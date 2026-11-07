@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Secrets - never commit API keys or machine-specific config
+.env
+.env.local
+.env.*.local
+server/.env
+app/.env
+
+# Database - real user data, never commit
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal
+
+# Expo / React Native
+app/.expo/
+app/dist/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+app/ios/
+app/android/
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Test coverage
+coverage/

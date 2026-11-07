@@ -1,0 +1,108 @@
+{
+  "ruleEngineVersion": "gemstone-rules-1.0",
+  "tradition": "Vedic (sidereal) - Rashi (Moon-sign) lord strengthening method",
+  "traditionNote": "This engine recommends a gemstone traditionally associated with the ruling planet of the user's sidereal Moon sign (Janma Rashi). This is one documented, named traditional convention; it does not perform full lagna (ascendant), dasha, or planetary-affliction analysis, which this app's astrology engine does not currently calculate. Other traditions or astrologers may recommend differently.",
+  "gemstones": {
+    "Sun": {
+      "nameEnglish": "Ruby",
+      "nameHindi": "Manik",
+      "alternativeName": "Red Spinel",
+      "traditionalDay": "Sunday",
+      "traditionalFinger": "Ring finger",
+      "traditionalMetal": "Gold",
+      "customaryPractice": "Customarily worn after a Sunday-morning cleansing ritual; treated as a personal/cultural practice, not a scientifically proven requirement."
+    },
+    "Moon": {
+      "nameEnglish": "Natural Pearl",
+      "nameHindi": "Moti",
+      "alternativeName": "Moonstone",
+      "traditionalDay": "Monday",
+      "traditionalFinger": "Little finger",
+      "traditionalMetal": "Silver",
+      "customaryPractice": "Customarily worn after a Monday-evening cleansing ritual; a cultural practice, not a scientifically proven requirement."
+    },
+    "Mars": {
+      "nameEnglish": "Red Coral",
+      "nameHindi": "Moonga",
+      "alternativeName": "Expert-reviewed alternative only",
+      "traditionalDay": "Tuesday",
+      "traditionalFinger": "Ring finger",
+      "traditionalMetal": "Gold or copper",
+      "customaryPractice": "Customarily worn after a Tuesday-morning cleansing ritual; a cultural practice, not a scientifically proven requirement."
+    },
+    "Mercury": {
+      "nameEnglish": "Emerald",
+      "nameHindi": "Panna",
+      "alternativeName": "Green Onyx",
+      "traditionalDay": "Wednesday",
+      "traditionalFinger": "Little finger",
+      "traditionalMetal": "Gold",
+      "customaryPractice": "Customarily worn after a Wednesday-morning cleansing ritual; a cultural practice, not a scientifically proven requirement."
+    },
+    "Jupiter": {
+      "nameEnglish": "Yellow Sapphire",
+      "nameHindi": "Pukhraj",
+      "alternativeName": "Yellow Topaz",
+      "traditionalDay": "Thursday",
+      "traditionalFinger": "Index finger",
+      "traditionalMetal": "Gold",
+      "customaryPractice": "Customarily worn after a Thursday-morning cleansing ritual; a cultural practice, not a scientifically proven requirement."
+    },
+    "Venus": {
+      "nameEnglish": "Diamond",
+      "nameHindi": "Heera",
+      "alternativeName": "White Sapphire",
+      "traditionalDay": "Friday",
+      "traditionalFinger": "Middle or ring finger",
+      "traditionalMetal": "Platinum or silver",
+      "customaryPractice": "Customarily worn after a Friday-morning cleansing ritual; a cultural practice, not a scientifically proven requirement."
+    },
+    "Saturn": {
+      "nameEnglish": "Blue Sapphire",
+      "nameHindi": "Neelam",
+      "alternativeName": "Amethyst",
+      "traditionalDay": "Saturday",
+      "traditionalFinger": "Middle finger",
+      "traditionalMetal": "Silver or iron-toned alloy",
+      "customaryPractice": "Traditionally advised to be trial-worn briefly before committing, given its reputation in Vedic practice for a strong, variable effect; a cultural practice, not a scientifically proven requirement."
+    },
+    "Rahu": {
+      "nameEnglish": "Hessonite Garnet",
+      "nameHindi": "Gomed",
+      "alternativeName": "Expert-reviewed alternative only",
+      "traditionalDay": "Saturday",
+      "traditionalFinger": "Middle finger",
+      "traditionalMetal": "Silver",
+      "customaryPractice": "Customarily recommended only after consultation, given Rahu's shadow-planet status in Vedic tradition; a cultural practice, not a scientifically proven requirement."
+    },
+    "Ketu": {
+      "nameEnglish": "Cat's Eye Chrysoberyl",
+      "nameHindi": "Lehsunia",
+      "alternativeName": "Expert-reviewed alternative only",
+      "traditionalDay": "Tuesday",
+      "traditionalFinger": "Middle finger",
+      "traditionalMetal": "Silver",
+      "customaryPractice": "Customarily recommended only after consultation, given Ketu's shadow-planet status in Vedic tradition; a cultural practice, not a scientifically proven requirement."
+    }
+  },
+  "rashiLord": {
+    "Aries": "Mars",
+    "Taurus": "Venus",
+    "Gemini": "Mercury",
+    "Cancer": "Moon",
+    "Leo": "Sun",
+    "Virgo": "Mercury",
+    "Libra": "Venus",
+    "Scorpio": "Mars",
+    "Sagittarius": "Jupiter",
+    "Capricorn": "Saturn",
+    "Aquarius": "Saturn",
+    "Pisces": "Jupiter"
+  },
+  "carat": {
+    "method": "generic-traditional-range-v1",
+    "note": "A widely-cited traditional convention suggests ring-stone weights commonly fall in this range for the primary gemstone; this is NOT derived from the user's body weight (which this app never infers) and is not a scientific prescription. Always confirm with a qualified gemologist/astrologer before purchase.",
+    "defaultRangeCarats": [3, 6],
+    "disclaimer": "This is traditional guidance, not a validated scientific prescription. Actual recommendations should be confirmed by a qualified gemologist or astrologer, and may vary by jewelry setting and budget."
+  }
+}

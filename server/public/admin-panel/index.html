@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Solune Admin</title>
+<style>
+  :root {
+    --bg: #0B0D12;
+    --surface: #12151D;
+    --surfaceElevated: #191E28;
+    --border: #272D39;
+    --textPrimary: #F3F5F8;
+    --textSecondary: #929AAA;
+    --accent: #8B83F6;
+    --secondary: #66D9C3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--textPrimary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-card {
+    background: var(--surfaceElevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 320px;
+  }
+  .login-card h1 { font-size: 20px; margin: 0 0 4px; }
+  .login-card p { color: var(--textSecondary); font-size: 13px; margin: 0 0 20px; }
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--textPrimary);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  button {
+    width: 100%;
+    background: var(--accent);
+    color: #0B0D12;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .error { color: #F28B82; font-size: 13px; margin-top: 8px; min-height: 16px; }
+  #app { display: none; max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .topbar h1 { font-size: 18px; margin: 0; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--textSecondary);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .tab.active { background: var(--accent); color: #0B0D12; border-color: var(--accent); font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .card {
+    background: var(--surfaceElevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .card .label { color: var(--textSecondary); font-size: 12px; margin-bottom: 6px; }
+  .card .value { font-size: 24px; font-weight: 700; }
+  .card .sub { color: var(--textSecondary); font-size: 12px; margin-top: 4px; }
+  .unavailable { color: var(--textSecondary); font-size: 12px; font-style: italic; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--textSecondary); font-weight: 500; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: var(--surface); border: 1px solid var(--border); }
+  .pill.premium { color: var(--secondary); border-color: var(--secondary); }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+  .toolbar input { flex: 1; margin-bottom: 0; }
+  .toolbar button { width: auto; padding: 8px 16px; }
+  .logout { background: none; border: 1px solid var(--border); color: var(--textSecondary); width: auto; padding: 6px 12px; font-weight: 400; }
+  .section-title { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
+  .pager { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--textSecondary); font-size: 12px; }
+  .pager button { width: auto; padding: 6px 12px; background: var(--surface); color: var(--textPrimary); border: 1px solid var(--border); }
+  .range-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .range-bar label { color: var(--textSecondary); font-size: 12px; }
+  .range-bar input[type="date"] {
+    background: var(--surface); border: 1px solid var(--border); color: var(--textPrimary);
+    border-radius: 8px; padding: 6px 8px; font-size: 13px; margin: 0;
+  }
+  .range-bar button { width: auto; padding: 7px 14px; }
+  .range-bar .clear-range { background: none; border: 1px solid var(--border); color: var(--textSecondary); }
+  .sparkline-wrap { background: var(--surfaceElevated); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 20px; }
+  .export-btn { width: auto; padding: 8px 16px; background: var(--secondary); color: #0B0D12; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Solune Admin</h1>
+    <p>This is a prototype-grade login with a single shared password and no session expiry beyond 24 hours. Not production-safe authentication.</p>
+    <input id="password-input" type="password" placeholder="Password" autocomplete="off" />
+    <button id="login-btn">Log in</button>
+    <div class="error" id="login-error"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <h1>Solune Admin</h1>
+    <button class="logout" id="logout-btn">Log out</button>
+  </div>
+  <div class="range-bar">
+    <label for="range-since">Since</label>
+    <input type="date" id="range-since" />
+    <label for="range-until">Until</label>
+    <input type="date" id="range-until" />
+    <button id="range-apply" style="width:auto;padding:7px 14px;">Apply</button>
+    <button id="range-clear" class="clear-range">Clear</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="users">Users</div>
+    <div class="tab" data-tab="features">Features</div>
+    <div class="tab" data-tab="revenue">Revenue</div>
+    <div class="tab" data-tab="assistant">AI Chat</div>
+    <div class="tab" data-tab="audit">Audit Log</div>
+    <div class="tab" data-tab="system">System</div>
+  </div>
+  <div id="panel-content"></div>
+</div>
+
+<script>
+  const API_BASE = window.location.origin;
+  let token = localStorage.getItem('solune_admin_token') || '';
+  let usersPage = 1;
+  let currentTab = 'overview';
+  let lastUserSearch = '';
+
+  // Shared date-range state, applied to whichever tab is currently active.
+  // Reused across tabs since every /admin/* list/aggregate endpoint already
+  // honors since/until query params server-side.
+  function getRange() {
+    const since = document.getElementById('range-since').value;
+    const until = document.getElementById('range-until').value;
+    return { since, until };
+  }
+
+  function rangeParams() {
+    const { since, until } = getRange();
+    const params = {};
+    if (since) params.since = since;
+    if (until) params.until = until;
+    return params;
+  }
+
+  function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderTab('overview');
+  }
+
+  function showLogin(message) {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    if (message) document.getElementById('login-error').textContent = message;
+  }
+
+  async function api(path, options) {
+    const res = await fetch(API_BASE + path, {
+      ...options,
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(options && options.headers) },
+    });
+    if (res.status === 403) {
+      token = '';
+      localStorage.removeItem('solune_admin_token');
+      showLogin('Session expired, please log in again.');
+      throw new Error('Forbidden');
+    }
+    return res.json();
+  }
+
+  document.getElementById('login-btn').onclick = async () => {
+    const password = document.getElementById('password-input').value;
+    document.getElementById('login-error').textContent = '';
+    try {
+      const res = await fetch(API_BASE + '/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        document.getElementById('login-error').textContent = body.error || 'Login failed';
+        return;
+      }
+      const body = await res.json();
+      token = body.token;
+      localStorage.setItem('solune_admin_token', token);
+      showApp();
+    } catch (err) {
+      document.getElementById('login-error').textContent = 'Could not reach the server.';
+    }
+  };
+
+  document.getElementById('logout-btn').onclick = () => {
+    token = '';
+    localStorage.removeItem('solune_admin_token');
+    showLogin();
+  };
+
+  document.querySelectorAll('.tab').forEach((tab) => {
+    tab.onclick = () => renderTab(tab.dataset.tab);
+  });
+
+  document.getElementById('range-apply').onclick = () => renderTab(currentTab);
+  document.getElementById('range-clear').onclick = () => {
+    document.getElementById('range-since').value = '';
+    document.getElementById('range-until').value = '';
+    renderTab(currentTab);
+  };
+
+  function setActiveTab(name) {
+    currentTab = name;
+    document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === name));
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  async function renderTab(name) {
+    setActiveTab(name);
+    const el = document.getElementById('panel-content');
+    el.innerHTML = '<p class="unavailable">Loading...</p>';
+    try {
+      if (name === 'overview') return renderOverview(el);
+      if (name === 'users') return renderUsers(el);
+      if (name === 'features') return renderFeatures(el);
+      if (name === 'revenue') return renderRevenue(el);
+      if (name === 'assistant') return renderAssistant(el);
+      if (name === 'audit') return renderAudit(el);
+      if (name === 'system') return renderSystem(el);
+    } catch (err) {
+      el.innerHTML = '<p class="unavailable">Failed to load: ' + escapeHtml(err.message) + '</p>';
+    }
+  }
+
+  function formatCents(cents) {
+    return (cents / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+  }
+
+  async function renderOverview(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/overview?' + qs.toString());
+    let recentRows = '';
+    try {
+      const users = await api('/admin/users?' + new URLSearchParams({ ...rangeParams(), pageSize: '200', page: '1' }).toString());
+      const recent = [...users.users].filter((u) => u.lastSeen).sort((a, b) => b.lastSeen.localeCompare(a.lastSeen)).slice(0, 5);
+      recentRows = recent.map((u) => `
+        <tr>
+          <td>${escapeHtml(u.userId)}</td>
+          <td><span class="pill ${u.tier === 'premium' ? 'premium' : ''}">${escapeHtml(u.tier)}</span></td>
+          <td>${new Date(u.lastSeen).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    } catch (err) { /* non-critical widget, ignore */ }
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Total users</div><div class="value">${data.totalUsers}</div></div>
+        <div class="card"><div class="label">Premium users</div><div class="value">${data.usersByTier.premium}</div></div>
+        <div class="card"><div class="label">Free users</div><div class="value">${data.usersByTier.free}</div></div>
+      </div>
+      <div class="section-title">Readings by feature</div>
+      <div class="grid">
+        ${Object.entries(data.readingsByFeature).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('')}
+      </div>
+      <div class="section-title">Revenue (test pricing, see Revenue tab)</div>
+      <div class="grid">
+        <div class="card">
+          <div class="label">Total (assumed pricing)</div>
+          <div class="value">${formatCents(data.revenue.totalCents)}</div>
+          <div class="sub">${data.revenue.count} transaction(s)</div>
+        </div>
+      </div>
+      <p class="unavailable">${escapeHtml(data.revenue.note)}</p>
+      <div class="section-title">Recently active users</div>
+      <table>
+        <thead><tr><th>User ID</th><th>Tier</th><th>Last seen</th></tr></thead>
+        <tbody>${recentRows || '<tr><td colspan="3" class="unavailable">No activity in range</td></tr>'}</tbody>
+      </table>
+      <div class="section-title">Not yet instrumented</div>
+      <div class="grid">
+        <div class="card"><div class="label">AI cost</div><div class="unavailable">${escapeHtml(data.aiCost.reason)}</div></div>
+      </div>
+    `;
+  }
+
+  async function renderUsers(el, page) {
+    usersPage = page || usersPage;
+    el.innerHTML = `
+      <div class="toolbar">
+        <input id="user-search" type="text" placeholder="Search by user ID" />
+        <button id="user-search-btn" style="width:auto;">Search</button>
+        <button id="user-export-btn" class="export-btn">Export CSV</button>
+      </div>
+      <div id="users-table-wrap"><p class="unavailable">Loading...</p></div>
+    `;
+    const search = document.getElementById('user-search');
+    search.value = lastUserSearch;
+    document.getElementById('user-search-btn').onclick = () => loadUsers(search.value, 1);
+    search.onkeydown = (e) => { if (e.key === 'Enter') loadUsers(search.value, 1); };
+    document.getElementById('user-export-btn').onclick = () => exportUsersCsv(search.value);
+    loadUsers(lastUserSearch, usersPage);
+  }
+
+  // Downloads the CSV via an authenticated fetch + blob save-as, rather than
+  // navigating to a URL with the token as a query param. This is the more
+  // correct of the two options the task allows: a navigated URL would put
+  // the admin session token in browser history and server access logs. The
+  // tradeoff is a few extra lines of JS here; the server route itself still
+  // also accepts ?token= as a narrowly-scoped fallback for any caller that
+  // cannot do a blob fetch (see requireAdminRole in admin.ts).
+  async function exportUsersCsv(search) {
+    const qs = new URLSearchParams(rangeParams());
+    if (search) qs.set('search', search);
+    const res = await fetch(API_BASE + '/admin/users/export?' + qs.toString(), {
+      headers: { Authorization: 'Bearer ' + token },
+    });
+    if (!res.ok) { alert('Export failed'); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'solune-users.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function loadUsers(search, page) {
+    usersPage = page;
+    lastUserSearch = search || '';
+    const qs = new URLSearchParams({ ...rangeParams(), page: String(page), pageSize: '20' });
+    if (search) qs.set('search', search);
+    const data = await api('/admin/users?' + qs.toString());
+    const wrap = document.getElementById('users-table-wrap');
+    const rows = data.users.map((u) => `
+      <tr>
+        <td>${escapeHtml(u.userId)}</td>
+        <td><span class="pill ${u.tier === 'premium' ? 'premium' : ''}">${escapeHtml(u.tier)}</span></td>
+        <td>${u.readingCounts.tarot}</td>
+        <td>${u.readingCounts.gemstone}</td>
+        <td>${u.readingCounts.vastu}</td>
+        <td>${u.readingCounts.astrology}</td>
+        <td>${u.readingCounts.palm}</td>
+        <td>${u.readingCounts.companion}</td>
+        <td>${u.lastSeen ? new Date(u.lastSeen).toLocaleString() : '-'}</td>
+      </tr>
+    `).join('');
+    const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
+    wrap.innerHTML = `
+      <table>
+        <thead><tr><th>User ID</th><th>Tier</th><th>Tarot</th><th>Gemstone</th><th>Vastu</th><th>Astrology</th><th>Palm</th><th>Companion</th><th>Last seen</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="9" class="unavailable">No users found</td></tr>'}</tbody>
+      </table>
+      <div class="pager">
+        <span>Page ${data.page} of ${totalPages} (${data.total} users)</span>
+        <div>
+          <button ${data.page <= 1 ? 'disabled' : ''} id="prev-page">Prev</button>
+          <button ${data.page >= totalPages ? 'disabled' : ''} id="next-page">Next</button>
+        </div>
+      </div>
+    `;
+    const prev = document.getElementById('prev-page');
+    const next = document.getElementById('next-page');
+    if (prev) prev.onclick = () => loadUsers(search, page - 1);
+    if (next) next.onclick = () => loadUsers(search, page + 1);
+  }
+
+  async function renderFeatures(el) {
+    const qs = new URLSearchParams(rangeParams()).toString();
+    const suffix = qs ? '?' + qs : '';
+    const [tarot, gemstone, vastu, astrology, palm] = await Promise.all([
+      api('/admin/tarot' + suffix), api('/admin/gemstone' + suffix), api('/admin/vastu' + suffix),
+      api('/admin/astrology' + suffix), api('/admin/palm' + suffix),
+    ]);
+    function featureCard(title, data, breakdowns) {
+      const rows = breakdowns.map(([label, obj]) =>
+        `<div class="sub">${escapeHtml(label)}: ${Object.entries(obj).map(([k, v]) => `${escapeHtml(k)}=${v}`).join(', ') || 'none'}</div>`
+      ).join('');
+      return `
+        <div class="card">
+          <div class="label">${escapeHtml(title)}</div>
+          <div class="value">${data.total}</div>
+          <div class="sub">Premium: ${data.byTier.premium} / Free: ${data.byTier.free}</div>
+          <div class="sub">Revenue: ${formatCents(data.revenue.totalCents)} (${data.revenue.count} tx, test pricing)</div>
+          ${rows}
+        </div>
+      `;
+    }
+    el.innerHTML = `
+      <div class="grid">
+        ${featureCard('Tarot', tarot, [['Status', tarot.byStatus], ['Detailed report', tarot.byDetailedReportStatus]])}
+        ${featureCard('Gemstone', gemstone, [['Data completeness', gemstone.byDataCompleteness], ['Explanation source', gemstone.byExplanationSource]])}
+        ${featureCard('Vastu', vastu, [['Generation status', vastu.byGenerationStatus], ['Completeness', vastu.byCompleteness]])}
+        ${featureCard('Astrology', astrology, [['Generation status', astrology.byGenerationStatus], ['System', astrology.bySystem]])}
+        ${featureCard('Palm', palm, [['Image quality', palm.byImageQuality]])}
+      </div>
+    `;
+  }
+
+  // Lightweight inline SVG sparkline, no external chart library, consistent
+  // with this page being dependency-free elsewhere.
+  function sparklineSvg(series) {
+    if (series.length === 0) return '<p class="unavailable">No transactions in range</p>';
+    const w = 560, h = 90, pad = 8;
+    const max = Math.max(...series.map((d) => d.totalCents), 1);
+    const step = series.length > 1 ? (w - pad * 2) / (series.length - 1) : 0;
+    const points = series.map((d, i) => {
+      const x = pad + i * step;
+      const y = h - pad - (d.totalCents / max) * (h - pad * 2);
+      return x + ',' + y;
+    }).join(' ');
+    const last = series[series.length - 1];
+    return `
+      <svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Daily revenue trend">
+        <polyline points="${points}" fill="none" stroke="#66D9C3" stroke-width="2" />
+      </svg>
+      <div class="sub">${series.length} day(s) in range, latest: ${escapeHtml(last.date)} = ${formatCents(last.totalCents)}</div>
+    `;
+  }
+
+  async function renderRevenue(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/revenue?' + qs.toString());
+    const featureCards = Object.entries(data.byFeature).map(([feature, v]) => `
+      <div class="card">
+        <div class="label">${escapeHtml(feature)}</div>
+        <div class="value">${formatCents(v.totalCents)}</div>
+        <div class="sub">${v.count} transaction(s)</div>
+      </div>
+    `).join('');
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Total revenue</div><div class="value">${formatCents(data.totalCents)}</div><div class="sub">${data.count} transaction(s)</div></div>
+      </div>
+      <div class="section-title">By feature</div>
+      <div class="grid">${featureCards || '<p class="unavailable">No transactions in range</p>'}</div>
+      <div class="section-title">Daily trend</div>
+      <div class="sparkline-wrap">${sparklineSvg(data.dailySeries)}</div>
+      <p class="unavailable">${escapeHtml(data.note)} Pricing table version: ${escapeHtml(data.pricingTableVersion)}.</p>
+    `;
+  }
+
+  function msOrDash(v) {
+    return typeof v === 'number' ? Math.round(v) + 'ms' : '-';
+  }
+
+  async function renderAssistant(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const [data, config] = await Promise.all([
+      api('/admin/assistant?' + qs.toString()),
+      api('/admin/assistant-config'),
+    ]);
+
+    const featureRows = Object.entries(data.byFeature).map(([feature, count]) => `
+      <div class="card"><div class="label">${escapeHtml(feature)}</div><div class="value">${count}</div></div>
+    `).join('');
+
+    const stageLabels = {
+      intentDetectionMs: 'Intent detection',
+      dataRetrievalMs: 'Data retrieval',
+      timeToFirstTokenMs: 'Time to first token',
+      generationMs: 'Full generation',
+    };
+    const stageMax = Math.max(1, ...Object.values(data.performance.avgStageMs).filter((v) => typeof v === 'number'));
+    const stageRows = Object.entries(stageLabels).map(([key, label]) => {
+      const v = data.performance.avgStageMs[key];
+      const pct = typeof v === 'number' ? Math.round((v / stageMax) * 100) : 0;
+      const isSlowest = key === data.performance.slowestStage;
+      return `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+            <span style="color:${isSlowest ? 'var(--accent)' : 'var(--textSecondary)'};">${escapeHtml(label)}${isSlowest ? ' (slowest)' : ''}</span>
+            <span>${msOrDash(v)}</span>
+          </div>
+          <div style="background:var(--surface);border-radius:999px;height:6px;overflow:hidden;">
+            <div style="background:${isSlowest ? 'var(--accent)' : 'var(--secondary)'};width:${pct}%;height:100%;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Conversations</div><div class="value">${data.totalConversations}</div></div>
+        <div class="card"><div class="label">Messages</div><div class="value">${data.totalMessages}</div></div>
+        <div class="card"><div class="label">Avg msgs / conversation</div><div class="value">${data.avgMessagesPerConversation.toFixed(1)}</div></div>
+        <div class="card"><div class="label">DAU</div><div class="value">${data.dau}</div></div>
+        <div class="card"><div class="label">MAU</div><div class="value">${data.mau}</div></div>
+      </div>
+      <p class="unavailable">${escapeHtml(data.dauMauDefinition)}</p>
+
+      <div class="section-title">By feature</div>
+      <div class="grid">${featureRows || '<p class="unavailable">No messages in range</p>'}</div>
+
+      <div class="section-title">Premium recommendations</div>
+      <div class="grid">
+        <div class="card"><div class="label">Shown</div><div class="value">${data.premiumRecommendation.shown}</div></div>
+        <div class="card"><div class="label">Not shown</div><div class="value">${data.premiumRecommendation.notShown}</div></div>
+      </div>
+
+      <div class="section-title">Performance (real pipeline timing)</div>
+      <div class="grid">
+        <div class="card"><div class="label">Avg total latency</div><div class="value">${msOrDash(data.avgLatencyMs)}</div></div>
+        <div class="card"><div class="label">Error rate</div><div class="value">${(data.errorRate * 100).toFixed(1)}%</div></div>
+        <div class="card"><div class="label">Total requests</div><div class="value">${data.totalRequests}</div></div>
+      </div>
+      <div class="sparkline-wrap">${stageRows || '<p class="unavailable">No timing data in range</p>'}</div>
+
+      <div class="section-title">By processing mode (fast / deep analysis / premium report)</div>
+      <table>
+        <thead><tr><th>Mode</th><th>Requests</th><th>Avg latency</th><th>Avg cost</th></tr></thead>
+        <tbody>
+          ${Object.entries(data.performance.byMode).map(([mode, m]) => `
+            <tr>
+              <td><span class="pill">${escapeHtml(mode)}</span></td>
+              <td>${m.count}</td>
+              <td>${msOrDash(m.avgLatencyMs)}</td>
+              <td>${m.avgCostCents != null ? formatCents(m.avgCostCents) : '-'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <p class="unavailable">${escapeHtml(data.performance.note)}</p>
+
+      <div class="section-title">Estimated AI usage/cost</div>
+      <div class="grid">
+        <div class="card"><div class="label">Input tokens (est.)</div><div class="value">${data.usage.estimatedInputTokens}</div></div>
+        <div class="card"><div class="label">Output tokens (est.)</div><div class="value">${data.usage.estimatedOutputTokens}</div></div>
+        <div class="card"><div class="label">Estimated cost</div><div class="value">${formatCents(data.usage.estimatedCostCents)}</div></div>
+      </div>
+      <p class="unavailable">${escapeHtml(data.usage.note)}</p>
+
+      <div class="section-title">Assistant settings (super_admin only)</div>
+      <div class="card">
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Assistant name</label>
+        <input id="cfg-name" type="text" value="${escapeHtml(config.name)}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Welcome message</label>
+        <input id="cfg-welcome" type="text" value="${escapeHtml(config.welcomeMessage)}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">System instructions</label>
+        <input id="cfg-system" type="text" value="${escapeHtml(config.systemInstructions ?? '')}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Premium recommendation copy</label>
+        <input id="cfg-premium" type="text" value="${escapeHtml(config.premiumRecommendationCopy ?? '')}" />
+        <button id="cfg-save" style="width:auto;padding:8px 16px;">Save</button>
+        <div class="error" id="cfg-error"></div>
+      </div>
+    `;
+
+    const save = document.getElementById('cfg-save');
+    save.onclick = async () => {
+      document.getElementById('cfg-error').textContent = '';
+      try {
+        await api('/admin/assistant-config', {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: document.getElementById('cfg-name').value,
+            welcomeMessage: document.getElementById('cfg-welcome').value,
+            systemInstructions: document.getElementById('cfg-system').value,
+            premiumRecommendationCopy: document.getElementById('cfg-premium').value,
+          }),
+        });
+      } catch (err) {
+        document.getElementById('cfg-error').textContent = err.message || 'Failed to save';
+      }
+    };
+  }
+
+  let auditPage = 1;
+  async function renderAudit(el, page) {
+    auditPage = page || 1;
+    const qs = new URLSearchParams({ page: String(auditPage), pageSize: '50' });
+    const data = await api('/admin/audit-log?' + qs.toString());
+    const rows = data.entries.map((e) => `
+      <tr>
+        <td>${new Date(e.createdAt).toLocaleString()}</td>
+        <td><span class="pill">${escapeHtml(e.role)}</span></td>
+        <td>${escapeHtml(e.action)}</td>
+        <td>${escapeHtml(e.path)}</td>
+      </tr>
+    `).join('');
+    const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
+    el.innerHTML = `
+      <p class="unavailable">In-memory, per-process audit log of every authenticated admin request. Lost on server restart.</p>
+      <table>
+        <thead><tr><th>Time</th><th>Role</th><th>Method</th><th>Path</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" class="unavailable">No entries yet</td></tr>'}</tbody>
+      </table>
+      <div class="pager">
+        <span>Page ${data.page} of ${totalPages} (${data.total} entries)</span>
+        <div>
+          <button ${data.page <= 1 ? 'disabled' : ''} id="audit-prev">Prev</button>
+          <button ${data.page >= totalPages ? 'disabled' : ''} id="audit-next">Next</button>
+        </div>
+      </div>
+    `;
+    const prev = document.getElementById('audit-prev');
+    const next = document.getElementById('audit-next');
+    if (prev) prev.onclick = () => renderAudit(el, auditPage - 1);
+    if (next) next.onclick = () => renderAudit(el, auditPage + 1);
+  }
+
+  async function renderSystem(el) {
+    const data = await api('/admin/system');
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Uptime</div><div class="value">${Math.round(data.uptimeSeconds)}s</div></div>
+        <div class="card"><div class="label">Node version</div><div class="value">${escapeHtml(data.nodeVersion)}</div></div>
+        <div class="card"><div class="label">AI provider</div><div class="value">${escapeHtml(data.aiProvider)}</div></div>
+      </div>
+      <div class="section-title">In-memory record counts</div>
+      <div class="grid">
+        ${Object.entries(data.recordCountsByStore).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('')}
+      </div>
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+      <div class="section-title">Not yet instrumented</div>
+      <div class="card"><div class="label">Error monitoring</div><div class="unavailable">${escapeHtml(data.errorMonitoring.reason)}</div></div>
+    `;
+  }
+
+  if (token) {
+    api('/admin/system').then(() => showApp()).catch(() => showLogin());
+  } else {
+    showLogin();
+  }
+</script>
+
+</body>
+</html>

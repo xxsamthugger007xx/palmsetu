@@ -1,0 +1,132 @@
+{
+  "datasetVersion": "solune-vastu-directions-1.0",
+  "directions": [
+    {
+      "code": "N",
+      "label": "North",
+      "sanskritName": null,
+      "traditionalAssociation": "Traditionally associated with prosperity, career opportunities and the flow of positive energy into a home.",
+      "recommendations": [
+        "Keep this area open and uncluttered where practical.",
+        "Favored by many traditional schools for a study or home office."
+      ],
+      "limitations": "Guidance varies between regional Vastu schools and is not scientifically validated.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "NE",
+      "label": "Northeast",
+      "sanskritName": "Ishan",
+      "traditionalAssociation": "Traditionally considered the most auspicious direction for prayer, meditation and spiritual activities.",
+      "recommendations": [
+        "A commonly suggested placement for a prayer or meditation corner.",
+        "Traditionally kept light, open and free of heavy storage."
+      ],
+      "limitations": "Significance is strongest in schools that treat Ishan as sacred; not all traditions weight it the same way.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "E",
+      "label": "East",
+      "sanskritName": null,
+      "traditionalAssociation": "Traditionally associated with sunlight, new beginnings and vitality, given the rising sun.",
+      "recommendations": [
+        "Often suggested for windows or a main entrance to welcome morning light.",
+        "Commonly considered favorable for a living room."
+      ],
+      "limitations": "Practical benefit (morning light) is real; the broader traditional symbolism is cultural, not scientific.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "SE",
+      "label": "Southeast",
+      "sanskritName": "Agneya",
+      "traditionalAssociation": "Traditionally associated with the fire element, and commonly suggested for kitchen placement.",
+      "recommendations": [
+        "A traditionally favored direction for a kitchen or cooking area.",
+        "Often suggested for electrical equipment for the same elemental association."
+      ],
+      "limitations": "This is a traditional elemental association, not a safety or engineering requirement.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "S",
+      "label": "South",
+      "sanskritName": null,
+      "traditionalAssociation": "Guidance varies significantly by Vastu school and the specific building context.",
+      "recommendations": [
+        "Often associated with stability when paired with solid, heavier furnishings.",
+        "Consult a specific tradition's guidance if this matters to you, as views differ."
+      ],
+      "limitations": "Among the least consistently defined directions across different traditional schools.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "SW",
+      "label": "Southwest",
+      "sanskritName": "Nairutya",
+      "traditionalAssociation": "Often associated with stability and grounding, and commonly suggested for the master bedroom.",
+      "recommendations": [
+        "A traditionally favored direction for the primary/master bedroom.",
+        "Often suggested as a good location for heavier, sturdier furniture."
+      ],
+      "limitations": "Significance and specific guidance vary across regional traditions.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "W",
+      "label": "West",
+      "sanskritName": null,
+      "traditionalAssociation": "Guidance varies by room, building layout and the specific tradition being followed.",
+      "recommendations": [
+        "Often considered a flexible direction suited to dining areas in some schools.",
+        "Treat as context-dependent rather than fixed."
+      ],
+      "limitations": "One of the more loosely defined directions across traditional schools.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "NW",
+      "label": "Northwest",
+      "sanskritName": "Vayavya",
+      "traditionalAssociation": "Often associated with movement and air, and commonly suggested for guest rooms or storage.",
+      "recommendations": [
+        "Often suggested for a guest room given the association with movement/transience.",
+        "Sometimes suggested for garages or utility storage."
+      ],
+      "limitations": "Association with specific room types is one common convention, not universal.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    }
+  ],
+  "roomCompatibility": {
+    "entrance": { "favorable": ["N", "NE", "E"], "cautioned": [] },
+    "livingRoom": { "favorable": ["N", "E", "NE"], "cautioned": [] },
+    "kitchen": { "favorable": ["SE"], "cautioned": ["NE"] },
+    "masterBedroom": { "favorable": ["SW"], "cautioned": ["NE"] },
+    "prayerRoom": { "favorable": ["NE"], "cautioned": [] },
+    "bathroom": { "favorable": ["NW", "W"], "cautioned": ["NE"] }
+  },
+  "homeRoomLabels": {
+    "entrance": "Main Entrance",
+    "livingRoom": "Living Room",
+    "kitchen": "Kitchen",
+    "masterBedroom": "Bed / Master Bedroom",
+    "prayerRoom": "Home Temple / Prayer Room",
+    "bathroom": "Bathroom"
+  },
+  "workRoomCompatibility": {
+    "entrance": { "favorable": ["N", "E", "NE"], "cautioned": [] },
+    "deskStudy": { "favorable": ["N", "E", "NE"], "cautioned": [] },
+    "cashCounterSafe": { "favorable": ["N", "SW"], "cautioned": ["NE"] },
+    "meetingRoom": { "favorable": ["NW"], "cautioned": [] },
+    "storage": { "favorable": ["SW", "NW"], "cautioned": ["NE"] }
+  },
+  "workRoomLabels": {
+    "entrance": "Office Entrance",
+    "deskStudy": "Work Desk / Study",
+    "cashCounterSafe": "Cash Counter / Safe",
+    "meetingRoom": "Meeting Room",
+    "storage": "Storage Room"
+  },
+  "ruleEngineVersion": "vastu-rules-1.0"
+}
