@@ -20,10 +20,13 @@ export const billingApi = {
   getStatus(): Promise<SubscriptionStatus> {
     return request('/billing/status');
   },
-  // Real funnel events only - there is deliberately no purchase-completion
-  // call here. A genuine purchase can only ever be confirmed by a verified
-  // billing SDK/webhook, never a client-reported "it worked" beacon.
   trackFunnelEvent(type: 'SUBSCRIPTION_SCREEN_OPENED' | 'SUBSCRIPTION_PLAN_SELECTED' | 'CHECKOUT_INITIATED', planId?: BillingPeriod): Promise<{ ok: boolean }> {
     return request('/billing/funnel-event', { method: 'POST', body: JSON.stringify({ type, planId }) });
+  },
+  // Called after the RevenueCat SDK itself reports a successful purchase or
+  // restore - the backend re-verifies against RevenueCat's own API before
+  // ever granting Premium, this call is not what grants it.
+  confirmPurchase(appUserId: string): Promise<{ tier: 'free' | 'premium'; planId: BillingPeriod | null; renewsAt: string | null }> {
+    return request('/billing/confirm-purchase', { method: 'POST', body: JSON.stringify({ appUserId }) });
   },
 };

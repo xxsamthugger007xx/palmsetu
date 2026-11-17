@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { authApi, AccountPublic } from '../services/authApi';
 import { setAuthToken } from '../services/apiRequest';
+import { configurePurchases } from '../services/purchases';
 import { color } from '../theme/tokens';
 
 /**
@@ -50,9 +51,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (me.isGuest) {
         setIsGuest(true);
         setAccount(null);
+        // Same id the backend resolves from this same token server-side
+        // (see auth/context.ts) - configuring RevenueCat with it is what
+        // lets POST /billing/confirm-purchase look the purchase up without
+        // the client needing to separately prove who it is.
+        configurePurchases(me.userId);
       } else {
         setIsGuest(false);
         setAccount(me.account);
+        configurePurchases(me.account.id);
       }
     } catch {
       // Offline on first launch, or the stored token has expired/is

@@ -14,17 +14,9 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { billingApi } from '../../services/billingApi';
+import { isBillingConfigured, getPackagesByPlan, purchasePlan, restorePurchases } from '../../services/purchases';
 import { BillingPeriod, SubscriptionPlan } from '../../types/billing';
-
-/**
- * No billing SDK (RevenueCat / StoreKit / Google Play Billing) is wired
- * into this app - see the implementation report delivered alongside this
- * screen for the exact App Store Connect / Google Play Console setup
- * required. This constant gates the CTA into an honest "not yet available"
- * state instead of ever faking a successful purchase. Flip only once a
- * real billing integration exists and can verify a purchase server-side.
- */
-const BILLING_CONFIGURED = false;
+import { PurchasesPackage } from 'react-native-purchases';
 
 type BenefitCategory = {
   key: string;
@@ -146,7 +138,11 @@ export function PaywallScreen() {
   const [selected, setSelected] = useState<BillingPeriod>('monthly');
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [checkoutState, setCheckoutState] = useState<'idle' | 'pending' | 'failed'>('idle');
+  const [checkoutErrorText, setCheckoutErrorText] = useState<string | null>(null);
+  const [packagesByPlan, setPackagesByPlan] = useState<Record<string, PurchasesPackage>>({});
+  const [restoring, setRestoring] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const billingReady = isBillingConfigured();
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 450, useNativeDriver: true }).start();
@@ -160,6 +156,9 @@ export function PaywallScreen() {
         if (!loaded.some((p) => p.id === 'monthly') && loaded[0]) setSelected(loaded[0].id);
       })
       .catch(() => {});
+    if (billingReady) {
+      getPackagesByPlan().then(setPackagesByPlan).catch(() => {});
+    }
   }, []);
 
   const selectedPlan = plans.find((p) => p.id === selected);
@@ -180,15 +179,60 @@ export function PaywallScreen() {
     if (!selectedPlan) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     billingApi.trackFunnelEvent('CHECKOUT_INITIATED', selectedPlan.id).catch(() => {});
-    if (!BILLING_CONFIGURED) {
+    setCheckoutErrorText(null);
+
+    if (!billingReady) {
       setCheckoutState('failed');
       return;
     }
+
+    const pkg = packagesByPlan[selectedPlan.id];
+    if (!pkg) {
+      setCheckoutState('failed');
+      setCheckoutErrorText('This plan is not available for purchase right now. Please try again shortly.');
+      return;
+    }
+
     setCheckoutState('pending');
-    // Real purchase flow would be invoked here (RevenueCat.purchasePackage /
-    // native StoreKit / Play Billing) - intentionally not implemented, see
-    // the implementation report for exactly what's required before this
-    // branch can ever run.
+    try {
+      const { appUserId, entitlementActive } = await purchasePlan(pkg);
+      if (!entitlementActive) {
+        setCheckoutState('failed');
+        setCheckoutErrorText("Purchase completed but Premium isn't active yet - please try Restore Purchases in a moment.");
+        return;
+      }
+      // The purchase itself already happened via the native billing sheet -
+      // this call only asks the backend to re-verify and record it, never
+      // what grants Premium (see routes/billing.ts's confirm-purchase).
+      await billingApi.confirmPurchase(appUserId);
+      setCheckoutState('idle');
+      navigation.goBack();
+    } catch (err: any) {
+      setCheckoutState('failed');
+      if (err?.userCancelled) {
+        setCheckoutState('idle'); // not an error - just dismiss silently
+      } else {
+        setCheckoutErrorText(err?.message ?? 'Something went wrong with the purchase. Nothing was charged if it failed.');
+      }
+    }
+  };
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    setCheckoutErrorText(null);
+    try {
+      const { appUserId, entitlementActive } = await restorePurchases();
+      if (!entitlementActive) {
+        setCheckoutErrorText('No previous purchase was found to restore.');
+        return;
+      }
+      await billingApi.confirmPurchase(appUserId);
+      navigation.goBack();
+    } catch (err: any) {
+      setCheckoutErrorText(err?.message ?? 'Could not restore purchases right now.');
+    } finally {
+      setRestoring(false);
+    }
   };
 
   return (
@@ -316,11 +360,11 @@ export function PaywallScreen() {
             })}
           </View>
 
-          {!BILLING_CONFIGURED && (
+          {!billingReady && (
             <View style={styles.configNotice}>
               <Text variant="caption" style={{ color: color.warning }}>
-                Billing is not yet configured for Palm Setu Premium (no RevenueCat, StoreKit or Google Play
-                Billing integration exists yet). This screen will never charge you or grant Premium access.
+                Billing is not yet configured for Palm Setu Premium on this build. This screen will never
+                charge you or grant Premium access until it is.
               </Text>
             </View>
           )}
@@ -328,14 +372,16 @@ export function PaywallScreen() {
           {checkoutState === 'failed' && (
             <View style={styles.configNotice}>
               <Text variant="caption" style={{ color: color.danger }}>
-                Purchases aren't available yet in this build. Nothing was charged.
+                {checkoutErrorText ?? 'Purchases are not available right now. Nothing was charged.'}
               </Text>
             </View>
           )}
 
-          <Pressable onPress={() => {}} style={styles.restoreRow}>
+          <Pressable onPress={handleRestore} disabled={restoring || !billingReady} style={styles.restoreRow}>
             <RefreshCw size={14} color={color.textSecondary} strokeWidth={1.75} />
-            <Text variant="bodySm" tone="secondary" style={{ marginLeft: spacing.xs }}>Restore Purchases</Text>
+            <Text variant="bodySm" tone="secondary" style={{ marginLeft: spacing.xs }}>
+              {restoring ? 'Restoring...' : 'Restore Purchases'}
+            </Text>
           </Pressable>
 
           <Text variant="caption" tone="muted" style={styles.legal}>

@@ -1,0 +1,407 @@
+<!doctype html>
+<title>Privacy Policy</title>
+<meta name="description" content="How Palm Setu collects, uses, and protects your information.">
+<style>
+  :root {
+    --bg: #FBF9F5;
+    --surface: #FFFFFF;
+    --surface-sunken: #F3EFE6;
+    --border: #E7E0D2;
+    --text: #2A2440;
+    --text-muted: #6B6480;
+    --accent: #7A5FC2;
+    --accent-ink: #4A3A8A;
+    --gold: #B8872E;
+    --gold-bg: #FBF0DC;
+    --danger: #B3443B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161326;
+      --surface: #1E1A33;
+      --surface-sunken: #241F3D;
+      --border: #332C54;
+      --text: #ECE8FA;
+      --text-muted: #A69BC9;
+      --accent: #A99BEA;
+      --accent-ink: #D2CEFD;
+      --gold: #D9B872;
+      --gold-bg: #332A17;
+      --danger: #E0867E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161326;
+    --surface: #1E1A33;
+    --surface-sunken: #241F3D;
+    --border: #332C54;
+    --text: #ECE8FA;
+    --text-muted: #A69BC9;
+    --accent: #A99BEA;
+    --accent-ink: #D2CEFD;
+    --gold: #D9B872;
+    --gold-bg: #332A17;
+    --danger: #E0867E;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding-inline: 20px;
+    line-height: 1.65;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-block: 48px 80px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: var(--gold);
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1.1;
+    margin: 14px 0 6px;
+    text-wrap: balance;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 8px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .meta-row strong { color: var(--text); font-weight: 500; }
+
+  nav.toc {
+    margin: 36px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+  }
+  nav.toc p {
+    margin: 0 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  nav.toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    gap: 0 24px;
+  }
+  @media (max-width: 560px) { nav.toc ol { columns: 1; } }
+  nav.toc li { break-inside: avoid; margin-bottom: 6px; }
+  nav.toc a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    gap: 8px;
+  }
+  nav.toc a:hover { color: var(--accent); }
+  nav.toc a span.num { color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 1.4em; }
+
+  section { margin-top: 44px; scroll-margin-top: 20px; }
+  section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  section h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 20px 0 8px;
+  }
+  p { margin: 0 0 14px; color: var(--text); }
+  p.muted, li.muted { color: var(--text-muted); }
+  ul, ol.plain { padding-left: 1.1em; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 14px;
+  }
+  table caption { text-align: left; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500; }
+
+  .callout {
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  .callout.gold { border-left-color: var(--gold); background: var(--gold-bg); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .placeholder {
+    background: var(--gold-bg);
+    color: var(--gold);
+    border: 1px dashed var(--gold);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    white-space: nowrap;
+  }
+
+  a.inline { color: var(--accent-ink); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  footer a { color: var(--text-muted); }
+  .back-top {
+    position: fixed;
+    bottom: 22px;
+    right: max(22px, env(safe-area-inset-right, 0px));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Palm Setu</div>
+  <h1>Privacy Policy</h1>
+  <p class="subtitle">How we collect, use, store, and protect your information across the Palm Setu app, backend, and admin systems.</p>
+  <div class="meta-row">
+    <span><strong>Effective date:</strong> 18 November 2026</span>
+    <span><strong>Applies to:</strong> Palm Setu mobile app (Android &amp; iOS), palmsetu.com</span>
+    <span><strong>Contact:</strong> privacy@palmsetu.com</span>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#who-we-are"><span class="num">01</span> Who we are</a></li>
+      <li><a href="#information-we-collect"><span class="num">02</span> Information we collect</a></li>
+      <li><a href="#how-we-use"><span class="num">03</span> How we use your information</a></li>
+      <li><a href="#ai-processing"><span class="num">04</span> AI-generated readings</a></li>
+      <li><a href="#payments"><span class="num">05</span> Payments &amp; subscriptions</a></li>
+      <li><a href="#sharing"><span class="num">06</span> Who we share data with</a></li>
+      <li><a href="#sensitive"><span class="num">07</span> Sensitive content &amp; admin access</a></li>
+      <li><a href="#retention"><span class="num">08</span> Retention &amp; deletion</a></li>
+      <li><a href="#security"><span class="num">09</span> Security</a></li>
+      <li><a href="#rights"><span class="num">10</span> Your rights &amp; choices</a></li>
+      <li><a href="#children"><span class="num">11</span> Children's privacy</a></li>
+      <li><a href="#nature"><span class="num">12</span> Nature of readings</a></li>
+      <li><a href="#changes"><span class="num">13</span> Changes to this policy</a></li>
+      <li><a href="#contact"><span class="num">14</span> Contact us</a></li>
+    </ol>
+  </nav>
+
+  <section id="who-we-are">
+    <h2><span class="num">01</span> Who we are</h2>
+    <p>Palm Setu ("Palm Setu", "we", "us") is a mobile application offering palm reading, tarot, astrology, gemstone guidance, Vastu analysis, soulmate sketches, and wellness tools, published by PALM SETU, registered at 79, LD Block, Pitampura, Delhi.</p>
+    <p>This policy explains what we collect through the app and its backend services, why, who we share it with, and the choices you have. If you don't agree with this policy, please don't use Palm Setu.</p>
+  </section>
+
+  <section id="information-we-collect">
+    <h2><span class="num">02</span> Information we collect</h2>
+
+    <h3>Account information</h3>
+    <p>If you create an account: your email address and a securely hashed password (we never store your password in plain text). If you don't create an account, we assign your device an anonymous guest session so the app still works. Guest data can later be linked to a real account if you sign up.</p>
+
+    <h3>Profile &amp; birth details</h3>
+    <p>For astrology, Vedic/Western chart calculations, and daily horoscopes: your name, date of birth, time of birth (optional, you may skip this), birthplace, and the resulting geographic coordinates and timezone. These are used only to calculate your chart; we do not sell or independently use this data for any other purpose.</p>
+
+    <h3>Palm photos</h3>
+    <p>Photos you capture or upload for palm reading are processed to detect palm lines and generate your reading, and the image may be stored so you can view your reading again later. You can delete a palm reading (and its stored image) at any time from within the app.</p>
+
+    <h3>Readings, questions &amp; journal content</h3>
+    <p>Tarot readings, astrology reports, gemstone and Vastu reports, follow-up questions you ask our AI assistant, and any wellness journal entries, mood check-ins, or notes you choose to save. See <a class="inline" href="#sensitive">Section 7</a> for how we protect this content specifically.</p>
+
+    <h3>Device &amp; usage information</h3>
+    <p>We collect limited technical and usage data to keep the app working and to understand feature usage: app version, operating system, screens visited, features used, and session timing (when a session starts, goes to background, and ends). We do not collect precise GPS location, contacts, or anything from other apps on your device.</p>
+
+    <h3>Payment information</h3>
+    <p>See <a class="inline" href="#payments">Section 5</a>: we never see or store your full card number; that is handled entirely by our payment processors.</p>
+
+    <h3>Support communications</h3>
+    <p>If you contact us for support, we keep a record of that conversation to help resolve your issue and improve the app.</p>
+  </section>
+
+  <section id="how-we-use">
+    <h2><span class="num">03</span> How we use your information</h2>
+    <ul>
+      <li>To generate your palm, tarot, astrology, gemstone, and Vastu readings and reports</li>
+      <li>To let you save, revisit, and manage your reading history</li>
+      <li>To process payments and manage your subscription status</li>
+      <li>To personalize AI assistant responses using your own saved readings and profile (never another user's data)</li>
+      <li>To detect and prevent fraud, abuse, and security issues</li>
+      <li>To understand which features are used and improve the app over time</li>
+      <li>To send you notifications you've opted into (e.g. your daily tarot card or horoscope)</li>
+      <li>To comply with legal obligations</li>
+    </ul>
+    <p class="muted">We do not use your birth details, palm photos, or journal content to show you third-party advertising, and we do not sell your personal information to data brokers or advertisers.</p>
+  </section>
+
+  <section id="ai-processing">
+    <h2><span class="num">04</span> AI-generated readings</h2>
+    <p>Some readings and assistant responses are generated using third-party AI providers (currently Google Gemini and Anthropic Claude). When this happens, the relevant reading content and your question (never your account password or payment details) is sent to that provider to generate a response, under their own data processing terms. We do not permit these providers to use your data to train their general-purpose models beyond what's necessary to serve your request, per their enterprise/API terms.</p>
+    <div class="callout">
+      <strong>What this means practically</strong>
+      If you ask a follow-up question about your reading, that question and the relevant reading context is processed by an AI provider to generate an answer. It is not used for advertising.
+    </div>
+  </section>
+
+  <section id="payments">
+    <h2><span class="num">05</span> Payments &amp; subscriptions</h2>
+    <p>Palm Setu Premium subscriptions are purchased through the Google Play Store's billing system (or Apple's, on iOS); Google/Apple handle your payment method directly, and we only receive confirmation that a purchase was made and which plan you bought, via our billing partner RevenueCat.</p>
+    <p>One-time purchases (such as a Soulmate Sketch portrait) are processed through Razorpay, a payment gateway. Razorpay handles your card/UPI details directly; we only receive a payment confirmation and reference ID, never your full card number.</p>
+    <p class="muted">We never store your card number, CVV, or UPI PIN on our servers at any point.</p>
+  </section>
+
+  <section id="sharing">
+    <h2><span class="num">06</span> Who we share data with</h2>
+    <table>
+      <caption>Third parties that may process data on our behalf, and why</caption>
+      <thead><tr><th>Who</th><th>What they receive</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Google Gemini / Anthropic Claude</td><td>Reading content, your questions</td><td>Generate AI-written readings &amp; answers</td></tr>
+        <tr><td>Google Play Billing / RevenueCat</td><td>Purchase &amp; subscription status</td><td>Process and verify subscription purchases</td></tr>
+        <tr><td>Razorpay</td><td>Payment details (handled by them, not us)</td><td>Process one-time payments</td></tr>
+        <tr><td>Cloudflare (Turnstile)</td><td>Device/browser signals</td><td>Distinguish real users from bots during sign-up</td></tr>
+        <tr><td>Push notification service</td><td>Device push token</td><td>Deliver notifications you've opted into</td></tr>
+      </tbody>
+    </table>
+    <p>We do not sell your personal information. We may disclose information if required by law, to protect our rights, or to protect the safety of our users.</p>
+  </section>
+
+  <section id="sensitive">
+    <h2><span class="num">07</span> Sensitive content &amp; admin access</h2>
+    <p>Wellness journal entries and personal notes are treated as particularly sensitive. They are never shown to our support or admin staff by default: accessing the actual content of a journal entry requires an explicit, logged administrative action with a stated reason, and every such access is permanently recorded in an internal audit log. Routine admin tools only ever show counts and dates (e.g. "3 journal entries this week"), never the content itself.</p>
+  </section>
+
+  <section id="retention">
+    <h2><span class="num">08</span> Retention &amp; deletion</h2>
+    <p>We retain your account data for as long as your account is active. You can delete your account at any time from within the app's profile settings, which removes your profile, saved readings, and uploaded images. Some records (such as payment transaction logs) may be retained longer where required for accounting, fraud prevention, or legal obligations.</p>
+    <p>Guest sessions that never convert to a real account are not tied to any contact information and are periodically cleaned up.</p>
+  </section>
+
+  <section id="security">
+    <h2><span class="num">09</span> Security</h2>
+    <ul>
+      <li>Passwords are hashed (never stored as plain text) using industry-standard hashing</li>
+      <li>All traffic between the app and our servers is encrypted in transit (HTTPS)</li>
+      <li>Administrative access to the backend requires a separately authenticated admin account, is rate-limited against brute-force attempts, and every administrative action is logged</li>
+      <li>Sensitive content access (see <a class="inline" href="#sensitive">Section 7</a>) requires an explicit, audited action</li>
+    </ul>
+    <p class="muted">No method of transmission or storage is 100% secure, and we cannot guarantee absolute security, but we work to protect your information using the measures above.</p>
+  </section>
+
+  <section id="rights">
+    <h2><span class="num">10</span> Your rights &amp; choices</h2>
+    <ul>
+      <li><strong>Access &amp; export:</strong> you can view your saved readings and profile directly in the app</li>
+      <li><strong>Correction:</strong> you can edit your profile and birth details at any time</li>
+      <li><strong>Deletion:</strong> you can delete individual readings, or your entire account, from within the app</li>
+      <li><strong>Notifications:</strong> you can opt out of push notifications in your device settings or the app's notification settings</li>
+      <li><strong>Data requests:</strong> you can contact us at privacy@palmsetu.com for any other request regarding your personal data</li>
+    </ul>
+    <p>Depending on where you live, you may have additional rights under laws such as India's Digital Personal Data Protection Act, the EU/UK GDPR, or US state privacy laws. We will honor applicable rights requests consistent with those laws.</p>
+  </section>
+
+  <section id="children">
+    <h2><span class="num">11</span> Children's privacy</h2>
+    <p>Palm Setu is not directed at children under 13 (or the minimum age required by your country), and we do not knowingly collect personal information from children under that age. If you believe a child has provided us with personal information, please contact us and we will delete it.</p>
+  </section>
+
+  <section id="nature">
+    <h2><span class="num">12</span> Nature of readings</h2>
+    <div class="callout gold">
+      <strong>For reflection, not prediction</strong>
+      Palm reading, tarot, astrology, gemstone, and Vastu content in this app draws on traditional belief systems and AI-generated interpretation. It is provided for entertainment, reflection, and cultural interest. It is not scientifically validated, not a substitute for professional medical, legal, financial, or mental health advice, and should not be treated as a guaranteed prediction of real-world outcomes.
+    </div>
+  </section>
+
+  <section id="changes">
+    <h2><span class="num">13</span> Changes to this policy</h2>
+    <p>We may update this policy from time to time. If we make material changes, we'll notify you in the app or by email before the change takes effect. The "Effective date" at the top of this page always reflects the latest version.</p>
+  </section>
+
+  <section id="contact">
+    <h2><span class="num">14</span> Contact us</h2>
+    <p>Questions about this policy or your data? Reach us at privacy@palmsetu.com, or write to 79, LD Block, Pitampura, Delhi.</p>
+  </section>
+
+  <footer>
+    <span>&copy; 2026 Palm Setu</span>
+    <span><a class="inline" href="#who-we-are">Back to top</a></span>
+  </footer>
+</div>
+
+<a class="back-top" href="#who-we-are" aria-label="Back to top">&uarr;</a>

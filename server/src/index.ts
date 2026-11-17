@@ -126,6 +126,11 @@ app.use('/admin', buildAdminRouter(aiProvider));
 // (see auth/adminAuth.ts). Served at /admin-panel.
 app.use('/admin-panel', express.static(path.join(__dirname, '../public/admin-panel')));
 
+// Public privacy policy page, served at /privacy - this is the URL to give
+// Google Play Console / App Store Connect once palmsetu.com's DNS points
+// at this deployment. Plain static file, no auth.
+app.use('/privacy', express.static(path.join(__dirname, '../public/privacy')));
+
 // Provisions the first Super Admin from SUPER_ADMIN_EMAIL/SUPER_ADMIN_PASSWORD
 // if admin_users is empty (no-op otherwise), and assigns a permanent
 // PSU-000001-style ID to every account that doesn't have one yet (no-op for
