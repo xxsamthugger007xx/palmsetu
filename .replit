@@ -5,3 +5,7 @@ run = "cd server && npm run dev"
 build = ["bash", "-c", "cd server && npm install && npm run build"]
 run = ["bash", "-c", "cd server && npm run start"]
 deploymentTarget = "vm"
+
+[[ports]]
+localPort = 4000
+externalPort = 80
