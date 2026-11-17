@@ -23,5 +23,5 @@ export async function addWatermark(imageBuffer: Buffer): Promise<Buffer> {
     <text x="${width - 12}" y="${height - 16}" text-anchor="end" class="wm">Palm Setu</text>
   </svg>`;
 
-  return image.composite([{ input: Buffer.from(svg), top: 0, left: 0 }]).toBuffer();
+  return image.composite([{ input: Buffer.from(svg), top: 0, left: 0 }]).png().toBuffer();
 }

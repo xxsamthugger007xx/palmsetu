@@ -7,7 +7,7 @@ import { PRICING_CENTS, CURRENCY } from '../data/pricing';
 import { createOrder, verifyPaymentSignature, verifyWebhookSignature, getPublicKeyId } from '../payments/razorpay';
 import { pickSoulmateImage } from '../soulmate/catalogMatcher';
 import { generateSoulmatePersonality } from '../soulmate/personality';
-import { readSoulmateCatalogImage } from '../soulmate/imageStorage';
+import { isReadableSoulmateCatalogImage, readSoulmateCatalogImage } from '../soulmate/imageStorage';
 import { addWatermark } from '../soulmate/watermark';
 import { recordSoulmateEvent } from '../soulmate/analytics';
 import { recordEvent } from '../events/eventTracker';
@@ -269,6 +269,9 @@ export function buildSoulmateRouter() {
 
     try {
       const { filename } = pickSoulmateImage(sketch);
+      if (!await isReadableSoulmateCatalogImage(filename)) {
+        throw new Error('The selected portrait is unavailable or unreadable.');
+      }
       const personality = generateSoulmatePersonality(sketch);
 
       const completed: SoulmateSketch = {

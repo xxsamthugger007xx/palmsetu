@@ -1,0 +1,35 @@
+modules = ["nodejs-24"]
+run = "cd server && npm run dev"
+
+[[ports]]
+localPort = 4000
+externalPort = 80
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start Backend"
+
+[[workflows.workflow]]
+name = "Start Backend"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd server && npm run dev"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[deployment]
+deploymentTarget = "vm"
+build = ["bash", "-c", "cd server && npm install && npm run build"]
+run = ["bash", "-c", "cd server && npm run start"]
+ignorePorts = false

@@ -48,11 +48,14 @@ describe('routes/wellness - mood tracker', () => {
     expect(emptyTrends.body.averageEnergy).toBeNull();
 
     const userId = `test-${uuid()}`;
+    const today = new Date();
+    const todayDate = today.toISOString().slice(0, 10);
+    const yesterdayDate = new Date(today.getTime() - 86400000).toISOString().slice(0, 10);
     await request(app).post('/wellness/mood').set(userHeader(userId)).send({
-      localDate: '2026-11-01', mood: 'low', emotions: ['sad', 'tired'], energy: 1, stress: 1, sleepQuality: 1,
+      localDate: yesterdayDate, mood: 'low', emotions: ['sad', 'tired'], energy: 1, stress: 1, sleepQuality: 1,
     });
     await request(app).post('/wellness/mood').set(userHeader(userId)).send({
-      localDate: '2026-11-02', mood: 'low', emotions: ['sad'], energy: 1, stress: 1, sleepQuality: 1,
+      localDate: todayDate, mood: 'low', emotions: ['sad'], energy: 1, stress: 1, sleepQuality: 1,
     });
 
     const trends = await request(app).get('/wellness/mood/trends').set(userHeader(userId));
