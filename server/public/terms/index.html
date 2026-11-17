@@ -1,0 +1,356 @@
+<!doctype html>
+<title>Terms of Service</title>
+<meta name="description" content="The terms that govern your use of the Palm Setu app.">
+<style>
+  :root {
+    --bg: #FBF9F5;
+    --surface: #FFFFFF;
+    --surface-sunken: #F3EFE6;
+    --border: #E7E0D2;
+    --text: #2A2440;
+    --text-muted: #6B6480;
+    --accent: #7A5FC2;
+    --accent-ink: #4A3A8A;
+    --gold: #B8872E;
+    --gold-bg: #FBF0DC;
+    --danger: #B3443B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161326;
+      --surface: #1E1A33;
+      --surface-sunken: #241F3D;
+      --border: #332C54;
+      --text: #ECE8FA;
+      --text-muted: #A69BC9;
+      --accent: #A99BEA;
+      --accent-ink: #D2CEFD;
+      --gold: #D9B872;
+      --gold-bg: #332A17;
+      --danger: #E0867E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161326;
+    --surface: #1E1A33;
+    --surface-sunken: #241F3D;
+    --border: #332C54;
+    --text: #ECE8FA;
+    --text-muted: #A69BC9;
+    --accent: #A99BEA;
+    --accent-ink: #D2CEFD;
+    --gold: #D9B872;
+    --gold-bg: #332A17;
+    --danger: #E0867E;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding-inline: 20px;
+    line-height: 1.65;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-block: 48px 80px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: var(--gold);
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1.1;
+    margin: 14px 0 6px;
+    text-wrap: balance;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 8px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .meta-row strong { color: var(--text); font-weight: 500; }
+
+  nav.toc {
+    margin: 36px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+  }
+  nav.toc p {
+    margin: 0 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  nav.toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    gap: 0 24px;
+  }
+  @media (max-width: 560px) { nav.toc ol { columns: 1; } }
+  nav.toc li { break-inside: avoid; margin-bottom: 6px; }
+  nav.toc a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    gap: 8px;
+  }
+  nav.toc a:hover { color: var(--accent); }
+  nav.toc a span.num { color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 1.4em; }
+
+  section { margin-top: 44px; scroll-margin-top: 20px; }
+  section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  section h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 20px 0 8px;
+  }
+  p { margin: 0 0 14px; color: var(--text); }
+  p.muted, li.muted { color: var(--text-muted); }
+  ul, ol.plain { padding-left: 1.1em; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 14px;
+  }
+  table caption { text-align: left; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500; }
+
+  .callout {
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  .callout.gold { border-left-color: var(--gold); background: var(--gold-bg); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  a.inline { color: var(--accent-ink); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  footer a { color: var(--text-muted); }
+  .back-top {
+    position: fixed;
+    bottom: 22px;
+    right: max(22px, env(safe-area-inset-right, 0px));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Palm Setu</div>
+  <h1>Terms of Service</h1>
+  <p class="subtitle">The terms that govern your use of the Palm Setu app, its subscriptions, and one-time purchases.</p>
+  <div class="meta-row">
+    <span><strong>Effective date:</strong> 18 November 2026</span>
+    <span><strong>Applies to:</strong> Palm Setu mobile app (Android &amp; iOS), palmsetu.com</span>
+    <span><strong>Contact:</strong> support@palmsetu.com</span>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#acceptance"><span class="num">01</span> Acceptance of terms</a></li>
+      <li><a href="#the-service"><span class="num">02</span> The service</a></li>
+      <li><a href="#accounts"><span class="num">03</span> Accounts &amp; eligibility</a></li>
+      <li><a href="#subscriptions"><span class="num">04</span> Subscriptions &amp; billing</a></li>
+      <li><a href="#one-time"><span class="num">05</span> One-time purchases</a></li>
+      <li><a href="#refunds"><span class="num">06</span> Cancellations &amp; refunds</a></li>
+      <li><a href="#conduct"><span class="num">07</span> Acceptable use</a></li>
+      <li><a href="#content"><span class="num">08</span> Your content &amp; our content</a></li>
+      <li><a href="#nature"><span class="num">09</span> Nature of readings</a></li>
+      <li><a href="#disclaimers"><span class="num">10</span> Disclaimers</a></li>
+      <li><a href="#liability"><span class="num">11</span> Limitation of liability</a></li>
+      <li><a href="#termination"><span class="num">12</span> Termination</a></li>
+      <li><a href="#changes"><span class="num">13</span> Changes to these terms</a></li>
+      <li><a href="#law"><span class="num">14</span> Governing law</a></li>
+      <li><a href="#contact"><span class="num">15</span> Contact us</a></li>
+    </ol>
+  </nav>
+
+  <section id="acceptance">
+    <h2><span class="num">01</span> Acceptance of terms</h2>
+    <p>These Terms of Service ("Terms") are a legal agreement between you and PALM SETU, registered at 79, LD Block, Pitampura, Delhi ("Palm Setu", "we", "us"). By creating an account, making a purchase, or otherwise using the Palm Setu app, you agree to these Terms. If you don't agree, please don't use the app.</p>
+    <p>See also our <a class="inline" href="/privacy">Privacy Policy</a>, which explains how we handle your data and is incorporated into these Terms by reference.</p>
+  </section>
+
+  <section id="the-service">
+    <h2><span class="num">02</span> The service</h2>
+    <p>Palm Setu provides palm reading, tarot, astrology, gemstone guidance, Vastu analysis, soulmate sketches, and wellness journaling tools, with some content generated with the help of third-party AI providers. Some features are free; others require an active Premium subscription or a one-time purchase, as described in the app.</p>
+  </section>
+
+  <section id="accounts">
+    <h2><span class="num">03</span> Accounts &amp; eligibility</h2>
+    <p>You must be at least 13 years old (or the minimum age required in your country) to use Palm Setu. You're responsible for keeping your account credentials confidential and for all activity under your account. You can also use parts of the app as a guest, without creating an account, in which case your data is tied only to an anonymous session.</p>
+  </section>
+
+  <section id="subscriptions">
+    <h2><span class="num">04</span> Subscriptions &amp; billing</h2>
+    <p>Palm Setu Premium is offered as a monthly, quarterly, or annual auto-renewing subscription. Subscriptions are purchased and billed through the Google Play Store (Android) or the Apple App Store (iOS), using the payment method on file with that store account.</p>
+    <ul>
+      <li>Your subscription renews automatically at the end of each billing period unless you cancel at least 24 hours before renewal.</li>
+      <li>Payment is charged to your Google Play or App Store account at confirmation of purchase, and again at the start of each new billing period.</li>
+      <li>You can manage or cancel your subscription at any time from your Google Play or App Store account settings; Palm Setu cannot cancel it for you directly, since the store handles billing.</li>
+      <li>Prices may change for future billing periods; we'll notify you in the app or by email before any change takes effect for an active subscriber.</li>
+    </ul>
+  </section>
+
+  <section id="one-time">
+    <h2><span class="num">05</span> One-time purchases</h2>
+    <p>Certain features, such as a Soulmate Sketch portrait, are offered as a single one-time purchase rather than a subscription. These are processed through Razorpay and are billed once, at the time of purchase.</p>
+  </section>
+
+  <section id="refunds">
+    <h2><span class="num">06</span> Cancellations &amp; refunds</h2>
+    <p>Subscription refunds are handled according to Google Play's and Apple's own refund policies, since they process the payment; we don't have the ability to issue refunds for purchases billed through those stores directly, but you can reach us at <a class="inline" href="mailto:support@palmsetu.com">support@palmsetu.com</a> and we'll help however we can.</p>
+    <p>For one-time purchases billed through Razorpay, contact <a class="inline" href="mailto:support@palmsetu.com">support@palmsetu.com</a> within 7 days of purchase if something went wrong; refunds for digital content already delivered (such as a completed Soulmate Sketch) are granted at our discretion.</p>
+  </section>
+
+  <section id="conduct">
+    <h2><span class="num">07</span> Acceptable use</h2>
+    <p>You agree not to:</p>
+    <ul>
+      <li>Use the app for any unlawful purpose, or in a way that infringes anyone else's rights</li>
+      <li>Attempt to bypass, disable, or interfere with the app's security, billing, or authentication systems</li>
+      <li>Upload content you don't have the right to share, or content that is abusive, obscene, or harmful to others</li>
+      <li>Reverse-engineer, scrape, or resell access to the app or its content without our permission</li>
+    </ul>
+    <p class="muted">We may suspend or terminate accounts that violate this section.</p>
+  </section>
+
+  <section id="content">
+    <h2><span class="num">08</span> Your content &amp; our content</h2>
+    <p>You retain ownership of the photos, profile details, and journal entries you submit ("your content"). You grant us a limited license to use your content solely to provide the service to you, such as generating and storing your readings.</p>
+    <p>The app itself, including its design, text, graphics, and AI-generated readings delivered to you, is owned by Palm Setu or its licensors and is protected by intellectual property law. You may use readings generated for you personally, but may not republish or resell them as a commercial product.</p>
+  </section>
+
+  <section id="nature">
+    <h2><span class="num">09</span> Nature of readings</h2>
+    <div class="callout gold">
+      <strong>For reflection, not prediction</strong>
+      Palm reading, tarot, astrology, gemstone, and Vastu content in this app draws on traditional belief systems and AI-generated interpretation. It is provided for entertainment, reflection, and cultural interest. It is not scientifically validated, not a substitute for professional medical, legal, financial, or mental health advice, and should not be treated as a guaranteed prediction of real-world outcomes.
+    </div>
+  </section>
+
+  <section id="disclaimers">
+    <h2><span class="num">10</span> Disclaimers</h2>
+    <p>The app is provided "as is" and "as available," without warranties of any kind, whether express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement. We don't guarantee the app will be uninterrupted, error-free, or available at all times.</p>
+  </section>
+
+  <section id="liability">
+    <h2><span class="num">11</span> Limitation of liability</h2>
+    <p>To the maximum extent permitted by law, Palm Setu will not be liable for any indirect, incidental, or consequential damages arising from your use of the app. Our total liability for any claim relating to the app will not exceed the amount you paid us in the 12 months before the claim arose.</p>
+  </section>
+
+  <section id="termination">
+    <h2><span class="num">12</span> Termination</h2>
+    <p>You can stop using the app and delete your account at any time (see our <a class="inline" href="/delete-account">account deletion page</a>). We may suspend or terminate your access if you violate these Terms, without affecting any purchase already billed for the then-current period.</p>
+  </section>
+
+  <section id="changes">
+    <h2><span class="num">13</span> Changes to these terms</h2>
+    <p>We may update these Terms from time to time. If we make material changes, we'll notify you in the app or by email before the change takes effect. The "Effective date" at the top of this page always reflects the latest version.</p>
+  </section>
+
+  <section id="law">
+    <h2><span class="num">14</span> Governing law</h2>
+    <p>These Terms are governed by the laws of India, without regard to conflict-of-law principles. Any dispute arising from these Terms will be subject to the exclusive jurisdiction of the courts of Delhi, India, except where local consumer protection law gives you the right to bring a claim elsewhere.</p>
+  </section>
+
+  <section id="contact">
+    <h2><span class="num">15</span> Contact us</h2>
+    <p>Questions about these Terms? Reach us at <a class="inline" href="mailto:support@palmsetu.com">support@palmsetu.com</a>, or write to 79, LD Block, Pitampura, Delhi.</p>
+  </section>
+
+  <footer>
+    <span>&copy; 2026 Palm Setu &middot; <a class="inline" href="/privacy">Privacy Policy</a></span>
+    <span><a class="inline" href="#acceptance">Back to top</a></span>
+  </footer>
+</div>
+
+<a class="back-top" href="#acceptance" aria-label="Back to top">&uarr;</a>

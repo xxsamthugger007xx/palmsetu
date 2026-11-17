@@ -118,6 +118,10 @@ app.use('/privacy', express.static(path.join(__dirname, '../public/privacy')));
 // account without using the in-app flow (e.g. already uninstalled).
 app.use('/delete-account', express.static(path.join(__dirname, '../public/delete-account')));
 
+// Terms of Service, served at /terms - the URL Play Console's "App-level
+// trader status and Terms of Service" page asks for.
+app.use('/terms', express.static(path.join(__dirname, '../public/terms')));
+
 // Provisions the first Super Admin from SUPER_ADMIN_EMAIL/SUPER_ADMIN_PASSWORD
 // if admin_users is empty (no-op otherwise), and assigns a permanent
 // PSU-000001-style ID to every account that doesn't have one yet (no-op for
