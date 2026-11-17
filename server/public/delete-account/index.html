@@ -1,0 +1,100 @@
+<!doctype html>
+<title>Delete Your Account</title>
+<meta name="description" content="How to delete your Palm Setu account and data.">
+<style>
+  :root {
+    --bg: #FBF9F5;
+    --surface: #FFFFFF;
+    --surface-sunken: #F3EFE6;
+    --border: #E7E0D2;
+    --text: #2A2440;
+    --text-muted: #6B6480;
+    --accent: #7A5FC2;
+    --accent-ink: #4A3A8A;
+    --gold: #B8872E;
+    --gold-bg: #FBF0DC;
+    --danger: #B3443B;
+    --danger-bg: #FBE9E7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161326; --surface: #1E1A33; --surface-sunken: #241F3D; --border: #332C54;
+      --text: #ECE8FA; --text-muted: #A69BC9; --accent: #A99BEA; --accent-ink: #D2CEFD;
+      --gold: #D9B872; --gold-bg: #332A17; --danger: #E0867E; --danger-bg: #3A2320;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161326; --surface: #1E1A33; --surface-sunken: #241F3D; --border: #332C54;
+    --text: #ECE8FA; --text-muted: #A69BC9; --accent: #A99BEA; --accent-ink: #D2CEFD;
+    --gold: #D9B872; --gold-bg: #332A17; --danger: #E0867E; --danger-bg: #3A2320;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding-inline: 20px; line-height: 1.65; }
+  .wrap { max-width: 680px; margin: 0 auto; padding-block: 48px 80px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+  .eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--gold); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(2rem, 5vw, 2.6rem); line-height: 1.1; margin: 14px 0 6px; text-wrap: balance; }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin: 0; }
+  h2 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.25rem; margin: 40px 0 14px; }
+  p { margin: 0 0 14px; }
+  .steps { list-style: none; padding: 0; margin: 0 0 20px; counter-reset: step; }
+  .steps li { counter-increment: step; display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .steps li span { padding-top: 3px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 20px 0; }
+  .callout { background: var(--danger-bg); border: 1px solid var(--border); border-left: 3px solid var(--danger); border-radius: 10px; padding: 14px 18px; margin: 20px 0; font-size: 14.5px; }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--danger); }
+  .email-box { background: var(--surface-sunken); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--accent-ink); }
+  a.inline { color: var(--accent-ink); }
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Palm Setu</div>
+  <h1>Delete Your Account</h1>
+  <p class="subtitle">How to permanently delete your Palm Setu account and the data tied to it.</p>
+
+  <div class="callout">
+    <strong>This is permanent</strong>
+    Deleting your account permanently removes your profile, saved readings (palm, tarot, astrology, gemstone, Vastu), uploaded palm photos, and wellness journal entries. This cannot be undone.
+  </div>
+
+  <h2>Option 1: Delete it in the app (fastest)</h2>
+  <ol class="steps">
+    <li><span>Open the Palm Setu app and go to the <strong>Profile</strong> tab.</span></li>
+    <li><span>Scroll down and tap <strong>Delete account</strong>.</span></li>
+    <li><span>Confirm the deletion when prompted. Your account and data are deleted immediately.</span></li>
+  </ol>
+  <p>This option requires being signed in to a real account (not browsing as a guest) - if you're using the app as a guest, there's no account to delete; simply uninstalling the app removes your guest session.</p>
+
+  <h2>Option 2: Request deletion by email</h2>
+  <p>If you no longer have the app installed, or can't access your account, email us from the address associated with your account (or tell us the email you signed up with) and we'll delete your account and data within a reasonable time:</p>
+  <div class="email-box">privacy@palmsetu.com</div>
+
+  <h2>What gets deleted</h2>
+  <ul>
+    <li>Your account (email, password)</li>
+    <li>Your birth profile and saved astrology charts</li>
+    <li>Palm reading photos and reports</li>
+    <li>Tarot, gemstone, and Vastu reading history</li>
+    <li>Wellness journal entries and mood check-ins</li>
+  </ul>
+  <p style="color: var(--text-muted); font-size: 14px;">Some records, such as payment transaction logs, may be retained longer where required for accounting, fraud prevention, or legal obligations - see our <a class="inline" href="/privacy">Privacy Policy</a> for details.</p>
+
+  <footer>
+    &copy; 2026 Palm Setu &middot; <a class="inline" href="/privacy">Privacy Policy</a>
+  </footer>
+</div>

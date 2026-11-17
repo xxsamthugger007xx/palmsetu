@@ -112,6 +112,11 @@ app.use('/admin-panel', express.static(path.join(__dirname, '../public/admin-pan
 // at this deployment. Plain static file, no auth.
 app.use('/privacy', express.static(path.join(__dirname, '../public/privacy')));
 
+// Account deletion instructions, served at /delete-account - the URL Play
+// Console's Data Safety form asks for, for users who want to delete their
+// account without using the in-app flow (e.g. already uninstalled).
+app.use('/delete-account', express.static(path.join(__dirname, '../public/delete-account')));
+
 // Provisions the first Super Admin from SUPER_ADMIN_EMAIL/SUPER_ADMIN_PASSWORD
 // if admin_users is empty (no-op otherwise), and assigns a permanent
 // PSU-000001-style ID to every account that doesn't have one yet (no-op for
