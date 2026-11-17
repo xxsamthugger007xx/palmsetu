@@ -154,19 +154,3 @@ export function buildBillingRouter() {
 
   return router;
 }
-
-/** Used only by /dev/set-tier (index.ts) to populate real plan metadata
- * for a dev-granted premium tier - see UserPlan's doc comment for why this
- * is still the only writer of these fields today. */
-export function buildDevPlanMetadata(planId: BillingPeriod, startedAt: string) {
-  const plan = getPlan(planId);
-  return {
-    planId: plan.id,
-    productId: plan.storeProductId.android,
-    priceCents: plan.priceCents,
-    currency: plan.currency,
-    startedAt,
-    renewsAt: addPeriod(startedAt, plan.billingPeriod),
-    status: 'active' as const,
-  };
-}

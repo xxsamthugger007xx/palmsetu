@@ -155,10 +155,10 @@ export interface UserPlan {
   userId: string;
   tier: 'free' | 'premium';
   /** Real subscription lifecycle metadata, added alongside the Premium
-   * paywall redesign. Still never set by a verified purchase (no billing
-   * integration exists yet - see routes/billing.ts and data/subscriptionPlans.ts) -
-   * only ever written by the dev-only /dev/set-tier endpoint until a real
-   * App Store/Play Billing/RevenueCat webhook exists to write it instead.
+   * paywall redesign. Now only ever written by routes/billing.ts's
+   * POST /billing/confirm-purchase, after server-side verification against
+   * RevenueCat's API - the dev-only /dev/set-tier endpoint that used to be
+   * the sole writer here has been removed (it was reachable in production).
    * All optional so every pre-existing UserPlan row (tier only) keeps
    * working unchanged. */
   planId?: 'monthly' | 'quarterly' | 'annual';

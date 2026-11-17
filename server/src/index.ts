@@ -21,10 +21,10 @@ import { buildAssistantRouter } from './routes/assistant';
 import { buildAuthRouter } from './routes/auth';
 import { buildSoulmateRouter } from './routes/soulmate';
 import { buildAppSessionRouter } from './routes/appSession';
-import { buildBillingRouter, buildDevPlanMetadata } from './routes/billing';
+import { buildBillingRouter } from './routes/billing';
 import { migrateVastuPropertiesIfNeeded } from './vastu/migratePropertyProfiles';
 import { attachAuthContext } from './auth/middleware';
-import { userPlans, getUserTier, recordTransaction, accountsById, vastuPropertiesById } from './data/store';
+import { accountsById, vastuPropertiesById } from './data/store';
 import { bootstrapSuperAdminIfNeeded } from './auth/adminAuth';
 import { backfillPsuIds } from './auth/psuId';
 
@@ -80,34 +80,15 @@ console.log(`[solune] Tarot deck validated: ${tarotCatalogue.length} cards.`);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-// DEV-ONLY: there is no real payment/subscription integration yet (see README).
-// This lets premium-gated flows be exercised and tested honestly instead of
-// being permanently unverifiable. Must be removed once real entitlement
-// verification (App Store/Play Billing receipt validation) is wired up.
-if (process.env.NODE_ENV !== 'production') {
-  app.post('/dev/set-tier', (req, res) => {
-    const userId = (req.headers['x-demo-user'] as string) || 'demo-user';
-    const tier = req.body?.tier === 'premium' ? 'premium' : 'free';
-    const planId = req.body?.planId === 'monthly' || req.body?.planId === 'quarterly' || req.body?.planId === 'annual' ? req.body.planId : 'annual';
-    const wasPremium = getUserTier(userId) === 'premium';
-
-    if (tier === 'premium') {
-      const now = new Date().toISOString();
-      const meta = buildDevPlanMetadata(planId, now);
-      userPlans.set(userId, { userId, tier, ...meta });
-      // Only record a transaction the first time a user is newly set to
-      // premium, not on every call if they are already premium, so flipping
-      // tier back and forth or re-calling this dev endpoint does not
-      // double-count a subscription purchase.
-      if (!wasPremium) {
-        recordTransaction(userId, 'premium_subscription', meta.priceCents);
-      }
-    } else {
-      userPlans.set(userId, { userId, tier: 'free', status: 'expired' });
-    }
-    res.json({ userId, tier, planId: tier === 'premium' ? planId : null });
-  });
-}
+// The /dev/set-tier backdoor that used to live here has been removed now
+// that real billing exists (routes/billing.ts's POST /billing/confirm-purchase,
+// backed by RevenueCat server-side verification) - it was gated only by
+// `NODE_ENV !== 'production'`, which turned out to still be true on the
+// live Replit deployment, making it reachable by anyone who knew the URL
+// and letting them grant themselves free Premium. Removed outright rather
+// than re-gated, since there is no longer a legitimate reason for it to
+// exist: premium-gated flows can be tested for real via a RevenueCat
+// sandbox purchase instead.
 app.use('/palm', buildPalmRouter(aiProvider));
 app.use('/companion', buildCompanionRouter(aiProvider));
 app.use('/wellness', buildWellnessRouter(aiProvider));
