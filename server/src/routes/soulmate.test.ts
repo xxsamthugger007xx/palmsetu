@@ -1,5 +1,6 @@
 import express from 'express';
 import request from 'supertest';
+import sharp from 'sharp';
 import { v4 as uuid } from 'uuid';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { buildSoulmateRouter } from './soulmate';
@@ -7,6 +8,10 @@ import { attachAuthContext } from '../auth/middleware';
 import { soulmateSketchesById } from '../data/store';
 import * as razorpay from '../payments/razorpay';
 import * as catalogMatcher from '../soulmate/catalogMatcher';
+import soulmateCatalog from '../soulmate/catalogData.json';
+import { isReadableSoulmateCatalogImage } from '../soulmate/imageStorage';
+import * as imageStorage from '../soulmate/imageStorage';
+import * as watermark from '../soulmate/watermark';
 
 function buildApp() {
   const app = express();
@@ -47,8 +52,8 @@ describe('routes/soulmate', () => {
   });
 
   it('full happy path: create -> verify payment -> generate -> fetch, never charging twice or re-selecting, with ZERO AI calls', async () => {
-    vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: 'order_test123', amount: 9900, currency: 'INR', receipt: 'r1', status: 'created' });
-    vi.spyOn(razorpay, 'verifyPaymentSignature').mockReturnValue(true);
+    const createOrderSpy = vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: 'order_test123', amount: 9900, currency: 'INR', receipt: 'r1', status: 'created' });
+    const verifyPaymentSpy = vi.spyOn(razorpay, 'verifyPaymentSignature').mockReturnValue(true);
     const fetchSpy = vi.spyOn(global, 'fetch');
 
     const user = `user-${uuid()}`;
@@ -99,11 +104,56 @@ describe('routes/soulmate', () => {
     const image = await request(app).get(`/soulmate/sketches/${sketchId}/image`).set('x-demo-user', user);
     expect(image.status).toBe(200);
     expect(image.body.length).toBeGreaterThan(0);
+    expect(image.headers['content-type']).toMatch(/^image\/(jpeg|png)/);
 
     // The entire journey above (questionnaire -> payment -> selection ->
     // fetch -> image) made zero network calls of any kind - there is no
     // AI provider (image or text) anywhere in this feature any more.
+    expect(createOrderSpy).toHaveBeenCalledTimes(1);
+    expect(verifyPaymentSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('serves a completed sketch share image as valid PNG bytes', async () => {
+    const user = `share-image-${uuid()}`;
+    const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user)
+      .send({ ...validAnswers, requestFreeTrial: true });
+    expect(create.status).toBe(200);
+    const sketchId = create.body.sketch.id;
+
+    const generate = await request(app).post(`/soulmate/sketches/${sketchId}/generate`).set('x-demo-user', user);
+    expect(generate.status).toBe(200);
+    expect(generate.body.sketch.generationStatus).toBe('completed');
+
+    const share = await request(app).get(`/soulmate/sketches/${sketchId}/share-image`).set('x-demo-user', user);
+    expect(share.status).toBe(200);
+    expect(share.headers['content-type']).toMatch(/^image\/png/);
+    expect(Buffer.isBuffer(share.body)).toBe(true);
+    const metadata = await sharp(share.body).metadata();
+    expect(metadata.format).toBe('png');
+    expect(metadata.width).toBeGreaterThan(0);
+    expect(metadata.height).toBeGreaterThan(0);
+  });
+
+  it('serves readable original image bytes when watermarking the share image fails', async () => {
+    const user = `share-image-fallback-${uuid()}`;
+    const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user)
+      .send({ ...validAnswers, requestFreeTrial: true });
+    expect(create.status).toBe(200);
+    const sketchId = create.body.sketch.id;
+    const generate = await request(app).post(`/soulmate/sketches/${sketchId}/generate`).set('x-demo-user', user);
+    expect(generate.status).toBe(200);
+
+    vi.spyOn(watermark, 'addWatermark').mockRejectedValueOnce(new Error('simulated watermark failure'));
+    const share = await request(app).get(`/soulmate/sketches/${sketchId}/share-image`).set('x-demo-user', user);
+
+    expect(share.status).toBe(200);
+    expect(share.headers['content-type']).toMatch(/^image\/(jpeg|png)/);
+    expect(Buffer.isBuffer(share.body)).toBe(true);
+    const metadata = await sharp(share.body).metadata();
+    expect(metadata.format).toMatch(/^(jpeg|png)$/);
+    expect(metadata.width).toBeGreaterThan(0);
+    expect(metadata.height).toBeGreaterThan(0);
   });
 
   it('rejects a payment id that has already been used on another sketch', async () => {
@@ -158,6 +208,35 @@ describe('routes/soulmate', () => {
     // No second payment was ever created or verified for this retry - only
     // one sketch record exists, still tied to the original single payment.
     expect(soulmateSketchesById.get(sketchId)?.paymentId).toBe('pay_fail_retry');
+  });
+
+  it('does not complete generation when the selected portrait is unavailable, and allows retry', async () => {
+    vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: 'order_missing_image', amount: 9900, currency: 'INR', receipt: 'rmi', status: 'created' });
+    vi.spyOn(razorpay, 'verifyPaymentSignature').mockReturnValue(true);
+    vi.spyOn(catalogMatcher, 'pickSoulmateImage').mockReturnValue({ filename: 'soulmate_001.jpg' });
+    const readableSpy = vi.spyOn(imageStorage, 'isReadableSoulmateCatalogImage')
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+
+    const user = `missing-image-${uuid()}`;
+    const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send(validAnswers);
+    const sketchId = create.body.sketch.id;
+    await request(app)
+      .post(`/soulmate/sketches/${sketchId}/verify-payment`)
+      .set('x-demo-user', user)
+      .send({ razorpayOrderId: 'order_missing_image', razorpayPaymentId: 'pay_missing_image', razorpaySignature: 'sig' });
+
+    const failed = await request(app).post(`/soulmate/sketches/${sketchId}/generate`).set('x-demo-user', user);
+    expect(failed.status).toBe(502);
+    expect(failed.body.code).toBe('GENERATION_FAILED');
+    expect(failed.body.sketch.generationStatus).toBe('failed');
+    expect(failed.body.sketch.imageFilename).toBeNull();
+
+    const retried = await request(app).post(`/soulmate/sketches/${sketchId}/generate`).set('x-demo-user', user);
+    expect(retried.status).toBe(200);
+    expect(retried.body.sketch.generationStatus).toBe('completed');
+    expect(retried.body.sketch.imageFilename).toBe('soulmate_001.jpg');
+    expect(readableSpy).toHaveBeenCalledTimes(2);
   });
 
   it('a user cannot access or act on another user\'s sketch', async () => {
@@ -230,6 +309,12 @@ describe('routes/soulmate', () => {
   });
 
   describe('static catalogue matching', () => {
+    it('resolves every catalogue filename to a readable image', async () => {
+      for (const { filename } of soulmateCatalog) {
+        await expect(isReadableSoulmateCatalogImage(filename), filename).resolves.toBe(true);
+      }
+    });
+
     it('picks among multiple eligible filenames for the same broad preferences across repeated calls (no hardcoded single result)', async () => {
       // Narrow preferences (exact gender + exact country + exact age) can
       // legitimately have a single best-scoring catalogue match, which is

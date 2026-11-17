@@ -79,6 +79,7 @@ if (!deckCheck.valid) {
 console.log(`[solune] Tarot deck validated: ${tarotCatalogue.length} cards.`);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/', (_req, res) => res.redirect('/admin-panel/'));
 
 // The /dev/set-tier backdoor that used to live here has been removed now
 // that real billing exists (routes/billing.ts's POST /billing/confirm-purchase,
