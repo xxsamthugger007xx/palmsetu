@@ -1,4 +1,9 @@
 node_modules/
 dist/
 .env
-data/
+# Anchored to this directory's root - matches only server/data/ (the
+# runtime SQLite db + stored images), never server/src/data/ (real
+# application source). An earlier unanchored "data/" pattern here silently
+# excluded the entire src/data module from every commit, which is why it
+# was missing from GitHub entirely.
+/data/
