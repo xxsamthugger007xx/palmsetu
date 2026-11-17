@@ -1,37 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
-  ChevronLeft, ChevronDown, ChevronUp, MessageCircle, Eye, Lightbulb, AlertTriangle, CheckCircle2, Crown, Sparkles,
+  ChevronLeft, ChevronDown, ChevronUp, MessageCircle, Eye, Lightbulb, AlertTriangle, CheckCircle2, Crown, Sparkles, Lock,
+  Heart, Brain, Activity, TrendingUp, Gem, Hand, Fingerprint, Sparkle, Shapes, Tag, CheckCircle, History, Check,
 } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
+import { SignUpPromptCard } from '../../components/SignUpPromptCard';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
-import { color, spacing } from '../../theme/tokens';
+import { useTranslation } from 'react-i18next';
+import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
-import { PalmReading } from '../../types/palm';
+import { PalmReading, PalmSectionsResponse } from '../../types/palm';
+
+const SECTION_ICONS: Record<string, typeof Heart> = {
+  heartLine: Heart, headLine: Brain, lifeLine: Activity, fateLine: TrendingUp,
+  minorLine: Tag, mount: Gem, finger: Hand, thumb: Hand, nail: Fingerprint,
+  handShape: Shapes, marking: Sparkle,
+};
+
+function sectionIcon(key: string) {
+  return SECTION_ICONS[key] ?? Tag;
+}
 
 export function PalmReportScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PalmReport'>>();
   const { readingId, justCompleted } = route.params;
 
   const [reading, setReading] = useState<PalmReading | null>(null);
+  const [sectionsData, setSectionsData] = useState<PalmSectionsResponse | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [premiumExpanded, setPremiumExpanded] = useState<string | null>(null);
-  const [generatingPremium, setGeneratingPremium] = useState(false);
-  const [premiumError, setPremiumError] = useState<string | null>(null);
+  const [unlockingSection, setUnlockingSection] = useState<string | null>(null);
+  const [sectionError, setSectionError] = useState<string | null>(null);
+  const [generatingComplete, setGeneratingComplete] = useState(false);
 
   const load = async () => {
     setState('loading');
     try {
-      const r = await palmApi.getReading(readingId);
+      const [r, s] = await Promise.all([
+        palmApi.getReading(readingId),
+        palmApi.getSections(readingId),
+      ]);
       setReading(r);
-      setExpanded(r.freeReading.sections[0]?.title ?? null);
+      setSectionsData(s);
+      setExpanded(s.sections.find((sec) => sec.unlocked)?.sectionKey ?? s.sections[0]?.sectionKey ?? null);
       setState('ready');
     } catch {
       setState('error');
@@ -42,21 +62,40 @@ export function PalmReportScreen() {
     load();
   }, [readingId]);
 
-  const handleGeneratePremium = async () => {
-    setPremiumError(null);
-    setGeneratingPremium(true);
+  const handleUnlockSection = async (sectionKey: string) => {
+    setSectionError(null);
+    setUnlockingSection(sectionKey);
     try {
-      const updated = await palmApi.generatePremiumReport(readingId);
-      setReading(updated);
-      setPremiumExpanded(updated.premiumReport?.sections[0]?.title ?? null);
+      await palmApi.unlockSection(readingId, sectionKey);
+      const refreshed = await palmApi.getSections(readingId);
+      setSectionsData(refreshed);
+      setExpanded(sectionKey);
     } catch (err: any) {
       if (err.code === 'LIMIT_REACHED' || err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setPremiumError(err.message ?? 'Could not generate your premium report. Please try again.');
+        setSectionError(err.message ?? 'Could not unlock this section. Please try again.');
       }
     } finally {
-      setGeneratingPremium(false);
+      setUnlockingSection(null);
+    }
+  };
+
+  const handleUnlockComplete = async () => {
+    setSectionError(null);
+    setGeneratingComplete(true);
+    try {
+      await palmApi.generatePremiumReport(readingId);
+      const refreshed = await palmApi.getSections(readingId);
+      setSectionsData(refreshed);
+    } catch (err: any) {
+      if (err.code === 'LIMIT_REACHED' || err.code === 'PREMIUM_REQUIRED') {
+        navigation.navigate('Paywall');
+      } else {
+        setSectionError(err.message ?? 'Could not unlock your complete reading. Please try again.');
+      }
+    } finally {
+      setGeneratingComplete(false);
     }
   };
 
@@ -68,6 +107,7 @@ export function PalmReportScreen() {
       })
     );
   };
+
 
   if (state === 'loading') {
     return (
@@ -94,19 +134,38 @@ export function PalmReportScreen() {
   }
 
   const { analysis, freeReading } = reading;
+  const sections = sectionsData?.sections ?? [];
+  const completeUnlocked = sectionsData?.completeUnlocked ?? false;
+  const unlockedCount = sections.filter((s) => s.unlocked).length;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Palm Reading</Text>
-        <View style={{ width: 36 }} />
+        <View style={styles.headerActions}>
+          {justCompleted && (
+            <Card onPress={goHome} style={styles.saveBadge} padded={false}>
+              <Check size={13} color={color.success} strokeWidth={2.5} />
+              <Text variant="caption" tone="success" weight="semibold" style={{ marginLeft: 4 }}>{t('palm.saveLabel')}</Text>
+            </Card>
+          )}
+          <IconButton icon={History} onPress={() => navigation.navigate('PalmHistory')} />
+        </View>
       </View>
 
       <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Palm Reading</Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         {new Date(reading.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
+
+      {reading.hasStoredImage && (
+        <Image
+          source={{ uri: palmApi.imageUrl(reading.id), headers: palmApi.imageHeaders() }}
+          style={styles.scanImage}
+          resizeMode="cover"
+        />
+      )}
 
       {freeReading.limitedVisibility && (
         <Card style={styles.limitedCard}>
@@ -122,6 +181,7 @@ export function PalmReportScreen() {
         <View style={styles.overviewGrid}>
           <OverviewStat label="Sections matched" value={`${freeReading.sections.length}`} />
           <OverviewStat label="Image quality" value={analysis.imageQuality.ok ? 'Good' : 'Needs retake'} />
+          <OverviewStat label="Unlocked" value={`${unlockedCount}/${sections.length}`} highlight={unlockedCount > 0} />
         </View>
         {analysis.uncertainFeatures.length > 0 && (
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
@@ -136,19 +196,81 @@ export function PalmReportScreen() {
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.lg }}>{freeReading.summary}</Text>
 
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Reading sections</Text>
-        {freeReading.sections.length === 0 ? (
+        <View style={styles.sectionHeader}>
+          <Text variant="subtitle" weight="semibold">Reading sections</Text>
+          {sections.length > 0 && (
+            <Text variant="caption" tone="muted">{unlockedCount}/{sections.length} unlocked</Text>
+          )}
+        </View>
+        <Text variant="caption" tone="muted" style={{ marginBottom: spacing.sm }}>
+          Every line below includes one free, genuine observation from your scan. Unlock a line for its full breakdown.
+        </Text>
+        {sections.length === 0 ? (
           <Text variant="bodySm" tone="muted">No specific features could be confidently matched from this photo.</Text>
         ) : (
-          freeReading.sections.map((section) => (
-            <ReportSection
-              key={section.title}
-              title={section.title}
-              text={section.text}
-              expanded={expanded === section.title}
-              onToggle={() => setExpanded(expanded === section.title ? null : section.title)}
-            />
-          ))
+          sections.map((section) => {
+            const Icon = sectionIcon(section.sectionKey);
+            return (
+              <View key={section.sectionKey} style={{ marginBottom: spacing.md }}>
+                <Card elevated style={{ marginBottom: section.unlocked ? spacing.sm : 0 }}>
+                  <View style={styles.sectionCardHeader}>
+                    <View style={styles.iconWrap}>
+                      <Icon size={16} color={color.accent} strokeWidth={1.75} />
+                    </View>
+                    <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                      <Text variant="bodySm" weight="semibold">{section.title}</Text>
+                    </View>
+                    <View style={styles.freeBadge}>
+                      <CheckCircle size={11} color={color.success} strokeWidth={2} />
+                      <Text variant="caption" tone="success" style={{ marginLeft: 3 }}>FREE</Text>
+                    </View>
+                  </View>
+                  <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>{section.freeText}</Text>
+                </Card>
+
+                {section.unlocked ? (
+                  section.detail && section.detail.length > 0 && (
+                    <ReportSection
+                      title={`Unlocked detail`}
+                      text={section.detail.map((d) => d.text).join('\n\n')}
+                      expanded={expanded === section.sectionKey}
+                      onToggle={() => setExpanded(expanded === section.sectionKey ? null : section.sectionKey)}
+                    />
+                  )
+                ) : (
+                  <LinearGradient
+                    colors={[color.accentMuted, color.surface]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.lockCard}
+                  >
+                    <View style={styles.labelRow}>
+                      <View style={styles.lockIconWrap}>
+                        <Lock size={13} color={color.accent} strokeWidth={2} />
+                      </View>
+                      <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm, flex: 1 }}>
+                        Unlock your complete {section.title}
+                      </Text>
+                    </View>
+                    <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
+                      Full structure, additional detected characteristics and the complete traditional interpretation for this line.
+                    </Text>
+                    <Button
+                      label={`Unlock ${section.title} Analysis`}
+                      size="sm"
+                      loading={unlockingSection === section.sectionKey}
+                      disabled={unlockingSection !== null}
+                      style={{ marginTop: spacing.sm }}
+                      onPress={() => handleUnlockSection(section.sectionKey)}
+                    />
+                  </LinearGradient>
+                )}
+              </View>
+            );
+          })
+        )}
+        {sectionError && (
+          <Text variant="caption" tone="danger" style={{ marginTop: spacing.xs }}>{sectionError}</Text>
         )}
       </View>
 
@@ -164,47 +286,31 @@ export function PalmReportScreen() {
         </Card>
       )}
 
-      <View style={{ marginTop: spacing.lg }}>
-        <View style={styles.sectionHeader}>
-          <Text variant="subtitle" weight="semibold">Premium report</Text>
-          <Crown size={16} color={color.accent} strokeWidth={1.75} />
-        </View>
-
-        {reading.premiumReport ? (
-          reading.premiumReport.sections.map((section) => (
-            <ReportSection
-              key={section.title}
-              title={section.title}
-              text={section.text}
-              expanded={premiumExpanded === section.title}
-              onToggle={() => setPremiumExpanded(premiumExpanded === section.title ? null : section.title)}
-            />
-          ))
-        ) : (
-          <Card style={{ marginTop: spacing.sm }}>
-            <View style={styles.labelRow}>
-              <Sparkles size={16} color={color.accent} strokeWidth={1.75} />
-              <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Unlock your full premium report</Text>
-            </View>
-            <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-              A deeper reading covering every confidently matched feature, organized by personality, relationships,
-              career and more - built from the same traditional palmistry knowledge base as your free reading, just
-              more complete.
-            </Text>
-            {premiumError && (
-              <Text variant="caption" tone="danger" style={{ marginTop: spacing.sm }}>{premiumError}</Text>
-            )}
-            <Button
-              label="Generate premium report"
-              fullWidth
-              loading={generatingPremium}
-              disabled={generatingPremium}
-              style={{ marginTop: spacing.md }}
-              onPress={handleGeneratePremium}
-            />
-          </Card>
-        )}
-      </View>
+      {!completeUnlocked && sections.length > 0 && (
+        <LinearGradient
+          colors={[color.accentMuted, color.surfaceElevated]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.lockCard, { marginTop: spacing.lg }]}
+        >
+          <View style={styles.labelRow}>
+            <Crown size={16} color={color.accent} strokeWidth={1.75} />
+            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Your palm has more to reveal</Text>
+          </View>
+          <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
+            Unlock your complete palm reading to explore every detected feature and its traditional interpretation,
+            across every line and mount in this reading.
+          </Text>
+          <Button
+            label="Unlock Complete Reading"
+            fullWidth
+            loading={generatingComplete}
+            disabled={generatingComplete}
+            style={{ marginTop: spacing.md }}
+            onPress={handleUnlockComplete}
+          />
+        </LinearGradient>
+      )}
 
       <Card style={{ marginTop: spacing.lg }}>
         <Text variant="subtitle" weight="semibold">Reflective questions</Text>
@@ -225,6 +331,14 @@ export function PalmReportScreen() {
         onPress={() => navigation.navigate('Companion', { readingId: reading.id })}
       />
 
+      <View style={{ marginTop: spacing.lg }}>
+        <SignUpPromptCard
+          storageKey="palm-report"
+          title="Your palm reading is ready!"
+          description="Create your free account to save your palm profile and access your complete report anytime, on any device."
+        />
+      </View>
+
       {justCompleted && (
         <Card style={styles.doneCard}>
           <CheckCircle2 size={18} color={color.secondary} strokeWidth={1.75} />
@@ -236,15 +350,16 @@ export function PalmReportScreen() {
       {justCompleted && (
         <Button label="Done" fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
       )}
+
     </PageContainer>
   );
 }
 
-function OverviewStat({ label, value }: { label: string; value: string }) {
+function OverviewStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <View style={styles.statItem}>
       <Text variant="caption" tone="muted">{label}</Text>
-      <Text variant="mono" weight="semibold" style={{ marginTop: 2 }}>{value}</Text>
+      <Text variant="mono" weight="semibold" tone={highlight ? 'success' : 'primary'} style={{ marginTop: 2 }}>{value}</Text>
     </View>
   );
 }
@@ -289,6 +404,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  saveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    borderRadius: radius.pill ?? 999,
+    backgroundColor: color.successMuted,
+    marginRight: spacing.xs,
+  },
   overviewGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -319,5 +447,50 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: spacing.lg,
+  },
+  lockCard: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: color.accentBorder,
+    padding: spacing.md,
+  },
+  sectionCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.accentMuted,
+    borderWidth: 1,
+    borderColor: color.accentBorder,
+  },
+  lockIconWrap: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.surfaceElevated,
+    borderWidth: 1,
+    borderColor: color.accentBorder,
+  },
+  freeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+    backgroundColor: color.successMuted,
+  },
+  scanImage: {
+    width: '100%',
+    height: 220,
+    borderRadius: radius.lg,
+    marginBottom: spacing.lg,
+    backgroundColor: color.surfaceElevated,
   },
 });

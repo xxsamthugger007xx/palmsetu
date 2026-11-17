@@ -39,22 +39,24 @@ export function AdminFeaturesScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = React.useCallback(async () => {
     if (!adminRole) return;
     setLoading(true);
     setData(null);
-    adminApi.getFeature(adminRole, active)
+    await adminApi.getFeature(adminRole, active)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [adminRole, active]);
+
+  useEffect(() => { load(); }, [load]);
 
   const otherGroups = data
     ? Object.entries(data).filter(([key]) => key !== 'total' && key !== 'byTier')
     : [];
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <AdminTopNav active="AdminFeatures" />
       <Text variant="title" weight="semibold" style={{ marginBottom: spacing.md }}>Feature breakdowns</Text>
 

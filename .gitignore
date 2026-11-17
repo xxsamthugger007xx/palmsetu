@@ -13,6 +13,9 @@ server/data/*.db
 server/data/*.db-shm
 server/data/*.db-wal
 
+# Stored palm photos - real user data, never commit
+server/data/palmImages/
+
 # Expo / React Native
 app/.expo/
 app/dist/

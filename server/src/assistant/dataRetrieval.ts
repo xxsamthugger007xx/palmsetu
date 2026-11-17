@@ -1,12 +1,15 @@
 import {
   tarotReadingsById, birthProfiles, dailyHoroscopesByKey, gemstoneReportsById,
   vastuReportsById, readingsById, AssistantFeature,
+  moodEntriesByUserDate, discoveryAnswersByKey, habitsById,
+  challengeProgressByKey, wellnessGoalsById, journalEntriesById,
 } from '../data/store';
 import { TarotReading } from '../types/tarot';
 import { BirthProfile, DailyHoroscope } from '../types/astrology';
 import { GemstoneReport } from '../types/gemstone';
 import { VastuReport } from '../types/vastu';
 import { PalmReading } from '../types/palm';
+import { findDiscoveryQuestion } from '../wellness/discoveryQuestions';
 
 /**
  * Real user data retrieval for the assistant. Every lookup here reads from
@@ -33,6 +36,72 @@ export interface UserFeatureData {
    * questions using only free-tier-safe data (section titles/text, never
    * premium report text). */
   palmRecent: PalmReading[];
+  /** Real wellness summary (Part 7 of the wellness spec - closes the
+   * previously-named gap where this assistant had no wellness context at
+   * all). Deliberately SUMMARY-ONLY: mood levels/counts, discovery answer
+   * CATEGORIES (never raw free-text content), habit/challenge/goal status.
+   * Raw journal text is NEVER included here, mirroring the exact
+   * consent-gated rule already enforced in routes/wellness.ts's journal
+   * AI-insight endpoint (consent must be explicit per-request there; here,
+   * there is no consent flow at all, so journal content is simply never
+   * retrieved for this automatic context, only a count). */
+  wellness: WellnessSummary;
+}
+
+export interface WellnessSummary {
+  hasAnyData: boolean;
+  recentMoods: { localDate: string; mood: string }[]; // last 14 real check-ins
+  recentDiscoveryThemes: string[]; // category labels only from last 14 days' mood-influence answers, never free text
+  activeHabitNames: string[];
+  activeChallenges: { challengeId: string; currentDay: number }[];
+  activeGoalTitles: string[];
+  journalEntryCountLast30Days: number; // count only - never content
+}
+
+function buildWellnessSummary(userId: string): WellnessSummary {
+  const moods = [...moodEntriesByUserDate.values()]
+    .filter((m) => m.userId === userId)
+    .sort((a, b) => b.localDate.localeCompare(a.localDate))
+    .slice(0, 14)
+    .map((m) => ({ localDate: m.localDate, mood: m.mood }));
+
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 14);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  const recentDiscoveryThemes = new Set<string>();
+  for (const a of discoveryAnswersByKey.values()) {
+    if (a.userId !== userId || a.skipped || a.localDate < cutoffStr) continue;
+    const q = findDiscoveryQuestion(a.questionId);
+    if (q?.category === 'mood-influences' && Array.isArray(a.value)) {
+      for (const label of a.value as string[]) recentDiscoveryThemes.add(label);
+    }
+  }
+
+  const activeHabitNames = [...habitsById.values()].filter((h) => h.userId === userId && h.active).map((h) => h.name);
+  const activeChallenges = [...challengeProgressByKey.values()]
+    .filter((c) => c.userId === userId && c.status === 'active')
+    .map((c) => ({ challengeId: c.challengeId, currentDay: c.currentDay }));
+  const activeGoalTitles = [...wellnessGoalsById.values()].filter((g) => g.userId === userId && g.status === 'active').map((g) => g.title);
+
+  const journalCutoff = new Date();
+  journalCutoff.setDate(journalCutoff.getDate() - 30);
+  const journalCutoffStr = journalCutoff.toISOString().slice(0, 10);
+  const journalEntryCountLast30Days = [...journalEntriesById.values()].filter(
+    (j) => j.userId === userId && !j.deletedAt && !j.isDraft && j.createdAt.slice(0, 10) >= journalCutoffStr,
+  ).length;
+
+  const hasAnyData = moods.length > 0 || recentDiscoveryThemes.size > 0 || activeHabitNames.length > 0
+    || activeChallenges.length > 0 || activeGoalTitles.length > 0 || journalEntryCountLast30Days > 0;
+
+  return {
+    hasAnyData,
+    recentMoods: moods,
+    recentDiscoveryThemes: [...recentDiscoveryThemes],
+    activeHabitNames,
+    activeChallenges,
+    activeGoalTitles,
+    journalEntryCountLast30Days,
+  };
 }
 
 function latestOf<T extends { userId: string; createdAt: string }>(map: { values(): T[] }, userId: string): T | null {
@@ -59,6 +128,10 @@ const EMPTY: UserFeatureData = {
   vastu: null,
   palm: null,
   palmRecent: [],
+  wellness: {
+    hasAnyData: false, recentMoods: [], recentDiscoveryThemes: [], activeHabitNames: [],
+    activeChallenges: [], activeGoalTitles: [], journalEntryCountLast30Days: 0,
+  },
 };
 
 export function retrieveUserData(userId: string): UserFeatureData {
@@ -70,6 +143,7 @@ export function retrieveUserData(userId: string): UserFeatureData {
     vastu: latestOf(vastuReportsById, userId),
     palm: latestOf(readingsById, userId),
     palmRecent: recentOf(readingsById, userId, 2),
+    wellness: buildWellnessSummary(userId),
   };
 }
 
@@ -83,12 +157,21 @@ export function retrieveUserData(userId: string): UserFeatureData {
  * for default follow-up suggestions).
  */
 export function retrieveUserDataForFeature(feature: AssistantFeature, userId: string): UserFeatureData {
+  // Wellness context is cheap to compute (a handful of small in-memory
+  // lookups) and is included regardless of which feature was detected -
+  // this is what lets "how have I been feeling this month" or "what's been
+  // stressing me recently" work even when the heuristic intent detector did
+  // not specifically classify the message as a 'wellness' feature (no such
+  // AssistantFeature branch exists yet - adding one would mean touching the
+  // intent classifier, which is out of scope here; always including this
+  // summary is the minimal, additive way to close the gap without that).
+  const wellness = buildWellnessSummary(userId);
   switch (feature) {
-    case 'tarot': return { ...EMPTY, tarot: latestOf(tarotReadingsById, userId), tarotRecent: recentOf(tarotReadingsById, userId, 2) };
-    case 'astrology': return { ...EMPTY, astrology: { profile: birthProfiles.get(userId) ?? null, latestHoroscope: latestHoroscopeFor(userId) } };
-    case 'gemstone': return { ...EMPTY, gemstone: latestOf(gemstoneReportsById, userId) };
-    case 'vastu': return { ...EMPTY, vastu: latestOf(vastuReportsById, userId) };
-    case 'palm': return { ...EMPTY, palm: latestOf(readingsById, userId), palmRecent: recentOf(readingsById, userId, 2) };
+    case 'tarot': return { ...EMPTY, wellness, tarot: latestOf(tarotReadingsById, userId), tarotRecent: recentOf(tarotReadingsById, userId, 2) };
+    case 'astrology': return { ...EMPTY, wellness, astrology: { profile: birthProfiles.get(userId) ?? null, latestHoroscope: latestHoroscopeFor(userId) } };
+    case 'gemstone': return { ...EMPTY, wellness, gemstone: latestOf(gemstoneReportsById, userId) };
+    case 'vastu': return { ...EMPTY, wellness, vastu: latestOf(vastuReportsById, userId) };
+    case 'palm': return { ...EMPTY, wellness, palm: latestOf(readingsById, userId), palmRecent: recentOf(readingsById, userId, 2) };
     default: return retrieveUserData(userId);
   }
 }

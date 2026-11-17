@@ -8,6 +8,7 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
+import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { ReadingCategory } from '../../types/tarot';
 
@@ -31,7 +32,7 @@ export function TarotCategoryScreen() {
   const questionValid = !needsQuestion || question.trim().length >= MIN_QUESTION_LENGTH;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
@@ -52,8 +53,8 @@ export function TarotCategoryScreen() {
             onPress={() => setCategory(c.id)}
           >
             <View style={styles.optionRow}>
-              <View style={styles.optionIcon}>
-                <c.icon size={18} color={color.accent} strokeWidth={1.75} />
+              <View style={[styles.optionIcon, selected && styles.optionIconSelected]}>
+                <c.icon size={18} color={selected ? tarotColor.gold : color.accent} strokeWidth={1.75} />
               </View>
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <Text variant="bodySm" weight="semibold">{c.title}</Text>
@@ -100,7 +101,7 @@ export function TarotCategoryScreen() {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row' },
   option: { marginBottom: spacing.sm },
-  optionSelected: { borderColor: color.accentBorder },
+  optionSelected: { borderColor: tarotColor.goldMuted },
   optionRow: { flexDirection: 'row', alignItems: 'center' },
   optionIcon: {
     width: 36,
@@ -109,6 +110,9 @@ const styles = StyleSheet.create({
     backgroundColor: color.accentMuted,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  optionIconSelected: {
+    backgroundColor: tarotColor.violet,
   },
   input: {
     borderWidth: 1,

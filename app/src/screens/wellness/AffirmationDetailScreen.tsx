@@ -84,7 +84,7 @@ export function AffirmationDetailScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="label" tone="accent" style={{ marginTop: spacing.sm }}>{TYPE_LABELS[content.type] ?? content.type}</Text>
 
       <Card elevated style={{ marginTop: spacing.md, marginBottom: spacing.lg }}>

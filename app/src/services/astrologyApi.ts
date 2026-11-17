@@ -1,6 +1,7 @@
 import {
   AstrologySystem, BirthProfile, DailyDeliveryPreference, DailyHoroscope,
   Relationship, RelationshipConsent, RelationshipDailyReport, ConsentType, UserIdentity, Gender,
+  OnboardingDraft,
 } from '../types/astrology';
 import { request } from './apiRequest';
 
@@ -28,6 +29,21 @@ export const astrologyApi = {
 
   saveIdentity: (payload: { name: string; gender?: Gender | null }) =>
     request<UserIdentity>(BASE_URL, '/astrology/identity', { method: 'PUT', body: JSON.stringify(payload) }),
+
+  // Step-by-step astrology onboarding draft - see OnboardingDraft. 404 from
+  // getOnboardingDraft means nothing has been saved yet (brand-new user).
+  getOnboardingDraft: () => request<OnboardingDraft>(BASE_URL, '/astrology/onboarding-draft'),
+
+  saveOnboardingDraft: (payload: Partial<{
+    preferredSystem: AstrologySystem | null;
+    birthDate: string | null;
+    birthTime: string | null;
+    birthTimeSkipped: boolean;
+    birthPlace: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    timezone: string | null;
+  }>) => request<OnboardingDraft>(BASE_URL, '/astrology/onboarding-draft', { method: 'PATCH', body: JSON.stringify(payload) }),
 
   getDaily: (localDate: string, system?: AstrologySystem) =>
     request<DailyHoroscope>(BASE_URL, `/astrology/daily?localDate=${localDate}${system ? `&system=${system}` : ''}`),

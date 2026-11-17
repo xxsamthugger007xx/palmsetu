@@ -1,8 +1,10 @@
 import { AiProvider } from '../ai/types';
+import { BirthProfile } from '../types/astrology';
 import { TAROT_SYSTEM_PROMPT } from '../ai/tarotSystemPrompt';
 import { getCardOrThrow } from './catalogue';
 import { findMatchingCombinations } from './combinations';
 import { computeYesNoTendency } from './yesNo';
+import { buildBirthChartPerspective } from './chartPersonalization';
 import { CardInterpretation, ReadingCategory, SpreadType, TarotDraw, TarotInterpretation, YesNoResult } from '../types/tarot';
 
 const STATIC_MODEL_VERSION = 'static-fallback-v1';
@@ -135,27 +137,50 @@ function buildAiPrompt(draws: TarotDraw[], category: ReadingCategory, question: 
 /** Rejects obvious non-answers: our own prompt scaffold echoed back (angle-bracket
  * placeholders), or suspiciously short text. A provider that echoes the prompt
  * (e.g. a naive mock) must never be mistaken for a real, parsed interpretation. */
-function looksLikeRealAnswer(text: string): boolean {
+export function looksLikeRealAnswer(text: string): boolean {
   if (text.includes('<') || text.includes('>')) return false;
   if (text.trim().length < 8) return false;
   return true;
 }
 
+/**
+ * Extracts the content after `LABEL:` up to the next recognized label (or
+ * end of string), tolerant of the formatting variations real LLM output
+ * actually produces: markdown emphasis around the label (`**OVERALL:**`),
+ * extra whitespace, and content that wraps across multiple lines instead
+ * of staying on one line after the label. This replaces a previous
+ * implementation that only matched a single line via `.+`, which broke on
+ * any multi-line wrapped section.
+ */
+function extractSection(text: string, label: string, allLabels: string[]): string | null {
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const boundary = allLabels.map(escape).join('|');
+  const re = new RegExp(
+    `\\**\\s*${escape(label)}\\s*\\**\\s*:\\s*([\\s\\S]*?)(?=\\n\\s*\\**\\s*(?:${boundary})\\s*\\**\\s*:|$)`,
+    'i',
+  );
+  const match = text.match(re);
+  if (!match) return null;
+  // Strip any leading markdown emphasis markers left over right after the
+  // colon (e.g. "OVERALL: **some text**" or "**OVERALL:** some text").
+  return match[1].trim().replace(/^\*+\s*/, '').replace(/\*+$/, '').trim();
+}
+
 function parseAiResponse(text: string, draws: TarotDraw[], spreadType?: SpreadType): TarotInterpretation | null {
   try {
+    const labels = [...draws.map((d) => `CARD ${d.positionIndex}`), 'OVERALL', 'QUESTIONS'];
     const cardInterpretations: CardInterpretation[] = [];
     for (const draw of draws) {
-      const match = text.match(new RegExp(`CARD ${draw.positionIndex}:\\s*(.+)`));
-      if (!match || !looksLikeRealAnswer(match[1])) return null;
-      cardInterpretations.push({ positionIndex: draw.positionIndex, cardId: draw.cardId, text: match[1].trim() });
+      const content = extractSection(text, `CARD ${draw.positionIndex}`, labels);
+      if (!content || !looksLikeRealAnswer(content)) return null;
+      cardInterpretations.push({ positionIndex: draw.positionIndex, cardId: draw.cardId, text: content });
     }
 
-    const overallMatch = text.match(/OVERALL:\s*(.+)/);
-    const questionsMatch = text.match(/QUESTIONS:\s*(.+)/);
-    if (!overallMatch || !questionsMatch) return null;
-    if (!looksLikeRealAnswer(overallMatch[1])) return null;
+    const overall = extractSection(text, 'OVERALL', labels);
+    const questions = extractSection(text, 'QUESTIONS', labels);
+    if (!overall || !questions || !looksLikeRealAnswer(overall)) return null;
 
-    const reflectionPrompts = questionsMatch[1]
+    const reflectionPrompts = questions
       .split('|')
       .map((q) => q.trim())
       .filter((q) => looksLikeRealAnswer(q));
@@ -163,7 +188,7 @@ function parseAiResponse(text: string, draws: TarotDraw[], spreadType?: SpreadTy
 
     return {
       cardInterpretations,
-      overallInterpretation: overallMatch[1].trim(),
+      overallInterpretation: overall,
       reflectionPrompts,
       ...(spreadType === 'yes-no' && draws.length > 0 ? { yesNo: buildStaticYesNo(draws[0]) } : {}),
       modelVersion: 'ai-v1',
@@ -187,10 +212,13 @@ export async function generateInterpretation(
   spreadType?: SpreadType,
 ): Promise<TarotInterpretation> {
   try {
-    const raw = await aiProvider.complete([
-      { role: 'system', content: TAROT_SYSTEM_PROMPT },
-      { role: 'user', content: buildAiPrompt(draws, category, question, spreadType) },
-    ]);
+    const raw = await aiProvider.complete(
+      [
+        { role: 'system', content: TAROT_SYSTEM_PROMPT },
+        { role: 'user', content: buildAiPrompt(draws, category, question, spreadType) },
+      ],
+      { feature: 'tarot', operation: 'interpretation' },
+    );
     const parsed = parseAiResponse(raw, draws, spreadType);
     if (parsed) return parsed;
   } catch (err) {
@@ -216,36 +244,55 @@ function buildDetailedPrompt(draws: TarotDraw[], category: ReadingCategory, ques
     (question ? `User's question: "${question}"\n` : '') +
     `Cards drawn:\n${cardLines}\n\n` +
     `${combinationGroundingText(draws)}${relationalSynthesisInstruction(draws, spreadType)}\n\n` +
-    `Respond in exactly this format:\n` +
-    draws.map((d) => `CARD ${d.positionIndex}: <3-4 sentence detailed interpretation of this card in its position, including symbolism and how it relates to the question/category>`).join('\n') +
-    `\nOVERALL: <a coherent 5-7 sentence synthesis covering the overall theme of the spread, how the cards connect or contrast with each other, and a concluding summary - written as one flowing reading, not a list>\n` +
-    `SUGGESTIONS: <practical suggestion 1> | <practical suggestion 2> | <practical suggestion 3>\n` +
-    `QUESTIONS: <reflection question 1> | <reflection question 2> | <reflection question 3>`
+    `IMPORTANT LENGTH RULE: you MUST include all ${draws.length + 3} sections below, in order, and finish with ` +
+    `the QUESTIONS line - a response that gets cut off before QUESTIONS is useless even if the earlier sections ` +
+    `are excellent. Keep each CARD section to 2-3 sentences (not 3-4) and OVERALL to 4-5 sentences (not 5-7) so ` +
+    `the complete response fits comfortably within the available length. Do not use markdown formatting (no ** or #).\n\n` +
+    `Respond in exactly this format, with no text before CARD 0 or after the QUESTIONS line:\n` +
+    draws.map((d) => `CARD ${d.positionIndex}: <2-3 sentence detailed interpretation of this card in its position, including symbolism and how it relates to the question/category>`).join('\n') +
+    `\nOVERALL: <a coherent 4-5 sentence synthesis covering the overall theme of the spread, how the cards connect or contrast with each other, and a concluding summary - written as one flowing reading, not a list>\n` +
+    `SUGGESTIONS: <short practical suggestion 1> | <short practical suggestion 2> | <short practical suggestion 3>\n` +
+    `QUESTIONS: <short reflection question 1> | <short reflection question 2> | <short reflection question 3>`
   );
+}
+
+/** Scaled so larger spreads (which need more CARD sections) get a budget
+ * that can actually fit the complete required structure - a flat 800-token
+ * cap (fine for the short assistant chat path this same provider also
+ * serves) was truncating detailed reports before they ever reached the
+ * SUGGESTIONS/QUESTIONS lines the parser requires, causing every detailed
+ * report to fail with GENERATION_FAILED regardless of spread size. ~280
+ * tokens per card comfortably covers a 2-3 sentence section plus the fixed
+ * OVERALL/SUGGESTIONS/QUESTIONS overhead, capped so a pathological case
+ * can't run unbounded.
+ */
+function detailedReportTokenBudget(cardCount: number): number {
+  return Math.min(4000, 900 + cardCount * 280);
 }
 
 function parseDetailedResponse(text: string, draws: TarotDraw[]): TarotInterpretation | null {
   try {
+    const labels = [...draws.map((d) => `CARD ${d.positionIndex}`), 'OVERALL', 'SUGGESTIONS', 'QUESTIONS'];
     const cardInterpretations: CardInterpretation[] = [];
     for (const draw of draws) {
-      const match = text.match(new RegExp(`CARD ${draw.positionIndex}:\\s*(.+)`));
-      if (!match || !looksLikeRealAnswer(match[1])) return null;
-      cardInterpretations.push({ positionIndex: draw.positionIndex, cardId: draw.cardId, text: match[1].trim() });
+      const content = extractSection(text, `CARD ${draw.positionIndex}`, labels);
+      if (!content || !looksLikeRealAnswer(content)) return null;
+      cardInterpretations.push({ positionIndex: draw.positionIndex, cardId: draw.cardId, text: content });
     }
 
-    const overallMatch = text.match(/OVERALL:\s*(.+)/);
-    const suggestionsMatch = text.match(/SUGGESTIONS:\s*(.+)/);
-    const questionsMatch = text.match(/QUESTIONS:\s*(.+)/);
-    if (!overallMatch || !suggestionsMatch || !questionsMatch) return null;
-    if (!looksLikeRealAnswer(overallMatch[1])) return null;
+    const overall = extractSection(text, 'OVERALL', labels);
+    const suggestions = extractSection(text, 'SUGGESTIONS', labels);
+    const questions = extractSection(text, 'QUESTIONS', labels);
+    if (!overall || !suggestions || !questions) return null;
+    if (!looksLikeRealAnswer(overall)) return null;
 
-    const practicalSuggestions = suggestionsMatch[1].split('|').map((s) => s.trim()).filter((s) => looksLikeRealAnswer(s));
-    const reflectionPrompts = questionsMatch[1].split('|').map((q) => q.trim()).filter((q) => looksLikeRealAnswer(q));
+    const practicalSuggestions = suggestions.split('|').map((s) => s.trim()).filter((s) => looksLikeRealAnswer(s));
+    const reflectionPrompts = questions.split('|').map((q) => q.trim()).filter((q) => looksLikeRealAnswer(q));
     if (practicalSuggestions.length === 0 || reflectionPrompts.length === 0) return null;
 
     return {
       cardInterpretations,
-      overallInterpretation: overallMatch[1].trim(),
+      overallInterpretation: overall,
       reflectionPrompts,
       practicalSuggestions,
       modelVersion: 'ai-detailed-v1',
@@ -269,13 +316,19 @@ export async function generateDetailedReport(
   question: string | null,
   aiProvider: AiProvider,
   spreadType?: SpreadType,
+  birthProfile?: BirthProfile | null,
 ): Promise<TarotInterpretation | null> {
   try {
-    const raw = await aiProvider.complete([
-      { role: 'system', content: TAROT_SYSTEM_PROMPT },
-      { role: 'user', content: buildDetailedPrompt(draws, category, question, spreadType) },
-    ]);
-    return parseDetailedResponse(raw, draws);
+    const raw = await aiProvider.complete(
+      [
+        { role: 'system', content: TAROT_SYSTEM_PROMPT },
+        { role: 'user', content: buildDetailedPrompt(draws, category, question, spreadType) },
+      ],
+      { feature: 'tarot', operation: 'detailed_report', maxOutputTokens: detailedReportTokenBudget(draws.length) },
+    );
+    const parsed = parseDetailedResponse(raw, draws);
+    if (!parsed) return null;
+    return { ...parsed, birthChartPerspective: buildBirthChartPerspective(draws, birthProfile ?? null) };
   } catch (err) {
     console.warn('[tarot] Detailed report generation failed:', err);
     return null;

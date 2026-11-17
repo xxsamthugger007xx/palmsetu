@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "Palm Setu",
+    "slug": "palm-setu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,21 @@
     "plugins": [
       "expo-font",
       "expo-notifications",
-      "@react-native-community/datetimepicker"
-    ]
+      "@react-native-community/datetimepicker",
+      "expo-secure-store",
+      "expo-sharing"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c5e65383-30ac-42e0-97cf-ce69e45916a0"
+      }
+    },
+    "owner": "sanskarmalik",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c5e65383-30ac-42e0-97cf-ce69e45916a0"
+    }
   }
 }

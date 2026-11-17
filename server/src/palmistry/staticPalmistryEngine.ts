@@ -14,21 +14,30 @@
  * `free_reading` string from the knowledge base, a combination-engine
  * output string, or static scaffolding text - never model-generated prose.
  */
-import { CombinedInterpretation, MatchedFeature, PalmAnalysisResult, PalmFreeReading } from '../types/palm';
+import { CombinedInterpretation, MatchedFeature, PalmAnalysisResult, PalmFreeReading, PalmSectionKey } from '../types/palm';
 import { getKnowledgeEntry } from './knowledgeBase/knowledgeBaseService';
 import { evaluateCombinationRules } from './combinationEngine';
 
 function collectMatchedFeatures(analysis: PalmAnalysisResult): MatchedFeature[] {
   const out: MatchedFeature[] = [];
-  const pools: { matchedFeatureIds: string[]; confidence: number }[] = [
+  const pools: { matchedFeatureIds: string[]; confidence: number; variantLabel?: string }[] = [
     ...analysis.majorLines, ...analysis.minorLines, ...analysis.mounts,
     ...analysis.fingers, analysis.thumb, analysis.nails, ...analysis.specialMarkings,
     { matchedFeatureIds: analysis.handShape.matchedFeatureIds, confidence: analysis.handShape.confidence },
   ];
   for (const obs of pools) {
-    for (const id of obs.matchedFeatureIds) out.push({ featureId: id, confidence: obs.confidence });
+    for (const id of obs.matchedFeatureIds) out.push({ featureId: id, confidence: obs.confidence, variantLabel: obs.variantLabel });
   }
   return out;
+}
+
+/** Fills a knowledge-base entry's `{variant}` placeholder with the real
+ * detected qualitative label. If the entry has no placeholder, or no real
+ * label was captured for this match, the text is returned unchanged -
+ * never guesses a value to fill a placeholder it can't honestly complete. */
+function fillVariant(text: string, variantLabel?: string): string {
+  if (!variantLabel) return text;
+  return text.replace(/\{variant\}/g, variantLabel);
 }
 
 const SECTION_TITLES: Record<string, string> = {
@@ -41,11 +50,39 @@ export function buildFreeReading(analysis: PalmAnalysisResult): PalmFreeReading 
   const matched = collectMatchedFeatures(analysis);
   const combined: CombinedInterpretation[] = evaluateCombinationRules(matched);
 
-  const sections: PalmFreeReading['sections'] = [];
+  // Group matched features by major-line/category so the free reading shows
+  // ONE combined observation per line (e.g. Heart Line), not one row per
+  // individual characteristic - matches the section-wise paywall model,
+  // where a single "Unlock Heart Line Analysis" card gates everything
+  // found on that line, not each characteristic separately.
+  const byCategory = new Map<string, { featureId: string; featureName: string; freeReading: string }[]>();
   for (const m of matched) {
     const entry = getKnowledgeEntry(m.featureId);
     if (!entry) continue; // never fabricate a section for an id the knowledge base doesn't actually have
-    sections.push({ title: `${SECTION_TITLES[entry.category] ?? entry.category}: ${entry.featureName}`, text: entry.freeReading, featureIds: [entry.featureId] });
+    const bucket = byCategory.get(entry.category) ?? [];
+    bucket.push({ featureId: entry.featureId, featureName: entry.featureName, freeReading: fillVariant(entry.freeReading, m.variantLabel) });
+    byCategory.set(entry.category, bucket);
+  }
+
+  const sections: PalmFreeReading['sections'] = [];
+  for (const [category, entries] of byCategory) {
+    const title = SECTION_TITLES[category] ?? category;
+    const names = entries.map((e) => e.featureName).join(', ');
+    // Free preview is deliberately ONE sentence per section, not one per
+    // matched characteristic on that line - this is the whole point of the
+    // section-wise paywall (see routes/palm.ts's unlock endpoint): a single
+    // genuine observation is free, the rest of what was detected on this
+    // line is real content that already exists (see
+    // premiumPalmistryEngine.ts's buildPremiumSectionsByCategory, which
+    // still covers every matched entry in this category), just gated behind
+    // unlocking rather than given away for free alongside the first line.
+    const text = entries[0].freeReading;
+    sections.push({
+      title: `${title}: ${names}`,
+      text,
+      featureIds: entries.map((e) => e.featureId),
+      sectionKey: category as PalmSectionKey,
+    });
   }
 
   const detectedCount = sections.length;

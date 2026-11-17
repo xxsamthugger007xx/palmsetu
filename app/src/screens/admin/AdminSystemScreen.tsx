@@ -16,16 +16,19 @@ export function AdminSystemScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = React.useCallback(async () => {
     if (!adminRole) return;
-    adminApi.getSystem(adminRole)
+    setLoading(true);
+    await adminApi.getSystem(adminRole)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [adminRole]);
 
+  useEffect(() => { load(); }, [load]);
+
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <AdminTopNav active="AdminSystem" />
       <Text variant="title" weight="semibold" style={{ marginBottom: spacing.md }}>System health</Text>
 

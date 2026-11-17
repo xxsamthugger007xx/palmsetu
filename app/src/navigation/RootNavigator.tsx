@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
   NavigationContainer, DarkTheme, Theme, NavigationContainerRef,
@@ -13,7 +13,10 @@ import { color } from '../theme/tokens';
 import { useUserProfile } from '../context/UserProfileContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useOnboardingIntro } from '../context/OnboardingIntroContext';
+import { useAstrologyOnboardingStatus } from '../context/AstrologyOnboardingStatus';
 import { FloatingAIButton } from '../components/FloatingAIButton';
+import { UpgradeButton } from '../components/UpgradeButton';
+import { initSessionTracking, trackScreenChange } from '../services/sessionTracker';
 
 import { LanguageSelectScreen } from '../screens/onboarding/LanguageSelectScreen';
 import { IntroScreen } from '../screens/onboarding/IntroScreen';
@@ -38,6 +41,7 @@ import { TarotReportScreen } from '../screens/tarot/TarotReportScreen';
 import { TarotHistoryScreen } from '../screens/tarot/TarotHistoryScreen';
 import { AstrologyLandingScreen } from '../screens/astrology/AstrologyLandingScreen';
 import { AstrologyProfileSetupScreen } from '../screens/astrology/AstrologyProfileSetupScreen';
+import { AstrologyOnboardingStack } from './AstrologyOnboardingStack';
 import { DailyHoroscopeScreen } from '../screens/astrology/DailyHoroscopeScreen';
 import { RelationshipsScreen } from '../screens/astrology/RelationshipsScreen';
 import { ConnectPartnerScreen } from '../screens/astrology/ConnectPartnerScreen';
@@ -50,7 +54,12 @@ import { KundliResultScreen } from '../screens/astrology/KundliResultScreen';
 import { SoulEnergyReadingScreen } from '../screens/astrology/SoulEnergyReadingScreen';
 import { LanguageScreen } from '../screens/profile/LanguageScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
-import { SoulmateQuizScreen } from '../screens/discover/soulmate/SoulmateQuizScreen';
+import { SoulmateIntroScreen } from '../screens/soulmate/SoulmateIntroScreen';
+import { SoulmateQuestionnaireScreen } from '../screens/soulmate/SoulmateQuestionnaireScreen';
+import { SoulmatePaymentScreen } from '../screens/soulmate/SoulmatePaymentScreen';
+import { SoulmateGeneratingScreen } from '../screens/soulmate/SoulmateGeneratingScreen';
+import { SoulmateResultScreen } from '../screens/soulmate/SoulmateResultScreen';
+import { SoulmateHistoryScreen } from '../screens/soulmate/SoulmateHistoryScreen';
 import { GemstoneLandingScreen } from '../screens/gemstone/GemstoneLandingScreen';
 import { GemstoneGoalScreen } from '../screens/gemstone/GemstoneGoalScreen';
 import { GemstoneReportScreen } from '../screens/gemstone/GemstoneReportScreen';
@@ -61,6 +70,7 @@ import { VastuPropertyFormScreen } from '../screens/vastu/VastuPropertyFormScree
 import { VastuReportScreen } from '../screens/vastu/VastuReportScreen';
 import { VastuHistoryScreen } from '../screens/vastu/VastuHistoryScreen';
 import { AdminEntryScreen } from '../screens/admin/AdminEntryScreen';
+import { AuthScreen } from '../screens/auth/AuthScreen';
 import { AssistantChatScreen } from '../screens/assistant/AssistantChatScreen';
 import { AssistantHistoryScreen } from '../screens/assistant/AssistantHistoryScreen';
 import { MoonSignScreen } from '../screens/astrology/MoonSignScreen';
@@ -181,12 +191,25 @@ export function RootNavigator() {
   const { profile, loading: profileLoading } = useUserProfile();
   const { hasSelectedLanguage, loading: languageLoading } = useLanguage();
   const { hasSeenIntro, loading: introLoading } = useOnboardingIntro();
+  // Astrology-onboarding status (system/DOB/TOB/place/confirm) is derived
+  // from the real BirthProfile + OnboardingDraft records, not a separate
+  // flag - see context/AstrologyOnboardingStatus.tsx. `profile` above is
+  // UserIdentity only (name/gender); a user can have that and still need
+  // this step, which is exactly the migration path for every pre-existing
+  // user (UserIdentity with no BirthProfile at all).
+  const { step: astrologyStep, loading: astrologyStepLoading } = useAstrologyOnboardingStatus();
   const insets = useSafeAreaInsets();
   const navRef = useRef<NavigationContainerRef<RootStackParamList>>(null);
   const [currentRouteName, setCurrentRouteName] = useState<string | undefined>('Home');
 
-  if (profileLoading || languageLoading || introLoading) {
-    return <View style={{ flex: 1, backgroundColor: color.bg }} />;
+  const needsAstrologyOnboarding = !!profile && astrologyStep !== null && astrologyStep !== 'done';
+
+  if (profileLoading || languageLoading || introLoading || (!!profile && astrologyStepLoading)) {
+    return (
+      <View style={{ flex: 1, backgroundColor: color.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={color.accent} />
+      </View>
+    );
   }
 
   const showFloatingButton = !!profile && SHOW_FLOATING_BUTTON_ON.has(currentRouteName as keyof MainTabParamList);
@@ -206,8 +229,19 @@ export function RootNavigator() {
     <NavigationContainer
       theme={navTheme}
       ref={navRef}
-      onReady={() => setCurrentRouteName(navRef.current?.getCurrentRoute()?.name)}
-      onStateChange={() => setCurrentRouteName(navRef.current?.getCurrentRoute()?.name)}
+      onReady={() => {
+        const name = navRef.current?.getCurrentRoute()?.name;
+        setCurrentRouteName(name);
+        // First real route name of this app-open - starts the session
+        // with a true entryScreen instead of the 'Home' placeholder state
+        // initializes with (see Phase 2's Session Intelligence).
+        initSessionTracking(name ?? null);
+      }}
+      onStateChange={() => {
+        const name = navRef.current?.getCurrentRoute()?.name;
+        setCurrentRouteName(name);
+        trackScreenChange(name, name ? ROUTE_TO_FEATURE[name as keyof RootStackParamList] : undefined);
+      }}
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!hasSelectedLanguage ? (
@@ -216,6 +250,10 @@ export function RootNavigator() {
           <Stack.Screen name="OnboardingIntro" component={IntroScreen} />
         ) : !profile ? (
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        ) : needsAstrologyOnboarding ? (
+          <Stack.Screen name="AstrologyOnboarding" key={astrologyStep}>
+            {() => <AstrologyOnboardingStack initialStep={astrologyStep as 'system' | 'dob' | 'tob' | 'place' | 'confirm'} />}
+          </Stack.Screen>
         ) : (
           <>
             <Stack.Screen name="MainTabs" component={MainTabs} />
@@ -256,7 +294,12 @@ export function RootNavigator() {
             <Stack.Screen name="MyReports" component={MyReportsScreen} />
             <Stack.Screen name="Language" component={LanguageScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="SoulmateQuiz" component={SoulmateQuizScreen} />
+            <Stack.Screen name="SoulmateIntro" component={SoulmateIntroScreen} />
+            <Stack.Screen name="SoulmateQuestionnaire" component={SoulmateQuestionnaireScreen} />
+            <Stack.Screen name="SoulmatePayment" component={SoulmatePaymentScreen} />
+            <Stack.Screen name="SoulmateGenerating" component={SoulmateGeneratingScreen} options={{ gestureEnabled: false }} />
+            <Stack.Screen name="SoulmateResult" component={SoulmateResultScreen} />
+            <Stack.Screen name="SoulmateHistory" component={SoulmateHistoryScreen} />
             <Stack.Screen name="GemstoneLanding" component={GemstoneLandingScreen} />
             <Stack.Screen name="GemstoneGoal" component={GemstoneGoalScreen} />
             <Stack.Screen name="GemstoneReport" component={GemstoneReportScreen} />
@@ -284,6 +327,7 @@ export function RootNavigator() {
             <Stack.Screen name="AffirmationDetail" component={AffirmationDetailScreen} />
             <Stack.Screen name="InspirationBrowse" component={InspirationBrowseScreen} />
             <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+            <Stack.Screen name="Auth" component={AuthScreen} />
 
             {/* Hidden admin panel - not reachable from any tab or visible menu.
                 Reached only via a long-press on the Profile screen's avatar.
@@ -302,6 +346,9 @@ export function RootNavigator() {
           bottomOffset={bottomOffset}
           onPress={() => navRef.current?.navigate('AssistantChat', screenContext ? { screenContext } : undefined)}
         />
+      )}
+      {showFloatingButton && (
+        <UpgradeButton onPress={() => navRef.current?.navigate('Paywall')} />
       )}
     </NavigationContainer>
   );

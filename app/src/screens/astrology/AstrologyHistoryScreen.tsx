@@ -13,6 +13,7 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { RelationshipDailyReport } from '../../types/astrology';
+import { parseLocalDateString } from '../../utils/formatDate';
 
 export function AstrologyHistoryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -20,25 +21,27 @@ export function AstrologyHistoryScreen() {
   const [sharedHistory, setSharedHistory] = useState<RelationshipDailyReport[]>([]);
   const [relationshipId, setRelationshipId] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      setState('loading');
-      try {
-        const rel = await astrologyApi.getMyRelationship();
-        if (rel.relationship) {
-          setRelationshipId(rel.relationship.id);
-          const hist = await astrologyApi.getRelationshipHistory(rel.relationship.id);
-          setSharedHistory(hist.items);
-        }
-        setState('ready');
-      } catch {
-        setState('error');
+  const load = React.useCallback(async () => {
+    setState('loading');
+    try {
+      const rel = await astrologyApi.getMyRelationship();
+      if (rel.relationship) {
+        setRelationshipId(rel.relationship.id);
+        const hist = await astrologyApi.getRelationshipHistory(rel.relationship.id);
+        setSharedHistory(hist.items);
       }
-    })();
+      setState('ready');
+    } catch {
+      setState('error');
+    }
   }, []);
 
+  useEffect(() => {
+    load();
+  }, [load]);
+
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Reading History</Text>
@@ -73,7 +76,7 @@ export function AstrologyHistoryScreen() {
                 >
                   <View style={{ flex: 1 }}>
                     <Text variant="bodySm" weight="semibold">{r.connectionTheme}</Text>
-                    <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{new Date(r.localDate).toLocaleDateString()}</Text>
+                    <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{parseLocalDateString(r.localDate).toLocaleDateString()}</Text>
                   </View>
                   <ChevronRight size={16} color={color.textMuted} />
                 </Card>

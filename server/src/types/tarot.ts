@@ -27,10 +27,10 @@ export interface TarotCard {
 
 export type ReadingCategory = 'general' | 'love' | 'career' | 'question';
 export type SpreadType =
-  | 'one-card' | 'three-card-ppf' | 'three-card-scg' | 'three-card-mbs' | 'celtic-cross'
+  | 'one-card' | 'three-card-ppf' | 'three-card-scg' | 'three-card-mbs' | 'five-card' | 'celtic-cross'
   | 'love-relationship' | 'career-finance' | 'yes-no' | 'relationship-compatibility';
 export type ReadingStatus = 'drawn' | 'interpreted' | 'failed';
-export type DetailedReportStatus = 'none' | 'ready' | 'failed';
+export type DetailedReportStatus = 'none' | 'generating' | 'ready' | 'failed';
 
 export interface SpreadPosition {
   index: number;
@@ -82,6 +82,11 @@ export interface TarotInterpretation {
   practicalSuggestions?: string[];
   /** Only populated for the 'yes-no' spread - see YesNoResult. */
   yesNo?: YesNoResult;
+  /** Optional birth-chart personalisation, premium-only - see
+   * tarot/chartPersonalization.ts. Null when the reading has no detailed
+   * report, or the user has no saved birth profile. Never influences which
+   * cards were drawn or their orientation. */
+  birthChartPerspective?: string | null;
   /** Only populated for the free daily tarot card. True once a saved birth
    * profile exists and the guidance framing was personalized from it - the
    * card drawn is never affected, only the interpretation text. False (with
@@ -98,6 +103,16 @@ export interface TarotReading {
   readingType: ReadingCategory;
   spreadType: SpreadType;
   question: string | null;
+  /** Optional display label for the 'relationship-compatibility' spread
+   * only (e.g. a first name or nickname) - a lightweight, non-account
+   * field, deliberately NOT the heavier Relationships/invitation system
+   * (see relationships/invitationService.ts), which requires both people to
+   * have their own accounts and mutually consent - that doesn't fit a
+   * card-based compatibility reading, which never touches either party's
+   * birth chart. Never anything beyond a short display name; deleted along
+   * with the reading itself (DELETE /readings/:id), never retained or
+   * exposed elsewhere. Null for every other spread type. */
+  secondPersonName: string | null;
   status: ReadingStatus;
   draws: TarotDraw[];
   /** Free, immediate, deterministic per-card interpretation - never requires
@@ -107,10 +122,21 @@ export interface TarotReading {
    * Null until the user unlocks it via /detailed-report. */
   detailedReport: TarotInterpretation | null;
   detailedReportStatus: DetailedReportStatus;
+  /** Persisted follow-up Q&A for this specific reading - premium-only,
+   * server-enforced (see tarot/entitlements.ts's checkFollowupLimit).
+   * Reopening a reading (different session, logout/login, different
+   * device) retrieves the same conversation rather than losing it. */
+  followupMessages: TarotFollowupMessage[];
   saved: boolean;
   createdAt: string;
   completedAt: string | null;
   datasetVersion: string;
+}
+
+export interface TarotFollowupMessage {
+  question: string;
+  answer: string;
+  createdAt: string;
 }
 
 export interface TarotJournalEntry {

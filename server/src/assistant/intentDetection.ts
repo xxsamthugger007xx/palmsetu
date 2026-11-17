@@ -1,5 +1,7 @@
 import { AiProvider } from '../ai/types';
 import { AssistantFeature } from '../data/store';
+import { getAllAstrologyKnowledgeEntries } from '../astrology/knowledgeBase/knowledgeBaseService';
+import { AstrologySystemId } from '../astrology/knowledgeBase/types';
 
 /**
  * Intent/feature detection for the assistant.
@@ -68,4 +70,36 @@ export async function detectFeature(message: string, aiProvider: AiProvider): Pr
   } catch {
     return 'unknown';
   }
+}
+
+/**
+ * Lightweight astrology-knowledge topic detector: scans the user's message
+ * for any sign/rashi, house/bhava, planet/graha, nakshatra, or dasha name
+ * (or alias) that exists in the astrology knowledge base for the given
+ * system, and returns the longest matching alias/name - the same string
+ * getAstrologyKnowledge() in knowledgeBaseService.ts can then look up.
+ * Deterministic, no AI call, same keyword-matching design choice as
+ * detectFeatureHeuristic() above. Returns null when nothing matches, which
+ * callers must treat as an honest "no known topic detected" signal.
+ */
+export function detectAstrologyTopic(message: string, system: AstrologySystemId): string | null {
+  const text = message.toLowerCase();
+  const entries = getAllAstrologyKnowledgeEntries().filter((e) => e.system === system);
+
+  let best: string | null = null;
+  let bestLength = 0;
+  for (const entry of entries) {
+    const needles = [entry.name.toLowerCase(), ...entry.aliases.map((a) => a.toLowerCase())];
+    for (const needle of needles) {
+      // Strip parenthetical qualifiers like " (aries)" from compound names
+      // so a plain alias match (already present in `aliases`) is what's
+      // actually tested against the raw message text.
+      const cleaned = needle.replace(/\s*\(.*?\)\s*/g, '').trim();
+      if (cleaned.length >= 3 && text.includes(cleaned) && cleaned.length > bestLength) {
+        best = cleaned;
+        bestLength = cleaned.length;
+      }
+    }
+  }
+  return best;
 }

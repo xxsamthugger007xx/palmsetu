@@ -32,7 +32,7 @@ export function VastuHistoryScreen() {
   useEffect(() => { load(); }, []);
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Vastu Reports</Text>

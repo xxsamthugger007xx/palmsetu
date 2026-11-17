@@ -10,88 +10,62 @@ import {
   getUserTier,
   transactions,
   Transaction,
-  adminAuditLog,
   moodEntriesByUserDate, journalEntriesById, breathingSessionsById, habitsById,
   challengeProgressByKey, meditationSessionsById, wellnessGoalsById, wellnessAnalyticsEvents,
+  soulmateSketchesById, soulmateAnalyticsEvents,
+  accountsById, userIdentities, birthProfiles, guestSessionsById,
 } from '../data/store';
 import { PRICING_TABLE_VERSION } from '../data/pricing';
 import { AiProvider } from '../ai/types';
-import { assistantConversationsById, assistantUsageLog } from '../data/store';
+import { assistantConversationsById, assistantUsageLog, aiUsageEvents } from '../data/store';
 import { assistantConfig, setAssistantConfig, AssistantConfig } from '../data/assistantConfig';
 import { DB_PATH, dbFileSizeBytes } from '../data/db';
 import { memoryAdminStats } from '../memory/memoryService';
+import { getPsuIdForUuid, getUuidForPsuId } from '../auth/psuId';
+import { listEvents, listEventsSince } from '../events/eventTracker';
+import { listSessionsForUser, getUserEngagementStats, getLatestDeviceInfo } from '../events/sessionTracker';
+import {
+  AdminRole, performAdminLogin, resolveAdminSession,
+  listSessionsForAdmin, revokeSession, revokeAllSessionsForAdmin, listLoginHistory,
+  logAdminAudit, listAdminAudit, findAdminById, generateTotpSecret, totpOtpauthUrl,
+  verifyTotpCode, setAdminMfa,
+} from '../auth/adminAuth';
 
 /**
- * PROTOTYPE-GRADE ADMIN AUTH, NOT REAL AUTH.
- *
- * There is no admin login/session system anywhere in this app (there is no
- * real user auth at all - see currentUserId() in every other route file).
- * This middleware is a stand-in that reads a plain `x-admin-role` header and
- * checks it against a hardcoded allowlist. It has no password, no token, no
- * expiry, and anyone who knows the header value can call every /admin route.
- * This MUST be replaced with real authenticated admin sessions (e.g. signed
- * tokens tied to a real admin-user table) before this is ever exposed outside
- * a trusted local/dev environment.
+ * Real admin authentication, backed by admin_users/admin_sessions in
+ * SQLite (see auth/adminAuth.ts). Replaces the old single-shared-password
+ * + in-memory-session + "or just send any x-admin-role header" mechanism
+ * that used to live here - that bypass let anyone in with no secret at
+ * all and has been removed entirely, not just deprecated.
  */
-const ADMIN_ROLES = ['super_admin', 'analyst', 'viewer'] as const;
-type AdminRole = typeof ADMIN_ROLES[number];
-
-/**
- * Password-login session store for the browser admin panel (/admin-panel).
- * This is still a prototype-grade stand-in, not real auth: one shared
- * password for every admin, tokens live only in memory (lost on restart),
- * and there is no rate limiting on login attempts. Do not expose this
- * server outside a trusted network with this mechanism in place.
- */
-const ADMIN_PANEL_PASSWORD = process.env.ADMIN_PANEL_PASSWORD || '12345';
-const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
-const adminSessions = new Map<string, { role: AdminRole; expiresAt: number }>();
-
-function createAdminSession(role: AdminRole): string {
-  const token = [...Array(32)].map(() => Math.floor(Math.random() * 36).toString(36)).join('');
-  adminSessions.set(token, { role, expiresAt: Date.now() + SESSION_TTL_MS });
-  return token;
-}
-
-/**
- * Login rate limiting, in-memory and per-process only (same caveat as the
- * session store above: it resets on restart and is not shared across
- * instances/workers). Tracks consecutive failed attempts per IP and locks
- * that IP out for LOCKOUT_MS after MAX_FAILED_ATTEMPTS, then resets the
- * counter on a successful login.
- */
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_MS = 60 * 1000;
-const loginAttemptsByIp = new Map<string, { failures: number; lockedUntil: number | null }>();
 
 function clientIp(req: any): string {
   return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || req.socket?.remoteAddress || 'unknown';
 }
 
-export function handleAdminLogin(req: any, res: any) {
+export async function handleAdminLogin(req: any, res: any) {
   const ip = clientIp(req);
-  const state = loginAttemptsByIp.get(ip) ?? { failures: 0, lockedUntil: null };
+  const userAgent = (req.headers['user-agent'] as string) || 'unknown';
+  const { email, password, totpCode } = req.body ?? {};
 
-  if (state.lockedUntil && state.lockedUntil > Date.now()) {
-    const retryAfterSeconds = Math.ceil((state.lockedUntil - Date.now()) / 1000);
-    res.setHeader('Retry-After', String(retryAfterSeconds));
-    return res.status(429).json({ error: `Too many failed login attempts. Try again in ${retryAfterSeconds}s.`, retryAfterSeconds });
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
   }
 
-  const { password } = req.body ?? {};
-  if (password !== ADMIN_PANEL_PASSWORD) {
-    state.failures += 1;
-    if (state.failures >= MAX_FAILED_ATTEMPTS) {
-      state.lockedUntil = Date.now() + LOCKOUT_MS;
-      state.failures = 0;
-    }
-    loginAttemptsByIp.set(ip, state);
-    return res.status(401).json({ error: 'Incorrect password' });
+  const result = await performAdminLogin({ email: String(email), password: String(password), totpCode, ip, userAgent });
+  if (!result.ok) {
+    if (result.retryAfterSeconds) res.setHeader('Retry-After', String(result.retryAfterSeconds));
+    return res.status(result.status).json({ error: result.error });
   }
+  res.json({ token: result.token, role: result.role, expiresAt: result.expiresAt, email: result.email });
+}
 
-  loginAttemptsByIp.delete(ip);
-  const token = createAdminSession('super_admin');
-  res.json({ token, role: 'super_admin', expiresAt: adminSessions.get(token)!.expiresAt });
+export function handleAdminLogout(req: any, res: any) {
+  const admin = req.admin as { adminId: string; sessionId: string } | undefined;
+  if (!admin) return res.status(401).json({ error: 'Not logged in.' });
+  revokeSession(admin.adminId, admin.sessionId);
+  logAdminAudit({ adminId: admin.adminId, action: 'LOGOUT', path: req.originalUrl });
+  res.json({ ok: true });
 }
 
 /**
@@ -114,36 +88,31 @@ function requireAdminRole(req: any, res: any, next: any) {
   if (!bearer && QUERY_TOKEN_ROUTES.has(req.path) && typeof req.query.token === 'string') {
     bearer = req.query.token;
   }
-  if (bearer) {
-    const session = adminSessions.get(bearer);
-    if (session && session.expiresAt > Date.now()) {
-      req.adminRole = session.role;
-      logAdminAction(req);
-      return next();
-    }
-    if (session) adminSessions.delete(bearer); // expired
-    return res.status(403).json({ error: 'Forbidden: session missing or expired, please log in again' });
+
+  if (!bearer) {
+    return res.status(401).json({ error: 'Unauthorized: missing Authorization: Bearer <token>. Log in via POST /admin/login first.' });
   }
 
-  const role = req.headers['x-admin-role'] as string | undefined;
-  if (!role || !ADMIN_ROLES.includes(role as AdminRole)) {
-    return res.status(403).json({ error: 'Forbidden: missing or invalid x-admin-role header, or Authorization: Bearer <token>' });
+  const session = resolveAdminSession(bearer);
+  if (!session) {
+    return res.status(401).json({ error: 'Unauthorized: session missing, expired, or revoked. Please log in again.' });
   }
-  req.adminRole = role;
-  logAdminAction(req);
+
+  req.adminRole = session.role;
+  req.admin = session;
+  logAdminAudit({ adminId: session.adminId, action: req.method, path: req.originalUrl || req.path });
   next();
 }
 
-/** Appends one audit-log entry per authenticated /admin/* request. In-memory
- * only, same caveat as every other store in this app - lost on restart. */
-function logAdminAction(req: any) {
-  adminAuditLog.push({
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
-    role: req.adminRole,
-    action: req.method,
-    path: req.originalUrl || req.path,
-    createdAt: new Date().toISOString(),
-  });
+/** Restricts a route to one or more roles, beyond the baseline requireAdminRole check. */
+function requireRole(...roles: AdminRole[]) {
+  return (req: any, res: any, next: any) => {
+    if (!roles.includes(req.adminRole)) {
+      logAdminAudit({ adminId: req.admin.adminId, action: req.method, path: req.originalUrl || req.path, outcome: 'denied' });
+      return res.status(403).json({ error: `Forbidden: requires role ${roles.join(' or ')}, you have ${req.adminRole}.` });
+    }
+    next();
+  };
 }
 
 interface DateRange {
@@ -299,12 +268,123 @@ function summarizeRevenue(rows: Transaction[]) {
   };
 }
 
+/** Real, instrumented AI usage - every entry comes from ai/usageTracking.ts's
+ * UsageTrackingProvider, which wraps the single app-wide aiProvider instance,
+ * so this covers every feature that calls it (currently Tarot; Palm,
+ * Astrology, and the Assistant will appear here automatically once they're
+ * updated to pass a `feature` tag, with zero changes needed to this
+ * endpoint). Token counts are estimates (~4 chars/token), never a real
+ * provider-reported bill - labeled as such rather than presented as exact. */
+function summarizeAiUsage(range: DateRange) {
+  const rows = aiUsageEvents.filter((e) => inRange(e.createdAt, range));
+  const byFeature: Record<string, { calls: number; successes: number; estimatedInputTokens: number; estimatedOutputTokens: number; avgLatencyMs: number }> = {};
+  for (const e of rows) {
+    const bucket = byFeature[e.feature] ?? { calls: 0, successes: 0, estimatedInputTokens: 0, estimatedOutputTokens: 0, avgLatencyMs: 0 };
+    bucket.calls += 1;
+    if (e.success) bucket.successes += 1;
+    bucket.estimatedInputTokens += e.estimatedInputTokens;
+    bucket.estimatedOutputTokens += e.estimatedOutputTokens;
+    bucket.avgLatencyMs += e.latencyMs;
+    byFeature[e.feature] = bucket;
+  }
+  for (const key of Object.keys(byFeature)) {
+    byFeature[key].avgLatencyMs = Math.round(byFeature[key].avgLatencyMs / byFeature[key].calls);
+  }
+  return {
+    available: true,
+    totalCalls: rows.length,
+    byFeature,
+    note: 'Token counts are rough estimates (~4 chars/token), not real provider-reported usage - no AiProvider in this app currently returns exact token counts or a dollar cost.',
+  };
+}
+
 export function buildAdminRouter(aiProvider: AiProvider) {
   const router = Router();
 
   router.use(requireAdminRole);
 
+  // --- Admin session/account self-service -------------------------------
+  router.post('/logout', handleAdminLogout);
+
+  router.get('/sessions', (req: any, res: any) => {
+    res.json({ sessions: listSessionsForAdmin(req.admin.adminId) });
+  });
+
+  router.post('/sessions/:sessionId/revoke', (req: any, res: any) => {
+    const revoked = revokeSession(req.admin.adminId, req.params.sessionId);
+    logAdminAudit({ adminId: req.admin.adminId, action: 'SESSION_REVOKE', path: req.originalUrl, targetType: 'admin_session', targetId: req.params.sessionId, outcome: revoked ? 'success' : 'error' });
+    res.json({ ok: revoked });
+  });
+
+  router.post('/sessions/revoke-all', (req: any, res: any) => {
+    revokeAllSessionsForAdmin(req.admin.adminId);
+    logAdminAudit({ adminId: req.admin.adminId, action: 'SESSION_REVOKE_ALL', path: req.originalUrl });
+    res.json({ ok: true });
+  });
+
+  router.get('/login-history', requireRole('super_admin'), (req: any, res: any) => {
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
+    res.json(listLoginHistory(page, pageSize));
+  });
+
+  // --- MFA (TOTP) setup, per logged-in admin ----------------------------
+  router.post('/mfa/setup', (req: any, res: any) => {
+    const admin = findAdminById(req.admin.adminId);
+    if (!admin) return res.status(404).json({ error: 'Admin not found.' });
+    const secret = generateTotpSecret();
+    setAdminMfa(admin.id, secret, false); // not enabled until verified below
+    res.json({ secret, otpauthUrl: totpOtpauthUrl(admin.email, secret) });
+  });
+
+  router.post('/mfa/verify', (req: any, res: any) => {
+    const admin = findAdminById(req.admin.adminId);
+    if (!admin?.mfaSecret) return res.status(400).json({ error: 'Call /mfa/setup first.' });
+    const { code } = req.body ?? {};
+    if (!code || !verifyTotpCode(admin.mfaSecret, String(code))) {
+      return res.status(400).json({ error: 'Incorrect code.' });
+    }
+    setAdminMfa(admin.id, admin.mfaSecret, true);
+    logAdminAudit({ adminId: admin.id, action: 'MFA_ENABLED', path: req.originalUrl });
+    res.json({ ok: true });
+  });
+
+  router.post('/mfa/disable', (req: any, res: any) => {
+    setAdminMfa(req.admin.adminId, null, false);
+    logAdminAudit({ adminId: req.admin.adminId, action: 'MFA_DISABLED', path: req.originalUrl });
+    res.json({ ok: true });
+  });
+
   // --- Overview --------------------------------------------------------
+  // --- Central event log / Live Activity (see events/eventTracker.ts) ----
+  router.get('/events', (req, res) => {
+    const range = parseDateRange(req);
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
+    const { total, entries } = listEvents(
+      {
+        userId: req.query.userId as string | undefined,
+        eventType: req.query.eventType as string | undefined,
+        feature: req.query.feature as string | undefined,
+        status: req.query.status as any,
+        since: range.since,
+        until: range.until,
+      },
+      page,
+      pageSize,
+    );
+    res.json({ total, page, pageSize, entries });
+  });
+
+  // Polling-based live feed (no WebSocket/SSE infra exists in this app yet):
+  // the panel calls this every few seconds with the createdAt of the last
+  // event it already has, and gets back only what's new. Returning at most
+  // 100 keeps a single poll bounded even after a burst of activity.
+  router.get('/events/live', (req, res) => {
+    const after = typeof req.query.after === 'string' ? req.query.after : null;
+    res.json({ entries: listEventsSince(after, 100) });
+  });
+
   router.get('/overview', (req, res) => {
     const range = parseDateRange(req);
     const activity = buildUserActivity(range);
@@ -332,7 +412,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
         companion: conversationsById.size, // no createdAt on Conversation - not date-filterable
       },
       revenue: summarizeRevenue(transactionsInRange(range)),
-      aiCost: { available: false, reason: 'AiProvider calls are not instrumented for token usage, latency, or cost anywhere in the codebase.' },
+      aiUsage: summarizeAiUsage(range),
     });
   });
 
@@ -341,27 +421,58 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const range = parseDateRange(req);
     const activity = buildUserActivity(range);
     const search = (req.query.search as string | undefined)?.toLowerCase();
+    const tierFilter = req.query.tier as string | undefined;
+    const accountTypeFilter = req.query.accountType as string | undefined; // 'registered' | 'guest'
+    const deviceFilter = (req.query.device as string | undefined)?.toLowerCase();
     const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
     const pageSize = Math.min(100, Math.max(1, parseInt(String(req.query.pageSize ?? '20'), 10) || 20));
 
-    let rows = [...activity.values()].map((a) => ({
-      userId: a.userId,
-      tier: getUserTier(a.userId),
-      readingCounts: {
-        tarot: a.tarot,
-        gemstone: a.gemstone,
-        vastu: a.vastu,
-        astrology: a.astrology,
-        palm: a.palm,
-        companion: a.companion,
-      },
-      firstSeen: a.firstSeen,
-      lastSeen: a.lastSeen,
-    }));
+    // Union of every registered account and every userId with any activity -
+    // a brand-new account with zero feature usage must still be listable
+    // and searchable (by email/name), not silently invisible until they
+    // use a feature. buildUserActivity alone would miss them entirely.
+    const allUserIds = new Set<string>([...accountsById.keys(), ...activity.keys()]);
+
+    let rows = [...allUserIds].map((userId) => {
+      const a = activity.get(userId);
+      const account = accountsById.get(userId);
+      const identity = userIdentities.get(userId);
+      const deviceInfo = getLatestDeviceInfo(userId);
+      return {
+        userId,
+        psuId: getPsuIdForUuid(userId),
+        name: identity?.name ?? null,
+        email: account?.email ?? null,
+        accountType: account ? 'registered' as const : 'guest' as const,
+        tier: getUserTier(userId),
+        device: deviceInfo?.device ?? null,
+        os: deviceInfo?.os ?? null,
+        readingCounts: {
+          tarot: a?.tarot ?? 0,
+          gemstone: a?.gemstone ?? 0,
+          vastu: a?.vastu ?? 0,
+          astrology: a?.astrology ?? 0,
+          palm: a?.palm ?? 0,
+          companion: a?.companion ?? 0,
+        },
+        registeredAt: account?.createdAt ?? null,
+        firstSeen: a?.firstSeen ?? null,
+        lastSeen: a?.lastSeen ?? null,
+      };
+    });
 
     if (search) {
-      rows = rows.filter((r) => r.userId.toLowerCase().includes(search));
+      rows = rows.filter((r) =>
+        r.userId.toLowerCase().includes(search) ||
+        r.psuId?.toLowerCase().includes(search) ||
+        r.email?.toLowerCase().includes(search) ||
+        r.name?.toLowerCase().includes(search),
+      );
     }
+    if (tierFilter) rows = rows.filter((r) => r.tier === tierFilter);
+    if (accountTypeFilter) rows = rows.filter((r) => r.accountType === accountTypeFilter);
+    if (deviceFilter) rows = rows.filter((r) => r.os?.toLowerCase().includes(deviceFilter) || r.device?.toLowerCase().includes(deviceFilter));
+
     rows.sort((a, b) => a.userId.localeCompare(b.userId));
 
     const total = rows.length;
@@ -376,30 +487,39 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   // the narrow query-param token fallback documented above requireAdminRole.
   // Streams the full, unpaginated list respecting the same search/date-range
   // filters as GET /users.
-  router.get('/users/export', (req, res) => {
+  router.get('/users/export', requireRole('super_admin', 'analyst'), (req, res) => {
     const range = parseDateRange(req);
     const activity = buildUserActivity(range);
     const search = (req.query.search as string | undefined)?.toLowerCase();
 
-    let rows = [...activity.values()].map((a) => ({
-      userId: a.userId,
-      tier: getUserTier(a.userId),
-      tarot: a.tarot,
-      gemstone: a.gemstone,
-      vastu: a.vastu,
-      astrology: a.astrology,
-      palm: a.palm,
-      companion: a.companion,
-      firstSeen: a.firstSeen ?? '',
-      lastSeen: a.lastSeen ?? '',
-    }));
-    if (search) rows = rows.filter((r) => r.userId.toLowerCase().includes(search));
+    const allUserIds = new Set<string>([...accountsById.keys(), ...activity.keys()]);
+    let rows = [...allUserIds].map((userId) => {
+      const a = activity.get(userId);
+      const account = accountsById.get(userId);
+      const identity = userIdentities.get(userId);
+      return {
+        userId,
+        psuId: getPsuIdForUuid(userId) ?? '',
+        name: identity?.name ?? '',
+        email: account?.email ?? '',
+        tier: getUserTier(userId),
+        tarot: a?.tarot ?? 0,
+        gemstone: a?.gemstone ?? 0,
+        vastu: a?.vastu ?? 0,
+        astrology: a?.astrology ?? 0,
+        palm: a?.palm ?? 0,
+        companion: a?.companion ?? 0,
+        firstSeen: a?.firstSeen ?? '',
+        lastSeen: a?.lastSeen ?? '',
+      };
+    });
+    if (search) rows = rows.filter((r) => r.userId.toLowerCase().includes(search) || r.email.toLowerCase().includes(search) || r.name.toLowerCase().includes(search));
     rows.sort((a, b) => a.userId.localeCompare(b.userId));
 
-    const header = 'userId,tier,tarot,gemstone,vastu,astrology,palm,companion,firstSeen,lastSeen';
+    const header = 'userId,psuId,name,email,tier,tarot,gemstone,vastu,astrology,palm,companion,firstSeen,lastSeen';
     const csvEscape = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
     const lines = rows.map((r) =>
-      [r.userId, r.tier, r.tarot, r.gemstone, r.vastu, r.astrology, r.palm, r.companion, r.firstSeen, r.lastSeen]
+      [r.userId, r.psuId, r.name, r.email, r.tier, r.tarot, r.gemstone, r.vastu, r.astrology, r.palm, r.companion, r.firstSeen, r.lastSeen]
         .map((v) => csvEscape(String(v)))
         .join(',')
     );
@@ -416,43 +536,241 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     res.json(summarizeRevenue(transactionsInRange(range)));
   });
 
-  // --- Admin audit log ---------------------------------------------------------
-  // In-memory only (see adminAuditLog in data/store.ts): one entry per
-  // authenticated /admin/* request, recorded by requireAdminRole above.
-  router.get('/audit-log', (req, res) => {
+  // --- Subscriptions -----------------------------------------------------
+  // Real data from userPlans (see data/store.ts's UserPlan + the Premium
+  // paywall redesign) - every field here is whatever /dev/set-tier actually
+  // wrote, never fabricated. planId/renewsAt etc. are null for any premium
+  // user who was set to that tier before this plan metadata existed.
+  router.get('/subscriptions', (req, res) => {
     const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
-    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
-    const sorted = [...adminAuditLog].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    const total = sorted.length;
+    const pageSize = Math.min(100, Math.max(1, parseInt(String(req.query.pageSize ?? '20'), 10) || 20));
+    const all = [...userPlans.values()].filter((p) => p.tier === 'premium');
+    const byPlan: Record<string, number> = {};
+    for (const p of all) {
+      const key = p.planId ?? 'unknown';
+      byPlan[key] = (byPlan[key] ?? 0) + 1;
+    }
+    const sorted = all.sort((a, b) => (b.startedAt ?? '').localeCompare(a.startedAt ?? ''));
     const start = (page - 1) * pageSize;
-    res.json({ total, page, pageSize, entries: sorted.slice(start, start + pageSize) });
+    const pageRows = sorted.slice(start, start + pageSize).map((p) => ({
+      userId: p.userId,
+      psuId: getPsuIdForUuid(p.userId),
+      planId: p.planId ?? null,
+      status: p.status ?? 'active',
+      priceCents: p.priceCents ?? null,
+      currency: p.currency ?? null,
+      startedAt: p.startedAt ?? null,
+      renewsAt: p.renewsAt ?? null,
+      expiresAt: p.expiresAt ?? null,
+    }));
+    res.json({ total: all.length, page, pageSize, byPlan, subscriptions: pageRows });
   });
 
-  // --- User detail ---------------------------------------------------------
+  // --- Admin audit log ---------------------------------------------------------
+  // Durable (admin_audit_log table): one entry per authenticated /admin/*
+  // request, recorded by requireAdminRole above, surviving restarts.
+  router.get('/audit-log', requireRole('super_admin'), (req, res) => {
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
+    const { total, entries } = listAdminAudit(page, pageSize);
+    res.json({ total, page, pageSize, entries });
+  });
+
+  /** Resolves a route param that may be either the internal UUID or a
+   * PSU-000001 ID to the internal UUID, or null if neither matches anything. */
+  function resolveUserParam(raw: string): string | null {
+    if (raw.toUpperCase().startsWith('PSU-')) return getUuidForPsuId(raw);
+    return raw;
+  }
+
+  function revenueForUser(userId: string) {
+    const rows = transactions.filter((t) => t.userId === userId);
+    const totalCents = rows.reduce((sum, t) => sum + t.amountCents, 0);
+    return { totalCents, currency: 'INR', count: rows.length, transactions: rows };
+  }
+
+  /** Every soulmate sketch this user has ever created, oldest-first, as the
+   * closest thing this app has to a payment-history table (the only real
+   * payment gateway integration is Soulmate Sketch's Razorpay flow). */
+  function paymentsForUser(userId: string) {
+    return [...soulmateSketchesById.values()]
+      .filter((s) => s.userId === userId)
+      .map((s) => ({
+        sketchId: s.id,
+        orderId: s.orderId,
+        paymentId: s.paymentId,
+        amountCents: s.priceCents,
+        currency: s.currency,
+        status: s.generationStatus,
+        isFreeTrial: s.isFreeTrial,
+      }))
+      .sort((a, b) => (a.sketchId < b.sketchId ? -1 : 1));
+  }
+
+  // --- User 360 profile ------------------------------------------------------
   router.get('/users/:userId', (req, res) => {
-    const { userId } = req.params;
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+
+    const account = accountsById.get(userId); // undefined for guests/demo ids - real, not every userId is a registered account
+    const identity = userIdentities.get(userId);
+    const birthProfile = birthProfiles.get(userId);
+    const guestSession = !account ? guestSessionsById.get(userId) : undefined;
+
     const range = parseDateRange(req);
-    const activity = buildUserActivity(range);
-    const a = activity.get(userId);
-    if (!a) {
-      return res.status(404).json({ error: 'No activity found for this userId' });
+    const activity = buildUserActivity(range).get(userId);
+
+    // A user is "known" if they're a real account, a guest session, or have
+    // any activity at all - otherwise the ID genuinely doesn't exist.
+    if (!account && !guestSession && !activity) {
+      return res.status(404).json({ error: 'No user found for this ID' });
     }
-    // Deliberately only counts/timestamps - never reading content, questions,
-    // birth details, or AI interpretations, per the admin-table privacy rule.
+
+    const revenue = revenueForUser(userId);
+    const engagement = getUserEngagementStats(userId);
+    const device = getLatestDeviceInfo(userId);
+
     res.json({
-      userId: a.userId,
-      tier: getUserTier(a.userId),
-      readingCounts: {
-        tarot: a.tarot,
-        gemstone: a.gemstone,
-        vastu: a.vastu,
-        astrology: a.astrology,
-        palm: a.palm,
-        companion: a.companion,
+      userId,
+      psuId: getPsuIdForUuid(userId),
+      accountType: account ? 'registered' : guestSession ? 'guest' : 'legacy_demo',
+      profile: {
+        name: identity?.name ?? null,
+        email: account?.email ?? null,
+        // Not collected anywhere in this app today - never fabricated.
+        phone: null,
+        country: null,
+        emailVerified: account?.emailVerified ?? null,
       },
-      firstSeen: a.firstSeen,
-      lastSeen: a.lastSeen,
+      registeredAt: account?.createdAt ?? guestSession?.createdAt ?? null,
+      accountStatus: account ? 'active' : guestSession ? 'guest' : 'unknown',
+      tier: getUserTier(userId),
+      birthProfile: birthProfile
+        ? { birthDate: birthProfile.birthDate, birthPlace: birthProfile.birthPlace, preferredSystem: birthProfile.preferredSystem, updatedAt: birthProfile.updatedAt }
+        : null,
+      readingCounts: activity
+        ? { tarot: activity.tarot, gemstone: activity.gemstone, vastu: activity.vastu, astrology: activity.astrology, palm: activity.palm, companion: activity.companion }
+        : { tarot: 0, gemstone: 0, vastu: 0, astrology: 0, palm: 0, companion: 0 },
+      firstSeen: activity?.firstSeen ?? null,
+      lastSeen: activity?.lastSeen ?? engagement.lastActiveAt,
+      revenue: { totalCents: revenue.totalCents, currency: revenue.currency, transactionCount: revenue.count },
+      engagement,
+      device,
     });
+  });
+
+  // --- User 360: activity timeline (reuses Phase 1's user_events) --------
+  router.get('/users/:userId/timeline', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
+    const range = parseDateRange(req);
+    const { total, entries } = listEvents({ userId, since: range.since, until: range.until }, page, pageSize);
+    res.json({ total, page, pageSize, entries });
+  });
+
+  // --- User 360: sessions --------------------------------------------------
+  router.get('/users/:userId/sessions', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(100, Math.max(1, parseInt(String(req.query.pageSize ?? '20'), 10) || 20));
+    res.json(listSessionsForUser(userId, page, pageSize));
+  });
+
+  // --- User 360: payments ---------------------------------------------------
+  router.get('/users/:userId/payments', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    res.json({ payments: paymentsForUser(userId), revenue: revenueForUser(userId) });
+  });
+
+  // --- User 360: feature-wise history (metadata/status only, never full
+  // AI interpretation text or journal content - same privacy rule as the
+  // existing per-feature aggregate endpoints below). -----------------------
+  router.get('/users/:userId/tarot', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const readings = [...tarotReadingsById.values()]
+      .filter((r) => r.userId === userId)
+      .map((r) => ({ id: r.id, readingType: r.readingType, spreadType: r.spreadType, status: r.status, saved: r.saved, detailedReportStatus: r.detailedReportStatus, createdAt: r.createdAt, completedAt: r.completedAt }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    res.json({ readings });
+  });
+
+  router.get('/users/:userId/palm', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const readings = [...readingsById.values()]
+      .filter((r) => r.userId === userId)
+      .map((r) => ({ id: r.id, premiumReportAvailable: r.premiumReportAvailable, premiumReportGeneratedAt: r.premiumReportGeneratedAt, isPrimary: r.isPrimary ?? false, createdAt: r.createdAt }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    res.json({ readings });
+  });
+
+  router.get('/users/:userId/astrology', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const profile = birthProfiles.get(userId);
+    const horoscopes = [...dailyHoroscopesByKey.values()]
+      .filter((h) => h.userId === userId)
+      .map((h) => ({ id: h.id, localDate: h.localDate, astrologySystem: h.astrologySystem, createdAt: h.createdAt }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    res.json({
+      birthProfile: profile
+        ? { birthDate: profile.birthDate, birthPlace: profile.birthPlace, preferredSystem: profile.preferredSystem, timezone: profile.timezone, updatedAt: profile.updatedAt }
+        : null,
+      horoscopes,
+    });
+  });
+
+  router.get('/users/:userId/wellness', (req, res) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const moodEntries = [...moodEntriesByUserDate.values()].filter((e) => e.userId === userId);
+    const journalEntries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt);
+    const habits = [...habitsById.values()].filter((h) => h.userId === userId);
+    const goals = [...wellnessGoalsById.values()].filter((g) => g.userId === userId);
+    const meditationSessions = [...meditationSessionsById.values()].filter((s) => s.userId === userId);
+    const breathingSessions = [...breathingSessionsById.values()].filter((s) => s.userId === userId);
+    res.json({
+      moodCheckIns: { total: moodEntries.length, lastAt: moodEntries.map((e) => e.createdAt).sort().at(-1) ?? null },
+      // Metadata only (id/type/dates) - never journal content. See
+      // POST /users/:userId/journal-access for the explicit, audited path
+      // to actual entry text.
+      journalEntries: journalEntries.map((e) => ({ id: e.id, type: e.type, isDraft: e.isDraft, favorite: e.favorite, createdAt: e.createdAt, updatedAt: e.updatedAt })),
+      habits: habits.map((h) => ({ id: h.id, name: h.name, active: h.active, createdAt: h.createdAt })),
+      goals: goals.map((g) => ({ id: g.id, status: g.status, createdAt: g.createdAt })),
+      meditationSessions: { total: meditationSessions.length, completed: meditationSessions.filter((s) => s.completed).length },
+      breathingSessions: { total: breathingSessions.length, completed: breathingSessions.filter((s) => s.completed).length },
+    });
+  });
+
+  // --- Sensitive data access: private journal entry content --------------
+  // Deliberately the ONLY place in the whole admin API that returns real
+  // journal text. Requires a reason, is restricted to super_admin, and is
+  // unconditionally audited (both the request and which entry was opened) -
+  // satisfies "explicit access action + reason + audited" rather than ever
+  // showing journal content in a table/list by default.
+  router.post('/users/:userId/journal-access', requireRole('super_admin'), (req: any, res: any) => {
+    const userId = resolveUserParam(req.params.userId);
+    if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
+    const { reason, entryId } = req.body ?? {};
+    if (!reason || String(reason).trim().length < 5) {
+      return res.status(400).json({ error: 'A reason (5+ characters) is required to access private journal content.' });
+    }
+    const entries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt && (!entryId || e.id === entryId));
+    logAdminAudit({
+      adminId: req.admin.adminId,
+      action: 'SENSITIVE_ACCESS_JOURNAL',
+      path: req.originalUrl,
+      targetType: 'journal_entry',
+      targetId: entryId || `all:${userId}`,
+      reason: String(reason),
+      metadata: { userId, entryCount: entries.length },
+    });
+    res.json({ entries: entries.map((e) => ({ id: e.id, type: e.type, title: e.title ?? null, content: e.content, tags: e.tags ?? [], createdAt: e.createdAt, updatedAt: e.updatedAt })) });
   });
 
   // --- Per-feature breakdowns ----------------------------------------------
@@ -522,6 +840,34 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       if (r.analysis?.imageQuality?.ok) qualityOk += 1; else qualityIssue += 1;
     }
     res.json({ total: rows.length, byImageQuality: { ok: qualityOk, issue: qualityIssue }, byTier: { premium, free }, revenue: featureRevenue(range, 'palm_premium_report') });
+  });
+
+  router.get('/soulmate', (req, res) => {
+    const range = parseDateRange(req);
+    const rows = [...soulmateSketchesById.values()].filter((s) => inRange(s.createdAt, range));
+    const byGenerationStatus: Record<string, number> = {};
+    const byStyle: Record<string, number> = {};
+    for (const s of rows) {
+      byGenerationStatus[s.generationStatus] = (byGenerationStatus[s.generationStatus] ?? 0) + 1;
+      byStyle[s.style] = (byStyle[s.style] ?? 0) + 1;
+    }
+    const events = soulmateAnalyticsEvents.filter((e) => inRange(e.createdAt, range));
+    const eventCounts: Record<string, number> = {};
+    for (const e of events) eventCounts[e.type] = (eventCounts[e.type] ?? 0) + 1;
+
+    res.json({
+      total: rows.length,
+      byGenerationStatus,
+      byStyle,
+      eventCounts,
+      // The real recorded-transaction revenue (see data/pricing.ts) is the
+      // only revenue figure reported - no separate estimate is fabricated
+      // alongside it. Per-call AI image-generation cost is not tracked
+      // here since Gemini's image-gen billing is not queryable from this
+      // app; wiring that in later only needs a cost field added to
+      // SoulmateSketch at generation time, not a change to this endpoint.
+      revenue: featureRevenue(range, 'soulmate_sketch'),
+    });
   });
 
   router.get('/wellness', (req, res) => {

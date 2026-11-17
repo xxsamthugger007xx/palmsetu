@@ -21,9 +21,13 @@ export function VastuCompassScreen() {
   const [manualDirection, setManualDirection] = useState<Direction | null>(null);
   const [directions, setDirections] = useState<VastuDirectionEntry[]>([]);
 
-  useEffect(() => {
-    vastuApi.getDirections().then((res) => setDirections(res.directions)).catch(() => {});
+  const load = React.useCallback(async () => {
+    await vastuApi.getDirections().then((res) => setDirections(res.directions)).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const sensorUnavailable = availability === 'unavailable' || availability === 'permission-denied';
   const useManual = sensorUnavailable || manualDirection !== null;
@@ -32,7 +36,7 @@ export function VastuCompassScreen() {
   const activeEntry = activeDirection ? directions.find((d) => d.code === activeDirection) : null;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>

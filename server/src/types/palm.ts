@@ -39,6 +39,12 @@ export interface FeatureObservation {
   confidenceLabel: Confidence;
   matchedFeatureIds: string[]; // knowledge-base feature_id values, empty if undetected
   notes?: string;
+  /** Real detected qualitative label (e.g. a mount's developmentLabel:
+   * prominent/balanced/flat/overdeveloped) used to fill a `{variant}`
+   * placeholder in a knowledge-base entry's text, when that entry's wording
+   * is written generically across several possible real outcomes rather
+   * than having one entry per outcome. Never set to a fabricated value. */
+  variantLabel?: string;
 }
 
 export interface MajorLineObservation extends FeatureObservation {
@@ -146,6 +152,7 @@ export interface PalmAnalysisResult {
 export interface MatchedFeature {
   featureId: string;
   confidence: number;
+  variantLabel?: string;
 }
 
 export interface CombinedInterpretation {
@@ -155,9 +162,21 @@ export interface CombinedInterpretation {
   involvedFeatureIds: string[];
 }
 
+/** Major-line/category key a free or premium section belongs to, used for
+ * section-wise entitlement lookups (see data/store.ts palmSectionUnlocks).
+ * Matches the `category` field already present on knowledge-base entries
+ * (knowledgeBase/types.ts), so no new taxonomy was invented. */
+export type PalmSectionKey =
+  | 'heartLine' | 'headLine' | 'lifeLine' | 'fateLine' | 'minorLine'
+  | 'mount' | 'finger' | 'thumb' | 'nail' | 'handShape' | 'marking';
+
 export interface PalmFreeReading {
   summary: string;
-  sections: { title: string; text: string; featureIds: string[] }[];
+  /** `sectionKey` is additive/optional so older cached PalmFreeReading
+   * records (written before section-wise unlocking existed) still satisfy
+   * this type - they simply won't have a gateable key, which is handled
+   * as "unknown" wherever this is read for entitlement purposes. */
+  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey }[];
   combinedInterpretations: CombinedInterpretation[];
   reflectiveQuestions: string[];
   /** True when the underlying analysis came from an accepted_partial image
@@ -182,6 +201,19 @@ export interface PalmReading {
   premiumReportAvailable: boolean;
   premiumReport: PalmPremiumReport | null;
   premiumReportGeneratedAt: string | null;
+  /** True when the original captured photo was persisted to disk (see
+   * palmistry/imageStorage.ts). Older readings created before image
+   * persistence existed will have this false/undefined - the frontend must
+   * not show a broken image for those. */
+  hasStoredImage?: boolean;
+  imageHash?: string;
+  /** True for the user's one permanent palm profile - palm scanning is a
+   * one-time onboarding experience, not a repeatable feature, so at most
+   * one reading per user carries this flag at any time (see
+   * data/store.ts's primaryReadingFor/setPrimaryReading). Older readings
+   * created before this flag existed are treated as non-primary until a
+   * fresh scan or rescan establishes a real primary. */
+  isPrimary?: boolean;
 }
 
 export interface DailyPalmGuidance {

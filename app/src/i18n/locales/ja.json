@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "ホーム", "palmScan": "手相スキャン", "discover": "発見", "wellness": "ウェルネス", "profile": "プロフィール" },
-  "common": { "continue": "続ける", "cancel": "キャンセル", "save": "保存", "delete": "削除", "retry": "再試行", "loading": "読み込み中...", "back": "戻る", "skip": "スキップ", "upgrade": "アップグレード", "viewAll": "すべて表示", "open": "開く", "getStarted": "はじめる" },
+  "nav": {
+    "home": "ホーム",
+    "palmScan": "手相スキャン",
+    "discover": "発見",
+    "wellness": "ウェルネス",
+    "profile": "プロフィール"
+  },
+  "common": {
+    "continue": "続ける",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "retry": "再試行",
+    "loading": "読み込み中...",
+    "back": "戻る",
+    "skip": "スキップ",
+    "upgrade": "アップグレード",
+    "viewAll": "すべて表示",
+    "open": "開く",
+    "getStarted": "はじめる",
+    "close": "閉じる",
+    "comingSoon": "近日公開",
+    "saving": "保存中...",
+    "greetingMorning": "おはようございます",
+    "greetingAfternoon": "こんにちは",
+    "greetingEvening": "こんばんは",
+    "feelingToday": "今日は{{mood}}気分です",
+    "tapToEditCheckIn": "チェックインを編集するにはタップしてください"
+  },
   "intro": {
     "screen1Badge": "AIによる手相占い",
     "screen1Headline": "あなたの手が語ること",
@@ -29,44 +56,212 @@
     "footer": "これはプロフィールからいつでも変更できます。"
   },
   "home": {
-    "greetingMorning": "おはようございます",
-    "greetingAfternoon": "こんにちは",
-    "greetingEvening": "こんばんは",
-    "heroLabel": "AI インサイト空間",
-    "heroTitle": "あなたのための内省の空間",
-    "heroSubtitle": "手相を探り、パターンを理解し、新しい視点を発見しましょう。",
-    "startPalmAnalysis": "手相分析を始める",
-    "viewPreviousReading": "過去の鑑定を見る",
-    "quickActions": "クイックアクション",
-    "palmAnalysisTitle": "手相分析",
-    "palmAnalysisDesc": "スキャンして分析",
-    "astrologyTitle": "占星術",
-    "astrologyDesc": "あなたのチャートを解説",
-    "compatibilityTitle": "相性",
-    "compatibilityDesc": "他の人と比較する",
-    "companionTitle": "AIコンパニオン",
-    "companionDesc": "気持ちを話してみましょう",
-    "dailyInsight": "今日の気づき",
-    "saveReflection": "振り返りを保存",
-    "recentActivity": "最近のアクティビティ",
-    "wellnessSection": "ウェルネス",
-    "moodCheckIn": "今日の気分を記録する",
-    "breathingReady": "短い呼吸エクササイズの準備ができました",
-    "mockObservation": "最近の振り返りから、自分よりも他人のニーズを優先する傾向が見られます。",
-    "mockQuestion": "今日、自分のためだけにできることは何ですか？",
-    "activityPalmReadingType": "手相鑑定",
-    "activityPalmReadingSummary": "感情線、知能線、生命線を分析しました",
-    "activityJournalType": "日記エントリー",
-    "activityJournalSummary": "仕事の決断について振り返りました",
-    "statusComplete": "完了",
-    "statusDraft": "下書き"
+    "moonTonightLabel": "今夜の月",
+    "moonLabel": "月",
+    "todaysTransits": "本日のトランジット",
+    "transitBody": "天体",
+    "transitSign": "サイン",
+    "transitDegree": "度数",
+    "setUpProfile": "プロフィールを設定してください",
+    "moonAddBirthDetails": "キャリブレーションのため生年月日情報を追加してください",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "西洋（トロピカル）の月星座",
+    "transitRetrograde": "{{body}}は現在逆行中です（地球から見た見かけ上の後退運動） - その天体の領域の詳細を再確認する伝統的なサインです。",
+    "transitDirect": "{{body}}は今日順行しています。",
+    "transitNote": "注：このアプリのエンジンは、現在このトランジット位置とあなたのネイタルチャートとの間のアスペクトを計算していないため、ここではチャートに基づく解釈は表示されません - 上記は実際に計算された現在のサインと度数のみです。",
+    "dailyGuidanceTitle": "今日のガイダンス",
+    "careerLabel": "キャリア：",
+    "relationshipsLabel": "人間関係：",
+    "energyLabel": "エネルギー：",
+    "tryTodayLabel": "今日試してみること：",
+    "dailyGuidanceEmpty": "パーソナライズされた今日のガイダンスのロックを解除するには、生年月日情報を追加してください。",
+    "feelingTitle": "今日の気分はいかがですか？",
+    "goToWellness": "ウェルネスへ移動",
+    "palmInsightTitle": "あなたの手相インサイト",
+    "palmInsightScanned": "{{date}}にスキャン · {{count}}件の特徴を読み取りました",
+    "palmInsightEmpty": "ここにインサイトを表示するには、最初の手相スキャンを完了してください。",
+    "premiumTitle": "PALM SETU プレミアム",
+    "premiumDesc": "より詳しいレポートと無制限のAIチャットのロックを解除",
+    "exploreTitle": "探索",
+    "sections": {
+      "palm": {
+        "title": "手相分析",
+        "description": "手のひらの写真によるAI手相占い"
+      },
+      "tarot": {
+        "title": "タロット",
+        "description": "カードを引いて自分の道を振り返る"
+      },
+      "astrology": {
+        "title": "占星術",
+        "description": "ヴェーダ占星術のクンダリと宇宙的ガイダンス"
+      },
+      "moonsign": {
+        "title": "月星座",
+        "description": "あなたのサイデリアルおよびトロピカルの月星座"
+      },
+      "dailyreport": {
+        "title": "デイリーレポート",
+        "description": "今日のパーソナライズされたガイダンス"
+      },
+      "horoscopes": {
+        "title": "星占い",
+        "description": "星座別の星占い"
+      },
+      "lovetest": {
+        "title": "ラブテスト",
+        "description": "パートナーとつながって一緒に鑑定を受ける"
+      },
+      "horoscopelauncher": {
+        "title": "拡張星占い",
+        "description": "週間・月間の展望"
+      },
+      "numerology": {
+        "title": "数秘術",
+        "description": "ムーランクとバギャンク"
+      },
+      "western": {
+        "title": "西洋占星術",
+        "description": "トロピカルの太陽、月、トランジット"
+      },
+      "aichat": {
+        "title": "AIチャットアシスタント",
+        "description": "あなたの鑑定について何でも質問できます"
+      },
+      "myreports": {
+        "title": "マイレポート",
+        "description": "これまでのすべての鑑定結果を一か所に"
+      },
+      "soulmate": {
+        "title": "ソウルメイト・スケッチ",
+        "description": "あなたが思い描く運命の相手のAI肖像画"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "ちょっとした時間ができたときの、小さなリセットです。",
+    "todaySubtitle": "今日：{{title}}",
+    "moodSectionTitle": "気分",
+    "historyAction": "履歴",
+    "feelingNowPrompt": "今、どんな気分ですか？",
+    "affirmationSectionTitle": "今日のアファメーション",
+    "challengeSectionTitle": "今日のチャレンジ",
+    "challengeView": "表示",
+    "challengeDayLabel": "{{day}}日目：{{title}}",
+    "challengeDuration": "{{days}}日間のプログラム",
+    "challengeCompletedToday": "今日完了しました",
+    "challengeMarkComplete": "今日を完了としてマーク",
+    "habitJourneyTitle": "習慣の旅",
+    "quickResetsTitle": "クイックリセット",
+    "tiles": {
+      "breathing": "呼吸法",
+      "meditation": "瞑想",
+      "journal": "ジャーナル",
+      "challenges": "チャレンジ"
+    },
+    "breathingCount_other": "{{count}}件のテクニック",
+    "meditationCount_other": "{{count}}件のセッション",
+    "journalWrittenToday": "今日記入済み",
+    "journalReflectPrivately": "プライベートに振り返る",
+    "challengesInProgress": "進行中",
+    "challengesBrowsePrograms": "プログラムを見る",
+    "thisWeekTitle": "今週",
+    "checkInsThisWeek_other": "今週{{count}}回のチェックイン",
+    "averageEnergy": "平均エネルギー {{value}}/5",
+    "habitsDoneToday": "今日{{done}}/{{total}}件の習慣を完了",
+    "noTrendYet": "今週あと数回チェックインすると、傾向がここに表示されます。",
+    "activeGoalsTitle": "進行中の目標",
+    "checkInsLogged_other": "{{count}}件のチェックインを記録",
+    "inspirationLibrary": "インスピレーションライブラリ",
+    "reminders": "リマインダー",
+    "disclaimer": "これらのエクササイズとAIコンパニオンは日常的なサポートを提供するものであり、専門的なメンタルヘルスケアの代わりにはなりません。"
+  },
+  "palm": {
+    "profileTitle": "手相プロフィール",
+    "profileSubtitle": "あなたのアカウントに保存された、永続的な手相鑑定です。",
+    "handLabel": "手",
+    "handNotSpecified": "指定なし",
+    "handLeft": "左手",
+    "handRight": "右手",
+    "scanDateLabel": "スキャン日",
+    "statusLabel": "ステータス",
+    "statusSaved": "保存済み",
+    "analysisSectionsTitle": "分析セクション",
+    "noSectionsMatched": "このスキャンでは、確実に一致する特徴は見つかりませんでした。",
+    "viewCompleteReport": "完全な手相レポートを見る",
+    "scanTitle": "手相スキャン",
+    "scanSubtitle": "伝統的な手相占いに基づいています。内省と娯楽のためのものであり、医学的または予測的な助言ではありません。",
+    "newReadingTitle": "新しい鑑定",
+    "newReadingDesc": "永続的な手相プロフィールを作成するために、手のひらの鮮明な写真を撮影してください",
+    "scanMyPalm": "手相をスキャンする",
+    "emptyTitle": "まだ手相プロフィールがありません",
+    "emptyDesc": "最初のスキャン後、手のひらの写真と完全な分析がここに永続的に保存されます。",
+    "photoUnavailable": "このスキャンの元の写真は利用できません。",
+    "saveLabel": "保存",
+    "scanAnother": "別の手相をスキャン",
+    "scanAnotherConfirmTitle": "別の手相をスキャンしますか？",
+    "scanAnotherConfirmDesc": "これにより、現在保存されている手相プロフィールが新しいスキャンに置き換えられます - 最新のスキャンのみがアクティブなプロフィールとして保持されます。以前のスキャンは履歴で引き続き確認できます。",
+    "viewHistory": "履歴"
+  },
+  "tarot": {
+    "title": "タロット",
+    "subtitle": "カードを探り、自分の道を振り返りましょう。",
+    "loading": "読み込み中...",
+    "errorTitle": "タロットを読み込めませんでした",
+    "errorDesc": "接続を確認してもう一度お試しください。",
+    "dailyCardLabel": "今日のカード",
+    "revealMyCard": "カードを公開する",
+    "reversed": "逆位置",
+    "upright": "正位置",
+    "openFullReading": "詳細な鑑定を開く",
+    "categoriesTitle": "鑑定カテゴリー",
+    "categoryComingSoon": "近日公開",
+    "recentReadingsTitle": "最近の鑑定",
+    "noReadingsTitle": "まだ鑑定がありません",
+    "noReadingsDesc": "ワンカード占いから始めて、最初の鑑定をここに表示しましょう。",
+    "startAReading": "鑑定を始める",
+    "cardCount_other": "カード{{count}}枚",
+    "categories": {
+      "oneCard": {
+        "title": "ワンカード占い",
+        "description": "手軽で集中した一枚引き"
+      },
+      "threeCard": {
+        "title": "スリーカード占い",
+        "description": "過去、現在、未来"
+      },
+      "love": {
+        "title": "恋愛と人間関係",
+        "description": "つながりについて振り返る"
+      },
+      "career": {
+        "title": "キャリアと成長",
+        "description": "方向性について振り返る"
+      },
+      "general": {
+        "title": "一般的なガイダンス",
+        "description": "自由な内省"
+      },
+      "celticCross": {
+        "title": "ケルト十字",
+        "description": "上級者向けの10枚スプレッド"
+      },
+      "yesNo": {
+        "title": "イエス / ノー",
+        "description": "手早い方向性のある答え"
+      },
+      "compatibility": {
+        "title": "相性",
+        "description": "あなた、相手、そして二人をつなぐもの"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "プレミアムにアップグレード",
     "upgradeDesc": "無制限の鑑定とコンパニオンへのフルアクセス",
     "account": "アカウント",
     "personalInfo": "個人情報",
-    "birthDetails": "生年月日情報",
+    "birthDetails": "占星術と生年月日情報",
     "birthDetailsDesc": "占星術機能に使用します",
     "accountManagement": "アカウント管理",
     "preferences": "設定",
@@ -87,14 +282,47 @@
     "privacyPolicy": "プライバシーポリシー",
     "signOut": "ログアウト",
     "deleteAccountTitle": "アカウントを削除",
-    "deleteAccountDesc": "アカウント、鑑定結果、ジャーナルデータが完全に削除されます。元に戻すことはできません。"
+    "deleteAccountDesc": "アカウント、鑑定結果、ジャーナルデータが完全に削除されます。元に戻すことはできません。",
+    "guestBannerTitle": "ゲストとして閲覧中",
+    "guestBannerDesc": "鑑定結果を保存し、デバイス間で同期するには、無料アカウントを作成してください。",
+    "signUp": "サインアップ",
+    "signedIn": "サインイン済み",
+    "palmProfileGroup": "手相プロフィール",
+    "rescanPalm": "手相を再スキャン",
+    "rescanPalmDesc": "既存の手相プロフィールとレポートを置き換えます",
+    "rescanConfirmTitle": "手相を再スキャンしますか？",
+    "rescanConfirmDesc": "手相プロフィールは一度限りの鑑定として設計されています。再スキャンすると、現在の写真とレポートが新しいものに完全に置き換えられます - これは元に戻せません。",
+    "rescanConfirm": "再スキャン",
+    "signInCreateAccount": "サインイン / アカウント作成"
   },
   "discover": {
     "title": "発見",
     "tarotTitle": "タロット",
     "tarotDesc": "カードを探り、自分の道を振り返りましょう。",
     "astrologyTitle": "デイリー・コズミックガイダンス",
-    "astrologyDesc": "パーソナライズされた星占い、トランジット、カップル鑑定。"
+    "astrologyDesc": "パーソナライズされた星占い、トランジット、カップル鑑定。",
+    "modules": {
+      "horoscope": {
+        "title": "デイリーホロスコープ",
+        "description": "今日のための短い占い。"
+      },
+      "compatibility": {
+        "title": "ソウルメイト・スケッチ",
+        "description": "あなたが思い描く運命の相手のプレミアムAI肖像画。"
+      },
+      "vastu": {
+        "title": "ヴァーストゥ・コンパス",
+        "description": "伝統的な方位ガイダンスで空間を整える。"
+      },
+      "selfDiscovery": {
+        "title": "自己発見",
+        "description": "アイデンティティと価値観についてのガイド付きプロンプト。"
+      },
+      "gemstone": {
+        "title": "パワーストーンガイド",
+        "description": "あなたのチャートに基づく伝統的なパワーストーンガイダンス。"
+      }
+    }
   },
   "language": {
     "title": "言語",

@@ -1,4 +1,4 @@
-import { PropertyProfile, RoomDirections, VastuDirectionEntry, VastuReport } from '../types/vastu';
+import { PropertyProfile, PropertyRoom, PropertyType, VastuDirectionEntry, VastuReport } from '../types/vastu';
 
 import { request as baseRequest } from './apiRequest';
 
@@ -14,11 +14,23 @@ export const vastuApi = {
   getLimits: () =>
     request<{ tier: 'free' | 'premium'; canCreateProperty: boolean; propertiesUsed: number; freeLimit: number }>('/vastu/limits'),
 
-  createProperty: (propertyType: string, rooms: Partial<RoomDirections>, notes: string | null) =>
+  createProperty: (
+    propertyType: PropertyType,
+    bedroomCount: number,
+    bathroomCount: number,
+    rooms: PropertyRoom[],
+    notes: string | null,
+  ) =>
     request<PropertyProfile>('/vastu/properties', {
       method: 'POST',
-      body: JSON.stringify({ propertyType, rooms, notes }),
+      body: JSON.stringify({ propertyType, bedroomCount, bathroomCount, rooms, notes }),
     }),
+
+  updateProperty: (
+    id: string,
+    data: Partial<{ propertyType: PropertyType; bedroomCount: number; bathroomCount: number; rooms: PropertyRoom[]; notes: string | null }>,
+  ) =>
+    request<PropertyProfile>(`/vastu/properties/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 
   getProperties: () => request<{ items: PropertyProfile[] }>('/vastu/properties'),
 

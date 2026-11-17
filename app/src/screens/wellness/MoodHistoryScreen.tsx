@@ -143,7 +143,7 @@ export function MoodHistoryScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Mood History</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         Trends and check-ins over time.

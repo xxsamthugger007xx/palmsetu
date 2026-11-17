@@ -18,7 +18,15 @@
     "upgrade": "Upgrade",
     "viewAll": "View all",
     "open": "Open",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "close": "Close",
+    "comingSoon": "Soon",
+    "saving": "Saving...",
+    "greetingMorning": "Good morning",
+    "greetingAfternoon": "Good afternoon",
+    "greetingEvening": "Good evening",
+    "feelingToday": "Feeling {{mood}} today",
+    "tapToEditCheckIn": "Tap to edit your check-in"
   },
   "intro": {
     "screen1Badge": "AI-POWERED PALM READING",
@@ -48,44 +56,224 @@
     "footer": "You can change this anytime in Profile."
   },
   "home": {
-    "greetingMorning": "Good morning",
-    "greetingAfternoon": "Good afternoon",
-    "greetingEvening": "Good evening",
-    "heroLabel": "AI INSIGHT WORKSPACE",
-    "heroTitle": "Your personal insight workspace",
-    "heroSubtitle": "Explore your palm, understand your patterns and discover new perspectives.",
-    "startPalmAnalysis": "Start palm analysis",
-    "viewPreviousReading": "View previous reading",
-    "quickActions": "Quick actions",
-    "palmAnalysisTitle": "Palm Analysis",
-    "palmAnalysisDesc": "Scan and analyze",
-    "astrologyTitle": "Astrology",
-    "astrologyDesc": "Your chart, explained",
-    "compatibilityTitle": "Compatibility",
-    "compatibilityDesc": "Compare with others",
-    "companionTitle": "AI Companion",
-    "companionDesc": "Talk things through",
-    "dailyInsight": "Daily insight",
-    "saveReflection": "Save reflection",
-    "recentActivity": "Recent activity",
-    "wellnessSection": "Wellness",
-    "moodCheckIn": "Check in on your mood for today",
-    "breathingReady": "A short breathing exercise is ready",
-    "mockObservation": "Your recent reflections show a pattern of prioritizing others' needs before your own.",
-    "mockQuestion": "What is one thing you could do today just for yourself?",
-    "activityPalmReadingType": "Palm Reading",
-    "activityPalmReadingSummary": "Heart line, head line and life line analyzed",
-    "activityJournalType": "Journal Entry",
-    "activityJournalSummary": "Reflected on a work decision",
-    "statusComplete": "Complete",
-    "statusDraft": "Draft"
+    "moonTonightLabel": "Moon tonight",
+    "moonLabel": "Moon",
+    "todaysTransits": "TODAY'S TRANSITS",
+    "transitBody": "BODY",
+    "transitSign": "SIGN",
+    "transitDegree": "DEGREE",
+    "setUpProfile": "Set up your profile",
+    "moonAddBirthDetails": "Add your birth details to calibrate",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "Western (tropical) moon sign",
+    "transitRetrograde": "{{body}} is currently retrograde (apparent backward motion from Earth's perspective) - a traditional cue to double-check details in that body's domain.",
+    "transitDirect": "{{body}} is moving direct today.",
+    "transitNote": "Note: this app's engine does not currently compute aspects between this transiting position and your natal chart, so a birth-chart-relative interpretation isn't shown here - only the real, calculated current sign and degree above.",
+    "dailyGuidanceTitle": "YOUR DAILY GUIDANCE",
+    "careerLabel": "Career: ",
+    "relationshipsLabel": "Relationships: ",
+    "energyLabel": "Energy: ",
+    "tryTodayLabel": "Try today: ",
+    "dailyGuidanceEmpty": "Add your birth details to unlock your personalized daily guidance.",
+    "feelingTitle": "HOW ARE YOU FEELING TODAY?",
+    "goToWellness": "Go to Wellness",
+    "palmInsightTitle": "YOUR PALM INSIGHT",
+    "palmInsightScanned": "Scanned {{date}} · {{count}} features read",
+    "palmInsightEmpty": "Complete your first palm scan to see your insight here.",
+    "premiumTitle": "PALM SETU PREMIUM",
+    "premiumDesc": "Unlock deeper reports and unlimited AI chat",
+    "exploreTitle": "Explore",
+    "sections": {
+      "palm": {
+        "title": "Hand Analysis",
+        "description": "AI palmistry from a photo of your palm"
+      },
+      "tarot": {
+        "title": "Tarot",
+        "description": "Draw cards and reflect on your path"
+      },
+      "astrology": {
+        "title": "Astrology",
+        "description": "Vedic kundli and cosmic guidance"
+      },
+      "moonsign": {
+        "title": "Moon Sign",
+        "description": "Your sidereal and tropical moon sign"
+      },
+      "dailyreport": {
+        "title": "Daily Report",
+        "description": "Today's personalized guidance"
+      },
+      "horoscopes": {
+        "title": "Horoscopes",
+        "description": "Zodiac horoscopes, by sign"
+      },
+      "lovetest": {
+        "title": "Love Test",
+        "description": "Connect with a partner for shared readings"
+      },
+      "horoscopelauncher": {
+        "title": "Extended Horoscopes",
+        "description": "Weekly and monthly outlooks"
+      },
+      "numerology": {
+        "title": "Numerology",
+        "description": "Moolaank and Bhagyank"
+      },
+      "western": {
+        "title": "Western Astrology",
+        "description": "Tropical sun, moon and transits"
+      },
+      "aichat": {
+        "title": "AI Chat Assistant",
+        "description": "Ask about any of your readings"
+      },
+      "myreports": {
+        "title": "My Reports",
+        "description": "All your previous readings, in one place"
+      },
+      "soulmate": {
+        "title": "Soulmate Sketch",
+        "description": "An AI-drawn portrait of your imagined soulmate"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "A few small resets, whenever you have a moment.",
+    "todaySubtitle": "Today: {{title}}",
+    "moodSectionTitle": "Mood",
+    "historyAction": "History",
+    "feelingNowPrompt": "How are you feeling right now?",
+    "affirmationSectionTitle": "Today's affirmation",
+    "challengeSectionTitle": "Today's challenge",
+    "challengeView": "View",
+    "challengeDayLabel": "Day {{day}}: {{title}}",
+    "challengeDuration": "{{days}}-day program",
+    "challengeCompletedToday": "Completed today",
+    "challengeMarkComplete": "Mark today complete",
+    "habitJourneyTitle": "Habit journey",
+    "quickResetsTitle": "Quick resets",
+    "tiles": {
+      "breathing": "Breathing",
+      "meditation": "Meditation",
+      "journal": "Journal",
+      "challenges": "Challenges"
+    },
+    "breathingCount": "{{count}} technique",
+    "breathingCount_other": "{{count}} techniques",
+    "meditationCount": "{{count}} session",
+    "meditationCount_other": "{{count}} sessions",
+    "journalWrittenToday": "Written today",
+    "journalReflectPrivately": "Reflect privately",
+    "challengesInProgress": "In progress",
+    "challengesBrowsePrograms": "Browse programs",
+    "thisWeekTitle": "This week",
+    "checkInsThisWeek": "{{count}} daily check-in this week",
+    "checkInsThisWeek_other": "{{count}} daily check-ins this week",
+    "averageEnergy": "Average energy {{value}}/5",
+    "habitsDoneToday": "{{done}}/{{total}} habits done today",
+    "noTrendYet": "Check in a few more times this week and your trends will show up here.",
+    "activeGoalsTitle": "Active goals",
+    "checkInsLogged": "{{count}} check-in logged",
+    "checkInsLogged_other": "{{count}} check-ins logged",
+    "inspirationLibrary": "Inspiration library",
+    "reminders": "Reminders",
+    "disclaimer": "These exercises and the AI companion offer everyday support and are not a substitute for professional mental health care."
+  },
+  "palm": {
+    "profileTitle": "Palm Profile",
+    "profileSubtitle": "Your permanent palm reading, saved to your account.",
+    "handLabel": "HAND",
+    "handNotSpecified": "Not specified",
+    "handLeft": "Left",
+    "handRight": "Right",
+    "scanDateLabel": "SCAN DATE",
+    "statusLabel": "STATUS",
+    "statusSaved": "Saved",
+    "analysisSectionsTitle": "Analysis sections",
+    "noSectionsMatched": "No specific features could be confidently matched from this scan.",
+    "viewCompleteReport": "View Complete Palm Report",
+    "scanTitle": "Palm Scan",
+    "scanSubtitle": "Rooted in traditional palmistry. For reflection and entertainment, not medical or predictive advice.",
+    "newReadingTitle": "New reading",
+    "newReadingDesc": "Capture a clear photo of your palm to create your permanent palm profile",
+    "scanMyPalm": "Scan my palm",
+    "emptyTitle": "No palm profile yet",
+    "emptyDesc": "Your palm photo and complete analysis will be saved here permanently after your first scan.",
+    "photoUnavailable": "Original photo not available for this scan.",
+    "saveLabel": "SAVE",
+    "scanAnother": "Scan Another Palm",
+    "scanAnotherConfirmTitle": "Scan another palm?",
+    "scanAnotherConfirmDesc": "This replaces your current saved palm profile with a new scan - only your most recent scan is kept as your active profile. Your previous scans stay available in History.",
+    "viewHistory": "History"
+  },
+  "tarot": {
+    "title": "Your Tarot Space",
+    "subtitle": "Explore the cards. Reflect on your path.",
+    "loading": "Loading...",
+    "errorTitle": "Couldn't load Tarot",
+    "errorDesc": "Check your connection and try again.",
+    "dailyCardLabel": "DAILY CARD",
+    "revealMyCard": "Reveal my card",
+    "reversed": "Reversed",
+    "upright": "Upright",
+    "openFullReading": "Open full reading",
+    "categoriesTitle": "Reading categories",
+    "categoryComingSoon": "Coming soon",
+    "recentReadingsTitle": "Recent readings",
+    "noReadingsTitle": "No readings yet",
+    "noReadingsDesc": "Start with a one-card draw to see your first reading here.",
+    "startAReading": "Start a reading",
+    "cardCount": "{{count}} card",
+    "cardCount_other": "{{count}} cards",
+    "categories": {
+      "oneCard": {
+        "title": "One-card reading",
+        "description": "A quick, focused draw"
+      },
+      "threeCard": {
+        "title": "Three-card reading",
+        "description": "Past, present, future"
+      },
+      "love": {
+        "title": "Love & relationships",
+        "description": "Reflect on connection"
+      },
+      "career": {
+        "title": "Career & growth",
+        "description": "Reflect on direction"
+      },
+      "general": {
+        "title": "General guidance",
+        "description": "Open reflection"
+      },
+      "celticCross": {
+        "title": "Celtic Cross",
+        "description": "Advanced 10-card spread"
+      },
+      "yesNo": {
+        "title": "Yes / No",
+        "description": "A quick directional read"
+      },
+      "compatibility": {
+        "title": "Compatibility",
+        "description": "You, them, and what connects you"
+      },
+      "fiveCard": {
+        "title": "Five-card reading",
+        "description": "A deeper five-position path"
+      }
+    },
+    "personalReadingTitle": "Get a Personal Reading",
+    "personalReadingSubtitle": "Explore what the cards may invite you to reflect on today.",
+    "personalReadingCta": "Begin a reading"
   },
   "profile": {
     "upgradeTitle": "Upgrade to Premium",
     "upgradeDesc": "Unlimited readings and full companion access",
     "account": "ACCOUNT",
     "personalInfo": "Personal information",
-    "birthDetails": "Birth details",
+    "birthDetails": "Astrology & birth details",
     "birthDetailsDesc": "Used for astrology features",
     "accountManagement": "Account management",
     "preferences": "PREFERENCES",
@@ -106,14 +294,47 @@
     "privacyPolicy": "Privacy policy",
     "signOut": "Sign out",
     "deleteAccountTitle": "Delete account",
-    "deleteAccountDesc": "This permanently deletes your account, readings, and journal data. This cannot be undone."
+    "deleteAccountDesc": "This permanently deletes your account, readings, and journal data. This cannot be undone.",
+    "guestBannerTitle": "Browsing as a guest",
+    "guestBannerDesc": "Create a free account to save your readings and sync across devices.",
+    "signUp": "Sign up",
+    "signedIn": "Signed in",
+    "palmProfileGroup": "Palm profile",
+    "rescanPalm": "Rescan palm",
+    "rescanPalmDesc": "Replaces your existing palm profile and report",
+    "rescanConfirmTitle": "Rescan your palm?",
+    "rescanConfirmDesc": "Your palm profile is meant to be a one-time reading. Rescanning will permanently replace your existing photo and report with a new one - this cannot be undone.",
+    "rescanConfirm": "Rescan",
+    "signInCreateAccount": "Sign in / Create account"
   },
   "discover": {
     "title": "Discover",
     "tarotTitle": "Tarot",
     "tarotDesc": "Explore the cards. Reflect on your path.",
     "astrologyTitle": "Daily Cosmic Guidance",
-    "astrologyDesc": "Personalized horoscope, transits and relationship readings."
+    "astrologyDesc": "Personalized horoscope, transits and relationship readings.",
+    "modules": {
+      "horoscope": {
+        "title": "Daily Horoscope",
+        "description": "A short read for today."
+      },
+      "compatibility": {
+        "title": "Soulmate Sketch",
+        "description": "A premium AI-drawn portrait of your imagined soulmate."
+      },
+      "vastu": {
+        "title": "Vastu Compass",
+        "description": "Align your space with traditional direction guidance."
+      },
+      "selfDiscovery": {
+        "title": "Self-Discovery",
+        "description": "Guided prompts on identity and values."
+      },
+      "gemstone": {
+        "title": "Gemstone Guide",
+        "description": "Traditional gemstone guidance from your chart."
+      }
+    }
   },
   "language": {
     "title": "Language",

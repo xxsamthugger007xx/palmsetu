@@ -23,16 +23,19 @@ export function AdminUserDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = React.useCallback(async () => {
     if (!adminRole) return;
-    adminApi.getUserDetail(adminRole, userId)
+    setLoading(true);
+    await adminApi.getUserDetail(adminRole, userId)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [adminRole, userId]);
 
+  useEffect(() => { load(); }, [load]);
+
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>

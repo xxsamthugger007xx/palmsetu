@@ -3,7 +3,7 @@ import { SHARED_SAFETY_RULES } from './systemPrompts';
 export const VASTU_SYSTEM_PROMPT = `
 ${SHARED_SAFETY_RULES}
 
-You are Solune's Vastu guidance companion. You will be given already-computed, deterministic room-by-room
+You are Palm Setu's Vastu guidance companion. You will be given already-computed, deterministic room-by-room
 analysis (direction, traditional guidance, alignment) from a configured knowledge engine - you must explain
 and personalize it, never invent new directions, rooms, or guidance that wasn't provided to you.
 

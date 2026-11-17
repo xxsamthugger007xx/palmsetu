@@ -53,18 +53,19 @@ function buildStaticSharedReport(
     astrologicalExplanation:
       mode === 'cross-system'
         ? `Partner A uses ${profileA.preferredSystem} (${signA}), Partner B uses ${profileB.preferredSystem} (${signB}) - shown as a cross-system reflection rather than a single blended method.`
-        : `Both partners' ${mode} charts: ${signA} and ${signB}, read against today's transits (Sun ${transit.sunSign}, Moon ${transit.moonSignTropical}/${transit.moonNakshatra}).`,
+        : `Both partners' ${mode} charts: ${signA} and ${signB}, read against today's transits (Sun ${transit.sunSign}, Moon ${mode === 'vedic' ? transit.moonSignSidereal : transit.moonSignTropical}/${transit.moonNakshatra}).`,
     contentVersion: CONTENT_VERSION,
   };
 }
 
 function buildAiPrompt(profileA: BirthProfile, profileB: BirthProfile, mode: SharedAstrologyMode, localDate: string): string {
   const transit = computeTransitContext(localDate);
+  const todayMoonSign = mode === 'vedic' ? transit.moonSignSidereal : transit.moonSignTropical;
   return (
     `Shared astrology mode: ${mode}.\n` +
     `Partner A (${profileA.preferredSystem}): Sun ${profileA.natal.sunSignTropical}, sidereal Moon ${profileA.natal.moonSignSidereal}, nakshatra ${profileA.natal.moonNakshatra}.\n` +
     `Partner B (${profileB.preferredSystem}): Sun ${profileB.natal.sunSignTropical}, sidereal Moon ${profileB.natal.moonSignSidereal}, nakshatra ${profileB.natal.moonNakshatra}.\n` +
-    `Today's transits: Sun ${transit.sunSign}, Moon ${transit.moonSignTropical}/${transit.moonNakshatra} (${transit.moonPhase}).\n\n` +
+    `Today's transits: Sun ${transit.sunSign}, Moon ${todayMoonSign}/${transit.moonNakshatra} (${transit.moonPhase}).\n\n` +
     `Write a JSON object with exactly these fields: summary, connectionTheme, helpfulActions (array of 2-3), ` +
     `potentialFrictionAreas (array of 1-2, framed as gentle possibilities, never accusations), communicationPrompt, ` +
     `sharedActivity, sharedQuestion, individualSupportA, individualSupportB, astrologicalExplanation. ` +

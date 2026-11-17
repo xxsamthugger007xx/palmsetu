@@ -116,7 +116,7 @@ export function GoalDetailScreen() {
   };
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: spacing.sm }}>
         <Text variant="display" weight="semibold" style={{ flex: 1 }}>{goal.title}</Text>
         {goal.status !== 'completed' && !editing && (
@@ -221,7 +221,7 @@ export function GoalsCompletedScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Completed Goals</Text>
       {goals.length === 0 ? (
         <EmptyState icon={CheckCircle2} title="No completed goals yet" description="Goals you complete will show up here." />

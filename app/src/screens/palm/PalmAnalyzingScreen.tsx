@@ -48,7 +48,7 @@ export function PalmAnalyzingScreen() {
         // upload itself completes - it reflects "the request is now in
         // flight server-side", not a fabricated timer.
         setStage('detecting');
-        const reading = await palmApi.submitReading(base64);
+        const reading = await palmApi.submitReading(base64, route.params.allowRescan, route.params.hand);
         if (cancelled) return;
 
         setStage('interpreting');
@@ -59,6 +59,11 @@ export function PalmAnalyzingScreen() {
         if (err?.code === 'IMAGE_REJECTED') {
           setRejectionMessage(err.message ?? 'This photo could not be used for a palm reading.');
           setPhase('rejected');
+        } else if (err?.code === 'PROFILE_EXISTS' && err.existingReadingId) {
+          // Race with an already-existing profile (e.g. a second device, or
+          // this flow reached without the rescan confirmation) - land on
+          // the real existing profile rather than showing a dead-end error.
+          navigation.replace('PalmReport', { readingId: err.existingReadingId });
         } else {
           setPhase('error');
         }

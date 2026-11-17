@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AiProvider, ChatMessage } from '../ai/types';
+import { AiProvider, ChatMessage, GenerationOptions } from '../ai/types';
 import { spreadDefinitions, listAvailableSpreads } from './spreads';
 import { drawSpread } from './drawService';
 import { buildStaticInterpretation, generateInterpretation, generateDetailedReport } from './interpretationService';
@@ -17,9 +17,11 @@ import { BirthProfile } from '../types/astrology';
  * CountingFakeAiProvider. */
 class ScriptedFakeAiProvider implements AiProvider {
   public lastPrompt = '';
+  public lastOptions: GenerationOptions | undefined;
   constructor(private response: string) {}
-  async complete(messages: ChatMessage[]): Promise<string> {
+  async complete(messages: ChatMessage[], options?: GenerationOptions): Promise<string> {
     this.lastPrompt = messages.map((m) => m.content).join('\n');
+    this.lastOptions = options;
     return this.response;
   }
 }
@@ -270,5 +272,132 @@ describe('Daily card personalization - honest fallback, draw never biased', () =
     expect(fallback.personalizedNote).toMatch(/non-personalized/i);
     // The card id/draw itself is untouched by personalization.
     expect(draws[0].cardId).toBe(card.id);
+  });
+});
+
+describe('Five-card spread', () => {
+  it('is registered with exactly 5 positions and draws exactly 5 unique cards', () => {
+    expect(spreadDefinitions['five-card'].cardCount).toBe(5);
+    expect(spreadDefinitions['five-card'].positions.length).toBe(5);
+    const draws = drawSpread('five-card');
+    expect(draws.length).toBe(5);
+    expect(new Set(draws.map((d) => d.cardId)).size).toBe(5);
+  });
+
+  it('is included in the full spread listing', () => {
+    expect(listAvailableSpreads().some((s) => s.id === 'five-card')).toBe(true);
+  });
+});
+
+describe('Birth-chart personalization on the premium detailed report - optional, never affects the draw', () => {
+  const fakeProfile: BirthProfile = {
+    userId: 'u1',
+    birthDate: '1990-01-01',
+    birthTime: null,
+    birthPlace: 'Mumbai, India',
+    birthLatitude: 19.07,
+    birthLongitude: 72.87,
+    preferredSystem: 'vedic',
+    timezone: 'Asia/Kolkata',
+    natal: {
+      birthDateUtc: '1990-01-01T12:00:00Z',
+      birthTimeKnown: true,
+      sunSignTropical: 'Capricorn',
+      moonSignTropical: 'Gemini',
+      moonSignSidereal: 'Taurus',
+      moonNakshatra: 'Mrigashira',
+      moonNakshatraPada: 2,
+      risingSignAvailable: false,
+      engineVersion: 'test-engine-1.0',
+      confidenceNote: 'test',
+    },
+    updatedAt: new Date().toISOString(),
+  };
+
+  it('attaches a birth-chart perspective section when a profile is provided, without altering the drawn cards or their orientation', async () => {
+    const draws = drawSpread('three-card-ppf');
+    const provider = new ScriptedFakeAiProvider(detailedResponseFor(draws));
+    const report = await generateDetailedReport(draws, 'general', null, provider, 'three-card-ppf', fakeProfile);
+    expect(report).not.toBeNull();
+    expect(report!.birthChartPerspective).toContain('Taurus'); // vedic -> sidereal moon sign
+    expect(report!.cardInterpretations.map((c) => c.cardId)).toEqual(draws.map((d) => d.cardId));
+  });
+
+  it('omits the section (null, not fabricated) when no profile is provided', async () => {
+    const draws = drawSpread('one-card');
+    const provider = new ScriptedFakeAiProvider(detailedResponseFor(draws));
+    const report = await generateDetailedReport(draws, 'general', null, provider, 'one-card', null);
+    expect(report).not.toBeNull();
+    expect(report!.birthChartPerspective).toBeNull();
+  });
+});
+
+describe('Detailed report token budget scales with spread size (fixes the flat-800-token truncation bug)', () => {
+  it('requests a larger output budget for Celtic Cross (10 cards) than for a one-card draw', async () => {
+    const oneCardDraws = drawSpread('one-card');
+    const oneCardProvider = new ScriptedFakeAiProvider(detailedResponseFor(oneCardDraws));
+    await generateDetailedReport(oneCardDraws, 'general', null, oneCardProvider, 'one-card');
+
+    const celticDraws = drawSpread('celtic-cross');
+    const celticProvider = new ScriptedFakeAiProvider(detailedResponseFor(celticDraws));
+    await generateDetailedReport(celticDraws, 'general', null, celticProvider, 'celtic-cross');
+
+    expect(oneCardProvider.lastOptions?.maxOutputTokens).toBeDefined();
+    expect(celticProvider.lastOptions?.maxOutputTokens).toBeGreaterThan(oneCardProvider.lastOptions!.maxOutputTokens!);
+    // Never unbounded even for the largest spread.
+    expect(celticProvider.lastOptions!.maxOutputTokens!).toBeLessThanOrEqual(4000);
+  });
+
+  it('still tags every detailed-report call with feature/operation for the shared usage tracker, regardless of budget', async () => {
+    const draws = drawSpread('five-card');
+    const provider = new ScriptedFakeAiProvider(detailedResponseFor(draws));
+    await generateDetailedReport(draws, 'general', null, provider, 'five-card');
+    expect(provider.lastOptions?.feature).toBe('tarot');
+    expect(provider.lastOptions?.operation).toBe('detailed_report');
+  });
+});
+
+describe('Detailed report parser is robust to real-world formatting variations (not just the exact scripted shape)', () => {
+  it('parses sections wrapped across multiple lines, not just single-line content after the label', async () => {
+    const draws = drawSpread('three-card-ppf');
+    const multiline =
+      `CARD 0: A detailed interpretation for this position\nthat wraps onto a second line naturally.\n` +
+      `CARD 1: Another interpretation here\nspanning two lines as well.\n` +
+      `CARD 2: And a third one\nthat also wraps.\n` +
+      `OVERALL: A coherent synthesis of the full spread\nthat the model wrote across several lines\nfor readability.\n` +
+      `SUGGESTIONS: Take one step | Reflect on this | Talk to someone\n` +
+      `QUESTIONS: What stands out? | What would you change? | What feels true?`;
+    const provider = new ScriptedFakeAiProvider(multiline);
+    const report = await generateDetailedReport(draws, 'general', null, provider, 'three-card-ppf');
+    expect(report).not.toBeNull();
+    expect(report!.cardInterpretations[0].text).toContain('wraps onto a second line');
+    expect(report!.overallInterpretation).toContain('across several lines');
+  });
+
+  it('parses sections wrapped in markdown emphasis around the label (e.g. "**OVERALL:**")', async () => {
+    const draws = drawSpread('one-card');
+    const markdown =
+      `**CARD 0:** A real detailed interpretation for this position, with symbolism woven in.\n` +
+      `**OVERALL:** A real coherent synthesis covering the full spread as one flowing reading.\n` +
+      `**SUGGESTIONS:** Take one step | Reflect on this | Talk to someone\n` +
+      `**QUESTIONS:** What stands out? | What would you change? | What feels true?`;
+    const provider = new ScriptedFakeAiProvider(markdown);
+    const report = await generateDetailedReport(draws, 'general', null, provider, 'one-card');
+    expect(report).not.toBeNull();
+    expect(report!.cardInterpretations[0].text).not.toContain('*');
+    expect(report!.overallInterpretation).not.toContain('*');
+  });
+
+  it('still correctly returns null (never a fabricated/partial report) when the response is genuinely truncated mid-structure', async () => {
+    const draws = drawSpread('celtic-cross');
+    // Simulates a real truncation: only the first few CARD sections exist,
+    // the response ends abruptly before SUGGESTIONS/QUESTIONS.
+    const truncated = drawSpread('celtic-cross')
+      .slice(0, 3)
+      .map((d) => `CARD ${d.positionIndex}: A partial interpretation.`)
+      .join('\n');
+    const provider = new ScriptedFakeAiProvider(truncated);
+    const report = await generateDetailedReport(draws, 'general', null, provider, 'celtic-cross');
+    expect(report).toBeNull();
   });
 });

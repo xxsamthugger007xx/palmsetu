@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "홈", "palmScan": "손금 스캔", "discover": "탐색", "wellness": "웰니스", "profile": "프로필" },
-  "common": { "continue": "계속", "cancel": "취소", "save": "저장", "delete": "삭제", "retry": "다시 시도", "loading": "로딩 중...", "back": "뒤로", "skip": "건너뛰기", "upgrade": "업그레이드", "viewAll": "전체 보기", "open": "열기", "getStarted": "시작하기" },
+  "nav": {
+    "home": "홈",
+    "palmScan": "손금 스캔",
+    "discover": "탐색",
+    "wellness": "웰니스",
+    "profile": "프로필"
+  },
+  "common": {
+    "continue": "계속",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "retry": "다시 시도",
+    "loading": "로딩 중...",
+    "back": "뒤로",
+    "skip": "건너뛰기",
+    "upgrade": "업그레이드",
+    "viewAll": "전체 보기",
+    "open": "열기",
+    "getStarted": "시작하기",
+    "close": "닫기",
+    "comingSoon": "곧 출시",
+    "saving": "저장 중...",
+    "greetingMorning": "좋은 아침이에요",
+    "greetingAfternoon": "좋은 오후예요",
+    "greetingEvening": "좋은 저녁이에요",
+    "feelingToday": "오늘 {{mood}} 기분이에요",
+    "tapToEditCheckIn": "체크인을 수정하려면 탭하세요"
+  },
   "intro": {
     "screen1Badge": "AI 기반 손금 리딩",
     "screen1Headline": "당신의 손이 말해주는 것",
@@ -29,44 +56,212 @@
     "footer": "프로필에서 언제든지 변경할 수 있어요."
   },
   "home": {
-    "greetingMorning": "좋은 아침이에요",
-    "greetingAfternoon": "좋은 오후예요",
-    "greetingEvening": "좋은 저녁이에요",
-    "heroLabel": "AI 인사이트 공간",
-    "heroTitle": "나만의 성찰 공간",
-    "heroSubtitle": "손바닥을 탐색하고, 패턴을 이해하고, 새로운 관점을 발견해 보세요.",
-    "startPalmAnalysis": "손금 분석 시작",
-    "viewPreviousReading": "이전 리딩 보기",
-    "quickActions": "빠른 작업",
-    "palmAnalysisTitle": "손금 분석",
-    "palmAnalysisDesc": "스캔 및 분석",
-    "astrologyTitle": "점성술",
-    "astrologyDesc": "당신의 차트 설명",
-    "compatibilityTitle": "궁합",
-    "compatibilityDesc": "다른 사람과 비교",
-    "companionTitle": "AI 동반자",
-    "companionDesc": "마음속 이야기를 나눠보세요",
-    "dailyInsight": "오늘의 통찰",
-    "saveReflection": "성찰 저장",
-    "recentActivity": "최근 활동",
-    "wellnessSection": "웰니스",
-    "moodCheckIn": "오늘의 기분을 기록하세요",
-    "breathingReady": "짧은 호흡 운동이 준비되었어요",
-    "mockObservation": "최근 당신의 성찰은 자신보다 타인의 필요를 우선시하는 패턴을 보여줘요.",
-    "mockQuestion": "오늘 오직 자신을 위해 할 수 있는 한 가지는 무엇인가요?",
-    "activityPalmReadingType": "손금 리딩",
-    "activityPalmReadingSummary": "감정선, 두뇌선, 생명선을 분석했어요",
-    "activityJournalType": "일지 항목",
-    "activityJournalSummary": "업무 결정을 되돌아봤어요",
-    "statusComplete": "완료",
-    "statusDraft": "초안"
+    "moonTonightLabel": "오늘 밤의 달",
+    "moonLabel": "달",
+    "todaysTransits": "오늘의 트랜짓",
+    "transitBody": "천체",
+    "transitSign": "별자리",
+    "transitDegree": "각도",
+    "setUpProfile": "프로필을 설정하세요",
+    "moonAddBirthDetails": "보정을 위해 출생 정보를 추가하세요",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "서양(트로피컬) 달 별자리",
+    "transitRetrograde": "{{body}}는 현재 역행 중이에요 (지구 관점에서 보이는 겉보기 후진 운동) - 해당 천체 영역의 세부 사항을 다시 확인해보라는 전통적인 신호예요.",
+    "transitDirect": "{{body}}는 오늘 순행 중이에요.",
+    "transitNote": "참고: 이 앱의 엔진은 아직 이 트랜짓 위치와 당신의 출생 차트 간의 어스펙트를 계산하지 않으므로, 출생 차트 기준 해석은 표시되지 않아요 - 위에는 실제로 계산된 현재 별자리와 각도만 표시돼요.",
+    "dailyGuidanceTitle": "오늘의 가이드",
+    "careerLabel": "커리어: ",
+    "relationshipsLabel": "관계: ",
+    "energyLabel": "에너지: ",
+    "tryTodayLabel": "오늘 시도해보세요: ",
+    "dailyGuidanceEmpty": "맞춤형 데일리 가이드를 잠금 해제하려면 출생 정보를 추가하세요.",
+    "feelingTitle": "오늘 기분이 어떠신가요?",
+    "goToWellness": "웰니스로 이동",
+    "palmInsightTitle": "당신의 손금 인사이트",
+    "palmInsightScanned": "{{date}}에 스캔됨 · {{count}}개 특징 분석",
+    "palmInsightEmpty": "첫 손금 스캔을 완료하면 여기서 인사이트를 볼 수 있어요.",
+    "premiumTitle": "PALM SETU 프리미엄",
+    "premiumDesc": "더 깊은 리포트와 무제한 AI 채팅을 잠금 해제하세요",
+    "exploreTitle": "탐색",
+    "sections": {
+      "palm": {
+        "title": "손금 분석",
+        "description": "손바닥 사진으로 보는 AI 손금술"
+      },
+      "tarot": {
+        "title": "타로",
+        "description": "카드를 뽑고 당신의 길을 성찰하세요"
+      },
+      "astrology": {
+        "title": "점성술",
+        "description": "베다 쿤달리와 우주 가이드"
+      },
+      "moonsign": {
+        "title": "달 별자리",
+        "description": "당신의 항성 및 트로피컬 달 별자리"
+      },
+      "dailyreport": {
+        "title": "데일리 리포트",
+        "description": "오늘의 맞춤형 가이드"
+      },
+      "horoscopes": {
+        "title": "별자리 운세",
+        "description": "별자리별 운세"
+      },
+      "lovetest": {
+        "title": "러브 테스트",
+        "description": "파트너와 연결하여 함께 리딩받기"
+      },
+      "horoscopelauncher": {
+        "title": "확장 운세",
+        "description": "주간 및 월간 전망"
+      },
+      "numerology": {
+        "title": "수비학",
+        "description": "물랑크와 바갸앙크"
+      },
+      "western": {
+        "title": "서양 점성술",
+        "description": "트로피컬 태양, 달, 트랜짓"
+      },
+      "aichat": {
+        "title": "AI 채팅 어시스턴트",
+        "description": "리딩에 대해 무엇이든 물어보세요"
+      },
+      "myreports": {
+        "title": "내 리포트",
+        "description": "지금까지의 모든 리딩을 한곳에서"
+      },
+      "soulmate": {
+        "title": "소울메이트 스케치",
+        "description": "당신이 상상하는 소울메이트의 AI 초상화"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "여유가 있을 때 할 수 있는 작은 리셋들이에요.",
+    "todaySubtitle": "오늘: {{title}}",
+    "moodSectionTitle": "기분",
+    "historyAction": "기록",
+    "feelingNowPrompt": "지금 기분이 어떠신가요?",
+    "affirmationSectionTitle": "오늘의 확언",
+    "challengeSectionTitle": "오늘의 챌린지",
+    "challengeView": "보기",
+    "challengeDayLabel": "{{day}}일차: {{title}}",
+    "challengeDuration": "{{days}}일 프로그램",
+    "challengeCompletedToday": "오늘 완료함",
+    "challengeMarkComplete": "오늘 완료로 표시",
+    "habitJourneyTitle": "습관 여정",
+    "quickResetsTitle": "빠른 리셋",
+    "tiles": {
+      "breathing": "호흡",
+      "meditation": "명상",
+      "journal": "일지",
+      "challenges": "챌린지"
+    },
+    "breathingCount_other": "{{count}}개 기법",
+    "meditationCount_other": "{{count}}개 세션",
+    "journalWrittenToday": "오늘 작성함",
+    "journalReflectPrivately": "혼자 성찰해보세요",
+    "challengesInProgress": "진행 중",
+    "challengesBrowsePrograms": "프로그램 둘러보기",
+    "thisWeekTitle": "이번 주",
+    "checkInsThisWeek_other": "이번 주 {{count}}회 체크인",
+    "averageEnergy": "평균 에너지 {{value}}/5",
+    "habitsDoneToday": "오늘 {{done}}/{{total}}개 습관 완료",
+    "noTrendYet": "이번 주에 몇 번 더 체크인하면 여기서 추이를 볼 수 있어요.",
+    "activeGoalsTitle": "진행 중인 목표",
+    "checkInsLogged_other": "{{count}}회 체크인 기록됨",
+    "inspirationLibrary": "영감 라이브러리",
+    "reminders": "알림",
+    "disclaimer": "이 운동과 AI 동반자는 일상적인 지원을 제공하며 전문적인 정신 건강 치료를 대체하지 않아요."
+  },
+  "palm": {
+    "profileTitle": "손금 프로필",
+    "profileSubtitle": "계정에 저장된 영구적인 손금 리딩이에요.",
+    "handLabel": "손",
+    "handNotSpecified": "지정되지 않음",
+    "handLeft": "왼손",
+    "handRight": "오른손",
+    "scanDateLabel": "스캔 날짜",
+    "statusLabel": "상태",
+    "statusSaved": "저장됨",
+    "analysisSectionsTitle": "분석 섹션",
+    "noSectionsMatched": "이 스캔에서는 확실하게 일치하는 특징을 찾을 수 없었어요.",
+    "viewCompleteReport": "전체 손금 리포트 보기",
+    "scanTitle": "손금 스캔",
+    "scanSubtitle": "전통 손금술에 기반해요. 성찰과 재미를 위한 것이며, 의학적이거나 예측적인 조언이 아니에요.",
+    "newReadingTitle": "새 리딩",
+    "newReadingDesc": "영구적인 손금 프로필을 만들기 위해 손바닥 사진을 선명하게 찍어주세요",
+    "scanMyPalm": "손금 스캔하기",
+    "emptyTitle": "아직 손금 프로필이 없어요",
+    "emptyDesc": "첫 스캔 후 손바닥 사진과 전체 분석이 여기에 영구적으로 저장돼요.",
+    "photoUnavailable": "이 스캔에 대한 원본 사진을 사용할 수 없어요.",
+    "saveLabel": "저장",
+    "scanAnother": "다른 손금 스캔하기",
+    "scanAnotherConfirmTitle": "다른 손금을 스캔할까요?",
+    "scanAnotherConfirmDesc": "이렇게 하면 현재 저장된 손금 프로필이 새로운 스캔으로 교체돼요 - 가장 최근 스캔만 활성 프로필로 유지돼요. 이전 스캔은 기록에서 계속 확인할 수 있어요.",
+    "viewHistory": "기록"
+  },
+  "tarot": {
+    "title": "타로",
+    "subtitle": "카드를 탐험하고 당신의 길을 성찰해 보세요.",
+    "loading": "로딩 중...",
+    "errorTitle": "타로를 불러올 수 없어요",
+    "errorDesc": "연결 상태를 확인하고 다시 시도하세요.",
+    "dailyCardLabel": "오늘의 카드",
+    "revealMyCard": "내 카드 공개하기",
+    "reversed": "역방향",
+    "upright": "정방향",
+    "openFullReading": "전체 리딩 열기",
+    "categoriesTitle": "리딩 카테고리",
+    "categoryComingSoon": "곧 출시",
+    "recentReadingsTitle": "최근 리딩",
+    "noReadingsTitle": "아직 리딩이 없어요",
+    "noReadingsDesc": "원 카드 뽑기로 첫 리딩을 시작해보세요.",
+    "startAReading": "리딩 시작하기",
+    "cardCount_other": "카드 {{count}}장",
+    "categories": {
+      "oneCard": {
+        "title": "원 카드 리딩",
+        "description": "빠르고 집중된 한 장 뽑기"
+      },
+      "threeCard": {
+        "title": "쓰리 카드 리딩",
+        "description": "과거, 현재, 미래"
+      },
+      "love": {
+        "title": "사랑과 관계",
+        "description": "관계에 대해 성찰해보세요"
+      },
+      "career": {
+        "title": "커리어와 성장",
+        "description": "방향에 대해 성찰해보세요"
+      },
+      "general": {
+        "title": "일반 가이드",
+        "description": "열린 성찰"
+      },
+      "celticCross": {
+        "title": "켈틱 크로스",
+        "description": "고급 10장 스프레드"
+      },
+      "yesNo": {
+        "title": "예 / 아니오",
+        "description": "빠른 방향성 답변"
+      },
+      "compatibility": {
+        "title": "궁합",
+        "description": "당신, 상대방, 그리고 둘을 연결하는 것"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "프리미엄으로 업그레이드",
     "upgradeDesc": "무제한 리딩과 전체 동반자 액세스",
     "account": "계정",
     "personalInfo": "개인 정보",
-    "birthDetails": "출생 정보",
+    "birthDetails": "점성술 및 출생 정보",
     "birthDetailsDesc": "점성술 기능에 사용돼요",
     "accountManagement": "계정 관리",
     "preferences": "환경설정",
@@ -87,18 +282,51 @@
     "privacyPolicy": "개인정보 처리방침",
     "signOut": "로그아웃",
     "deleteAccountTitle": "계정 삭제",
-    "deleteAccountDesc": "계정, 리딩, 일지 데이터가 영구적으로 삭제됩니다. 되돌릴 수 없어요."
+    "deleteAccountDesc": "계정, 리딩, 일지 데이터가 영구적으로 삭제됩니다. 되돌릴 수 없어요.",
+    "guestBannerTitle": "게스트로 둘러보는 중이에요",
+    "guestBannerDesc": "리딩을 저장하고 기기 간 동기화하려면 무료 계정을 만드세요.",
+    "signUp": "가입하기",
+    "signedIn": "로그인됨",
+    "palmProfileGroup": "손금 프로필",
+    "rescanPalm": "손금 다시 스캔",
+    "rescanPalmDesc": "기존 손금 프로필과 리포트를 대체해요",
+    "rescanConfirmTitle": "손금을 다시 스캔할까요?",
+    "rescanConfirmDesc": "손금 프로필은 한 번만 리딩하도록 설계되었어요. 다시 스캔하면 기존 사진과 리포트가 새 것으로 영구적으로 대체돼요 - 되돌릴 수 없어요.",
+    "rescanConfirm": "다시 스캔",
+    "signInCreateAccount": "로그인 / 계정 만들기"
   },
   "discover": {
     "title": "탐색",
     "tarotTitle": "타로",
     "tarotDesc": "카드를 탐험하고 당신의 길을 성찰해 보세요.",
     "astrologyTitle": "매일의 우주 가이드",
-    "astrologyDesc": "맞춤형 별자리 운세, 트랜짓, 커플 리딩."
+    "astrologyDesc": "맞춤형 별자리 운세, 트랜짓, 커플 리딩.",
+    "modules": {
+      "horoscope": {
+        "title": "일일 운세",
+        "description": "오늘을 위한 짧은 리딩이에요."
+      },
+      "compatibility": {
+        "title": "소울메이트 스케치",
+        "description": "당신이 상상하는 소울메이트의 프리미엄 AI 초상화."
+      },
+      "vastu": {
+        "title": "바스투 나침반",
+        "description": "전통적인 방향 가이드로 공간을 정렬하세요."
+      },
+      "selfDiscovery": {
+        "title": "자기 발견",
+        "description": "정체성과 가치관에 대한 안내 질문."
+      },
+      "gemstone": {
+        "title": "보석 가이드",
+        "description": "당신의 차트를 기반으로 한 전통 보석 가이드."
+      }
+    }
   },
   "language": {
     "title": "언어",
-    "notice": "언제든지 언어를 변경할 수 있어요.",
+    "notice": "언제든지 언어를 변경할 수 있어요. 번역된 화면은 즉시 업데이트되며, 나머지 화면은 추후 업데이트에서 제공될 예정이에요.",
     "searchPlaceholder": "언어 검색"
   }
 }

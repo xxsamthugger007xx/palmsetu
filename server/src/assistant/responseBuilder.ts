@@ -2,7 +2,8 @@ import { AiProvider } from '../ai/types';
 import { AssistantFeature, AssistantMessage } from '../data/store';
 import { AssistantConfig } from '../data/assistantConfig';
 import { buildAssistantSystemPrompt } from './systemPrompts';
-import { detectFeature, detectFeatureHeuristic } from './intentDetection';
+import { detectFeature, detectFeatureHeuristic, detectAstrologyTopic } from './intentDetection';
+import { getAstrologyKnowledge } from '../astrology/knowledgeBase/knowledgeBaseService';
 import { retrieveUserData, retrieveUserDataForFeature, hasDataFor, UserFeatureData } from './dataRetrieval';
 import { evaluateEntitlement, PremiumCard } from './entitlementCheck';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
@@ -213,7 +214,7 @@ export async function buildAssistantReply(
 
   const notImplemented = mentionsUnimplementedFeature(message);
   if (notImplemented) {
-    const reply = `Solune doesn't have a ${notImplemented} feature yet, so this isn't something I can look up for you - it isn't a premium limitation, it simply hasn't been built.`;
+    const reply = `Palm Setu doesn't have a ${notImplemented} feature yet, so this isn't something I can look up for you - it isn't a premium limitation, it simply hasn't been built.`;
     return {
       reply,
       detectedFeature: null,
@@ -239,6 +240,15 @@ export async function buildAssistantReply(
   // match in the message text, and it carries no user data, just a feature
   // name, so it cannot leak anything premium on its own.
   let feature: AssistantFeature = detectFeatureHeuristic(message);
+  // General astrology knowledge questions ("what does the 7th house mean",
+  // "tell me about Scorpio") often don't contain any of FEATURE_KEYWORDS'
+  // astrology words, so the plain heuristic above would misclassify them as
+  // 'unknown'. Checking both systems' knowledge-base topic names here (sign/
+  // rashi, house/bhava, planet/graha, nakshatra, dasha, concept) closes that
+  // gap without touching FEATURE_KEYWORDS itself.
+  if (feature === 'unknown' && (detectAstrologyTopic(message, 'vedic') || detectAstrologyTopic(message, 'western'))) {
+    feature = 'astrology';
+  }
   if (feature === 'unknown' && screenContext && screenContext !== 'unknown') {
     feature = screenContext;
   } else if (feature === 'unknown') {
@@ -269,21 +279,41 @@ export async function buildAssistantReply(
     // to look up yet" / "got it, let me know when you're ready" naturally.
     onStage?.({ key: 'generation', label: 'Writing your answer...' });
     const fallbackReply =
-      `I can help with tarot, astrology, gemstone, vastu, or palm questions using your real Solune data. ` +
+      `I can help with tarot, astrology, gemstone, vastu, or palm questions using your real Palm Setu data. ` +
       `Could you tell me which of those this is about?`;
+
+    // Real wellness summary (mood/habits/challenges/goals/discovery themes,
+    // never raw journal text) - included here, rather than as a sixth
+    // AssistantFeature branch, so a question like "how have I been feeling
+    // this month" gets a real, grounded answer without restructuring the
+    // tarot/astrology/gemstone/vastu/palm intent-detection pipeline. See
+    // dataRetrieval.ts's buildWellnessSummary for exactly what this is built
+    // from and what it deliberately omits (raw journal content).
+    const wellnessContext = data.wellness.hasAnyData
+      ? `\n\nReal wellness data on file for this user (you may use this ONLY to answer wellness-related questions ` +
+        `like mood/habits/journaling/goals - never invent anything beyond these facts, and never diagnose):\n` +
+        `Recent mood check-ins (most recent first, mood label only): ${data.wellness.recentMoods.map((m) => `${m.localDate}: ${m.mood}`).join(', ') || 'none'}.\n` +
+        `Recent discovery themes (what has been on their mind, last 14 days): ${data.wellness.recentDiscoveryThemes.join(', ') || 'none'}.\n` +
+        `Active habits: ${data.wellness.activeHabitNames.join(', ') || 'none'}.\n` +
+        `Active challenges: ${data.wellness.activeChallenges.map((c) => `${c.challengeId} (day ${c.currentDay})`).join(', ') || 'none'}.\n` +
+        `Active goals: ${data.wellness.activeGoalTitles.join(', ') || 'none'}.\n` +
+        `Journal entries in the last 30 days: ${data.wellness.journalEntryCountLast30Days} (count only - you do not have access to their content).`
+      : '';
 
     const smallTalkMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
       {
         role: 'system',
         content:
           `${buildAssistantSystemPrompt(config)}\n\n` +
-          `The user's last message did not clearly point to a specific Solune feature (tarot, astrology, gemstone, ` +
-          `vastu, or palm) - it may be small talk, an acknowledgment like "okay" or "thanks", or a genuinely unrelated ` +
-          `question. Reply briefly and naturally, in one short message. Do not repeat the exact same sentence you may ` +
-          `have used earlier in this conversation - vary your phrasing. If it's small talk or an acknowledgment, ` +
-          `respond warmly and briefly. If it seems like a real question outside tarot/astrology/gemstone/vastu/palm, ` +
-          `say plainly that you can only help with those five areas right now. Never invent chart data, card names, ` +
-          `or personal details - you have none to reference here. Keep it to 1-2 sentences.`,
+          `The user's last message did not clearly point to a specific Palm Setu feature (tarot, astrology, gemstone, ` +
+          `vastu, or palm) - it may be small talk, an acknowledgment like "okay" or "thanks", a wellness question ` +
+          `(mood/habits/journaling/goals), or a genuinely unrelated question. Reply briefly and naturally, in one ` +
+          `short message. Do not repeat the exact same sentence you may have used earlier in this conversation - ` +
+          `vary your phrasing. If it's small talk or an acknowledgment, respond warmly and briefly. If it is a ` +
+          `wellness question and real wellness data is given below, answer it grounded only in that data. If it ` +
+          `seems like a real question outside tarot/astrology/gemstone/vastu/palm/wellness, say plainly that you can ` +
+          `only help with those areas right now. Never invent chart data, card names, or personal details beyond ` +
+          `what is explicitly given to you.${wellnessContext}`,
       },
       ...history.slice(-6).map((m) => ({ role: m.role, content: m.content } as const)),
     ];
@@ -310,6 +340,105 @@ export async function buildAssistantReply(
       mode: 'fast',
       timings: { intentDetectionMs, dataRetrievalMs, generationMs, totalMs: Date.now() - t0 },
     };
+  }
+
+  // General astrology knowledge questions (sign/rashi, house/bhava, planet/
+  // graha, nakshatra, dasha, or core-concept meaning) are answered from the
+  // real, researched, typed astrology knowledge base (see
+  // astrology/knowledgeBase/) rather than requiring a birth profile on file
+  // - "what does the 7th house mean" is a real question even for a user who
+  // has never generated a chart. System-aware: a Vedic-preference user asking
+  // about a sign gets Rashi-framed content, a Western-preference user gets
+  // tropical-sign-framed content, and the two are never mixed into one
+  // answer unless the user's message itself asks for a comparison.
+  // "What is MY moon sign" / "what's my rising sign" are personal-chart
+  // questions about this specific user's real computed placements - those
+  // must keep going through the existing real-chart-data flow below (with
+  // its full streaming support), never the generic knowledge-base lookup,
+  // since a bare word like "moon" would otherwise also match the Moon
+  // graha/planet knowledge entry and silently short-circuit a personal
+  // question into a generic one.
+  const isPersonalChartQuestion = /\bmy\b/.test(message.toLowerCase());
+  if (feature === 'astrology' && !isPersonalChartQuestion) {
+    const text = message.toLowerCase();
+    const mentionsVedic = /\bvedic\b/.test(text);
+    const mentionsWestern = /\bwestern\b/.test(text);
+    const wantsComparison = (mentionsVedic && mentionsWestern) || /\bcompar/.test(text);
+    const profileSystem = data.astrology.profile?.preferredSystem ?? null;
+
+    // Default to Western framing only when the user genuinely gave us no
+    // signal at all (no explicit system mention, no birth profile on file) -
+    // a reasonable, clearly-labeled default for a generic knowledge
+    // question, never presented as tied to a specific user's real chart.
+    const resolvedSystem: 'vedic' | 'western' | null = wantsComparison
+      ? null
+      : mentionsVedic ? 'vedic'
+      : mentionsWestern ? 'western'
+      : profileSystem ?? 'western';
+
+    if (!wantsComparison && resolvedSystem) {
+      const topic = detectAstrologyTopic(message, resolvedSystem);
+      const entry = topic ? getAstrologyKnowledge(topic, resolvedSystem) : undefined;
+      if (entry) {
+        onStage?.({ key: 'data', label: 'Consulting traditional astrology reference...' });
+        const knowledgeBlock =
+          `Traditional ${resolvedSystem === 'vedic' ? 'Vedic' : 'Western'} astrology reference entry for "${entry.name}" ` +
+          `(category: ${entry.category}):\nSummary: ${entry.summary}\nDetailed: ${entry.detailed}\n` +
+          (entry.rulingPlanet ? `Ruling planet: ${entry.rulingPlanet}\n` : '') +
+          (entry.element ? `Element: ${entry.element}\n` : '') +
+          (entry.modality ? `Modality: ${entry.modality}\n` : '') +
+          (entry.traits && entry.traits.length ? `Traits: ${entry.traits.join(', ')}\n` : '') +
+          `Limitations/what this does NOT mean: ${entry.limitations}`;
+
+        const systemPrompt = buildAssistantSystemPrompt(config);
+        const knowledgeMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+          { role: 'system', content: systemPrompt },
+          ...history.slice(-6).map((m) => ({ role: m.role, content: m.content } as const)),
+          {
+            role: 'user',
+            content:
+              `Answer the user's astrology knowledge question using ONLY the real traditional reference content below - ` +
+              `do not invent, add, or imply any claim beyond it. Stay entirely within the ${resolvedSystem === 'vedic' ? 'Vedic' : 'Western'} ` +
+              `tradition's framing and do not mix in the other system's terminology unless the user explicitly asked for a comparison. ` +
+              `Keep the tone traditional/symbolic, never a guaranteed prediction.\n\n` +
+              `=== REAL TRADITIONAL REFERENCE CONTENT - the only facts you may reference ===\n${knowledgeBlock}\n=== END REFERENCE CONTENT ===\n\n` +
+              `User question: ${message}`,
+          },
+        ];
+
+        onStage?.({ key: 'generation', label: 'Writing your answer...' });
+        const generationStart = Date.now();
+        let reply: string;
+        let success = true;
+        try {
+          reply = await aiProvider.complete(knowledgeMessages, generationOptionsForMode('fast'));
+          if (!reply.trim()) reply = entry.detailed;
+        } catch {
+          success = false;
+          reply = entry.detailed; // honest static fallback: the real reference content itself, never fabricated
+        }
+        const generationMs = Date.now() - generationStart;
+
+        return {
+          reply,
+          detectedFeature: feature,
+          premiumCard: null,
+          suggestedFollowUps: defaultFollowUps(feature, data),
+          estimatedInputTokens: estimateTokens(systemPrompt + knowledgeBlock + message),
+          estimatedOutputTokens: estimateTokens(reply),
+          success,
+          mode: 'fast',
+          timings: { intentDetectionMs, dataRetrievalMs, generationMs, totalMs: Date.now() - t0 },
+        };
+      }
+    }
+    // No topic recognized in the knowledge base (or the user asked for a
+    // cross-system comparison, which this pass deliberately keeps out of
+    // scope) - fall through to the normal chart-data-based astrology flow
+    // below, which requires a birth profile on file. This is the honest
+    // "not grounded in specific reference content" fallback: the reply will
+    // either come from the user's real chart data, or (if that is also
+    // missing) the normal noDataMessage below.
   }
 
   if (!hasDataFor(feature, data)) {

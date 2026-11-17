@@ -114,7 +114,7 @@ export function MeditationPlayerScreen() {
         setIsPlaying(false);
       }
     } catch (err: any) {
-      setError(err?.status === 403 ? 'This session requires Solune Premium.' : (err?.message ?? 'Could not start this session.'));
+      setError(err?.status === 403 ? 'This session requires Palm Setu Premium.' : (err?.message ?? 'Could not start this session.'));
       if (err?.status === 403) navigation.navigate('Paywall');
     }
   };
@@ -175,7 +175,7 @@ export function MeditationPlayerScreen() {
   const hasRealAudio = Boolean(session) && soundRef.current !== null;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{content.title}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         {content.description}

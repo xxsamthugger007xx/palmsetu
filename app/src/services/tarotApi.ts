@@ -34,10 +34,10 @@ export const tarotApi = {
   getDailyCard: () =>
     request<{ daily: DailyTarot; reading: TarotReading }>(`/tarot/daily?localDate=${todayLocalDate()}`),
 
-  startReading: (readingType: ReadingCategory, spreadType: SpreadType, question?: string) =>
+  startReading: (readingType: ReadingCategory, spreadType: SpreadType, question?: string, secondPersonName?: string) =>
     request<TarotReading | { crisisFlag: true; message: string }>('/tarot/readings', {
       method: 'POST',
-      body: JSON.stringify({ readingType, spreadType, question }),
+      body: JSON.stringify({ readingType, spreadType, question, secondPersonName }),
     }),
 
   interpretReading: (readingId: string) =>
@@ -47,15 +47,20 @@ export const tarotApi = {
     request<TarotReading>(`/tarot/readings/${readingId}/detailed-report`, { method: 'POST' }),
 
   askFollowup: (readingId: string, question: string) =>
-    request<{ answer: string; crisisFlag?: boolean }>(`/tarot/readings/${readingId}/ask`, {
+    request<{ answer: string; crisisFlag?: boolean; remainingToday?: number }>(`/tarot/readings/${readingId}/ask`, {
       method: 'POST',
       body: JSON.stringify({ question }),
     }),
 
-  getHistory: (page = 1, pageSize = 20) =>
-    request<{ items: TarotReading[]; page: number; pageSize: number; total: number }>(
-      `/tarot/readings?page=${page}&pageSize=${pageSize}`
-    ),
+  getHistory: (page = 1, pageSize = 20, filters?: { saved?: boolean; category?: ReadingCategory; q?: string }) => {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    if (filters?.saved) params.set('saved', 'true');
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.q) params.set('q', filters.q);
+    return request<{ items: TarotReading[]; page: number; pageSize: number; total: number }>(
+      `/tarot/readings?${params.toString()}`
+    );
+  },
 
   getReading: (readingId: string) => request<TarotReading>(`/tarot/readings/${readingId}`),
 

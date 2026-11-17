@@ -82,7 +82,7 @@ export function WesternAstrologyScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Western Astrology</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         Tropical sun, moon and transits, read the western way

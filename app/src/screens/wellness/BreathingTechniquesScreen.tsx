@@ -57,7 +57,7 @@ export function BreathingTechniquesScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Breathing</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         Choose a guided breathing technique.

@@ -14,6 +14,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { DailyHoroscope } from '../../types/astrology';
+import { formatLongDate } from '../../utils/formatDate';
 
 type LoadState = 'loading' | 'ready' | 'failed' | 'error';
 
@@ -97,10 +98,10 @@ export function DailyHoroscopeScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="caption" tone="muted">{new Date(daily.localDate).toLocaleDateString()}</Text>
+        <Text variant="caption" tone="muted">{formatLongDate(daily.localDate)}</Text>
       </View>
 
       <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{daily.dailyTheme}</Text>
@@ -111,16 +112,21 @@ export function DailyHoroscopeScreen() {
       <Card elevated style={{ alignItems: 'center', marginBottom: spacing.sm }}>
         <ZodiacWheel
           size={200}
-          points={daily.transitContext.planets.map((p) => ({ label: p.body, sign: p.sign }))}
+          points={daily.transitContext.planets.map((p) => ({
+            label: p.body,
+            sign: daily.astrologySystem === 'vedic' ? p.signSidereal : p.sign,
+          }))}
         />
         <FadeDivider style={{ marginVertical: spacing.md }} />
         <View style={{ width: '100%' }}>
           {daily.transitContext.planets.map((p) => (
             <View key={p.body} style={styles.transitRow}>
               <Text variant="bodySm" tone="secondary" style={{ flex: 1 }}>{p.body}</Text>
-              <Text variant="bodySm" weight="semibold" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{p.sign}</Text>
+              <Text variant="bodySm" weight="semibold" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>
+                {daily.astrologySystem === 'vedic' ? p.signSidereal : p.sign}
+              </Text>
               <Text variant="bodySm" tone="muted" style={{ flex: 1, fontVariant: ['tabular-nums'], textAlign: 'right' }}>
-                {p.longitude.toFixed(1)}° {p.retrograde ? 'R' : ''}
+                {(daily.astrologySystem === 'vedic' ? p.longitudeSidereal : p.longitude).toFixed(1)}° {p.retrograde ? 'R' : ''}
               </Text>
             </View>
           ))}

@@ -12,6 +12,11 @@ import { retrieveUserData, hasDataFor } from '../assistant/dataRetrieval';
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 

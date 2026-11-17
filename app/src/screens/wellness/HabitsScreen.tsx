@@ -26,10 +26,14 @@ export function HabitsScreen() {
     wellnessApi.getHabits().then((res) => { setHabits(res.habits); setMaxFree(res.maxFreeHabits); setTier(res.tier); }).catch(() => {});
   }, []);
 
-  useFocusEffect(React.useCallback(() => {
+  const loadHabitsData = React.useCallback(async () => {
     load();
-    wellnessApi.getPredefinedHabits().then((res) => setPredefined(res.habits)).catch(() => setPredefined([]));
-  }, [load]));
+    await wellnessApi.getPredefinedHabits().then((res) => setPredefined(res.habits)).catch(() => setPredefined([]));
+  }, [load]);
+
+  useFocusEffect(React.useCallback(() => {
+    loadHabitsData();
+  }, [loadHabitsData]));
 
   const toggle = async (habit: Habit) => {
     const today = wellnessApi.todayLocalDate();
@@ -63,7 +67,7 @@ export function HabitsScreen() {
   const atLimit = tier === 'free' && habits.length >= maxFree;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={loadHabitsData}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>Habits</Text>
       <Text variant="body" tone="secondary" style={{ marginBottom: spacing.lg }}>
         {tier === 'free' ? `Free plan: up to ${maxFree} active habits.` : 'Unlimited active habits.'}

@@ -12,7 +12,12 @@ import * as Astronomy from 'astronomy-engine';
  * few arc-minutes, which is sufficient for sign-level results but should not be
  * presented as observatory-grade precision.
  */
-export const ENGINE_VERSION = 'astronomy-engine-lahiri-approx-1.0';
+// Bumped from -1.0: TransitContext/PlanetTransit gained sidereal sign/longitude
+// fields alongside the existing tropical ones. Cached DailyHoroscope records
+// generated under the previous version are missing those fields entirely -
+// the version bump lets routes/astrology.ts detect and regenerate them
+// instead of serving a record that will compute as NaN on the client.
+export const ENGINE_VERSION = 'astronomy-engine-lahiri-approx-1.2';
 
 export const TROPICAL_SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -85,14 +90,40 @@ export function moonPhaseName(date: Date): string {
   return MOON_PHASE_NAMES[index];
 }
 
+const SYNODIC_MONTH_DAYS = 29.530588853;
+
+/**
+ * Days remaining until the Moon's phase angle crosses the next 45 degree
+ * boundary (i.e. the next named phase in MOON_PHASE_NAMES). This is a real,
+ * cheap derivation from the same Astronomy.MoonPhase angle already used for
+ * moonPhaseName - not a fabricated date. It approximates the phase angle's
+ * rate of change as linear over the synodic month, which is accurate to
+ * well under a day for this purpose (an honest "about N days" estimate,
+ * not a claim of a precise station/exact-phase time).
+ */
+export function daysUntilNextMoonPhase(date: Date): { nextPhase: string; daysUntil: number } {
+  const angle = Astronomy.MoonPhase(date);
+  const currentIndex = Math.floor(angle / 45) % 8;
+  const nextIndex = (currentIndex + 1) % 8;
+  const nextBoundary = (currentIndex + 1) * 45; // may be 360, meaning "next New Moon"
+  const degreesRemaining = nextBoundary - angle;
+  const daysUntil = (degreesRemaining / 360) * SYNODIC_MONTH_DAYS;
+  return { nextPhase: MOON_PHASE_NAMES[nextIndex], daysUntil: Math.round(daysUntil * 10) / 10 };
+}
+
 function bodyEnum(body: PlanetBody): Astronomy.Body {
   return Astronomy.Body[body];
 }
 
 export interface PlanetTransit {
   body: PlanetBody;
-  sign: TropicalSign;
-  longitude: number;
+  sign: TropicalSign; // tropical (Western) sign - kept as the existing field name for compatibility
+  signSidereal: TropicalSign; // sidereal (Vedic, Lahiri) sign - previously not exposed, so every
+  // caller describing "today's transits" for a Vedic user was silently reading tropical sign
+  // names regardless of the user's selected system.
+  longitude: number; // tropical longitude
+  longitudeSidereal: number; // sidereal longitude - paired with signSidereal so a degree-in-sign
+  // readout for a Vedic display is never shown against the wrong (tropical) longitude number.
   retrograde: boolean;
 }
 
@@ -113,11 +144,22 @@ export interface TransitContext {
   engineVersion: string;
   sunSign: TropicalSign;
   sunLongitude: number;
+  sunSignSidereal: TropicalSign; // same tropical/sidereal symmetry fix as the Moon fields below
   moonSignTropical: TropicalSign;
+  moonTropicalLongitude: number;
+  // Sidereal sign name alongside the already-present raw sidereal longitude -
+  // previously only the raw longitude was exposed here (asymmetric with the
+  // tropical side, which has both a sign name and a longitude), which meant
+  // callers had no direct way to show "today's Moon sign" under the Vedic
+  // system without re-deriving it themselves. Same underlying formula as
+  // moonSignTropical, just applied to the sidereal longitude.
+  moonSignSidereal: TropicalSign;
   moonSiderealLongitude: number;
   moonNakshatra: Nakshatra;
   moonNakshatraPada: number;
   moonPhase: string;
+  nextMoonPhase: string;
+  daysUntilNextMoonPhase: number;
   planets: PlanetTransit[];
 }
 
@@ -136,14 +178,29 @@ export function computeTransitContext(localDate: string): TransitContext {
     engineVersion: ENGINE_VERSION,
     sunSign: tropicalSign(sunElon),
     sunLongitude: sunElon,
+    sunSignSidereal: tropicalSign(siderealLongitude(sunElon, date)),
     moonSignTropical: tropicalSign(moonElon),
+    moonTropicalLongitude: moonElon,
+    moonSignSidereal: tropicalSign(moonSidereal),
     moonSiderealLongitude: moonSidereal,
     moonNakshatra: nakshatra,
     moonNakshatraPada: pada,
     moonPhase: moonPhaseName(date),
+    ...(() => {
+      const next = daysUntilNextMoonPhase(date);
+      return { nextMoonPhase: next.nextPhase, daysUntilNextMoonPhase: next.daysUntil };
+    })(),
     planets: TRANSIT_BODIES.map((body) => {
       const lon = eclipticLongitude(bodyEnum(body), date);
-      return { body, sign: tropicalSign(lon), longitude: lon, retrograde: isRetrograde(body, date) };
+      const lonSidereal = siderealLongitude(lon, date);
+      return {
+        body,
+        sign: tropicalSign(lon),
+        signSidereal: tropicalSign(lonSidereal),
+        longitude: lon,
+        longitudeSidereal: lonSidereal,
+        retrograde: isRetrograde(body, date),
+      };
     }),
   };
 }

@@ -7,13 +7,18 @@ import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
 import { listDirections } from '../vastu/knowledgeEngine';
 import { buildVastuReportContent } from '../vastu/reportService';
 import {
-  vastuPropertiesById, vastuReportsById, vastuFollowupCounts, getUserTier, recordTransaction,
+  vastuPropertiesById, vastuReportsById, vastuFollowupCounts, getUserTier,
 } from '../data/store';
 import { PropertyProfile, VastuReport } from '../types/vastu';
 import { recordCompletedReading, invalidateMemoryForSource } from '../memory/memoryService';
 
 /** TEMPORARY testing shim, same as the rest of this app's routes: no real auth yet. */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
@@ -22,23 +27,39 @@ function summarizeVastuReport(r: VastuReport): string {
   return `Vastu report on ${r.createdAt.slice(0, 10)} (${r.propertyType}, ${r.completeness}). ${rooms}`;
 }
 
-const MAX_PROPERTIES_FREE = 1;
-const MAX_FOLLOWUP_FREE = 2;
+const directionEnum = z.enum(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'C']);
+const roomCategoryEnum = z.enum(['entrance', 'livingRoom', 'kitchen', 'bedroom', 'prayerRoom', 'bathroom', 'custom']);
 
-const directionEnum = z.enum(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']);
+const roomSchema = z.object({
+  roomId: z.string().min(1).max(100),
+  category: roomCategoryEnum,
+  name: z.string().min(1).max(100),
+  direction: directionEnum.nullable(),
+});
+
+// Generous but bounded - prevents a pathological payload (thousands of
+// "rooms") rather than reflecting any real property size limit.
+const MAX_ROOMS = 60;
 
 const propertySchema = z.object({
   propertyType: z.enum(['apartment', 'independent-house', 'office', 'shop', 'other']),
-  rooms: z.object({
-    entrance: directionEnum.nullable().optional(),
-    livingRoom: directionEnum.nullable().optional(),
-    kitchen: directionEnum.nullable().optional(),
-    masterBedroom: directionEnum.nullable().optional(),
-    prayerRoom: directionEnum.nullable().optional(),
-    bathroom: directionEnum.nullable().optional(),
-  }),
+  bedroomCount: z.number().int().min(0).max(20),
+  bathroomCount: z.number().int().min(0).max(20),
+  rooms: z.array(roomSchema).max(MAX_ROOMS),
   notes: z.string().max(2000).nullable().optional(),
 });
+
+/** Every roomId in the array must be unique - a duplicate would mean two
+ * rooms silently sharing one analysis slot, which analyzeProperty has no
+ * way to detect on its own since it just iterates the array it's given. */
+function validateUniqueRoomIds(rooms: { roomId: string }[]): string | null {
+  const seen = new Set<string>();
+  for (const r of rooms) {
+    if (seen.has(r.roomId)) return `Duplicate roomId: ${r.roomId}`;
+    seen.add(r.roomId);
+  }
+  return null;
+}
 
 function ownedPropertyOr404(res: any, userId: string, id: string): PropertyProfile | undefined {
   const p = vastuPropertiesById.get(id);
@@ -66,15 +87,18 @@ export function buildVastuRouter(aiProvider: AiProvider) {
     res.json({ directions: listDirections() });
   });
 
+  // Vastu is fully free - no property-count or follow-up limit, per explicit
+  // product decision. canCreateProperty/freeLimit are kept in the response
+  // shape (rather than removed) so the app's existing consumers of this
+  // endpoint don't need a shape change, but they now always report "no limit".
   router.get('/limits', (req, res) => {
     const userId = currentUserId(req);
-    const tier = getUserTier(userId);
     const propertyCount = [...vastuPropertiesById.values()].filter((p) => p.userId === userId).length;
     res.json({
-      tier,
-      canCreateProperty: tier === 'premium' || propertyCount < MAX_PROPERTIES_FREE,
+      tier: getUserTier(userId),
+      canCreateProperty: true,
       propertiesUsed: propertyCount,
-      freeLimit: MAX_PROPERTIES_FREE,
+      freeLimit: null,
     });
   });
 
@@ -84,36 +108,22 @@ export function buildVastuRouter(aiProvider: AiProvider) {
     const parsed = propertySchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
-    const tier = getUserTier(userId);
-    const existingCount = [...vastuPropertiesById.values()].filter((p) => p.userId === userId).length;
-    if (tier !== 'premium' && existingCount >= MAX_PROPERTIES_FREE) {
-      return res.status(403).json({ error: 'Free plan allows 1 saved property. Upgrade for additional properties.', code: 'LIMIT_REACHED' });
-    }
+    const dupError = validateUniqueRoomIds(parsed.data.rooms);
+    if (dupError) return res.status(400).json({ error: dupError });
 
     const now = new Date().toISOString();
     const property: PropertyProfile = {
       id: uuid(),
       userId,
       propertyType: parsed.data.propertyType,
-      rooms: {
-        entrance: parsed.data.rooms.entrance ?? null,
-        livingRoom: parsed.data.rooms.livingRoom ?? null,
-        kitchen: parsed.data.rooms.kitchen ?? null,
-        masterBedroom: parsed.data.rooms.masterBedroom ?? null,
-        prayerRoom: parsed.data.rooms.prayerRoom ?? null,
-        bathroom: parsed.data.rooms.bathroom ?? null,
-      },
+      bedroomCount: parsed.data.bedroomCount,
+      bathroomCount: parsed.data.bathroomCount,
+      rooms: parsed.data.rooms,
       notes: parsed.data.notes ?? null,
       createdAt: now,
       updatedAt: now,
     };
     vastuPropertiesById.set(property.id, property);
-    // Same reasoning as gemstone reports: this property only exists because
-    // the user is premium and already past the free quota, so it is one
-    // real premium unlock. Each property is a new record, never a retry.
-    if (tier === 'premium' && existingCount >= MAX_PROPERTIES_FREE) {
-      recordTransaction(userId, 'vastu_premium_report');
-    }
     res.json(property);
   });
 
@@ -138,8 +148,20 @@ export function buildVastuRouter(aiProvider: AiProvider) {
     const parsed = propertySchema.partial().safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
+    if (parsed.data.rooms) {
+      const dupError = validateUniqueRoomIds(parsed.data.rooms);
+      if (dupError) return res.status(400).json({ error: dupError });
+    }
+
     if (parsed.data.propertyType) property.propertyType = parsed.data.propertyType;
-    if (parsed.data.rooms) Object.assign(property.rooms, parsed.data.rooms);
+    if (parsed.data.bedroomCount !== undefined) property.bedroomCount = parsed.data.bedroomCount;
+    if (parsed.data.bathroomCount !== undefined) property.bathroomCount = parsed.data.bathroomCount;
+    // The client always resends its full current room list (never a
+    // sparse/partial one) - rooms is an array, not a fixed set of named
+    // slots, so there is no safe way to "merge" a partial array by
+    // position without risking misaligning one room's direction onto a
+    // completely different room. A full replace is the only safe option.
+    if (parsed.data.rooms) property.rooms = parsed.data.rooms;
     if (parsed.data.notes !== undefined) property.notes = parsed.data.notes ?? null;
     property.updatedAt = new Date().toISOString();
 
@@ -236,11 +258,7 @@ export function buildVastuRouter(aiProvider: AiProvider) {
     if (!question) return res.status(400).json({ error: 'question is required' });
     if (containsCrisisLanguage(question)) return res.json({ answer: CRISIS_RESPONSE, crisisFlag: true });
 
-    const tier = getUserTier(userId);
     const askedSoFar = vastuFollowupCounts.get(report.id) ?? 0;
-    if (tier !== 'premium' && askedSoFar >= MAX_FOLLOWUP_FREE) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FOLLOWUP_FREE} follow-up questions per report.` });
-    }
 
     let answer: string;
     try {

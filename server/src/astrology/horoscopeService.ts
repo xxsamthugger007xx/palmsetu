@@ -60,7 +60,7 @@ function buildStaticHoroscope(
     reflectionQuestion: `Where today did ${traitLabel} show up, and did you lean into it or away from it?`,
     astrologicalExplanation:
       system === 'vedic'
-        ? `Vedic (sidereal, Lahiri ayanamsa approx.) - Moon in ${transit.moonNakshatra} nakshatra, pada ${transit.moonNakshatraPada}, sidereal sign ${transit.moonSignTropical ? sign : sign}. Natal Moon: ${profile.natal.moonNakshatra}.`
+        ? `Vedic (sidereal, Lahiri ayanamsa approx.) - Moon in ${transit.moonNakshatra} nakshatra, pada ${transit.moonNakshatraPada}, sidereal sign ${sign}. Natal Moon: ${profile.natal.moonNakshatra}.`
         : `Western (tropical) - Sun in ${transit.sunSign}, Moon in ${transit.moonSignTropical} (${transit.moonPhase}). Natal Sun: ${profile.natal.sunSignTropical}.${retro ? ' ' + retro : ''}`,
     dataCompleteness: profile.natal.birthTimeKnown ? 'full' : 'partial',
     contentVersion: CONTENT_VERSION,
@@ -68,13 +68,22 @@ function buildStaticHoroscope(
 }
 
 function buildAiPrompt(profile: BirthProfile, transit: TransitContext, system: AstrologySystem): string {
+  // Every sign named here must match the selected system - a Vedic prompt
+  // describing transiting planets in their tropical signs (or vice versa)
+  // would silently mix systems in the generated guidance text, which is
+  // exactly the bug this file previously had for both the Moon and every
+  // other transiting planet.
+  const todayMoonSign = system === 'vedic' ? transit.moonSignSidereal : transit.moonSignTropical;
+  const planetList = transit.planets
+    .map((p) => `${p.body} in ${system === 'vedic' ? p.signSidereal : p.sign}${p.retrograde ? ' (retrograde)' : ''}`)
+    .join(', ');
   return (
     `Astrology system: ${system}.\n` +
     `Natal: Sun ${profile.natal.sunSignTropical} (tropical), Moon ${profile.natal.moonSignTropical} (tropical) / ` +
     `${profile.natal.moonSignSidereal} (sidereal), nakshatra ${profile.natal.moonNakshatra} pada ${profile.natal.moonNakshatraPada}. ` +
     `Birth time known: ${profile.natal.birthTimeKnown}.\n` +
-    `Today's transits: Sun ${transit.sunSign}, Moon ${transit.moonSignTropical} nakshatra ${transit.moonNakshatra} (${transit.moonPhase}). ` +
-    `Planets: ${transit.planets.map((p) => `${p.body} in ${p.sign}${p.retrograde ? ' (retrograde)' : ''}`).join(', ')}.\n\n` +
+    `Today's transits: Sun ${transit.sunSign}, Moon ${todayMoonSign} nakshatra ${transit.moonNakshatra} (${transit.moonPhase}). ` +
+    `Planets: ${planetList}.\n\n` +
     `Write a JSON object with exactly these string/array fields: summary, dailyTheme, focusPriority, focusAction, ` +
     `careerGuidance, relationshipGuidance, selfCarePrompt, doSuggestions (array of 3), mindfulOfSuggestions (array of 2), ` +
     `dailyChallenge, reflectionQuestion, astrologicalExplanation. Respond with ONLY the JSON object, no prose outside it.`

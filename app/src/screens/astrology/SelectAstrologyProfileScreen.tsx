@@ -34,7 +34,7 @@ export function SelectAstrologyProfileScreen() {
   };
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Select Profile</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         {path === 'vedic'

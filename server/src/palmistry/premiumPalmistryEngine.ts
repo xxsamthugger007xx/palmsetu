@@ -37,15 +37,23 @@ const PREMIUM_SECTION_TITLES: Record<string, string> = {
 
 function collectMatchedFeatures(analysis: PalmAnalysisResult): MatchedFeature[] {
   const out: MatchedFeature[] = [];
-  const pools: { matchedFeatureIds: string[]; confidence: number }[] = [
+  const pools: { matchedFeatureIds: string[]; confidence: number; variantLabel?: string }[] = [
     ...analysis.majorLines, ...analysis.minorLines, ...analysis.mounts,
     ...analysis.fingers, analysis.thumb, analysis.nails, ...analysis.specialMarkings,
     { matchedFeatureIds: analysis.handShape.matchedFeatureIds, confidence: analysis.handShape.confidence },
   ];
   for (const obs of pools) {
-    for (const id of obs.matchedFeatureIds) out.push({ featureId: id, confidence: obs.confidence });
+    for (const id of obs.matchedFeatureIds) out.push({ featureId: id, confidence: obs.confidence, variantLabel: obs.variantLabel });
   }
   return out;
+}
+
+/** Same honest placeholder-fill rule as staticPalmistryEngine.ts's
+ * fillVariant - never guesses a value, only substitutes a real detected
+ * qualitative label when one was actually captured. */
+function fillVariant(text: string, variantLabel?: string): string {
+  if (!variantLabel) return text;
+  return text.replace(/\{variant\}/g, variantLabel);
 }
 
 /** Builds one richer section per matched feature, going beyond the free
@@ -54,8 +62,8 @@ function collectMatchedFeatures(analysis: PalmAnalysisResult): MatchedFeature[] 
  * strengths/challenges lists already present in the knowledge-base schema
  * (knowledgeBase/types.ts), closing with the same `limitations` hedge the
  * free tier relies on - never weakened, never dropped. */
-function buildFeatureSectionText(entry: KnowledgeEntry): string {
-  const parts: string[] = [entry.premiumReading];
+function buildFeatureSectionText(entry: KnowledgeEntry, variantLabel?: string): string {
+  const parts: string[] = [fillVariant(entry.premiumReading, variantLabel)];
   parts.push(`Personality: ${entry.personalityInterpretation}`);
   parts.push(`Emotional life: ${entry.emotionalInterpretation}`);
   parts.push(`Relationships: ${entry.relationshipInterpretation}`);
@@ -81,7 +89,7 @@ export function buildPremiumSectionsDeterministic(analysis: PalmAnalysisResult):
     if (!entry) continue; // never fabricate a section for an id the knowledge base doesn't actually have
     sections.push({
       title: `${PREMIUM_SECTION_TITLES[entry.category] ?? entry.category}: ${entry.featureName}`,
-      text: buildFeatureSectionText(entry),
+      text: buildFeatureSectionText(entry, m.variantLabel),
       featureIds: [entry.featureId],
     });
   }
@@ -92,6 +100,42 @@ export function buildPremiumSectionsDeterministic(analysis: PalmAnalysisResult):
     sections.push({ title: `Combination: ${c.title}`, text: c.text, featureIds: c.involvedFeatureIds });
   }
   return { sections, combined };
+}
+
+/**
+ * Builds the same deterministic detailed content as
+ * buildPremiumSectionsDeterministic, but grouped by section/category key
+ * (heartLine, headLine, mount, ...) instead of flattened - used by the
+ * section-wise unlock routes in routes/palm.ts so a single section's
+ * detail can be returned without generating or exposing any other
+ * section's content. Combination-rule sections (which can span multiple
+ * lines) are returned separately, since they only make sense once the
+ * complete-reading bundle is unlocked rather than any single line.
+ */
+export function buildPremiumSectionsByCategory(analysis: PalmAnalysisResult): {
+  byCategory: Record<string, PalmPremiumReport['sections']>;
+  combinationSections: PalmPremiumReport['sections'];
+} {
+  const matched = collectMatchedFeatures(analysis);
+  const combined = evaluateCombinationRules(matched);
+  const byCategory: Record<string, PalmPremiumReport['sections']> = {};
+  for (const m of matched) {
+    const entry = getKnowledgeEntry(m.featureId);
+    if (!entry) continue; // never fabricate a section for an id the knowledge base doesn't actually have
+    const bucket = byCategory[entry.category] ?? [];
+    bucket.push({
+      title: `${PREMIUM_SECTION_TITLES[entry.category] ?? entry.category}: ${entry.featureName}`,
+      text: buildFeatureSectionText(entry, m.variantLabel),
+      featureIds: [entry.featureId],
+    });
+    byCategory[entry.category] = bucket;
+  }
+  const combinationSections: PalmPremiumReport['sections'] = combined.map((c) => ({
+    title: `Combination: ${c.title}`,
+    text: c.text,
+    featureIds: c.involvedFeatureIds,
+  }));
+  return { byCategory, combinationSections };
 }
 
 /**

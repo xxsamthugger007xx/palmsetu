@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Share, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, Share, StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ChevronLeft, ChevronDown, ChevronUp, Bookmark, Share2, NotebookPen, Info, Trash2, Sparkles, Lock,
-  CheckCircle2, XCircle, HelpCircle, Sparkle,
+  CheckCircle2, XCircle, HelpCircle, Sparkle, Moon, MessageCircle, Send,
 } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
+import { SignUpPromptCard } from '../../components/SignUpPromptCard';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { TarotCardFace } from '../../components/TarotCardFace';
+import { TarotCardInfoModal } from '../../components/TarotCardInfoModal';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { color, radius, spacing } from '../../theme/tokens';
+import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
-import { TarotCard, TarotReading } from '../../types/tarot';
+import { TarotCard, TarotReading, formatSpreadLabel } from '../../types/tarot';
 
 type LoadState = 'loading' | 'interpreting' | 'ready' | 'error';
 
@@ -30,22 +33,31 @@ export function TarotReportScreen() {
   const [cardsById, setCardsById] = useState<Record<string, TarotCard>>({});
   const [expanded, setExpanded] = useState<number | null>(0);
   const [followupQuestion, setFollowupQuestion] = useState('');
-  const [followupAnswers, setFollowupAnswers] = useState<string[]>([]);
   const [askingFollowup, setAskingFollowup] = useState(false);
+  const [followupError, setFollowupError] = useState<string | null>(null);
+  const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const [tier, setTier] = useState<'free' | 'premium'>('free');
   const [journalText, setJournalText] = useState('');
   const [savingJournal, setSavingJournal] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
   const [unlockError, setUnlockError] = useState<string | null>(null);
+  const [infoDraw, setInfoDraw] = useState<{ cardId: string; orientation: 'upright' | 'reversed' } | null>(null);
+
+  // Pure display substitution, never mutates stored data - see
+  // TarotDrawScreen's identical helper for why.
+  const displayPositionName = (name: string) => (name === 'Them' && reading?.secondPersonName ? reading.secondPersonName : name);
 
   const load = async () => {
     setState('loading');
     try {
-      const [readingRes, catalogueRes] = await Promise.all([
+      const [readingRes, catalogueRes, limitsRes] = await Promise.all([
         tarotApi.getReading(readingId),
         tarotApi.getCatalogue(),
+        tarotApi.getLimits(),
       ]);
       setCardsById(Object.fromEntries(catalogueRes.cards.map((c) => [c.id, c])));
+      setTier(limitsRes.tier);
 
       if (readingRes.status === 'drawn') {
         setState('interpreting');
@@ -65,18 +77,36 @@ export function TarotReportScreen() {
   }, [readingId]);
 
   const handleAskFollowup = async () => {
-    if (!followupQuestion.trim()) return;
+    const question = followupQuestion.trim();
+    if (!question || !reading) return;
+    setFollowupError(null);
     setAskingFollowup(true);
+    // Optimistic bubble so the conversation feels immediate - replaced by
+    // the real persisted message once the server responds, or removed on
+    // error (never left showing a fabricated answer).
+    const optimistic = { question, answer: '', createdAt: new Date().toISOString() };
+    setReading({ ...reading, followupMessages: [...reading.followupMessages, optimistic] });
+    setFollowupQuestion('');
     try {
-      const res = await tarotApi.askFollowup(readingId, followupQuestion.trim());
-      setFollowupAnswers((prev) => [...prev, `Q: ${followupQuestion.trim()}\n\n${res.answer}`]);
-      setFollowupQuestion('');
+      const res = await tarotApi.askFollowup(readingId, question);
+      setReading((prev) => prev ? {
+        ...prev,
+        followupMessages: [...prev.followupMessages.slice(0, -1), { question, answer: res.answer, createdAt: new Date().toISOString() }],
+      } : prev);
+      if (typeof res.remainingToday === 'number') setRemainingToday(res.remainingToday);
     } catch (err: any) {
-      setFollowupAnswers((prev) => [...prev, `Couldn't get a response: ${err.message ?? 'please try again.'}`]);
+      setReading((prev) => prev ? { ...prev, followupMessages: prev.followupMessages.slice(0, -1) } : prev);
+      if (err.code === 'PREMIUM_REQUIRED') {
+        navigation.navigate('Paywall');
+      } else {
+        setFollowupError(err.message ?? 'Could not get a response. Please try again.');
+      }
     } finally {
       setAskingFollowup(false);
     }
   };
+
+  const SUGGESTED_FOLLOWUPS = ['What should I focus on first?', 'How do these cards connect?', 'What should I be mindful of?'];
 
   const handleSave = async () => {
     if (!reading) return;
@@ -86,8 +116,8 @@ export function TarotReportScreen() {
 
   const handleShare = async () => {
     if (!reading) return;
-    const summary = reading.interpretation?.overallInterpretation ?? 'My tarot reading from Solune.';
-    await Share.share({ message: `${summary}\n\n - via Solune (readings are for reflection, not prediction)` });
+    const summary = reading.interpretation?.overallInterpretation ?? 'My tarot reading from Palm Setu.';
+    await Share.share({ message: `${summary}\n\n - via Palm Setu (readings are for reflection, not prediction)` });
   };
 
   const handleSaveJournal = async () => {
@@ -144,7 +174,7 @@ export function TarotReportScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
@@ -155,11 +185,10 @@ export function TarotReportScreen() {
       </View>
 
       <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>
-        {reading.spreadType.replace(/-/g, ' ')}
+        {formatSpreadLabel(reading.spreadType)}
       </Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         {new Date(reading.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-        {reading.interpretation?.modelVersion === 'static-fallback-v1' && ' · Static interpretation (AI unavailable)'}
       </Text>
 
       {reading.interpretation?.personalizedNote && (
@@ -199,8 +228,10 @@ export function TarotReportScreen() {
       <View style={styles.cardsRow}>
         {reading.draws.map((d) => (
           <View key={d.positionIndex} style={styles.cardSlot}>
-            <TarotCardFace card={cardsById[d.cardId]} orientation={d.orientation} width={90} height={138} />
-            <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, textAlign: 'center' }}>{d.positionName}</Text>
+            <Pressable onPress={() => setInfoDraw({ cardId: d.cardId, orientation: d.orientation })} accessibilityRole="button" accessibilityLabel={`Card info for ${cardsById[d.cardId]?.name ?? 'card'}`}>
+              <TarotCardFace card={cardsById[d.cardId]} orientation={d.orientation} width={90} height={138} />
+            </Pressable>
+            <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, textAlign: 'center' }}>{displayPositionName(d.positionName)}</Text>
           </View>
         ))}
       </View>
@@ -213,7 +244,7 @@ export function TarotReportScreen() {
           return (
             <Card key={d.positionIndex} style={{ marginBottom: spacing.sm }} onPress={() => setExpanded(isExpanded ? null : i)}>
               <View style={styles.sectionHeader}>
-                <Text variant="bodySm" weight="semibold">{d.positionName} - {card?.name} ({d.orientation})</Text>
+                <Text variant="bodySm" weight="semibold">{displayPositionName(d.positionName)} - {card?.name} ({d.orientation})</Text>
                 {isExpanded ? <ChevronUp size={16} color={color.textMuted} /> : <ChevronDown size={16} color={color.textMuted} />}
               </View>
               {isExpanded && (
@@ -243,10 +274,10 @@ export function TarotReportScreen() {
       )}
 
       {reading.detailedReportStatus === 'ready' && reading.detailedReport ? (
-        <Card elevated style={{ marginTop: spacing.lg, borderColor: color.accentBorder }}>
+        <Card elevated style={{ marginTop: spacing.lg, borderColor: tarotColor.goldMuted }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Sparkles size={16} color={color.accent} strokeWidth={1.75} />
-            <Text variant="label" tone="accent" style={{ marginLeft: spacing.xs }}>DETAILED AI READING</Text>
+            <Sparkles size={16} color={tarotColor.gold} strokeWidth={1.75} />
+            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>DETAILED AI READING</Text>
           </View>
           <Text variant="bodySm" style={{ marginTop: spacing.sm }}>{reading.detailedReport.overallInterpretation}</Text>
 
@@ -254,7 +285,7 @@ export function TarotReportScreen() {
             const draw = reading.draws.find((d) => d.positionIndex === c.positionIndex);
             return (
               <View key={c.positionIndex} style={{ marginTop: spacing.md }}>
-                <Text variant="caption" tone="muted">{draw?.positionName.toUpperCase()}</Text>
+                <Text variant="caption" tone="muted">{displayPositionName(draw?.positionName ?? '').toUpperCase()}</Text>
                 <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>{c.text}</Text>
               </View>
             );
@@ -273,10 +304,22 @@ export function TarotReportScreen() {
           {reading.detailedReport.reflectionPrompts.map((q) => (
             <Text key={q} variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>• {q}</Text>
           ))}
+
+          {reading.detailedReport.birthChartPerspective && (
+            <View style={{ marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: color.borderSubtle }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Moon size={14} color={color.accent} strokeWidth={1.75} />
+                <Text variant="label" tone="accent" style={{ marginLeft: spacing.xs }}>YOUR BIRTH CHART PERSPECTIVE</Text>
+              </View>
+              <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>
+                {reading.detailedReport.birthChartPerspective}
+              </Text>
+            </View>
+          )}
         </Card>
       ) : (
-        <Card elevated style={{ marginTop: spacing.lg, alignItems: 'center' }}>
-          <Lock size={20} color={color.accent} strokeWidth={1.75} />
+        <Card elevated style={{ marginTop: spacing.lg, alignItems: 'center', borderColor: tarotColor.goldMuted }}>
+          <Lock size={20} color={tarotColor.gold} strokeWidth={1.75} />
           <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.sm }}>Go Deeper With AI</Text>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' }}>
             Explore the symbolism of your selected cards, how they connect, and the themes you may want to
@@ -295,20 +338,79 @@ export function TarotReportScreen() {
       )}
 
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Ask a follow-up question</Text>
-        {followupAnswers.map((a, i) => (
-          <Card key={i} style={{ marginBottom: spacing.sm }}>
-            <Text variant="bodySm" tone="secondary">{a}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MessageCircle size={16} color={tarotColor.gold} strokeWidth={1.75} />
+            <Text variant="subtitle" weight="semibold" style={{ marginLeft: spacing.xs }}>Ask about this reading</Text>
+          </View>
+          {tier === 'premium' && remainingToday !== null && (
+            <Text variant="caption" tone="muted">{remainingToday} left today</Text>
+          )}
+        </View>
+
+        {tier !== 'premium' ? (
+          <Card elevated style={{ marginTop: spacing.sm, alignItems: 'center', borderColor: tarotColor.goldMuted }}>
+            <Lock size={18} color={tarotColor.gold} strokeWidth={1.75} />
+            <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>Follow-up questions are a Premium feature</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' }}>
+              Ask anything about this specific reading and get an answer grounded in your actual cards.
+            </Text>
+            <Button label="Upgrade to Premium" icon={Sparkles} onPress={() => navigation.navigate('Paywall')} />
           </Card>
-        ))}
-        <TextInput
-          value={followupQuestion}
-          onChangeText={setFollowupQuestion}
-          placeholder="Ask about this reading..."
-          placeholderTextColor={color.textMuted}
-          style={styles.input}
-        />
-        <Button label="Ask" loading={askingFollowup} style={{ marginTop: spacing.sm }} onPress={handleAskFollowup} />
+        ) : (
+          <>
+            {reading.followupMessages.length === 0 && !askingFollowup ? (
+              <View style={{ marginTop: spacing.sm }}>
+                <Text variant="caption" tone="muted">Try asking:</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
+                  {SUGGESTED_FOLLOWUPS.map((q) => (
+                    <Card key={q} style={styles.suggestionChip} onPress={() => setFollowupQuestion(q)}>
+                      <Text variant="caption" style={{ color: tarotColor.lavender }}>{q}</Text>
+                    </Card>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <View style={{ marginTop: spacing.sm }}>
+                {reading.followupMessages.map((m, i) => (
+                  <View key={i} style={{ marginBottom: spacing.md }}>
+                    <View style={[styles.bubble, styles.bubbleUser]}>
+                      <Text variant="bodySm" tone="primary">{m.question}</Text>
+                    </View>
+                    <Text variant="caption" tone="muted" style={styles.bubbleTimestamp}>
+                      {new Date(m.createdAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                    </Text>
+                    {m.answer ? (
+                      <View style={[styles.bubble, styles.bubbleAnswer]}>
+                        <Text variant="bodySm" tone="secondary">{m.answer}</Text>
+                      </View>
+                    ) : (
+                      <View style={[styles.bubble, styles.bubbleAnswer, { flexDirection: 'row', alignItems: 'center' }]}>
+                        <Text variant="bodySm" tone="muted">Thinking</Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {followupError && (
+              <Text variant="caption" tone="danger" style={{ marginTop: spacing.xs }}>{followupError}</Text>
+            )}
+
+            <View style={styles.composerRow}>
+              <TextInput
+                value={followupQuestion}
+                onChangeText={setFollowupQuestion}
+                placeholder="Ask about this reading..."
+                placeholderTextColor={color.textMuted}
+                style={[styles.input, { flex: 1, marginTop: 0 }]}
+                editable={!askingFollowup}
+              />
+              <IconButton icon={Send} onPress={handleAskFollowup} tone={followupQuestion.trim() ? tarotColor.gold : color.textMuted} />
+            </View>
+          </>
+        )}
       </View>
 
       <View style={{ marginTop: spacing.lg }}>
@@ -327,6 +429,14 @@ export function TarotReportScreen() {
         <Button label="Save note" variant="secondary" loading={savingJournal} style={{ marginTop: spacing.sm }} onPress={handleSaveJournal} />
       </View>
 
+      <View style={{ marginTop: spacing.lg }}>
+        <SignUpPromptCard
+          storageKey="tarot-report"
+          title="Save this reading"
+          description="Create a free account to save your tarot reading and revisit its insights whenever you need them."
+        />
+      </View>
+
       <ConfirmationModal
         visible={confirmDelete}
         title="Delete this reading"
@@ -335,6 +445,13 @@ export function TarotReportScreen() {
         destructive
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}
+      />
+
+      <TarotCardInfoModal
+        visible={!!infoDraw}
+        card={infoDraw ? cardsById[infoDraw.cardId] ?? null : null}
+        orientation={infoDraw?.orientation ?? 'upright'}
+        onClose={() => setInfoDraw(null)}
       />
     </PageContainer>
   );
@@ -353,5 +470,34 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     color: color.textPrimary,
     minHeight: 44,
+  },
+  suggestionChip: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderColor: tarotColor.goldMuted,
+  },
+  bubble: {
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    maxWidth: '88%',
+  },
+  bubbleUser: {
+    alignSelf: 'flex-end',
+    backgroundColor: tarotColor.violet,
+  },
+  bubbleAnswer: {
+    alignSelf: 'flex-start',
+    backgroundColor: color.surfaceElevated,
+    marginTop: spacing.xs,
+  },
+  bubbleTimestamp: {
+    alignSelf: 'flex-end',
+    marginTop: 2,
+  },
+  composerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.xs,
   },
 });

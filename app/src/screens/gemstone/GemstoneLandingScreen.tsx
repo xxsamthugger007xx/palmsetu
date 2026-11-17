@@ -41,7 +41,7 @@ export function GemstoneLandingScreen() {
 
   if (state === 'needsProfile') {
     return (
-      <PageContainer>
+      <PageContainer onRefresh={load}>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Gemstone Guide</Text>
         <EmptyState
           icon={Gem}

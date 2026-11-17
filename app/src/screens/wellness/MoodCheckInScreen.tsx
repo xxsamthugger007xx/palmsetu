@@ -101,7 +101,7 @@ export function MoodCheckInScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>
         {wasExisting ? 'Edit check-in' : 'How are you feeling?'}
       </Text>

@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "Start", "palmScan": "Handlesen", "discover": "Entdecken", "wellness": "Wellness", "profile": "Profil" },
-  "common": { "continue": "Weiter", "cancel": "Abbrechen", "save": "Speichern", "delete": "Löschen", "retry": "Erneut versuchen", "loading": "Lädt...", "back": "Zurück", "skip": "Überspringen", "upgrade": "Upgrade", "viewAll": "Alle anzeigen", "open": "Öffnen", "getStarted": "Loslegen" },
+  "nav": {
+    "home": "Start",
+    "palmScan": "Handlesen",
+    "discover": "Entdecken",
+    "wellness": "Wellness",
+    "profile": "Profil"
+  },
+  "common": {
+    "continue": "Weiter",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "retry": "Erneut versuchen",
+    "loading": "Lädt...",
+    "back": "Zurück",
+    "skip": "Überspringen",
+    "upgrade": "Upgrade",
+    "viewAll": "Alle anzeigen",
+    "open": "Öffnen",
+    "getStarted": "Loslegen",
+    "close": "Schließen",
+    "comingSoon": "Demnächst",
+    "saving": "Speichert...",
+    "greetingMorning": "Guten Morgen",
+    "greetingAfternoon": "Guten Tag",
+    "greetingEvening": "Guten Abend",
+    "feelingToday": "Du fühlst dich heute {{mood}}",
+    "tapToEditCheckIn": "Tippe, um deinen Check-in zu bearbeiten"
+  },
   "intro": {
     "screen1Badge": "KI-GESTÜTZTES HANDLESEN",
     "screen1Headline": "Entdecke, was deine Hände verraten",
@@ -29,44 +56,217 @@
     "footer": "Du kannst dies jederzeit im Profil ändern."
   },
   "home": {
-    "greetingMorning": "Guten Morgen",
-    "greetingAfternoon": "Guten Tag",
-    "greetingEvening": "Guten Abend",
-    "heroLabel": "KI-EINBLICKSBEREICH",
-    "heroTitle": "Dein persönlicher Reflexionsraum",
-    "heroSubtitle": "Erkunde deine Handfläche, verstehe deine Muster und entdecke neue Perspektiven.",
-    "startPalmAnalysis": "Handflächenanalyse starten",
-    "viewPreviousReading": "Vorherige Lesung ansehen",
-    "quickActions": "Schnellzugriff",
-    "palmAnalysisTitle": "Handflächenanalyse",
-    "palmAnalysisDesc": "Scannen und analysieren",
-    "astrologyTitle": "Astrologie",
-    "astrologyDesc": "Dein Horoskop, erklärt",
-    "compatibilityTitle": "Kompatibilität",
-    "compatibilityDesc": "Mit anderen vergleichen",
-    "companionTitle": "KI-Begleiter",
-    "companionDesc": "Sprich über das, was dich bewegt",
-    "dailyInsight": "Tägliche Reflexion",
-    "saveReflection": "Reflexion speichern",
-    "recentActivity": "Letzte Aktivität",
-    "wellnessSection": "Wellness",
-    "moodCheckIn": "Trage deine heutige Stimmung ein",
-    "breathingReady": "Eine kurze Atemübung ist bereit",
-    "mockObservation": "Deine letzten Reflexionen zeigen ein Muster, die Bedürfnisse anderer vor deine eigenen zu stellen.",
-    "mockQuestion": "Was könntest du heute nur für dich selbst tun?",
-    "activityPalmReadingType": "Handflächenlesung",
-    "activityPalmReadingSummary": "Herzlinie, Kopflinie und Lebenslinie analysiert",
-    "activityJournalType": "Tagebucheintrag",
-    "activityJournalSummary": "Reflexion über eine berufliche Entscheidung",
-    "statusComplete": "Abgeschlossen",
-    "statusDraft": "Entwurf"
+    "moonTonightLabel": "Mond heute Nacht",
+    "moonLabel": "Mond",
+    "todaysTransits": "HEUTIGE TRANSITE",
+    "transitBody": "KÖRPER",
+    "transitSign": "ZEICHEN",
+    "transitDegree": "GRAD",
+    "setUpProfile": "Richte dein Profil ein",
+    "moonAddBirthDetails": "Füge deine Geburtsdaten zur Kalibrierung hinzu",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "Westliches (tropisches) Mondzeichen",
+    "transitRetrograde": "{{body}} ist derzeit rückläufig (scheinbare Rückwärtsbewegung aus Sicht der Erde) - ein traditionelles Signal, Details im Bereich dieses Himmelskörpers noch einmal zu prüfen.",
+    "transitDirect": "{{body}} bewegt sich heute direkt (vorwärts).",
+    "transitNote": "Hinweis: Die Engine dieser App berechnet derzeit keine Aspekte zwischen dieser Transitposition und deinem Geburtshoroskop, daher wird hier keine horoskopbezogene Interpretation angezeigt - nur das echte, berechnete aktuelle Zeichen und der Grad oben.",
+    "dailyGuidanceTitle": "DEINE TÄGLICHE FÜHRUNG",
+    "careerLabel": "Karriere: ",
+    "relationshipsLabel": "Beziehungen: ",
+    "energyLabel": "Energie: ",
+    "tryTodayLabel": "Heute ausprobieren: ",
+    "dailyGuidanceEmpty": "Füge deine Geburtsdaten hinzu, um deine personalisierte tägliche Führung freizuschalten.",
+    "feelingTitle": "WIE FÜHLST DU DICH HEUTE?",
+    "goToWellness": "Zu Wellness",
+    "palmInsightTitle": "DEINE HANDFLÄCHEN-ERKENNTNIS",
+    "palmInsightScanned": "Gescannt am {{date}} · {{count}} Merkmale gelesen",
+    "palmInsightEmpty": "Schließe deinen ersten Handflächen-Scan ab, um hier deine Erkenntnisse zu sehen.",
+    "premiumTitle": "PALM SETU PREMIUM",
+    "premiumDesc": "Schalte tiefere Berichte und unbegrenzten KI-Chat frei",
+    "exploreTitle": "Entdecken",
+    "sections": {
+      "palm": {
+        "title": "Handflächenanalyse",
+        "description": "KI-Handlesen anhand eines Fotos deiner Handfläche"
+      },
+      "tarot": {
+        "title": "Tarot",
+        "description": "Ziehe Karten und reflektiere deinen Weg"
+      },
+      "astrology": {
+        "title": "Astrologie",
+        "description": "Vedisches Kundli und kosmische Führung"
+      },
+      "moonsign": {
+        "title": "Mondzeichen",
+        "description": "Dein siderisches und tropisches Mondzeichen"
+      },
+      "dailyreport": {
+        "title": "Täglicher Bericht",
+        "description": "Deine personalisierte Führung für heute"
+      },
+      "horoscopes": {
+        "title": "Horoskope",
+        "description": "Tierkreis-Horoskope, nach Zeichen"
+      },
+      "lovetest": {
+        "title": "Liebestest",
+        "description": "Verbinde dich mit einem Partner für gemeinsame Lesungen"
+      },
+      "horoscopelauncher": {
+        "title": "Erweiterte Horoskope",
+        "description": "Wöchentliche und monatliche Aussichten"
+      },
+      "numerology": {
+        "title": "Numerologie",
+        "description": "Moolaank und Bhagyank"
+      },
+      "western": {
+        "title": "Westliche Astrologie",
+        "description": "Tropische Sonne, Mond und Transite"
+      },
+      "aichat": {
+        "title": "KI-Chat-Assistent",
+        "description": "Frage zu einer deiner Lesungen"
+      },
+      "myreports": {
+        "title": "Meine Berichte",
+        "description": "Alle deine bisherigen Lesungen, an einem Ort"
+      },
+      "soulmate": {
+        "title": "Seelenverwandte-Skizze",
+        "description": "Ein KI-Porträt deines imaginierten Seelenverwandten"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "Ein paar kleine Resets, wann immer du einen Moment hast.",
+    "todaySubtitle": "Heute: {{title}}",
+    "moodSectionTitle": "Stimmung",
+    "historyAction": "Verlauf",
+    "feelingNowPrompt": "Wie fühlst du dich gerade?",
+    "affirmationSectionTitle": "Affirmation des Tages",
+    "challengeSectionTitle": "Herausforderung des Tages",
+    "challengeView": "Ansehen",
+    "challengeDayLabel": "Tag {{day}}: {{title}}",
+    "challengeDuration": "{{days}}-Tage-Programm",
+    "challengeCompletedToday": "Heute abgeschlossen",
+    "challengeMarkComplete": "Heute als erledigt markieren",
+    "habitJourneyTitle": "Gewohnheitsreise",
+    "quickResetsTitle": "Schnelle Resets",
+    "tiles": {
+      "breathing": "Atmung",
+      "meditation": "Meditation",
+      "journal": "Tagebuch",
+      "challenges": "Herausforderungen"
+    },
+    "breathingCount": "{{count}} Technik",
+    "breathingCount_other": "{{count}} Techniken",
+    "meditationCount": "{{count}} Sitzung",
+    "meditationCount_other": "{{count}} Sitzungen",
+    "journalWrittenToday": "Heute geschrieben",
+    "journalReflectPrivately": "Privat reflektieren",
+    "challengesInProgress": "In Bearbeitung",
+    "challengesBrowsePrograms": "Programme durchsuchen",
+    "thisWeekTitle": "Diese Woche",
+    "checkInsThisWeek": "{{count}} täglicher Check-in diese Woche",
+    "checkInsThisWeek_other": "{{count}} tägliche Check-ins diese Woche",
+    "averageEnergy": "Durchschnittliche Energie {{value}}/5",
+    "habitsDoneToday": "{{done}}/{{total}} Gewohnheiten heute erledigt",
+    "noTrendYet": "Checke diese Woche noch ein paar Mal ein und deine Trends erscheinen hier.",
+    "activeGoalsTitle": "Aktive Ziele",
+    "checkInsLogged": "{{count}} Check-in protokolliert",
+    "checkInsLogged_other": "{{count}} Check-ins protokolliert",
+    "inspirationLibrary": "Inspirationsbibliothek",
+    "reminders": "Erinnerungen",
+    "disclaimer": "Diese Übungen und der KI-Begleiter bieten alltägliche Unterstützung und ersetzen keine professionelle psychische Gesundheitsversorgung."
+  },
+  "palm": {
+    "profileTitle": "Handflächen-Profil",
+    "profileSubtitle": "Deine dauerhafte Handflächenlesung, gespeichert in deinem Konto.",
+    "handLabel": "HAND",
+    "handNotSpecified": "Nicht angegeben",
+    "handLeft": "Links",
+    "handRight": "Rechts",
+    "scanDateLabel": "SCANDATUM",
+    "statusLabel": "STATUS",
+    "statusSaved": "Gespeichert",
+    "analysisSectionsTitle": "Analyseabschnitte",
+    "noSectionsMatched": "Bei diesem Scan konnten keine spezifischen Merkmale mit Sicherheit zugeordnet werden.",
+    "viewCompleteReport": "Vollständigen Handflächenbericht ansehen",
+    "scanTitle": "Handlesen",
+    "scanSubtitle": "Basierend auf traditionellem Handlesen. Zur Reflexion und Unterhaltung, keine medizinische oder vorhersagende Beratung.",
+    "newReadingTitle": "Neue Lesung",
+    "newReadingDesc": "Mache ein klares Foto deiner Handfläche, um dein dauerhaftes Handflächen-Profil zu erstellen",
+    "scanMyPalm": "Meine Handfläche scannen",
+    "emptyTitle": "Noch kein Handflächen-Profil",
+    "emptyDesc": "Das Foto deiner Handfläche und die vollständige Analyse werden hier nach deinem ersten Scan dauerhaft gespeichert.",
+    "photoUnavailable": "Originalfoto für diesen Scan nicht verfügbar.",
+    "saveLabel": "SPEICHERN",
+    "scanAnother": "Weitere Handfläche scannen",
+    "scanAnotherConfirmTitle": "Weitere Handfläche scannen?",
+    "scanAnotherConfirmDesc": "Dies ersetzt dein aktuell gespeichertes Handflächen-Profil durch einen neuen Scan - nur dein neuester Scan wird als aktives Profil behalten. Deine früheren Scans bleiben im Verlauf verfügbar.",
+    "viewHistory": "Verlauf"
+  },
+  "tarot": {
+    "title": "Tarot",
+    "subtitle": "Erkunde die Karten. Reflektiere deinen Weg.",
+    "loading": "Lädt...",
+    "errorTitle": "Tarot konnte nicht geladen werden",
+    "errorDesc": "Überprüfe deine Verbindung und versuche es erneut.",
+    "dailyCardLabel": "KARTE DES TAGES",
+    "revealMyCard": "Meine Karte aufdecken",
+    "reversed": "Umgekehrt",
+    "upright": "Aufrecht",
+    "openFullReading": "Vollständige Lesung öffnen",
+    "categoriesTitle": "Lesekategorien",
+    "categoryComingSoon": "Demnächst",
+    "recentReadingsTitle": "Letzte Lesungen",
+    "noReadingsTitle": "Noch keine Lesungen",
+    "noReadingsDesc": "Beginne mit einer Einzelkarten-Ziehung, um hier deine erste Lesung zu sehen.",
+    "startAReading": "Lesung beginnen",
+    "cardCount": "{{count}} Karte",
+    "cardCount_other": "{{count}} Karten",
+    "categories": {
+      "oneCard": {
+        "title": "Einzelkarten-Lesung",
+        "description": "Eine schnelle, fokussierte Ziehung"
+      },
+      "threeCard": {
+        "title": "Dreikarten-Lesung",
+        "description": "Vergangenheit, Gegenwart, Zukunft"
+      },
+      "love": {
+        "title": "Liebe & Beziehungen",
+        "description": "Reflektiere über Verbindung"
+      },
+      "career": {
+        "title": "Karriere & Wachstum",
+        "description": "Reflektiere über Richtung"
+      },
+      "general": {
+        "title": "Allgemeine Führung",
+        "description": "Offene Reflexion"
+      },
+      "celticCross": {
+        "title": "Keltisches Kreuz",
+        "description": "Fortgeschrittenes 10-Karten-Spread"
+      },
+      "yesNo": {
+        "title": "Ja / Nein",
+        "description": "Eine schnelle richtungsweisende Antwort"
+      },
+      "compatibility": {
+        "title": "Kompatibilität",
+        "description": "Du, sie, und was euch verbindet"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "Auf Premium upgraden",
     "upgradeDesc": "Unbegrenzte Lesungen und voller Zugang zum Begleiter",
     "account": "KONTO",
     "personalInfo": "Persönliche Informationen",
-    "birthDetails": "Geburtsdaten",
+    "birthDetails": "Astrologie & Geburtsdaten",
     "birthDetailsDesc": "Wird für Astrologie-Funktionen verwendet",
     "accountManagement": "Kontoverwaltung",
     "preferences": "EINSTELLUNGEN",
@@ -87,14 +287,47 @@
     "privacyPolicy": "Datenschutzrichtlinie",
     "signOut": "Abmelden",
     "deleteAccountTitle": "Konto löschen",
-    "deleteAccountDesc": "Dies löscht dauerhaft dein Konto, deine Lesungen und Tagebuchdaten. Dies kann nicht rückgängig gemacht werden."
+    "deleteAccountDesc": "Dies löscht dauerhaft dein Konto, deine Lesungen und Tagebuchdaten. Dies kann nicht rückgängig gemacht werden.",
+    "guestBannerTitle": "Du surfst als Gast",
+    "guestBannerDesc": "Erstelle ein kostenloses Konto, um deine Lesungen zu speichern und geräteübergreifend zu synchronisieren.",
+    "signUp": "Registrieren",
+    "signedIn": "Angemeldet",
+    "palmProfileGroup": "Handflächen-Profil",
+    "rescanPalm": "Handfläche erneut scannen",
+    "rescanPalmDesc": "Ersetzt dein bestehendes Handflächen-Profil und den Bericht",
+    "rescanConfirmTitle": "Handfläche erneut scannen?",
+    "rescanConfirmDesc": "Dein Handflächen-Profil ist als einmalige Lesung gedacht. Ein erneuter Scan ersetzt dein aktuelles Foto und den Bericht dauerhaft durch einen neuen - das kann nicht rückgängig gemacht werden.",
+    "rescanConfirm": "Erneut scannen",
+    "signInCreateAccount": "Anmelden / Konto erstellen"
   },
   "discover": {
     "title": "Entdecken",
     "tarotTitle": "Tarot",
     "tarotDesc": "Erkunde die Karten. Reflektiere deinen Weg.",
     "astrologyTitle": "Tägliche kosmische Führung",
-    "astrologyDesc": "Persönliches Horoskop, Transite und Paarlesungen."
+    "astrologyDesc": "Persönliches Horoskop, Transite und Paarlesungen.",
+    "modules": {
+      "horoscope": {
+        "title": "Tageshoroskop",
+        "description": "Eine kurze Lektüre für heute."
+      },
+      "compatibility": {
+        "title": "Seelenverwandte-Skizze",
+        "description": "Ein Premium-KI-Porträt deines imaginierten Seelenverwandten."
+      },
+      "vastu": {
+        "title": "Vastu-Kompass",
+        "description": "Richte deinen Raum mit traditioneller Richtungsführung aus."
+      },
+      "selfDiscovery": {
+        "title": "Selbstfindung",
+        "description": "Geführte Impulse zu Identität und Werten."
+      },
+      "gemstone": {
+        "title": "Edelstein-Guide",
+        "description": "Traditionelle Edelstein-Führung aus deinem Horoskop."
+      }
+    }
   },
   "language": {
     "title": "Sprache",

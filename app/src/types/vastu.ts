@@ -1,4 +1,4 @@
-export type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW';
+export type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW' | 'C';
 
 export interface VastuDirectionEntry {
   code: Direction;
@@ -13,22 +13,23 @@ export interface VastuDirectionEntry {
 }
 
 export type PropertyType = 'apartment' | 'independent-house' | 'office' | 'shop' | 'other';
-export type RoomType = 'entrance' | 'livingRoom' | 'kitchen' | 'masterBedroom' | 'prayerRoom' | 'bathroom';
 
-export interface RoomDirections {
-  entrance: Direction | null;
-  livingRoom: Direction | null;
-  kitchen: Direction | null;
-  masterBedroom: Direction | null;
-  prayerRoom: Direction | null;
-  bathroom: Direction | null;
+export type RoomCategory = 'entrance' | 'livingRoom' | 'kitchen' | 'bedroom' | 'prayerRoom' | 'bathroom' | 'custom';
+
+export interface PropertyRoom {
+  roomId: string;
+  category: RoomCategory;
+  name: string;
+  direction: Direction | null;
 }
 
 export interface PropertyProfile {
   id: string;
   userId: string;
   propertyType: PropertyType;
-  rooms: RoomDirections;
+  bedroomCount: number;
+  bathroomCount: number;
+  rooms: PropertyRoom[];
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -37,7 +38,8 @@ export interface PropertyProfile {
 export type Alignment = 'favorable' | 'neutral' | 'traditionally-cautioned';
 
 export interface RoomAnalysis {
-  room: RoomType;
+  roomId: string;
+  category: RoomCategory;
   roomLabel: string;
   direction: Direction;
   alignment: Alignment;
@@ -63,7 +65,7 @@ export interface VastuReport {
   ruleEngineVersion: string;
   propertyType: PropertyType;
   confirmedRoomCount: number;
-  missingRooms: RoomType[];
+  missingRooms: string[];
   completeness: 'full' | 'partial';
   roomAnalyses: RoomAnalysis[];
   checklist: ChecklistItem[];

@@ -82,6 +82,7 @@ function mapMount(mount: MountType, raw: RawDetectionResult['mounts'][string] | 
     confidenceLabel: confidenceLabel(raw.confidence),
     matchedFeatureIds: matched,
     notes: matched.length > 0 ? `Development: ${raw.developmentLabel}` : undefined,
+    variantLabel: matched.length > 0 ? raw.developmentLabel : undefined,
   };
 }
 

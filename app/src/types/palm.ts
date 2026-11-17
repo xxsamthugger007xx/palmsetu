@@ -118,12 +118,31 @@ export interface CombinedInterpretation {
   involvedFeatureIds: string[];
 }
 
+/** Major-line/category key used for section-wise entitlement - mirrors
+ * server/src/types/palm.ts's PalmSectionKey exactly. */
+export type PalmSectionKey =
+  | 'heartLine' | 'headLine' | 'lifeLine' | 'fateLine' | 'minorLine'
+  | 'mount' | 'finger' | 'thumb' | 'nail' | 'handShape' | 'marking';
+
 export interface PalmFreeReading {
   summary: string;
-  sections: { title: string; text: string; featureIds: string[] }[];
+  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey }[];
   combinedInterpretations: CombinedInterpretation[];
   reflectiveQuestions: string[];
   limitedVisibility: boolean;
+}
+
+export interface PalmSectionEntry {
+  sectionKey: string;
+  title: string;
+  freeText: string;
+  unlocked: boolean;
+  detail: { title: string; text: string; featureIds: string[] }[] | null;
+}
+
+export interface PalmSectionsResponse {
+  sections: PalmSectionEntry[];
+  completeUnlocked: boolean;
 }
 
 export interface PalmPremiumReport {
@@ -141,6 +160,9 @@ export interface PalmReading {
   premiumReportAvailable: boolean;
   premiumReport: PalmPremiumReport | null;
   premiumReportGeneratedAt: string | null;
+  hasStoredImage?: boolean;
+  imageHash?: string;
+  isPrimary?: boolean;
 }
 
 export interface DailyPalmGuidance {

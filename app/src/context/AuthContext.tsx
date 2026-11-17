@@ -1,0 +1,131 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { authApi, AccountPublic } from '../services/authApi';
+import { setAuthToken } from '../services/apiRequest';
+import { color } from '../theme/tokens';
+
+/**
+ * Guest-first auth: on first launch (no token in SecureStore at all), a
+ * guest session is created automatically and silently - no login prompt,
+ * no blocked screens. Every *Api.ts request then carries whichever token is
+ * current (guest or real account) via apiRequest.ts's setAuthToken(), which
+ * every backend route resolves through auth/context.ts.
+ *
+ * SecureStore (not AsyncStorage) holds the token itself, since it's a bearer
+ * credential - AsyncStorage remains fine for non-sensitive UI cache (see
+ * UserProfileContext) but a session token gets the OS keychain/keystore.
+ */
+const TOKEN_KEY = 'solune.authToken';
+
+interface AuthContextValue {
+  loading: boolean;
+  isGuest: boolean;
+  account: AccountPublic | null;
+  signUp: (email: string, password: string, turnstileToken: string | undefined) => Promise<void>;
+  logIn: (email: string, password: string, turnstileToken: string | undefined) => Promise<void>;
+  logOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  refresh: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(true);
+  const [account, setAccount] = useState<AccountPublic | null>(null);
+
+  const bootstrap = async () => {
+    try {
+      let token = await SecureStore.getItemAsync(TOKEN_KEY);
+      if (!token) {
+        const guest = await authApi.createGuestSession();
+        token = guest.token;
+        await SecureStore.setItemAsync(TOKEN_KEY, token);
+      }
+      setAuthToken(token);
+
+      const me = await authApi.me();
+      if (me.isGuest) {
+        setIsGuest(true);
+        setAccount(null);
+      } else {
+        setIsGuest(false);
+        setAccount(me.account);
+      }
+    } catch {
+      // Offline on first launch, or the stored token has expired/is
+      // invalid server-side - fall back to an unauthenticated guest state
+      // locally rather than blocking the app. The next successful request
+      // (or app restart with connectivity) will create a fresh guest
+      // session via apiRequest.ts's 401 handling is not needed here since
+      // every route tolerates an unresolved guest identity.
+      setIsGuest(true);
+      setAccount(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    bootstrap();
+  }, []);
+
+  const applyAuthResult = async (result: { token: string; account: AccountPublic }) => {
+    await SecureStore.setItemAsync(TOKEN_KEY, result.token);
+    setAuthToken(result.token);
+    setIsGuest(false);
+    setAccount(result.account);
+  };
+
+  const signUp = async (email: string, password: string, turnstileToken: string | undefined) => {
+    const result = await authApi.signUp(email, password, turnstileToken);
+    await applyAuthResult(result);
+  };
+
+  const logIn = async (email: string, password: string, turnstileToken: string | undefined) => {
+    const result = await authApi.logIn(email, password, turnstileToken);
+    await applyAuthResult(result);
+  };
+
+  const logOut = async () => {
+    await authApi.logOut().catch(() => {});
+    // Signing out returns to a fresh guest session, not a logged-out dead
+    // end - consistent with "guest first": there is always something
+    // usable behind every screen, logged in or not.
+    const guest = await authApi.createGuestSession();
+    await SecureStore.setItemAsync(TOKEN_KEY, guest.token);
+    setAuthToken(guest.token);
+    setIsGuest(true);
+    setAccount(null);
+  };
+
+  const deleteAccount = async () => {
+    await authApi.deleteAccount();
+    await logOut();
+  };
+
+  return (
+    <AuthContext.Provider value={{ loading, isGuest, account, signUp, logIn, logOut, deleteAccount, refresh: bootstrap }}>
+      {loading ? (
+        // Blocks every nested provider/screen from mounting (and firing its
+        // own API calls) until a session token - guest or real - exists, so
+        // nothing races ahead of apiRequest.ts's Authorization header being
+        // set. Same spinner-over-blank-screen pattern as
+        // RootNavigator.tsx's own loading gate.
+        <View style={{ flex: 1, backgroundColor: color.bg, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color={color.accent} />
+        </View>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
+  return ctx;
+}

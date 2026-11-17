@@ -96,15 +96,76 @@
       ],
       "limitations": "Association with specific room types is one common convention, not universal.",
       "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
+    },
+    {
+      "code": "C",
+      "label": "Centre",
+      "sanskritName": "Brahmasthan",
+      "traditionalAssociation": "Traditionally considered the energetic heart of a home, best kept open, light and free of heavy structures or clutter.",
+      "recommendations": [
+        "Commonly suggested to be kept open and uncluttered rather than used for storage.",
+        "Often left as open floor space, a courtyard, or a light well where the layout allows."
+      ],
+      "limitations": "Not every layout allows a genuinely open centre; guidance here is aspirational, not a requirement.",
+      "sourceReference": "General Vastu Shastra convention (traditional, not a specific cited text)."
     }
   ],
   "roomCompatibility": {
-    "entrance": { "favorable": ["N", "NE", "E"], "cautioned": [] },
-    "livingRoom": { "favorable": ["N", "E", "NE"], "cautioned": [] },
-    "kitchen": { "favorable": ["SE"], "cautioned": ["NE"] },
-    "masterBedroom": { "favorable": ["SW"], "cautioned": ["NE"] },
-    "prayerRoom": { "favorable": ["NE"], "cautioned": [] },
-    "bathroom": { "favorable": ["NW", "W"], "cautioned": ["NE"] }
+    "entrance": {
+      "favorable": [
+        "N",
+        "NE",
+        "E"
+      ],
+      "cautioned": []
+    },
+    "livingRoom": {
+      "favorable": [
+        "N",
+        "E",
+        "NE"
+      ],
+      "cautioned": []
+    },
+    "kitchen": {
+      "favorable": [
+        "SE"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    },
+    "masterBedroom": {
+      "favorable": [
+        "SW"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    },
+    "prayerRoom": {
+      "favorable": [
+        "NE"
+      ],
+      "cautioned": []
+    },
+    "bathroom": {
+      "favorable": [
+        "NW",
+        "W"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    },
+    "bedroom": {
+      "favorable": [
+        "SW"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    }
   },
   "homeRoomLabels": {
     "entrance": "Main Entrance",
@@ -112,14 +173,50 @@
     "kitchen": "Kitchen",
     "masterBedroom": "Bed / Master Bedroom",
     "prayerRoom": "Home Temple / Prayer Room",
-    "bathroom": "Bathroom"
+    "bathroom": "Bathroom",
+    "bedroom": "Bedroom"
   },
   "workRoomCompatibility": {
-    "entrance": { "favorable": ["N", "E", "NE"], "cautioned": [] },
-    "deskStudy": { "favorable": ["N", "E", "NE"], "cautioned": [] },
-    "cashCounterSafe": { "favorable": ["N", "SW"], "cautioned": ["NE"] },
-    "meetingRoom": { "favorable": ["NW"], "cautioned": [] },
-    "storage": { "favorable": ["SW", "NW"], "cautioned": ["NE"] }
+    "entrance": {
+      "favorable": [
+        "N",
+        "E",
+        "NE"
+      ],
+      "cautioned": []
+    },
+    "deskStudy": {
+      "favorable": [
+        "N",
+        "E",
+        "NE"
+      ],
+      "cautioned": []
+    },
+    "cashCounterSafe": {
+      "favorable": [
+        "N",
+        "SW"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    },
+    "meetingRoom": {
+      "favorable": [
+        "NW"
+      ],
+      "cautioned": []
+    },
+    "storage": {
+      "favorable": [
+        "SW",
+        "NW"
+      ],
+      "cautioned": [
+        "NE"
+      ]
+    }
   },
   "workRoomLabels": {
     "entrance": "Office Entrance",

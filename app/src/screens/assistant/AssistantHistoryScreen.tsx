@@ -38,7 +38,7 @@ export function AssistantHistoryScreen() {
 
   if (!loading && items.length === 0) {
     return (
-      <PageContainer>
+      <PageContainer onRefresh={load}>
         <Text variant="display" weight="semibold" style={{ marginBottom: spacing.lg }}>Chat history</Text>
         <EmptyState
           icon={MessageCircle}
@@ -52,7 +52,7 @@ export function AssistantHistoryScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginBottom: spacing.lg }}>Chat history</Text>
       {items.map((c) => (
         <Card key={c.id} onPress={() => navigation.navigate('AssistantChat', { conversationId: c.id })} style={{ marginBottom: spacing.sm }}>

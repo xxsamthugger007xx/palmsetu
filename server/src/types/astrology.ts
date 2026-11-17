@@ -18,6 +18,31 @@ export interface UserIdentity {
   updatedAt: string;
 }
 
+/**
+ * Real, backend-persisted scratch record for step-by-step astrology
+ * onboarding. Every field is optional because a user may have picked their
+ * astrology system but not yet entered a birth date, etc. - this record IS
+ * the honest "how far has onboarding gotten" state (derived by checking
+ * which fields are present), not a parallel progress flag that could drift
+ * from what's actually saved. Once birthDate + birthPlace/coords + system
+ * are all present, the client sends the equivalent full payload to
+ * PUT /astrology/profile, which creates the real BirthProfile (computing
+ * natal placements for real, same as before this record existed) and this
+ * draft becomes irrelevant history - it is never read by any astrology
+ * calculation or AI grounding path, only by onboarding-resume logic. */
+export interface OnboardingDraft {
+  userId: string;
+  preferredSystem: AstrologySystem | null;
+  birthDate: string | null;
+  birthTime: string | null; // null also used for the explicit "I don't know" skip
+  birthTimeSkipped: boolean; // distinguishes "not yet answered" from "explicitly skipped"
+  birthPlace: string | null;
+  birthLatitude: number | null;
+  birthLongitude: number | null;
+  timezone: string | null;
+  updatedAt: string;
+}
+
 export interface BirthProfile {
   userId: string;
   birthDate: string; // YYYY-MM-DD

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import {
   Camera, ImagePlus, X, ChevronLeft, AlertTriangle, Lock,
   Crop, ZoomIn, RotateCw, Gem, Check,
@@ -28,6 +29,8 @@ const avoidExamples = [
 
 export function PalmCaptureScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'PalmCapture'>>();
+  const allowRescan = route.params?.allowRescan;
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [qualityWarning, setQualityWarning] = useState<string | null>(null);
   const [hand, setHand] = useState<Hand>('right');
@@ -49,7 +52,29 @@ export function PalmCaptureScreen() {
     if (result.canceled || !result.assets?.[0]) return;
 
     const asset = result.assets[0];
-    setImageUri(asset.uri);
+
+    // Real speed fix: a modern phone photo at quality:0.9 with no resize can
+    // be several MB, which then gets base64-encoded (~33% larger) and
+    // uploaded, and a larger image also costs the vision model more time to
+    // process - none of that size is actually needed for line-level palm
+    // analysis. Resizing to a sane max dimension before upload cuts upload
+    // time and vision-processing time together, with no loss of analysis
+    // quality (palm lines are coarse, macro-scale features, not something
+    // that needs 4000px resolution to assess).
+    let optimizedUri = asset.uri;
+    try {
+      const resized = await ImageManipulator.manipulateAsync(
+        asset.uri,
+        [{ resize: { width: 1280 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      optimizedUri = resized.uri;
+    } catch {
+      // If resizing fails for any reason, fall back to the original capture
+      // rather than blocking the flow - slower upload beats a broken one.
+    }
+
+    setImageUri(optimizedUri);
     const quality = await assessImageQuality(asset);
     setQualityWarning(quality.ok ? null : quality.message);
   };
@@ -61,11 +86,11 @@ export function PalmCaptureScreen() {
 
   const handleContinue = () => {
     if (!imageUri) return;
-    navigation.navigate('PalmAnalyzing', { imageUri, hand });
+    navigation.navigate('PalmAnalyzing', { imageUri, hand, allowRescan });
   };
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Capture</Text>

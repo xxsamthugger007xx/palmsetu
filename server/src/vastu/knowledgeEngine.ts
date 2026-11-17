@@ -1,6 +1,6 @@
 import directionsData from './directions.json';
 import {
-  Alignment, Direction, PropertyProfile, RoomAnalysis, RoomDirections, RoomType, VastuDirectionEntry,
+  Alignment, Direction, PropertyProfile, PropertyRoom, RoomAnalysis, RoomCategory, VastuDirectionEntry,
 } from '../types/vastu';
 
 export const DATASET_VERSION: string = directionsData.datasetVersion;
@@ -10,7 +10,7 @@ type CompatTable = Record<string, { favorable: Direction[]; cautioned: Direction
 
 const roomCompatibility = directionsData.roomCompatibility as CompatTable;
 const workRoomCompatibility = directionsData.workRoomCompatibility as CompatTable;
-const ROOM_LABELS = directionsData.homeRoomLabels as Record<RoomType, string>;
+const ROOM_LABELS = directionsData.homeRoomLabels as Record<string, string>;
 const WORK_ROOM_LABELS = directionsData.workRoomLabels as Record<string, string>;
 
 /** Reverse-looks-up which rooms/roles a direction is favorable for, by label,
@@ -45,35 +45,50 @@ export function listDirections(): VastuDirectionEntry[] {
   return [...directionsByCode.values()];
 }
 
-function alignmentFor(room: RoomType, direction: Direction): Alignment {
-  const compat = roomCompatibility[room];
+/** 'custom' rooms have no sourced favorable/cautioned table - there is no
+ * honest traditional basis for one, since the user could name it anything.
+ * Every other category looks up roomCompatibility directly by its key. */
+function alignmentFor(category: RoomCategory, direction: Direction): Alignment {
+  if (category === 'custom') return 'neutral';
+  const compat = roomCompatibility[category];
   if (!compat) return 'neutral';
   if (compat.favorable.includes(direction)) return 'favorable';
   if (compat.cautioned.includes(direction)) return 'traditionally-cautioned';
   return 'neutral';
 }
 
+function categoryLabel(category: RoomCategory, roomName: string): string {
+  if (category === 'custom') return roomName;
+  return ROOM_LABELS[category] ?? roomName;
+}
+
 /**
- * Deterministic room-by-room analysis. Every statement traces back to the
- * configured directions.json table - this never infers room dimensions, walls,
- * or layout from a direction alone, and never claims a direction causes harm.
+ * Deterministic analysis for one room INSTANCE. Two bedrooms with different
+ * directions always produce independent results - nothing here ever
+ * aggregates or copies one room's direction onto another, since each call
+ * only ever sees the single room passed in.
  */
-export function analyzeRoom(room: RoomType, direction: Direction): RoomAnalysis {
+export function analyzeRoom(room: Pick<PropertyRoom, 'roomId' | 'category' | 'name'>, direction: Direction): RoomAnalysis {
   const entry = getDirectionEntry(direction);
-  const alignment = alignmentFor(room, direction);
+  const alignment = alignmentFor(room.category, direction);
+  const label = categoryLabel(room.category, room.name);
+  const genericNoun = room.category === 'custom' ? room.name.toLowerCase() : label.toLowerCase();
 
   let explanation: string;
   if (alignment === 'favorable') {
-    explanation = `${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''} is traditionally considered a favorable placement for the ${ROOM_LABELS[room].toLowerCase()}, per the convention used here.`;
+    explanation = `${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''} is traditionally considered a favorable placement for a ${genericNoun}, per the convention used here.`;
   } else if (alignment === 'traditionally-cautioned') {
-    explanation = `Some traditional schools suggest reconsidering a ${ROOM_LABELS[room].toLowerCase()} in ${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''}, though this varies by tradition and is not a structural or safety concern.`;
+    explanation = `Some traditional schools suggest reconsidering a ${genericNoun} in ${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''}, though this varies by tradition and is not a structural or safety concern.`;
+  } else if (room.category === 'custom') {
+    explanation = `There's no specific traditional guidance in this convention for a custom room like "${room.name}" - general placement principles for ${entry.label.toLowerCase()} still apply.`;
   } else {
-    explanation = `${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''} doesn't have a strong traditional association either way for a ${ROOM_LABELS[room].toLowerCase()} in the convention used here.`;
+    explanation = `${entry.label}${entry.sanskritName ? ` (${entry.sanskritName})` : ''} doesn't have a strong traditional association either way for a ${genericNoun} in the convention used here.`;
   }
 
   return {
-    room,
-    roomLabel: ROOM_LABELS[room],
+    roomId: room.roomId,
+    category: room.category,
+    roomLabel: room.name || label,
     direction,
     alignment,
     guidance: entry.traditionalAssociation,
@@ -82,17 +97,15 @@ export function analyzeRoom(room: RoomType, direction: Direction): RoomAnalysis 
   };
 }
 
-export function analyzeProperty(profile: PropertyProfile): { analyses: RoomAnalysis[]; missingRooms: RoomType[] } {
-  const roomTypes = Object.keys(ROOM_LABELS) as RoomType[];
+export function analyzeProperty(profile: PropertyProfile): { analyses: RoomAnalysis[]; missingRooms: string[] } {
   const analyses: RoomAnalysis[] = [];
-  const missingRooms: RoomType[] = [];
+  const missingRooms: string[] = [];
 
-  for (const room of roomTypes) {
-    const direction = profile.rooms[room as keyof RoomDirections];
-    if (direction) {
-      analyses.push(analyzeRoom(room, direction));
+  for (const room of profile.rooms) {
+    if (room.direction) {
+      analyses.push(analyzeRoom(room, room.direction));
     } else {
-      missingRooms.push(room);
+      missingRooms.push(room.name);
     }
   }
 
@@ -109,7 +122,7 @@ export function buildGenericChecklist(analyses: RoomAnalysis[]) {
   const cautioned = analyses.filter((a) => a.alignment === 'traditionally-cautioned');
   for (const a of cautioned) {
     items.push({
-      id: `tradition-${a.room}`,
+      id: `tradition-${a.roomId}`,
       text: `Optional: explore traditional remedies for your ${a.roomLabel.toLowerCase()}'s placement, if this matters to you culturally.`,
       category: 'cultural-practice',
     });

@@ -25,19 +25,21 @@ export function AdminUsersScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = React.useCallback(async () => {
     if (!adminRole) return;
     setLoading(true);
-    adminApi.getUsers(adminRole, { page, pageSize: PAGE_SIZE, search: search || undefined })
+    await adminApi.getUsers(adminRole, { page, pageSize: PAGE_SIZE, search: search || undefined })
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [adminRole, page, search]);
 
+  useEffect(() => { load(); }, [load]);
+
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <AdminTopNav active="AdminUsers" />
       <Text variant="title" weight="semibold" style={{ marginBottom: spacing.md }}>Users</Text>
 

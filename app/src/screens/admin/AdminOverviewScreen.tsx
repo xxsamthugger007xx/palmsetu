@@ -25,16 +25,19 @@ export function AdminOverviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = React.useCallback(async () => {
     if (!adminRole) return;
-    adminApi.getOverview(adminRole)
+    setLoading(true);
+    await adminApi.getOverview(adminRole)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [adminRole]);
 
+  useEffect(() => { load(); }, [load]);
+
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <AdminTopNav active="AdminOverview" />
       <Text variant="title" weight="semibold" style={{ marginBottom: spacing.md }}>Overview</Text>
 

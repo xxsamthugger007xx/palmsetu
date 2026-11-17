@@ -16,6 +16,31 @@ export interface ApiError extends Error {
   isNetworkError: boolean;
 }
 
+// Set by AuthContext whenever the current session token (real account or
+// guest) changes - a plain module-level mutable rather than a React hook
+// because this file is called from plain functions (the *Api.ts service
+// files), not components. Read fresh on every request, never cached past a
+// single call, so a token refresh/logout takes effect on the very next
+// request with no extra wiring needed at each call site.
+let currentAuthToken: string | null = null;
+
+export function setAuthToken(token: string | null): void {
+  currentAuthToken = token;
+}
+
+/** For the rare case a screen needs to attach the auth token itself - e.g.
+ * RN's <Image> component makes its own native network request and never
+ * goes through request() above, so it never gets the Authorization header
+ * this file attaches to every JSON call. Screens displaying an
+ * authenticated image (palm photos) read this to build
+ * source={{ uri, headers: { Authorization: `Bearer ${token}` } }}
+ * themselves - without it, the image request resolves server-side to the
+ * anonymous fallback identity and gets a 404 even though the real session
+ * genuinely owns the image. */
+export function getAuthToken(): string | null {
+  return currentAuthToken;
+}
+
 export const NETWORK_ERROR_MESSAGE = 'Unable to connect. Check your connection and try again.';
 export const TIMEOUT_ERROR_MESSAGE = 'This is taking too long. Check your connection and try again.';
 
@@ -51,7 +76,10 @@ export async function request<T>(baseUrl: string, path: string, options?: Reques
   let res: Response;
   try {
     res = await fetch(`${baseUrl}${path}`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(currentAuthToken ? { Authorization: `Bearer ${currentAuthToken}` } : {}),
+      },
       ...options,
       signal: controller.signal,
     });

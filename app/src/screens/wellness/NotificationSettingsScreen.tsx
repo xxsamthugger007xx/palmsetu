@@ -105,7 +105,7 @@ export function NotificationSettingsScreen() {
   if (!prefs) return null;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>Notifications</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
         Local reminders scheduled on this device, based on what you enable below.
@@ -120,7 +120,7 @@ export function NotificationSettingsScreen() {
             </Text>
             <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>
               {permission === 'denied'
-                ? `Turn them on for Solune in your ${Platform.OS === 'ios' ? 'iOS' : 'Android'} settings to receive reminders. Your preferences below are still saved either way.`
+                ? `Turn them on for Palm Setu in your ${Platform.OS === 'ios' ? 'iOS' : 'Android'} settings to receive reminders. Your preferences below are still saved either way.`
                 : 'Enable notifications to receive reminders based on the preferences below.'}
             </Text>
             {permission !== 'denied' && (

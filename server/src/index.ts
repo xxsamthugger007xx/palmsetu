@@ -6,6 +6,7 @@ import { AnthropicProvider } from './ai/anthropicProvider';
 import { GeminiProvider } from './ai/geminiProvider';
 import { MockProvider } from './ai/mockProvider';
 import { SanitizingProvider } from './ai/sanitizingProvider';
+import { UsageTrackingProvider } from './ai/usageTracking';
 import { buildPalmRouter } from './routes/palm';
 import { buildCompanionRouter } from './routes/companion';
 import { buildWellnessRouter } from './routes/wellness';
@@ -17,11 +18,34 @@ import { buildGemstoneRouter } from './routes/gemstone';
 import { buildVastuRouter } from './routes/vastu';
 import { buildAdminRouter, handleAdminLogin } from './routes/admin';
 import { buildAssistantRouter } from './routes/assistant';
-import { userPlans, getUserTier, recordTransaction } from './data/store';
+import { buildAuthRouter } from './routes/auth';
+import { buildSoulmateRouter } from './routes/soulmate';
+import { buildAppSessionRouter } from './routes/appSession';
+import { buildBillingRouter, buildDevPlanMetadata } from './routes/billing';
+import { migrateVastuPropertiesIfNeeded } from './vastu/migratePropertyProfiles';
+import { attachAuthContext } from './auth/middleware';
+import { userPlans, getUserTier, recordTransaction, accountsById, vastuPropertiesById } from './data/store';
+import { bootstrapSuperAdminIfNeeded } from './auth/adminAuth';
+import { backfillPsuIds } from './auth/psuId';
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '15mb' })); // palm photos as base64
+app.use(express.json({
+  limit: '15mb', // palm photos as base64
+  // Stashes the raw request body alongside Express's parsed JSON - needed
+  // by routes/soulmate.ts's Razorpay webhook handler, which must verify an
+  // HMAC signature against the exact raw bytes Razorpay sent, not a
+  // re-serialized copy of the parsed object (whitespace/key-order
+  // differences would break the signature check). Harmless for every
+  // other route, which never reads req.rawBody.
+  verify: (req: any, _res, buf) => { req.rawBody = buf; },
+}));
+// Resolves req.auth (real account / guest session / legacy demo-user) on
+// every request - see auth/context.ts for the exact precedence. Mounted
+// globally and before every route below, since it never rejects a request
+// on its own (only requireAccount, used selectively per-route, does).
+app.use(attachAuthContext);
+app.use('/auth', buildAuthRouter());
 
 // Provider precedence: Gemini first if configured, then Anthropic, then the
 // mock fallback. Only one real provider is ever active at a time. Every real
@@ -33,7 +57,11 @@ const selectedProvider = process.env.GEMINI_API_KEY
   : process.env.ANTHROPIC_API_KEY
     ? new AnthropicProvider()
     : new MockProvider();
-const aiProvider = new SanitizingProvider(selectedProvider);
+// UsageTrackingProvider wraps the sanitized provider so every feature using
+// this single shared `aiProvider` instance is instrumented automatically -
+// see ai/usageTracking.ts for why this lives at the provider layer instead
+// of inside any one feature.
+const aiProvider = new UsageTrackingProvider(new SanitizingProvider(selectedProvider));
 
 if (process.env.GEMINI_API_KEY) {
   console.log('[solune] Using GeminiProvider for AI responses.');
@@ -60,16 +88,24 @@ if (process.env.NODE_ENV !== 'production') {
   app.post('/dev/set-tier', (req, res) => {
     const userId = (req.headers['x-demo-user'] as string) || 'demo-user';
     const tier = req.body?.tier === 'premium' ? 'premium' : 'free';
+    const planId = req.body?.planId === 'monthly' || req.body?.planId === 'quarterly' || req.body?.planId === 'annual' ? req.body.planId : 'annual';
     const wasPremium = getUserTier(userId) === 'premium';
-    userPlans.set(userId, { userId, tier });
-    // Only record a transaction the first time a user is newly set to
-    // premium, not on every call if they are already premium, so flipping
-    // tier back and forth or re-calling this dev endpoint does not
-    // double-count a subscription purchase.
-    if (tier === 'premium' && !wasPremium) {
-      recordTransaction(userId, 'premium_subscription');
+
+    if (tier === 'premium') {
+      const now = new Date().toISOString();
+      const meta = buildDevPlanMetadata(planId, now);
+      userPlans.set(userId, { userId, tier, ...meta });
+      // Only record a transaction the first time a user is newly set to
+      // premium, not on every call if they are already premium, so flipping
+      // tier back and forth or re-calling this dev endpoint does not
+      // double-count a subscription purchase.
+      if (!wasPremium) {
+        recordTransaction(userId, 'premium_subscription', meta.priceCents);
+      }
+    } else {
+      userPlans.set(userId, { userId, tier: 'free', status: 'expired' });
     }
-    res.json({ userId, tier });
+    res.json({ userId, tier, planId: tier === 'premium' ? planId : null });
   });
 }
 app.use('/palm', buildPalmRouter(aiProvider));
@@ -79,13 +115,30 @@ app.use('/tarot', buildTarotRouter(aiProvider));
 app.use('/astrology', buildAstrologyRouter(aiProvider));
 app.use('/gemstone', buildGemstoneRouter(aiProvider));
 app.use('/vastu', buildVastuRouter(aiProvider));
+app.use('/soulmate', buildSoulmateRouter());
+app.use('/app-session', buildAppSessionRouter());
+app.use('/billing', buildBillingRouter());
 app.use('/assistant', buildAssistantRouter(aiProvider));
 app.post('/admin/login', handleAdminLogin);
 app.use('/admin', buildAdminRouter(aiProvider));
 
-// Browser admin panel, password-gated (see admin.ts for the login/session
-// mechanism and its prototype-grade caveats). Served at /admin-panel.
+// Browser admin panel, now backed by real admin_users/admin_sessions auth
+// (see auth/adminAuth.ts). Served at /admin-panel.
 app.use('/admin-panel', express.static(path.join(__dirname, '../public/admin-panel')));
+
+// Provisions the first Super Admin from SUPER_ADMIN_EMAIL/SUPER_ADMIN_PASSWORD
+// if admin_users is empty (no-op otherwise), and assigns a permanent
+// PSU-000001-style ID to every account that doesn't have one yet (no-op for
+// accounts that already do). Both are safe to run on every boot.
+bootstrapSuperAdminIfNeeded().catch((err) => console.error('[solune] admin bootstrap failed:', err));
+const psuAssigned = backfillPsuIds([...accountsById.values()].map((a) => ({ id: a.id, createdAt: a.createdAt })));
+if (psuAssigned > 0) console.log(`[solune] assigned Palm Setu User IDs to ${psuAssigned} account(s)`);
+
+// Converts any Vastu property saved under the old fixed-room shape into
+// the new per-instance rooms array (see vastu/migratePropertyProfiles.ts) -
+// lossless, idempotent, safe to run on every boot.
+const vastuMigrated = migrateVastuPropertiesIfNeeded(vastuPropertiesById);
+if (vastuMigrated > 0) console.log(`[solune] migrated ${vastuMigrated} Vastu propert${vastuMigrated === 1 ? 'y' : 'ies'} to the new room-array format`);
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 app.listen(port, () => {

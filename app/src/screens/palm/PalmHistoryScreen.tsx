@@ -18,7 +18,7 @@ export function PalmHistoryScreen() {
   const [items, setItems] = useState<PalmReading[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
 
-  const load = async () => {
+  const load = React.useCallback(async () => {
     setState('loading');
     try {
       const res = await palmApi.listReadings();
@@ -27,11 +27,11 @@ export function PalmHistoryScreen() {
     } catch {
       setState('error');
     }
-  };
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete reading', 'This cannot be undone.', [
@@ -52,7 +52,7 @@ export function PalmHistoryScreen() {
   };
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Palm Reading History</Text>

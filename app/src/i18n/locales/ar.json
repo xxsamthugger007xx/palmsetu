@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "الرئيسية", "palmScan": "قراءة الكف", "discover": "استكشف", "wellness": "العافية", "profile": "الملف الشخصي" },
-  "common": { "continue": "متابعة", "cancel": "إلغاء", "save": "حفظ", "delete": "حذف", "retry": "إعادة المحاولة", "loading": "جارٍ التحميل...", "back": "رجوع", "skip": "تخطي", "upgrade": "ترقية", "viewAll": "عرض الكل", "open": "فتح", "getStarted": "ابدأ الآن" },
+  "nav": {
+    "home": "الرئيسية",
+    "palmScan": "قراءة الكف",
+    "discover": "استكشف",
+    "wellness": "العافية",
+    "profile": "الملف الشخصي"
+  },
+  "common": {
+    "continue": "متابعة",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل...",
+    "back": "رجوع",
+    "skip": "تخطي",
+    "upgrade": "ترقية",
+    "viewAll": "عرض الكل",
+    "open": "فتح",
+    "getStarted": "ابدأ الآن",
+    "close": "إغلاق",
+    "comingSoon": "قريبًا",
+    "saving": "جارٍ الحفظ...",
+    "greetingMorning": "صباح الخير",
+    "greetingAfternoon": "مساء الخير",
+    "greetingEvening": "مساء الخير",
+    "feelingToday": "تشعر بأنك {{mood}} اليوم",
+    "tapToEditCheckIn": "اضغط لتعديل تسجيلك"
+  },
   "intro": {
     "screen1Badge": "قراءة الكف بالذكاء الاصطناعي",
     "screen1Headline": "اكتشف ما تكشفه يداك",
@@ -29,44 +56,212 @@
     "footer": "يمكنك تغيير هذا في أي وقت من الملف الشخصي."
   },
   "home": {
-    "greetingMorning": "صباح الخير",
-    "greetingAfternoon": "مساء الخير",
-    "greetingEvening": "مساء الخير",
-    "heroLabel": "مساحة الرؤى الذكية",
-    "heroTitle": "مساحتك الشخصية للتأمل",
-    "heroSubtitle": "استكشف راحة يدك، وافهم أنماطك، واكتشف وجهات نظر جديدة.",
-    "startPalmAnalysis": "ابدأ تحليل الكف",
-    "viewPreviousReading": "عرض القراءة السابقة",
-    "quickActions": "إجراءات سريعة",
-    "palmAnalysisTitle": "تحليل الكف",
-    "palmAnalysisDesc": "مسح وتحليل",
-    "astrologyTitle": "علم التنجيم",
-    "astrologyDesc": "خريطتك الفلكية، موضحة",
-    "compatibilityTitle": "التوافق",
-    "compatibilityDesc": "قارن مع الآخرين",
-    "companionTitle": "المرافق الذكي",
-    "companionDesc": "تحدث عمّا يشغل بالك",
-    "dailyInsight": "تأمل يومي",
-    "saveReflection": "حفظ التأمل",
-    "recentActivity": "النشاط الأخير",
-    "wellnessSection": "العافية",
-    "moodCheckIn": "سجّل حالتك المزاجية اليوم",
-    "breathingReady": "تمرين تنفس قصير جاهز",
-    "mockObservation": "تُظهر تأملاتك الأخيرة نمطًا من تقديم احتياجات الآخرين على احتياجاتك الخاصة.",
-    "mockQuestion": "ما هو شيء واحد يمكنك فعله اليوم لنفسك فقط؟",
-    "activityPalmReadingType": "قراءة الكف",
-    "activityPalmReadingSummary": "تم تحليل خط القلب وخط الرأس وخط الحياة",
-    "activityJournalType": "إدخال في المذكرات",
-    "activityJournalSummary": "تأمل في قرار متعلق بالعمل",
-    "statusComplete": "مكتمل",
-    "statusDraft": "مسودة"
+    "moonTonightLabel": "القمر الليلة",
+    "moonLabel": "القمر",
+    "todaysTransits": "عبور اليوم",
+    "transitBody": "الجرم",
+    "transitSign": "البرج",
+    "transitDegree": "الدرجة",
+    "setUpProfile": "أعدّ ملفك الشخصي",
+    "moonAddBirthDetails": "أضف تفاصيل ميلادك للمعايرة",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "برج القمر الغربي (المداري)",
+    "transitRetrograde": "{{body}} في حالة تراجع حاليًا (حركة ظاهرية إلى الخلف من منظور الأرض) - إشارة تقليدية لإعادة التحقق من التفاصيل في مجال هذا الجرم.",
+    "transitDirect": "{{body}} يتحرك بشكل مباشر اليوم.",
+    "transitNote": "ملاحظة: لا يحسب محرك هذا التطبيق حاليًا الزوايا بين موضع العبور هذا وخريطتك الفلكية، لذا لا يتم عرض تفسير متعلق بخريطتك هنا - فقط البرج والدرجة الحاليان الفعليان المحسوبان أعلاه.",
+    "dailyGuidanceTitle": "إرشادك اليومي",
+    "careerLabel": "العمل: ",
+    "relationshipsLabel": "العلاقات: ",
+    "energyLabel": "الطاقة: ",
+    "tryTodayLabel": "جرّب اليوم: ",
+    "dailyGuidanceEmpty": "أضف تفاصيل ميلادك لفتح إرشادك اليومي الشخصي.",
+    "feelingTitle": "كيف تشعر اليوم؟",
+    "goToWellness": "الذهاب إلى العافية",
+    "palmInsightTitle": "رؤيتك لقراءة الكف",
+    "palmInsightScanned": "تم المسح في {{date}} · تم قراءة {{count}} سمة",
+    "palmInsightEmpty": "أكمل أول مسح لكفك لترى رؤيتك هنا.",
+    "premiumTitle": "PALM SETU المميز",
+    "premiumDesc": "افتح تقارير أعمق ومحادثة ذكاء اصطناعي غير محدودة",
+    "exploreTitle": "استكشف",
+    "sections": {
+      "palm": {
+        "title": "تحليل الكف",
+        "description": "قراءة الكف بالذكاء الاصطناعي من صورة لكفك"
+      },
+      "tarot": {
+        "title": "التاروت",
+        "description": "اسحب البطاقات وتأمل في مسارك"
+      },
+      "astrology": {
+        "title": "علم التنجيم",
+        "description": "الكُندلي الفيدي والإرشاد الكوني"
+      },
+      "moonsign": {
+        "title": "برج القمر",
+        "description": "برج القمر النجمي والمداري الخاص بك"
+      },
+      "dailyreport": {
+        "title": "التقرير اليومي",
+        "description": "إرشادك الشخصي لليوم"
+      },
+      "horoscopes": {
+        "title": "الأبراج",
+        "description": "أبراج الأبراج الفلكية، حسب البرج"
+      },
+      "lovetest": {
+        "title": "اختبار الحب",
+        "description": "تواصل مع شريك لقراءات مشتركة"
+      },
+      "horoscopelauncher": {
+        "title": "أبراج موسعة",
+        "description": "توقعات أسبوعية وشهرية"
+      },
+      "numerology": {
+        "title": "علم الأرقام",
+        "description": "مولانك وبهاغيانك"
+      },
+      "western": {
+        "title": "علم التنجيم الغربي",
+        "description": "الشمس والقمر والعبور المداري"
+      },
+      "aichat": {
+        "title": "مساعد الدردشة الذكي",
+        "description": "اسأل عن أي من قراءاتك"
+      },
+      "myreports": {
+        "title": "تقاريري",
+        "description": "جميع قراءاتك السابقة، في مكان واحد"
+      },
+      "soulmate": {
+        "title": "رسمة الشريك الروحي",
+        "description": "صورة برسم الذكاء الاصطناعي لشريك روحك المتخيل"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "بعض إعادة الضبط الصغيرة، متى ما توفر لديك وقت.",
+    "todaySubtitle": "اليوم: {{title}}",
+    "moodSectionTitle": "الحالة المزاجية",
+    "historyAction": "السجل",
+    "feelingNowPrompt": "كيف تشعر الآن؟",
+    "affirmationSectionTitle": "تأكيد اليوم",
+    "challengeSectionTitle": "تحدي اليوم",
+    "challengeView": "عرض",
+    "challengeDayLabel": "اليوم {{day}}: {{title}}",
+    "challengeDuration": "برنامج لمدة {{days}} يوم",
+    "challengeCompletedToday": "اكتمل اليوم",
+    "challengeMarkComplete": "تحديد اليوم كمكتمل",
+    "habitJourneyTitle": "رحلة العادات",
+    "quickResetsTitle": "إعادة ضبط سريعة",
+    "tiles": {
+      "breathing": "التنفس",
+      "meditation": "التأمل",
+      "journal": "المذكرات",
+      "challenges": "التحديات"
+    },
+    "breathingCount_other": "{{count}} تقنية",
+    "meditationCount_other": "{{count}} جلسة",
+    "journalWrittenToday": "تمت الكتابة اليوم",
+    "journalReflectPrivately": "تأمل بشكل خاص",
+    "challengesInProgress": "قيد التقدم",
+    "challengesBrowsePrograms": "تصفح البرامج",
+    "thisWeekTitle": "هذا الأسبوع",
+    "checkInsThisWeek_other": "{{count}} تسجيل يومي هذا الأسبوع",
+    "averageEnergy": "متوسط الطاقة {{value}}/5",
+    "habitsDoneToday": "تم إنجاز {{done}}/{{total}} من العادات اليوم",
+    "noTrendYet": "سجّل بضع مرات أخرى هذا الأسبوع وستظهر اتجاهاتك هنا.",
+    "activeGoalsTitle": "الأهداف النشطة",
+    "checkInsLogged_other": "تم تسجيل {{count}} تسجيل",
+    "inspirationLibrary": "مكتبة الإلهام",
+    "reminders": "التذكيرات",
+    "disclaimer": "توفر هذه التمارين والمرافق الذكي دعمًا يوميًا وليست بديلاً عن الرعاية الصحية النفسية المتخصصة."
+  },
+  "palm": {
+    "profileTitle": "ملف قراءة الكف",
+    "profileSubtitle": "قراءة كفك الدائمة، محفوظة في حسابك.",
+    "handLabel": "اليد",
+    "handNotSpecified": "غير محددة",
+    "handLeft": "اليسرى",
+    "handRight": "اليمنى",
+    "scanDateLabel": "تاريخ المسح",
+    "statusLabel": "الحالة",
+    "statusSaved": "محفوظ",
+    "analysisSectionsTitle": "أقسام التحليل",
+    "noSectionsMatched": "لم يتم التعرف على أي سمة محددة بثقة من هذا المسح.",
+    "viewCompleteReport": "عرض تقرير الكف الكامل",
+    "scanTitle": "مسح الكف",
+    "scanSubtitle": "مبني على قراءة الكف التقليدية. للتأمل والترفيه، وليس نصيحة طبية أو تنبؤية.",
+    "newReadingTitle": "قراءة جديدة",
+    "newReadingDesc": "التقط صورة واضحة لكفك لإنشاء ملف قراءة الكف الدائم الخاص بك",
+    "scanMyPalm": "امسح كفي",
+    "emptyTitle": "لا يوجد ملف قراءة كف بعد",
+    "emptyDesc": "سيتم حفظ صورة كفك والتحليل الكامل هنا بشكل دائم بعد أول مسح لك.",
+    "photoUnavailable": "الصورة الأصلية غير متوفرة لهذا المسح.",
+    "saveLabel": "حفظ",
+    "scanAnother": "امسح كفًا آخر",
+    "scanAnotherConfirmTitle": "مسح كف آخر؟",
+    "scanAnotherConfirmDesc": "سيؤدي هذا إلى استبدال ملف قراءة كفك المحفوظ حاليًا بمسح جديد - يتم الاحتفاظ بأحدث مسح فقط كملفك النشط. تبقى عمليات المسح السابقة متاحة في السجل.",
+    "viewHistory": "السجل"
+  },
+  "tarot": {
+    "title": "التاروت",
+    "subtitle": "استكشف البطاقات. تأمل في مسارك.",
+    "loading": "جارٍ التحميل...",
+    "errorTitle": "تعذّر تحميل التاروت",
+    "errorDesc": "تحقق من اتصالك وأعد المحاولة.",
+    "dailyCardLabel": "البطاقة اليومية",
+    "revealMyCard": "اكشف بطاقتي",
+    "reversed": "مقلوبة",
+    "upright": "مستقيمة",
+    "openFullReading": "افتح القراءة الكاملة",
+    "categoriesTitle": "فئات القراءة",
+    "categoryComingSoon": "قريبًا",
+    "recentReadingsTitle": "القراءات الأخيرة",
+    "noReadingsTitle": "لا توجد قراءات بعد",
+    "noReadingsDesc": "ابدأ بسحب بطاقة واحدة لترى قراءتك الأولى هنا.",
+    "startAReading": "ابدأ قراءة",
+    "cardCount_other": "{{count}} بطاقة",
+    "categories": {
+      "oneCard": {
+        "title": "قراءة بطاقة واحدة",
+        "description": "سحبة سريعة ومركزة"
+      },
+      "threeCard": {
+        "title": "قراءة ثلاث بطاقات",
+        "description": "الماضي، الحاضر، المستقبل"
+      },
+      "love": {
+        "title": "الحب والعلاقات",
+        "description": "تأمل في العلاقة"
+      },
+      "career": {
+        "title": "العمل والنمو",
+        "description": "تأمل في الاتجاه"
+      },
+      "general": {
+        "title": "إرشاد عام",
+        "description": "تأمل مفتوح"
+      },
+      "celticCross": {
+        "title": "الصليب السلتي",
+        "description": "انتشار متقدم من 10 بطاقات"
+      },
+      "yesNo": {
+        "title": "نعم / لا",
+        "description": "إجابة اتجاهية سريعة"
+      },
+      "compatibility": {
+        "title": "التوافق",
+        "description": "أنت، هم، وما يربطكما"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "الترقية إلى Premium",
     "upgradeDesc": "قراءات غير محدودة ووصول كامل للمرافق",
     "account": "الحساب",
     "personalInfo": "المعلومات الشخصية",
-    "birthDetails": "تفاصيل الميلاد",
+    "birthDetails": "علم التنجيم وتفاصيل الميلاد",
     "birthDetailsDesc": "تُستخدم لميزات علم التنجيم",
     "accountManagement": "إدارة الحساب",
     "preferences": "التفضيلات",
@@ -87,14 +282,47 @@
     "privacyPolicy": "سياسة الخصوصية",
     "signOut": "تسجيل الخروج",
     "deleteAccountTitle": "حذف الحساب",
-    "deleteAccountDesc": "سيؤدي هذا إلى حذف حسابك وقراءاتك وبيانات المذكرات نهائيًا. لا يمكن التراجع عن هذا الإجراء."
+    "deleteAccountDesc": "سيؤدي هذا إلى حذف حسابك وقراءاتك وبيانات المذكرات نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+    "guestBannerTitle": "تتصفح كضيف",
+    "guestBannerDesc": "أنشئ حسابًا مجانيًا لحفظ قراءاتك والمزامنة عبر الأجهزة.",
+    "signUp": "إنشاء حساب",
+    "signedIn": "تم تسجيل الدخول",
+    "palmProfileGroup": "ملف قراءة الكف",
+    "rescanPalm": "إعادة مسح الكف",
+    "rescanPalmDesc": "يستبدل ملف وتقرير الكف الحاليين",
+    "rescanConfirmTitle": "إعادة مسح كفك؟",
+    "rescanConfirmDesc": "تم تصميم ملف قراءة الكف ليكون قراءة لمرة واحدة. ستؤدي إعادة المسح إلى استبدال صورتك وتقريرك الحاليين بشكل دائم بآخرين جديدين - لا يمكن التراجع عن هذا.",
+    "rescanConfirm": "إعادة المسح",
+    "signInCreateAccount": "تسجيل الدخول / إنشاء حساب"
   },
   "discover": {
     "title": "استكشف",
     "tarotTitle": "التاروت",
     "tarotDesc": "استكشف البطاقات. تأمل في مسارك.",
     "astrologyTitle": "الإرشاد الكوني اليومي",
-    "astrologyDesc": "أبراج شخصية، عبور كوكبي، وقراءات للأزواج."
+    "astrologyDesc": "أبراج شخصية، عبور كوكبي، وقراءات للأزواج.",
+    "modules": {
+      "horoscope": {
+        "title": "البرج اليومي",
+        "description": "قراءة قصيرة لليوم."
+      },
+      "compatibility": {
+        "title": "رسمة الشريك الروحي",
+        "description": "صورة مميزة برسم الذكاء الاصطناعي لشريك روحك المتخيل."
+      },
+      "vastu": {
+        "title": "بوصلة فاستو",
+        "description": "واءم مساحتك مع الإرشاد الاتجاهي التقليدي."
+      },
+      "selfDiscovery": {
+        "title": "اكتشاف الذات",
+        "description": "تلميحات موجهة حول الهوية والقيم."
+      },
+      "gemstone": {
+        "title": "دليل الأحجار الكريمة",
+        "description": "إرشاد تقليدي للأحجار الكريمة من خريطتك."
+      }
+    }
   },
   "language": {
     "title": "اللغة",

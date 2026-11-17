@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "Beranda", "palmScan": "Pindai Telapak", "discover": "Jelajahi", "wellness": "Kesehatan", "profile": "Profil" },
-  "common": { "continue": "Lanjutkan", "cancel": "Batal", "save": "Simpan", "delete": "Hapus", "retry": "Coba lagi", "loading": "Memuat...", "back": "Kembali", "skip": "Lewati", "upgrade": "Tingkatkan", "viewAll": "Lihat semua", "open": "Buka", "getStarted": "Mulai" },
+  "nav": {
+    "home": "Beranda",
+    "palmScan": "Pindai Telapak",
+    "discover": "Jelajahi",
+    "wellness": "Kesehatan",
+    "profile": "Profil"
+  },
+  "common": {
+    "continue": "Lanjutkan",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "retry": "Coba lagi",
+    "loading": "Memuat...",
+    "back": "Kembali",
+    "skip": "Lewati",
+    "upgrade": "Tingkatkan",
+    "viewAll": "Lihat semua",
+    "open": "Buka",
+    "getStarted": "Mulai",
+    "close": "Tutup",
+    "comingSoon": "Segera hadir",
+    "saving": "Menyimpan...",
+    "greetingMorning": "Selamat pagi",
+    "greetingAfternoon": "Selamat siang",
+    "greetingEvening": "Selamat malam",
+    "feelingToday": "Merasa {{mood}} hari ini",
+    "tapToEditCheckIn": "Ketuk untuk mengedit check-in Anda"
+  },
   "intro": {
     "screen1Badge": "PEMBACAAN TELAPAK TANGAN BERBASIS AI",
     "screen1Headline": "Temukan Apa yang Diungkapkan Tangan Anda",
@@ -29,44 +56,212 @@
     "footer": "Anda dapat mengubah ini kapan saja di Profil."
   },
   "home": {
-    "greetingMorning": "Selamat pagi",
-    "greetingAfternoon": "Selamat siang",
-    "greetingEvening": "Selamat malam",
-    "heroLabel": "RUANG WAWASAN AI",
-    "heroTitle": "Ruang refleksi pribadi Anda",
-    "heroSubtitle": "Jelajahi telapak tangan Anda, pahami pola Anda, dan temukan perspektif baru.",
-    "startPalmAnalysis": "Mulai analisis telapak tangan",
-    "viewPreviousReading": "Lihat pembacaan sebelumnya",
-    "quickActions": "Tindakan cepat",
-    "palmAnalysisTitle": "Analisis Telapak Tangan",
-    "palmAnalysisDesc": "Pindai dan analisis",
-    "astrologyTitle": "Astrologi",
-    "astrologyDesc": "Bagan Anda, dijelaskan",
-    "compatibilityTitle": "Kecocokan",
-    "compatibilityDesc": "Bandingkan dengan orang lain",
-    "companionTitle": "Pendamping AI",
-    "companionDesc": "Bicarakan apa yang ada di pikiran Anda",
-    "dailyInsight": "Wawasan harian",
-    "saveReflection": "Simpan refleksi",
-    "recentActivity": "Aktivitas terbaru",
-    "wellnessSection": "Kesehatan",
-    "moodCheckIn": "Catat suasana hati Anda hari ini",
-    "breathingReady": "Latihan pernapasan singkat sudah siap",
-    "mockObservation": "Refleksi terbaru Anda menunjukkan pola mengutamakan kebutuhan orang lain sebelum kebutuhan Anda sendiri.",
-    "mockQuestion": "Apa satu hal yang bisa Anda lakukan hari ini hanya untuk diri sendiri?",
-    "activityPalmReadingType": "Pembacaan Telapak Tangan",
-    "activityPalmReadingSummary": "Garis hati, garis kepala, dan garis kehidupan dianalisis",
-    "activityJournalType": "Entri Jurnal",
-    "activityJournalSummary": "Merefleksikan keputusan pekerjaan",
-    "statusComplete": "Selesai",
-    "statusDraft": "Draf"
+    "moonTonightLabel": "Bulan malam ini",
+    "moonLabel": "Bulan",
+    "todaysTransits": "TRANSIT HARI INI",
+    "transitBody": "BENDA LANGIT",
+    "transitSign": "ZODIAK",
+    "transitDegree": "DERAJAT",
+    "setUpProfile": "Atur profil Anda",
+    "moonAddBirthDetails": "Tambahkan detail kelahiran Anda untuk kalibrasi",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "Zodiak bulan Barat (tropis)",
+    "transitRetrograde": "{{body}} saat ini sedang retrograde (gerakan mundur semu dari perspektif Bumi) - tanda tradisional untuk memeriksa kembali detail dalam ranah benda langit tersebut.",
+    "transitDirect": "{{body}} bergerak maju (direct) hari ini.",
+    "transitNote": "Catatan: mesin aplikasi ini belum menghitung aspek antara posisi transit ini dan bagan natal Anda, jadi interpretasi relatif terhadap bagan Anda tidak ditampilkan di sini - hanya zodiak dan derajat aktual yang benar-benar dihitung di atas.",
+    "dailyGuidanceTitle": "PANDUAN HARIAN ANDA",
+    "careerLabel": "Karier: ",
+    "relationshipsLabel": "Hubungan: ",
+    "energyLabel": "Energi: ",
+    "tryTodayLabel": "Coba hari ini: ",
+    "dailyGuidanceEmpty": "Tambahkan detail kelahiran Anda untuk membuka panduan harian yang dipersonalisasi.",
+    "feelingTitle": "BAGAIMANA PERASAAN ANDA HARI INI?",
+    "goToWellness": "Pergi ke Kesehatan",
+    "palmInsightTitle": "WAWASAN TELAPAK TANGAN ANDA",
+    "palmInsightScanned": "Dipindai {{date}} · {{count}} fitur terbaca",
+    "palmInsightEmpty": "Selesaikan pemindaian telapak tangan pertama Anda untuk melihat wawasan Anda di sini.",
+    "premiumTitle": "PALM SETU PREMIUM",
+    "premiumDesc": "Buka laporan yang lebih mendalam dan chat AI tanpa batas",
+    "exploreTitle": "Jelajahi",
+    "sections": {
+      "palm": {
+        "title": "Analisis Telapak Tangan",
+        "description": "Pembacaan telapak tangan AI dari foto telapak tangan Anda"
+      },
+      "tarot": {
+        "title": "Tarot",
+        "description": "Tarik kartu dan renungkan jalan Anda"
+      },
+      "astrology": {
+        "title": "Astrologi",
+        "description": "Kundli Veda dan panduan kosmik"
+      },
+      "moonsign": {
+        "title": "Zodiak Bulan",
+        "description": "Zodiak bulan sideral dan tropis Anda"
+      },
+      "dailyreport": {
+        "title": "Laporan Harian",
+        "description": "Panduan personal Anda hari ini"
+      },
+      "horoscopes": {
+        "title": "Ramalan Bintang",
+        "description": "Ramalan bintang zodiak, per tanda"
+      },
+      "lovetest": {
+        "title": "Tes Cinta",
+        "description": "Terhubung dengan pasangan untuk pembacaan bersama"
+      },
+      "horoscopelauncher": {
+        "title": "Ramalan Bintang Lanjutan",
+        "description": "Prospek mingguan dan bulanan"
+      },
+      "numerology": {
+        "title": "Numerologi",
+        "description": "Moolaank dan Bhagyank"
+      },
+      "western": {
+        "title": "Astrologi Barat",
+        "description": "Matahari, bulan, dan transit tropis"
+      },
+      "aichat": {
+        "title": "Asisten Chat AI",
+        "description": "Tanyakan tentang pembacaan Anda"
+      },
+      "myreports": {
+        "title": "Laporan Saya",
+        "description": "Semua pembacaan Anda sebelumnya, di satu tempat"
+      },
+      "soulmate": {
+        "title": "Sketsa Belahan Jiwa",
+        "description": "Potret AI dari belahan jiwa yang Anda bayangkan"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "Beberapa reset kecil, kapan pun Anda punya waktu.",
+    "todaySubtitle": "Hari ini: {{title}}",
+    "moodSectionTitle": "Suasana hati",
+    "historyAction": "Riwayat",
+    "feelingNowPrompt": "Bagaimana perasaan Anda saat ini?",
+    "affirmationSectionTitle": "Afirmasi hari ini",
+    "challengeSectionTitle": "Tantangan hari ini",
+    "challengeView": "Lihat",
+    "challengeDayLabel": "Hari {{day}}: {{title}}",
+    "challengeDuration": "Program {{days}} hari",
+    "challengeCompletedToday": "Selesai hari ini",
+    "challengeMarkComplete": "Tandai hari ini selesai",
+    "habitJourneyTitle": "Perjalanan kebiasaan",
+    "quickResetsTitle": "Reset cepat",
+    "tiles": {
+      "breathing": "Pernapasan",
+      "meditation": "Meditasi",
+      "journal": "Jurnal",
+      "challenges": "Tantangan"
+    },
+    "breathingCount_other": "{{count}} teknik",
+    "meditationCount_other": "{{count}} sesi",
+    "journalWrittenToday": "Ditulis hari ini",
+    "journalReflectPrivately": "Renungkan secara pribadi",
+    "challengesInProgress": "Sedang berlangsung",
+    "challengesBrowsePrograms": "Jelajahi program",
+    "thisWeekTitle": "Minggu ini",
+    "checkInsThisWeek_other": "{{count}} check-in harian minggu ini",
+    "averageEnergy": "Energi rata-rata {{value}}/5",
+    "habitsDoneToday": "{{done}}/{{total}} kebiasaan selesai hari ini",
+    "noTrendYet": "Check in beberapa kali lagi minggu ini dan tren Anda akan muncul di sini.",
+    "activeGoalsTitle": "Tujuan aktif",
+    "checkInsLogged_other": "{{count}} check-in tercatat",
+    "inspirationLibrary": "Pustaka inspirasi",
+    "reminders": "Pengingat",
+    "disclaimer": "Latihan ini dan pendamping AI menawarkan dukungan sehari-hari dan bukan pengganti perawatan kesehatan mental profesional."
+  },
+  "palm": {
+    "profileTitle": "Profil Telapak Tangan",
+    "profileSubtitle": "Pembacaan telapak tangan permanen Anda, tersimpan di akun Anda.",
+    "handLabel": "TANGAN",
+    "handNotSpecified": "Tidak ditentukan",
+    "handLeft": "Kiri",
+    "handRight": "Kanan",
+    "scanDateLabel": "TANGGAL PEMINDAIAN",
+    "statusLabel": "STATUS",
+    "statusSaved": "Tersimpan",
+    "analysisSectionsTitle": "Bagian analisis",
+    "noSectionsMatched": "Tidak ada fitur spesifik yang dapat dicocokkan dengan yakin dari pemindaian ini.",
+    "viewCompleteReport": "Lihat Laporan Telapak Tangan Lengkap",
+    "scanTitle": "Pindai Telapak Tangan",
+    "scanSubtitle": "Berakar pada ilmu membaca telapak tangan tradisional. Untuk refleksi dan hiburan, bukan nasihat medis atau prediktif.",
+    "newReadingTitle": "Pembacaan baru",
+    "newReadingDesc": "Ambil foto telapak tangan Anda yang jelas untuk membuat profil telapak tangan permanen Anda",
+    "scanMyPalm": "Pindai telapak tangan saya",
+    "emptyTitle": "Belum ada profil telapak tangan",
+    "emptyDesc": "Foto telapak tangan dan analisis lengkap Anda akan disimpan di sini secara permanen setelah pemindaian pertama Anda.",
+    "photoUnavailable": "Foto asli tidak tersedia untuk pemindaian ini.",
+    "saveLabel": "SIMPAN",
+    "scanAnother": "Pindai Telapak Tangan Lain",
+    "scanAnotherConfirmTitle": "Pindai telapak tangan lain?",
+    "scanAnotherConfirmDesc": "Ini akan mengganti profil telapak tangan tersimpan Anda saat ini dengan pemindaian baru - hanya pemindaian terbaru Anda yang disimpan sebagai profil aktif. Pemindaian sebelumnya tetap tersedia di Riwayat.",
+    "viewHistory": "Riwayat"
+  },
+  "tarot": {
+    "title": "Tarot",
+    "subtitle": "Jelajahi kartu. Renungkan jalan Anda.",
+    "loading": "Memuat...",
+    "errorTitle": "Tarot tidak dapat dimuat",
+    "errorDesc": "Periksa koneksi Anda dan coba lagi.",
+    "dailyCardLabel": "KARTU HARIAN",
+    "revealMyCard": "Ungkap kartu saya",
+    "reversed": "Terbalik",
+    "upright": "Tegak",
+    "openFullReading": "Buka pembacaan lengkap",
+    "categoriesTitle": "Kategori pembacaan",
+    "categoryComingSoon": "Segera hadir",
+    "recentReadingsTitle": "Pembacaan terbaru",
+    "noReadingsTitle": "Belum ada pembacaan",
+    "noReadingsDesc": "Mulai dengan pengambilan satu kartu untuk melihat pembacaan pertama Anda di sini.",
+    "startAReading": "Mulai pembacaan",
+    "cardCount_other": "{{count}} kartu",
+    "categories": {
+      "oneCard": {
+        "title": "Pembacaan satu kartu",
+        "description": "Pengambilan cepat dan terfokus"
+      },
+      "threeCard": {
+        "title": "Pembacaan tiga kartu",
+        "description": "Masa lalu, sekarang, masa depan"
+      },
+      "love": {
+        "title": "Cinta & hubungan",
+        "description": "Renungkan tentang koneksi"
+      },
+      "career": {
+        "title": "Karier & pertumbuhan",
+        "description": "Renungkan tentang arah"
+      },
+      "general": {
+        "title": "Panduan umum",
+        "description": "Refleksi terbuka"
+      },
+      "celticCross": {
+        "title": "Celtic Cross",
+        "description": "Spread 10 kartu tingkat lanjut"
+      },
+      "yesNo": {
+        "title": "Ya / Tidak",
+        "description": "Jawaban arah yang cepat"
+      },
+      "compatibility": {
+        "title": "Kecocokan",
+        "description": "Anda, mereka, dan apa yang menghubungkan kalian"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "Tingkatkan ke Premium",
     "upgradeDesc": "Pembacaan tak terbatas dan akses penuh ke pendamping",
     "account": "AKUN",
     "personalInfo": "Informasi pribadi",
-    "birthDetails": "Detail kelahiran",
+    "birthDetails": "Astrologi & detail kelahiran",
     "birthDetailsDesc": "Digunakan untuk fitur astrologi",
     "accountManagement": "Manajemen akun",
     "preferences": "PREFERENSI",
@@ -87,18 +282,51 @@
     "privacyPolicy": "Kebijakan privasi",
     "signOut": "Keluar",
     "deleteAccountTitle": "Hapus akun",
-    "deleteAccountDesc": "Ini akan menghapus akun, pembacaan, dan data jurnal Anda secara permanen. Tindakan ini tidak dapat dibatalkan."
+    "deleteAccountDesc": "Ini akan menghapus akun, pembacaan, dan data jurnal Anda secara permanen. Tindakan ini tidak dapat dibatalkan.",
+    "guestBannerTitle": "Menjelajah sebagai tamu",
+    "guestBannerDesc": "Buat akun gratis untuk menyimpan pembacaan Anda dan sinkronkan di semua perangkat.",
+    "signUp": "Daftar",
+    "signedIn": "Sudah masuk",
+    "palmProfileGroup": "Profil telapak tangan",
+    "rescanPalm": "Pindai ulang telapak tangan",
+    "rescanPalmDesc": "Mengganti profil dan laporan telapak tangan Anda yang sudah ada",
+    "rescanConfirmTitle": "Pindai ulang telapak tangan Anda?",
+    "rescanConfirmDesc": "Profil telapak tangan Anda dirancang sebagai pembacaan satu kali. Memindai ulang akan secara permanen mengganti foto dan laporan Anda saat ini dengan yang baru - ini tidak dapat dibatalkan.",
+    "rescanConfirm": "Pindai ulang",
+    "signInCreateAccount": "Masuk / Buat akun"
   },
   "discover": {
     "title": "Jelajahi",
     "tarotTitle": "Tarot",
     "tarotDesc": "Jelajahi kartu. Renungkan jalan Anda.",
     "astrologyTitle": "Panduan Kosmik Harian",
-    "astrologyDesc": "Ramalan bintang personal, transit, dan pembacaan pasangan."
+    "astrologyDesc": "Ramalan bintang personal, transit, dan pembacaan pasangan.",
+    "modules": {
+      "horoscope": {
+        "title": "Ramalan Harian",
+        "description": "Bacaan singkat untuk hari ini."
+      },
+      "compatibility": {
+        "title": "Sketsa Belahan Jiwa",
+        "description": "Potret premium AI dari belahan jiwa yang Anda bayangkan."
+      },
+      "vastu": {
+        "title": "Kompas Vastu",
+        "description": "Selaraskan ruang Anda dengan panduan arah tradisional."
+      },
+      "selfDiscovery": {
+        "title": "Penemuan Diri",
+        "description": "Pertanyaan terpandu tentang identitas dan nilai-nilai."
+      },
+      "gemstone": {
+        "title": "Panduan Batu Permata",
+        "description": "Panduan batu permata tradisional dari bagan Anda."
+      }
+    }
   },
   "language": {
     "title": "Bahasa",
-    "notice": "Anda dapat mengubah bahasa kapan saja.",
+    "notice": "Anda dapat mengubah bahasa kapan saja. Layar yang diterjemahkan diperbarui segera; layar lainnya akan menyusul dalam pembaruan mendatang.",
     "searchPlaceholder": "Cari bahasa"
   }
 }

@@ -1,4 +1,4 @@
-// Solune design tokens - Nocturne "Observatory" direction: instrument-led,
+// Palm Setu design tokens - Nocturne "Observatory" direction: instrument-led,
 // data-forward astronomy-instrument aesthetic. Swap values here to rebrand;
 // components must never hardcode raw hex/sizes.
 
@@ -152,5 +152,5 @@ export const border = {
 };
 
 export const brand = {
-  name: 'SOLUNE',
+  name: 'PALM SETU',
 };

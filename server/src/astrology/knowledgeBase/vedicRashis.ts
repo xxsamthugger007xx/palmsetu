@@ -1,0 +1,118 @@
+import { AstrologyKnowledgeEntry } from './types';
+
+/**
+ * The 12 Rashis (sidereal zodiac signs) of Vedic/Jyotish astrology.
+ * Synthesized from standard, widely published traditional descriptions
+ * (ruling planet, element, guna/quality, core personality traits), in
+ * original wording - not copied from any single source.
+ */
+export const VEDIC_RASHI_ENTRIES: AstrologyKnowledgeEntry[] = [
+  {
+    featureId: 'vedic-rashi-mesha', category: 'vedicRashi', system: 'vedic', name: 'Mesha (Aries)', aliases: ['mesha', 'aries'],
+    summary: 'The first Rashi, ruled by Mars, fire element - traditionally associated with initiative, courage, and a direct, pioneering approach.',
+    detailed: 'Mesha is the first sign of the sidereal zodiac, ruled by Mars (Mangal) and governed by the fire element. Classically described as a movable (chara) sign, it is traditionally linked to assertiveness, physical energy, impatience, and a willingness to act first and reflect later. People with a strong Mesha placement are traditionally described as natural starters, competitive, and quick to anger but equally quick to let go of it.',
+    rulingPlanet: 'Mars', element: 'Fire', modality: 'Movable (Chara)',
+    traits: ['courageous', 'impulsive', 'competitive', 'energetic', 'direct'],
+    limitations: 'This describes a traditional symbolic archetype only, not a guaranteed personality, medical trait, or predicted life outcome for any individual.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-vrishabha', category: 'vedicRashi', system: 'vedic', name: 'Vrishabha (Taurus)', aliases: ['vrishabha', 'taurus'],
+    summary: 'The second Rashi, ruled by Venus, earth element - traditionally linked to stability, material comfort, and steady persistence.',
+    detailed: 'Vrishabha is ruled by Venus (Shukra) and governed by the earth element, classically a fixed (sthira) sign. It is traditionally associated with patience, a love of comfort and beauty, financial groundedness, and a slow-but-steady approach to change. Traditional texts describe Vrishabha natives as reliable, sensually oriented, and prone to stubbornness once a position is settled on.',
+    rulingPlanet: 'Venus', element: 'Earth', modality: 'Fixed (Sthira)',
+    traits: ['steady', 'patient', 'comfort-seeking', 'reliable', 'stubborn'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed trait, medical reading, or financial outcome.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-mithuna', category: 'vedicRashi', system: 'vedic', name: 'Mithuna (Gemini)', aliases: ['mithuna', 'gemini'],
+    summary: 'The third Rashi, ruled by Mercury, air element - traditionally linked to communication, curiosity, and duality.',
+    detailed: 'Mithuna is ruled by Mercury (Budh), governed by the air element, and classically a dual (dwiswabhava) sign, symbolized by a pair - reflecting a traditional association with duality, versatility, and mental quickness. Mithuna natives are traditionally described as talkative, adaptable, intellectually curious, and sometimes scattered across multiple interests at once.',
+    rulingPlanet: 'Mercury', element: 'Air', modality: 'Dual (Dwiswabhava)',
+    traits: ['communicative', 'curious', 'adaptable', 'witty', 'restless'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed personality or intellectual capacity.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-karka', category: 'vedicRashi', system: 'vedic', name: 'Karka (Cancer)', aliases: ['karka', 'cancer', 'kark'],
+    summary: 'The fourth Rashi, ruled by the Moon, water element - traditionally linked to emotional depth, nurturing, and home/family focus.',
+    detailed: 'Karka is ruled by the Moon (Chandra), governed by the water element, and classically a movable sign. It is traditionally the Rashi most associated with emotional sensitivity, memory, attachment to home and family, and an instinct to protect and nurture. Traditional descriptions note a tendency toward moodiness and a strong pull toward emotional security.',
+    rulingPlanet: 'Moon', element: 'Water', modality: 'Movable (Chara)',
+    traits: ['nurturing', 'sensitive', 'protective', 'intuitive', 'moody'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed emotional profile or family outcome.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-simha', category: 'vedicRashi', system: 'vedic', name: 'Simha (Leo)', aliases: ['simha', 'leo'],
+    summary: 'The fifth Rashi, ruled by the Sun, fire element - traditionally linked to leadership, pride, and self-expression.',
+    detailed: 'Simha is ruled by the Sun (Surya), governed by the fire element, and classically a fixed sign. It is traditionally associated with authority, confidence, a desire for recognition, and natural leadership qualities. Traditional texts describe Simha natives as warm, generous, and proud, with a strong sense of personal dignity that can tip into ego when unchecked.',
+    rulingPlanet: 'Sun', element: 'Fire', modality: 'Fixed (Sthira)',
+    traits: ['confident', 'proud', 'generous', 'authoritative', 'warm'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed leadership ability or social outcome.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-kanya', category: 'vedicRashi', system: 'vedic', name: 'Kanya (Virgo)', aliases: ['kanya', 'virgo'],
+    summary: 'The sixth Rashi, ruled by Mercury, earth element - traditionally linked to analysis, service, and attention to detail.',
+    detailed: 'Kanya is ruled by Mercury (Budh), governed by the earth element, and classically a dual sign. It is traditionally associated with discernment, meticulousness, a service-oriented disposition, and practical intelligence. Traditional descriptions note a tendency toward perfectionism and self-criticism alongside genuine helpfulness.',
+    rulingPlanet: 'Mercury', element: 'Earth', modality: 'Dual (Dwiswabhava)',
+    traits: ['analytical', 'meticulous', 'service-oriented', 'practical', 'self-critical'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed skill level or health condition.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-tula', category: 'vedicRashi', system: 'vedic', name: 'Tula (Libra)', aliases: ['tula', 'libra'],
+    summary: 'The seventh Rashi, ruled by Venus, air element - traditionally linked to balance, partnership, and fairness.',
+    detailed: 'Tula is ruled by Venus (Shukra), governed by the air element, and classically a movable sign, symbolized by the scales. It is traditionally associated with a drive toward balance, diplomacy, aesthetic sense, and relational harmony. Traditional texts describe Tula natives as fair-minded and socially graceful, with a tendency toward indecision when weighing options.',
+    rulingPlanet: 'Venus', element: 'Air', modality: 'Movable (Chara)',
+    traits: ['diplomatic', 'fair-minded', 'social', 'indecisive', 'aesthetic'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed relationship outcome or legal/judicial ability.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-vrishchika', category: 'vedicRashi', system: 'vedic', name: 'Vrishchika (Scorpio)', aliases: ['vrishchika', 'scorpio'],
+    summary: 'The eighth Rashi, ruled by Mars, water element - traditionally linked to intensity, transformation, and deep investigation.',
+    detailed: 'Vrishchika is ruled by Mars (Mangal), governed by the water element, and classically a fixed sign. It is traditionally the Rashi most associated with emotional intensity, a drawn-in instinct to probe beneath the surface, resilience through hardship, and transformation. Traditional descriptions note strong will and secretiveness alongside the capacity for deep loyalty.',
+    rulingPlanet: 'Mars', element: 'Water', modality: 'Fixed (Sthira)',
+    traits: ['intense', 'resilient', 'secretive', 'transformative', 'loyal'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed emotional profile, outcome, or prediction of crisis.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-dhanu', category: 'vedicRashi', system: 'vedic', name: 'Dhanu (Sagittarius)', aliases: ['dhanu', 'sagittarius'],
+    summary: 'The ninth Rashi, ruled by Jupiter, fire element - traditionally linked to optimism, philosophy, and higher learning.',
+    detailed: 'Dhanu is ruled by Jupiter (Guru), governed by the fire element, and classically a dual sign, symbolized by the archer. It is traditionally associated with idealism, a wide-ranging intellect, a love of philosophy, travel, and higher learning, and generally optimistic outlook. Traditional texts describe Dhanu natives as generous and frank, sometimes to the point of bluntness.',
+    rulingPlanet: 'Jupiter', element: 'Fire', modality: 'Dual (Dwiswabhava)',
+    traits: ['optimistic', 'philosophical', 'adventurous', 'blunt', 'generous'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed academic outcome, travel event, or prediction.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-makara', category: 'vedicRashi', system: 'vedic', name: 'Makara (Capricorn)', aliases: ['makara', 'capricorn'],
+    summary: 'The tenth Rashi, ruled by Saturn, earth element - traditionally linked to discipline, ambition, and long-term structure.',
+    detailed: 'Makara is ruled by Saturn (Shani), governed by the earth element, and classically a movable sign, symbolized by the crocodile/sea-creature. It is traditionally associated with patience, discipline, a methodical pursuit of long-term goals, and a serious, duty-bound temperament. Traditional descriptions note a strong work ethic alongside a tendency toward reserve or pessimism.',
+    rulingPlanet: 'Saturn', element: 'Earth', modality: 'Movable (Chara)',
+    traits: ['disciplined', 'ambitious', 'methodical', 'reserved', 'dutiful'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed career outcome, status, or life timeline.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-kumbha', category: 'vedicRashi', system: 'vedic', name: 'Kumbha (Aquarius)', aliases: ['kumbha', 'aquarius'],
+    summary: 'The eleventh Rashi, ruled by Saturn, air element - traditionally linked to individuality, community, and unconventional thinking.',
+    detailed: 'Kumbha is ruled by Saturn (Shani), governed by the air element, and classically a fixed sign, symbolized by the water-bearer. It is traditionally associated with independent thinking, humanitarian concern, an interest in groups/community causes, and a willingness to break from convention. Traditional texts describe Kumbha natives as detached in temperament yet socially idealistic.',
+    rulingPlanet: 'Saturn', element: 'Air', modality: 'Fixed (Sthira)',
+    traits: ['independent', 'idealistic', 'unconventional', 'detached', 'community-minded'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed social outcome or ideological alignment.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+  {
+    featureId: 'vedic-rashi-meena', category: 'vedicRashi', system: 'vedic', name: 'Meena (Pisces)', aliases: ['meena', 'pisces', 'meen'],
+    summary: 'The twelfth Rashi, ruled by Jupiter, water element - traditionally linked to intuition, compassion, and spiritual inclination.',
+    detailed: 'Meena is ruled by Jupiter (Guru), governed by the water element, and classically a dual sign, symbolized by two fish. As the final Rashi, it is traditionally associated with empathy, imagination, spiritual or mystical inclination, and a tendency to absorb the emotional atmosphere around oneself. Traditional descriptions note compassion and adaptability alongside a tendency toward escapism or indecision.',
+    rulingPlanet: 'Jupiter', element: 'Water', modality: 'Dual (Dwiswabhava)',
+    traits: ['empathetic', 'intuitive', 'imaginative', 'spiritual', 'escapist'],
+    limitations: 'A traditional symbolic archetype, not a guaranteed emotional or spiritual outcome.',
+    sourceType: 'established Vedic astrology reference sites, synthesized', version: 'kb-astro-1.0',
+  },
+];

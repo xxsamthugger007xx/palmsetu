@@ -98,7 +98,7 @@ export function SoulEnergyReadingScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Soul Energy Reading</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         AI-generated, grounded in your real Sun/Moon chart.

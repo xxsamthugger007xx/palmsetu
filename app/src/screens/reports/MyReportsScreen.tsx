@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
-  Layers, Sparkles, Gem, Compass, ScanLine, ChevronRight,
+  Layers, Sparkles, Gem, Compass, ScanLine, ChevronRight, Pencil,
 } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
@@ -25,10 +25,11 @@ export function MyReportsScreen() {
     { id: 'gemstone', title: 'Gemstone History', description: 'Your past gemstone reports', icon: Gem, onPress: () => navigation.navigate('GemstoneHistory') },
     { id: 'vastu', title: 'Vastu History', description: 'Your past vastu reports', icon: Compass, onPress: () => navigation.navigate('VastuHistory') },
     { id: 'palm', title: 'Palm Readings', description: 'Your past palm scans', icon: ScanLine, onPress: () => navigation.navigate('PalmHistory') },
+    { id: 'soulmate', title: 'Soulmate Sketches', description: 'Your purchased soulmate portraits', icon: Pencil, onPress: () => navigation.navigate('SoulmateHistory') },
   ];
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>My Reports</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         All your previous readings and reports, in one place

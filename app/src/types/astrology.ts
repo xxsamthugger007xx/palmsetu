@@ -25,6 +25,22 @@ export interface NatalSummary {
   confidenceNote: string;
 }
 
+/** Mirrors server/src/types/astrology.ts OnboardingDraft - see there for why
+ * this exists (honest, backend-persisted, incrementally-saved onboarding
+ * state, never a parallel progress flag). */
+export interface OnboardingDraft {
+  userId: string;
+  preferredSystem: AstrologySystem | null;
+  birthDate: string | null;
+  birthTime: string | null;
+  birthTimeSkipped: boolean;
+  birthPlace: string | null;
+  birthLatitude: number | null;
+  birthLongitude: number | null;
+  timezone: string | null;
+  updatedAt: string;
+}
+
 export interface BirthProfile {
   userId: string;
   birthDate: string;
@@ -40,18 +56,28 @@ export interface BirthProfile {
 
 export interface PlanetTransit {
   body: string;
-  sign: string;
+  sign: string; // tropical (Western)
+  signSidereal: string; // sidereal (Vedic, Lahiri)
   longitude: number;
+  longitudeSidereal: number;
   retrograde: boolean;
 }
 
 export interface TransitContext {
   date: string;
   engineVersion: string;
-  sunSign: string;
+  sunSign: string; // tropical
+  sunSignSidereal: string;
+  sunLongitude: number;
   moonSignTropical: string;
+  moonTropicalLongitude: number;
+  moonSignSidereal: string;
+  moonSiderealLongitude: number;
   moonNakshatra: string;
+  moonNakshatraPada: number;
   moonPhase: string;
+  nextMoonPhase: string;
+  daysUntilNextMoonPhase: number;
   planets: PlanetTransit[];
 }
 

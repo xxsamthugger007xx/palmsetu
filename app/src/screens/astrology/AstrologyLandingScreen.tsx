@@ -72,7 +72,7 @@ export function AstrologyLandingScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <Text variant="display" weight="semibold">Astrology</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>

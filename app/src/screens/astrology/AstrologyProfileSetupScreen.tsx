@@ -1,18 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, Modal, Platform, StyleSheet, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { ChevronLeft, Calendar, Clock, MapPin, Search, X, Check } from 'lucide-react-native';
+import { ChevronLeft, Calendar, Clock, MapPin } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
-import { color, radius, spacing } from '../../theme/tokens';
+import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { AstrologySystem } from '../../types/astrology';
-import { BIRTHPLACES, BirthplaceOption } from '../../data/birthplaces';
+import { BirthplaceOption } from '../../data/birthplaces';
+import { BirthplacePickerModal } from './onboarding/BirthplacePickerModal';
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
@@ -41,6 +42,11 @@ export function AstrologyProfileSetupScreen() {
   const [birthTime, setBirthTime] = useState<Date | null>(null);
   const [birthplace, setBirthplace] = useState<BirthplaceOption | null>(null);
   const [system, setSystem] = useState<AstrologySystem>('western');
+  // Tracks the system this screen was opened with, so changing it can show
+  // an explicit confirmation (charts/interpretations will change) before
+  // saving - only relevant when editing an existing profile from Profile,
+  // not on a brand-new save where there's nothing to warn about changing.
+  const [originalSystem, setOriginalSystem] = useState<AstrologySystem | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingExisting, setLoadingExisting] = useState(true);
@@ -68,6 +74,7 @@ export function AstrologyProfileSetupScreen() {
           });
         }
         setSystem(p.preferredSystem);
+        setOriginalSystem(p.preferredSystem);
       })
       .catch(() => {}) // no saved profile yet - leave the form empty, this is the honest first-time state
       .finally(() => setLoadingExisting(false));
@@ -76,13 +83,6 @@ export function AstrologyProfileSetupScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showPlacePicker, setShowPlacePicker] = useState(false);
-  const [placeQuery, setPlaceQuery] = useState('');
-
-  const filteredPlaces = useMemo(() => {
-    const q = placeQuery.trim().toLowerCase();
-    if (!q) return BIRTHPLACES;
-    return BIRTHPLACES.filter((p) => p.city.toLowerCase().includes(q) || p.country.toLowerCase().includes(q));
-  }, [placeQuery]);
 
   const canContinue = birthDate !== null && birthTime !== null && birthplace !== null;
 
@@ -100,6 +100,26 @@ export function AstrologyProfileSetupScreen() {
 
   const handleSave = async () => {
     if (!canContinue || !birthDate || !birthTime || !birthplace) return;
+    // Changing the astrology system specifically (not just birth details)
+    // meaningfully changes chart/interpretation results - confirm before
+    // saving, matching the existing destructive-confirmation pattern (e.g.
+    // PalmHistoryScreen's delete confirmation).
+    if (returnTo === 'profile' && originalSystem && originalSystem !== system) {
+      Alert.alert(
+        'Change astrology system?',
+        'Switching between Vedic and Western changes your sign, chart and daily guidance. Your birth details stay the same, but interpretations will be recalculated.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Change system', style: 'destructive', onPress: () => void doSave() },
+        ],
+      );
+      return;
+    }
+    await doSave();
+  };
+
+  const doSave = async () => {
+    if (!birthDate || !birthTime || !birthplace) return;
     setSaving(true);
     setError(null);
     try {
@@ -138,7 +158,12 @@ export function AstrologyProfileSetupScreen() {
   };
 
   return (
-    <PageContainer>
+    // No real re-fetch wired here deliberately: this form pre-fills the
+    // saved birth profile once on mount and the fields are actively edited
+    // in place - re-fetching on pull would silently discard an in-progress,
+    // unsaved edit. The gesture still responds, it just has nothing safe to
+    // reload without risking the user's current input.
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
@@ -231,54 +256,15 @@ export function AstrologyProfileSetupScreen() {
         onPress={handleSave}
       />
 
-      <Modal visible={showPlacePicker} animationType="slide" onRequestClose={() => setShowPlacePicker(false)}>
-        <PageContainer scroll={false}>
-          <View style={styles.header}>
-            <Text variant="bodySm" weight="semibold">Select birthplace</Text>
-            <IconButton icon={X} onPress={() => setShowPlacePicker(false)} />
-          </View>
-
-          <View style={styles.searchRow}>
-            <Search size={16} color={color.textMuted} strokeWidth={1.75} />
-            <TextInput
-              value={placeQuery}
-              onChangeText={setPlaceQuery}
-              placeholder="Search city or country"
-              placeholderTextColor={color.textMuted}
-              style={styles.searchInput}
-              autoFocus
-            />
-          </View>
-
-          <FlatList
-            data={filteredPlaces}
-            keyExtractor={(p) => `${p.city}-${p.country}`}
-            contentContainerStyle={{ paddingBottom: spacing.xl }}
-            renderItem={({ item }) => {
-              const selected = birthplace?.city === item.city && birthplace?.country === item.country;
-              return (
-                <Card
-                  onPress={() => {
-                    setBirthplace(item);
-                    setShowPlacePicker(false);
-                    setPlaceQuery('');
-                  }}
-                  style={styles.placeRow}
-                  padded={false}
-                >
-                  <View style={styles.placeRowInner}>
-                    <View style={{ flex: 1 }}>
-                      <Text variant="bodySm" weight="medium">{item.city}</Text>
-                      <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{item.country} - {item.timezone}</Text>
-                    </View>
-                    {selected && <Check size={18} color={color.accent} strokeWidth={2} />}
-                  </View>
-                </Card>
-              );
-            }}
-          />
-        </PageContainer>
-      </Modal>
+      <BirthplacePickerModal
+        visible={showPlacePicker}
+        selected={birthplace}
+        onClose={() => setShowPlacePicker(false)}
+        onSelect={(place) => {
+          setBirthplace(place);
+          setShowPlacePicker(false);
+        }}
+      />
     </PageContainer>
   );
 }
@@ -296,7 +282,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: color.border,
     backgroundColor: color.surface,
-    borderRadius: radius.md,
+    borderRadius: 12,
     paddingHorizontal: spacing.md,
     marginTop: spacing.md,
     marginBottom: spacing.md,

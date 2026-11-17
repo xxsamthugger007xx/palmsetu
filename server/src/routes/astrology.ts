@@ -15,9 +15,9 @@ import {
   birthProfiles, dailyHoroscopesByKey, astrologyFollowupCounts,
   partnerInvitations, relationshipsById, activeRelationshipByUser, relationshipConsents,
   relationshipDailyReportsByKey, deliveryPreferences, getUserTier,
-  kundliChartsById, soulEnergyReadingsByKey, recordTransaction, userIdentities,
+  kundliChartsById, soulEnergyReadingsByKey, recordTransaction, userIdentities, onboardingDrafts,
 } from '../data/store';
-import { AstrologySystem, BirthProfile, ConsentType, DailyHoroscope, RelationshipDailyReport, UserIdentity } from '../types/astrology';
+import { AstrologySystem, BirthProfile, ConsentType, DailyHoroscope, OnboardingDraft, RelationshipDailyReport, UserIdentity } from '../types/astrology';
 import { KundliChart, KundliChartStyle } from '../types/kundli';
 import { recordCompletedReading } from '../memory/memoryService';
 
@@ -35,6 +35,11 @@ function summarizeHoroscope(h: DailyHoroscope): string {
  * must never be trusted to assert its own user ID in production.
  */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
@@ -43,9 +48,15 @@ const MAX_FOLLOWUP_FREE = 2;
 
 const birthProfileSchema = z.object({
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  // Required, not optional: exact birth time materially changes Moon sign/nakshatra
-  // and transit results, so the client UI now always collects it via a time picker.
-  birthTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+  // Exact birth time materially changes Moon sign/nakshatra and transit
+  // results, so the editing flow (AstrologyProfileSetupScreen) still always
+  // collects it via a time picker. During step-by-step onboarding, though,
+  // a user may genuinely not know their exact birth time - that is an
+  // honest "I don't know" case, not missing data, so null is accepted here
+  // and threaded through to BirthProfile.birthTime/natal.birthTimeKnown
+  // exactly like it already is for the daily horoscope's partial/full
+  // dataCompleteness framing.
+  birthTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).nullable().optional(),
   birthPlace: z.string().min(1).max(200),
   // Real city-center coordinates from the client's city picker (see
   // app/src/data/birthplaces.ts) - required so ascendant/house/dasha
@@ -70,6 +81,39 @@ const userIdentitySchema = z.object({
   name: z.string().min(1).max(100),
   gender: z.enum(['woman', 'man', 'non-binary', 'prefer-not-to-say']).nullable().optional(),
 });
+
+// Step-by-step astrology onboarding: every field optional, since this
+// record is saved incrementally (system first, then date, then time/place).
+// A PATCH here merges the provided fields onto whatever is already stored
+// for this user rather than replacing the whole record - the one thing that
+// must never happen is a later partial save silently wiping an earlier
+// one's fields (e.g. saving birthDate must not erase a previously-saved
+// preferredSystem). See astrology.partialSave.test.ts.
+const onboardingDraftSchema = z.object({
+  preferredSystem: z.enum(['vedic', 'western']).nullable().optional(),
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  birthTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).nullable().optional(),
+  birthTimeSkipped: z.boolean().optional(),
+  birthPlace: z.string().min(1).max(200).nullable().optional(),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
+  timezone: z.string().min(1).nullable().optional(),
+});
+
+function emptyDraft(userId: string): OnboardingDraft {
+  return {
+    userId,
+    preferredSystem: null,
+    birthDate: null,
+    birthTime: null,
+    birthTimeSkipped: false,
+    birthPlace: null,
+    birthLatitude: null,
+    birthLongitude: null,
+    timezone: null,
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 function requireProfile(res: any, userId: string): BirthProfile | undefined {
   const profile = birthProfiles.get(userId);
@@ -139,6 +183,48 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     res.json(identity);
   });
 
+  // --- Onboarding draft (partial, incremental astrology profile save) -------
+  // See OnboardingDraft in types/astrology.ts. GET returns the merged
+  // record so far (404 only if nothing has ever been saved); PATCH merges
+  // the provided fields onto it. The final "Confirm and continue" step
+  // builds a full payload from this draft and calls PUT /profile above to
+  // create the real BirthProfile - this draft is never read by any
+  // calculation or AI grounding path.
+  router.get('/onboarding-draft', (req, res) => {
+    const draft = onboardingDrafts.get(currentUserId(req));
+    if (!draft) return res.status(404).json({ error: 'No onboarding draft yet.' });
+    res.json(draft);
+  });
+
+  router.patch('/onboarding-draft', (req, res) => {
+    const userId = currentUserId(req);
+    const parsed = onboardingDraftSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
+
+    const existing = onboardingDrafts.get(userId) ?? emptyDraft(userId);
+    const d = parsed.data;
+    // Merge: only overwrite a field if the caller actually included that key
+    // in this request. `in` (not a truthy/undefined check) so an explicit
+    // `null` sent on purpose (e.g. clearing a previously-picked birthplace)
+    // is honored, while a key left out entirely leaves the existing value
+    // untouched. This is the one piece of logic that must never regress -
+    // a partial save must never wipe fields a previous partial save stored.
+    const merged: OnboardingDraft = {
+      ...existing,
+      preferredSystem: 'preferredSystem' in d ? d.preferredSystem ?? null : existing.preferredSystem,
+      birthDate: 'birthDate' in d ? d.birthDate ?? null : existing.birthDate,
+      birthTime: 'birthTime' in d ? d.birthTime ?? null : existing.birthTime,
+      birthTimeSkipped: 'birthTimeSkipped' in d ? !!d.birthTimeSkipped : existing.birthTimeSkipped,
+      birthPlace: 'birthPlace' in d ? d.birthPlace ?? null : existing.birthPlace,
+      birthLatitude: 'latitude' in d ? d.latitude ?? null : existing.birthLatitude,
+      birthLongitude: 'longitude' in d ? d.longitude ?? null : existing.birthLongitude,
+      timezone: 'timezone' in d ? d.timezone ?? null : existing.timezone,
+      updatedAt: new Date().toISOString(),
+    };
+    onboardingDrafts.set(userId, merged);
+    res.json(merged);
+  });
+
   // --- Daily horoscope (lazy-generated, idempotent per user+date+system) -----
   router.get('/daily', async (req, res) => {
     const userId = currentUserId(req);
@@ -153,7 +239,14 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
 
     const key = `${userId}:${localDate}:${system}`;
     const existing = dailyHoroscopesByKey.get(key);
-    if (existing) return res.json(existing); // idempotent - never regenerate on refresh
+    // Idempotent per user+date+system - never regenerate on refresh, EXCEPT
+    // when the cached record was computed by an older engine version. The
+    // engine's transit output shape can genuinely change (e.g. gaining
+    // sidereal fields it didn't have before), and a record from before that
+    // change is missing fields the current client expects - serving it as-is
+    // produces broken values (NaN) rather than an honest regeneration.
+    const existingIsCurrent = existing?.calculationReference?.startsWith(ENGINE_VERSION);
+    if (existing && existingIsCurrent) return res.json(existing);
 
     try {
       const content = await generateDailyHoroscope(profile, localDate, system, aiProvider);

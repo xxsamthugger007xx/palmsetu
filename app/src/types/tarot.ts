@@ -24,10 +24,14 @@ export interface TarotCard {
 
 export type ReadingCategory = 'general' | 'love' | 'career' | 'question';
 export type SpreadType =
-  | 'one-card' | 'three-card-ppf' | 'three-card-scg' | 'three-card-mbs' | 'celtic-cross'
+  | 'one-card' | 'three-card-ppf' | 'three-card-scg' | 'three-card-mbs' | 'five-card' | 'celtic-cross'
   | 'love-relationship' | 'career-finance' | 'yes-no' | 'relationship-compatibility';
 export type ReadingStatus = 'drawn' | 'interpreted' | 'failed';
-export type DetailedReportStatus = 'none' | 'ready' | 'failed';
+export type DetailedReportStatus = 'none' | 'generating' | 'ready' | 'failed';
+
+export function formatSpreadLabel(spreadType: SpreadType): string {
+  return spreadType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export interface SpreadPosition {
   index: number;
@@ -72,6 +76,10 @@ export interface TarotInterpretation {
   overallInterpretation: string;
   reflectionPrompts: string[];
   practicalSuggestions?: string[];
+  /** Optional birth-chart personalisation on the premium detailed report
+   * only - null when the user has no saved birth profile. Never affects
+   * which cards were drawn. */
+  birthChartPerspective?: string | null;
   yesNo?: YesNoResult;
   personalized?: boolean;
   personalizedNote?: string;
@@ -85,15 +93,27 @@ export interface TarotReading {
   readingType: ReadingCategory;
   spreadType: SpreadType;
   question: string | null;
+  /** Optional display label for the 'relationship-compatibility' spread
+   * only - a first name/nickname, never an account or full identity. See
+   * server/src/types/tarot.ts's TarotReading for why this is intentionally
+   * lighter than the Relationships/invitation system. */
+  secondPersonName: string | null;
   status: ReadingStatus;
   draws: TarotDraw[];
   interpretation: TarotInterpretation | null;
   detailedReport: TarotInterpretation | null;
   detailedReportStatus: DetailedReportStatus;
+  followupMessages: TarotFollowupMessage[];
   saved: boolean;
   createdAt: string;
   completedAt: string | null;
   datasetVersion: string;
+}
+
+export interface TarotFollowupMessage {
+  question: string;
+  answer: string;
+  createdAt: string;
 }
 
 export interface TarotJournalEntry {

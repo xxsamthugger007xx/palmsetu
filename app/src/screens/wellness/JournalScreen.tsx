@@ -28,13 +28,17 @@ export function JournalScreen() {
       .finally(() => setLoading(false));
   }, [query, favoriteOnly]);
 
-  useFocusEffect(React.useCallback(() => {
+  const loadJournalData = React.useCallback(async () => {
     load();
-    wellnessApi.getJournalStreak().then(setStreak).catch(() => setStreak(null));
-  }, [load]));
+    await wellnessApi.getJournalStreak().then(setStreak).catch(() => setStreak(null));
+  }, [load]);
+
+  useFocusEffect(React.useCallback(() => {
+    loadJournalData();
+  }, [loadJournalData]));
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={loadJournalData}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm, marginBottom: spacing.lg }}>
         <Text variant="display" weight="semibold">Journal</Text>
         <Button label="New entry" icon={Plus} size="sm" onPress={() => navigation.navigate('JournalEditor', {})} />

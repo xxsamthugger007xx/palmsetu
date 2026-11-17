@@ -135,7 +135,7 @@ export function ChallengeDetailScreen() {
   const isCompleted = progress?.status === 'completed';
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{challenge.title}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.sm }}>
         {challenge.description}

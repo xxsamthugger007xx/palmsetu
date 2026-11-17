@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "Accueil", "palmScan": "Lecture de main", "discover": "Découvrir", "wellness": "Bien-être", "profile": "Profil" },
-  "common": { "continue": "Continuer", "cancel": "Annuler", "save": "Enregistrer", "delete": "Supprimer", "retry": "Réessayer", "loading": "Chargement...", "back": "Retour", "skip": "Passer", "upgrade": "Mettre à niveau", "viewAll": "Tout voir", "open": "Ouvrir", "getStarted": "Commencer" },
+  "nav": {
+    "home": "Accueil",
+    "palmScan": "Lecture de main",
+    "discover": "Découvrir",
+    "wellness": "Bien-être",
+    "profile": "Profil"
+  },
+  "common": {
+    "continue": "Continuer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "retry": "Réessayer",
+    "loading": "Chargement...",
+    "back": "Retour",
+    "skip": "Passer",
+    "upgrade": "Mettre à niveau",
+    "viewAll": "Tout voir",
+    "open": "Ouvrir",
+    "getStarted": "Commencer",
+    "close": "Fermer",
+    "comingSoon": "Bientôt",
+    "saving": "Enregistrement...",
+    "greetingMorning": "Bonjour",
+    "greetingAfternoon": "Bon après-midi",
+    "greetingEvening": "Bonsoir",
+    "feelingToday": "Vous vous sentez {{mood}} aujourd'hui",
+    "tapToEditCheckIn": "Touchez pour modifier votre suivi"
+  },
   "intro": {
     "screen1Badge": "LECTURE DE MAIN PAR IA",
     "screen1Headline": "Découvrez ce que révèlent vos mains",
@@ -29,44 +56,217 @@
     "footer": "Vous pouvez modifier ceci à tout moment dans Profil."
   },
   "home": {
-    "greetingMorning": "Bonjour",
-    "greetingAfternoon": "Bon après-midi",
-    "greetingEvening": "Bonsoir",
-    "heroLabel": "ESPACE D'ANALYSE IA",
-    "heroTitle": "Votre espace de réflexion personnel",
-    "heroSubtitle": "Explorez votre paume, comprenez vos schémas et découvrez de nouvelles perspectives.",
-    "startPalmAnalysis": "Commencer l'analyse de la paume",
-    "viewPreviousReading": "Voir la lecture précédente",
-    "quickActions": "Actions rapides",
-    "palmAnalysisTitle": "Analyse de la paume",
-    "palmAnalysisDesc": "Scanner et analyser",
-    "astrologyTitle": "Astrologie",
-    "astrologyDesc": "Votre thème, expliqué",
-    "compatibilityTitle": "Compatibilité",
-    "compatibilityDesc": "Comparer avec d'autres",
-    "companionTitle": "Compagnon IA",
-    "companionDesc": "Parlez de ce qui vous préoccupe",
-    "dailyInsight": "Réflexion du jour",
-    "saveReflection": "Enregistrer la réflexion",
-    "recentActivity": "Activité récente",
-    "wellnessSection": "Bien-être",
-    "moodCheckIn": "Enregistrez votre humeur du jour",
-    "breathingReady": "Un court exercice de respiration est prêt",
-    "mockObservation": "Vos réflexions récentes montrent une tendance à prioriser les besoins des autres avant les vôtres.",
-    "mockQuestion": "Quelle est une chose que vous pourriez faire aujourd'hui juste pour vous ?",
-    "activityPalmReadingType": "Lecture de main",
-    "activityPalmReadingSummary": "Ligne de cœur, de tête et de vie analysées",
-    "activityJournalType": "Entrée de journal",
-    "activityJournalSummary": "Réflexion sur une décision professionnelle",
-    "statusComplete": "Terminé",
-    "statusDraft": "Brouillon"
+    "moonTonightLabel": "Lune ce soir",
+    "moonLabel": "Lune",
+    "todaysTransits": "TRANSITS DU JOUR",
+    "transitBody": "CORPS",
+    "transitSign": "SIGNE",
+    "transitDegree": "DEGRÉ",
+    "setUpProfile": "Configurez votre profil",
+    "moonAddBirthDetails": "Ajoutez vos informations de naissance pour calibrer",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "Signe lunaire occidental (tropical)",
+    "transitRetrograde": "{{body}} est actuellement rétrograde (mouvement apparent vers l'arrière depuis la perspective de la Terre) - un signe traditionnel pour vérifier les détails dans le domaine de ce corps.",
+    "transitDirect": "{{body}} se déplace en direct aujourd'hui.",
+    "transitNote": "Remarque : le moteur de cette application ne calcule pas encore les aspects entre cette position de transit et votre thème natal, donc aucune interprétation relative à votre thème n'est affichée ici - seulement le signe et le degré réels, calculés, ci-dessus.",
+    "dailyGuidanceTitle": "VOTRE GUIDANCE QUOTIDIENNE",
+    "careerLabel": "Carrière : ",
+    "relationshipsLabel": "Relations : ",
+    "energyLabel": "Énergie : ",
+    "tryTodayLabel": "À essayer aujourd'hui : ",
+    "dailyGuidanceEmpty": "Ajoutez vos informations de naissance pour débloquer votre guidance quotidienne personnalisée.",
+    "feelingTitle": "COMMENT VOUS SENTEZ-VOUS AUJOURD'HUI ?",
+    "goToWellness": "Aller à Bien-être",
+    "palmInsightTitle": "VOTRE APERÇU DE PAUME",
+    "palmInsightScanned": "Scanné le {{date}} · {{count}} caractéristiques lues",
+    "palmInsightEmpty": "Terminez votre premier scan de paume pour voir votre aperçu ici.",
+    "premiumTitle": "PALM SETU PREMIUM",
+    "premiumDesc": "Débloquez des rapports plus approfondis et un chat IA illimité",
+    "exploreTitle": "Explorer",
+    "sections": {
+      "palm": {
+        "title": "Analyse de la paume",
+        "description": "Chiromancie par IA à partir d'une photo de votre paume"
+      },
+      "tarot": {
+        "title": "Tarot",
+        "description": "Tirez des cartes et réfléchissez à votre chemin"
+      },
+      "astrology": {
+        "title": "Astrologie",
+        "description": "Kundli védique et guidance cosmique"
+      },
+      "moonsign": {
+        "title": "Signe lunaire",
+        "description": "Votre signe lunaire sidéral et tropical"
+      },
+      "dailyreport": {
+        "title": "Rapport quotidien",
+        "description": "Votre guidance personnalisée du jour"
+      },
+      "horoscopes": {
+        "title": "Horoscopes",
+        "description": "Horoscopes du zodiaque, par signe"
+      },
+      "lovetest": {
+        "title": "Test d'amour",
+        "description": "Connectez-vous avec un partenaire pour des lectures partagées"
+      },
+      "horoscopelauncher": {
+        "title": "Horoscopes étendus",
+        "description": "Perspectives hebdomadaires et mensuelles"
+      },
+      "numerology": {
+        "title": "Numérologie",
+        "description": "Moolaank et Bhagyank"
+      },
+      "western": {
+        "title": "Astrologie occidentale",
+        "description": "Soleil, lune et transits tropicaux"
+      },
+      "aichat": {
+        "title": "Assistant de chat IA",
+        "description": "Posez des questions sur n'importe laquelle de vos lectures"
+      },
+      "myreports": {
+        "title": "Mes rapports",
+        "description": "Toutes vos lectures précédentes, au même endroit"
+      },
+      "soulmate": {
+        "title": "Portrait de l'âme sœur",
+        "description": "Un portrait de votre âme sœur imaginée, dessiné par IA"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "Quelques petites remises à zéro, dès que vous avez un moment.",
+    "todaySubtitle": "Aujourd'hui : {{title}}",
+    "moodSectionTitle": "Humeur",
+    "historyAction": "Historique",
+    "feelingNowPrompt": "Comment vous sentez-vous en ce moment ?",
+    "affirmationSectionTitle": "Affirmation du jour",
+    "challengeSectionTitle": "Défi du jour",
+    "challengeView": "Voir",
+    "challengeDayLabel": "Jour {{day}} : {{title}}",
+    "challengeDuration": "Programme de {{days}} jours",
+    "challengeCompletedToday": "Terminé aujourd'hui",
+    "challengeMarkComplete": "Marquer aujourd'hui comme terminé",
+    "habitJourneyTitle": "Parcours d'habitudes",
+    "quickResetsTitle": "Remises à zéro rapides",
+    "tiles": {
+      "breathing": "Respiration",
+      "meditation": "Méditation",
+      "journal": "Journal",
+      "challenges": "Défis"
+    },
+    "breathingCount": "{{count}} technique",
+    "breathingCount_other": "{{count}} techniques",
+    "meditationCount": "{{count}} séance",
+    "meditationCount_other": "{{count}} séances",
+    "journalWrittenToday": "Écrit aujourd'hui",
+    "journalReflectPrivately": "Réfléchissez en privé",
+    "challengesInProgress": "En cours",
+    "challengesBrowsePrograms": "Parcourir les programmes",
+    "thisWeekTitle": "Cette semaine",
+    "checkInsThisWeek": "{{count}} suivi quotidien cette semaine",
+    "checkInsThisWeek_other": "{{count}} suivis quotidiens cette semaine",
+    "averageEnergy": "Énergie moyenne {{value}}/5",
+    "habitsDoneToday": "{{done}}/{{total}} habitudes complétées aujourd'hui",
+    "noTrendYet": "Enregistrez-vous encore quelques fois cette semaine et vos tendances apparaîtront ici.",
+    "activeGoalsTitle": "Objectifs actifs",
+    "checkInsLogged": "{{count}} suivi enregistré",
+    "checkInsLogged_other": "{{count}} suivis enregistrés",
+    "inspirationLibrary": "Bibliothèque d'inspiration",
+    "reminders": "Rappels",
+    "disclaimer": "Ces exercices et le compagnon IA offrent un soutien quotidien et ne remplacent pas des soins de santé mentale professionnels."
+  },
+  "palm": {
+    "profileTitle": "Profil de paume",
+    "profileSubtitle": "Votre lecture de paume permanente, enregistrée dans votre compte.",
+    "handLabel": "MAIN",
+    "handNotSpecified": "Non spécifiée",
+    "handLeft": "Gauche",
+    "handRight": "Droite",
+    "scanDateLabel": "DATE DE SCAN",
+    "statusLabel": "STATUT",
+    "statusSaved": "Enregistré",
+    "analysisSectionsTitle": "Sections d'analyse",
+    "noSectionsMatched": "Aucune caractéristique spécifique n'a pu être identifiée avec confiance sur ce scan.",
+    "viewCompleteReport": "Voir le rapport complet de paume",
+    "scanTitle": "Lecture de main",
+    "scanSubtitle": "Ancré dans la chiromancie traditionnelle. Pour la réflexion et le divertissement, pas un conseil médical ou prédictif.",
+    "newReadingTitle": "Nouvelle lecture",
+    "newReadingDesc": "Capturez une photo claire de votre paume pour créer votre profil de paume permanent",
+    "scanMyPalm": "Scanner ma paume",
+    "emptyTitle": "Pas encore de profil de paume",
+    "emptyDesc": "La photo de votre paume et l'analyse complète seront enregistrées ici de façon permanente après votre premier scan.",
+    "photoUnavailable": "Photo originale non disponible pour ce scan.",
+    "saveLabel": "ENREGISTRER",
+    "scanAnother": "Scanner une autre paume",
+    "scanAnotherConfirmTitle": "Scanner une autre paume ?",
+    "scanAnotherConfirmDesc": "Cela remplace votre profil de paume actuellement enregistré par un nouveau scan - seul votre scan le plus récent est conservé comme profil actif. Vos scans précédents restent disponibles dans l'historique.",
+    "viewHistory": "Historique"
+  },
+  "tarot": {
+    "title": "Tarot",
+    "subtitle": "Explorez les cartes. Réfléchissez à votre chemin.",
+    "loading": "Chargement...",
+    "errorTitle": "Impossible de charger le Tarot",
+    "errorDesc": "Vérifiez votre connexion et réessayez.",
+    "dailyCardLabel": "CARTE DU JOUR",
+    "revealMyCard": "Révéler ma carte",
+    "reversed": "Inversée",
+    "upright": "Droite",
+    "openFullReading": "Ouvrir la lecture complète",
+    "categoriesTitle": "Catégories de lecture",
+    "categoryComingSoon": "Bientôt disponible",
+    "recentReadingsTitle": "Lectures récentes",
+    "noReadingsTitle": "Pas encore de lectures",
+    "noReadingsDesc": "Commencez par un tirage d'une carte pour voir votre première lecture ici.",
+    "startAReading": "Commencer une lecture",
+    "cardCount": "{{count}} carte",
+    "cardCount_other": "{{count}} cartes",
+    "categories": {
+      "oneCard": {
+        "title": "Lecture d'une carte",
+        "description": "Un tirage rapide et ciblé"
+      },
+      "threeCard": {
+        "title": "Lecture de trois cartes",
+        "description": "Passé, présent, futur"
+      },
+      "love": {
+        "title": "Amour et relations",
+        "description": "Réfléchissez à la connexion"
+      },
+      "career": {
+        "title": "Carrière et croissance",
+        "description": "Réfléchissez à votre direction"
+      },
+      "general": {
+        "title": "Guidance générale",
+        "description": "Réflexion ouverte"
+      },
+      "celticCross": {
+        "title": "Croix celtique",
+        "description": "Tirage avancé à 10 cartes"
+      },
+      "yesNo": {
+        "title": "Oui / Non",
+        "description": "Une réponse directionnelle rapide"
+      },
+      "compatibility": {
+        "title": "Compatibilité",
+        "description": "Vous, eux, et ce qui vous connecte"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "Passer à Premium",
     "upgradeDesc": "Lectures illimitées et accès complet au compagnon",
     "account": "COMPTE",
     "personalInfo": "Informations personnelles",
-    "birthDetails": "Détails de naissance",
+    "birthDetails": "Astrologie et informations de naissance",
     "birthDetailsDesc": "Utilisé pour les fonctions d'astrologie",
     "accountManagement": "Gestion du compte",
     "preferences": "PRÉFÉRENCES",
@@ -87,14 +287,47 @@
     "privacyPolicy": "Politique de confidentialité",
     "signOut": "Se déconnecter",
     "deleteAccountTitle": "Supprimer le compte",
-    "deleteAccountDesc": "Cela supprime définitivement votre compte, vos lectures et vos données de journal. Action irréversible."
+    "deleteAccountDesc": "Cela supprime définitivement votre compte, vos lectures et vos données de journal. Action irréversible.",
+    "guestBannerTitle": "Navigation en tant qu'invité",
+    "guestBannerDesc": "Créez un compte gratuit pour enregistrer vos lectures et synchroniser sur tous vos appareils.",
+    "signUp": "S'inscrire",
+    "signedIn": "Connecté",
+    "palmProfileGroup": "Profil de paume",
+    "rescanPalm": "Rescanner la paume",
+    "rescanPalmDesc": "Remplace votre profil et rapport de paume existants",
+    "rescanConfirmTitle": "Rescanner votre paume ?",
+    "rescanConfirmDesc": "Votre profil de paume est conçu comme une lecture unique. Le rescanner remplacera définitivement votre photo et rapport actuels par de nouveaux - action irréversible.",
+    "rescanConfirm": "Rescanner",
+    "signInCreateAccount": "Se connecter / Créer un compte"
   },
   "discover": {
     "title": "Découvrir",
     "tarotTitle": "Tarot",
     "tarotDesc": "Explorez les cartes. Réfléchissez à votre chemin.",
     "astrologyTitle": "Guidance Cosmique Quotidienne",
-    "astrologyDesc": "Horoscope personnalisé, transits et lectures de couple."
+    "astrologyDesc": "Horoscope personnalisé, transits et lectures de couple.",
+    "modules": {
+      "horoscope": {
+        "title": "Horoscope quotidien",
+        "description": "Une lecture rapide pour aujourd'hui."
+      },
+      "compatibility": {
+        "title": "Portrait de l'âme sœur",
+        "description": "Un portrait premium de votre âme sœur imaginée, dessiné par IA."
+      },
+      "vastu": {
+        "title": "Boussole Vastu",
+        "description": "Alignez votre espace avec une guidance directionnelle traditionnelle."
+      },
+      "selfDiscovery": {
+        "title": "Découverte de soi",
+        "description": "Invites guidées sur l'identité et les valeurs."
+      },
+      "gemstone": {
+        "title": "Guide des pierres",
+        "description": "Guidance traditionnelle des pierres selon votre thème."
+      }
+    }
   },
   "language": {
     "title": "Langue",

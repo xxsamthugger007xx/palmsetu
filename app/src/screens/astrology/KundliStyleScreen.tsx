@@ -139,7 +139,7 @@ export function KundliStyleScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Style Chart</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         Choose a chart style and confirm the birth details to generate.

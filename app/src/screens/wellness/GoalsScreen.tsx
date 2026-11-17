@@ -86,7 +86,7 @@ export function GoalsScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm, marginBottom: spacing.xs }}>
         <Text variant="display" weight="semibold">Goals</Text>
       </View>

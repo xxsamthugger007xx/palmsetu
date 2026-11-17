@@ -71,7 +71,7 @@ export function GemstoneReportScreen() {
   const handleShare = async () => {
     if (!report?.primary.gemstone) return;
     await Share.share({
-      message: `My recommended gemstone (traditional Vedic guidance, via Solune): ${report.primary.gemstone.nameEnglish} (${report.primary.gemstone.nameHindi})\n\n${report.primary.ruleExplanation}`,
+      message: `My recommended gemstone (traditional Vedic guidance, via Palm Setu): ${report.primary.gemstone.nameEnglish} (${report.primary.gemstone.nameHindi})\n\n${report.primary.ruleExplanation}`,
     });
   };
 
@@ -107,7 +107,7 @@ export function GemstoneReportScreen() {
   const hasPrimary = primary.strength === 'primary' && primary.gemstone;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>

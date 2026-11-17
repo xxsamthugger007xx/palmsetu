@@ -17,6 +17,8 @@ function fakeTarotReading(userId: string): TarotReading {
     readingType: 'general',
     spreadType: 'one-card',
     question: null,
+    secondPersonName: null,
+    followupMessages: [],
     status: 'interpreted',
     draws: [{ cardId: 'major-00-the-fool', positionIndex: 0, positionName: 'Present', orientation: 'upright' }],
     interpretation: { overallInterpretation: 'A fresh start.', cards: [] } as any,

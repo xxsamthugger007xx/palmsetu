@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Solune Admin</title>
+<title>Palm Setu Admin</title>
 <style>
   :root {
     --bg: #0B0D12;
@@ -60,20 +60,48 @@
   }
   button:disabled { opacity: 0.5; cursor: default; }
   .error { color: #F28B82; font-size: 13px; margin-top: 8px; min-height: 16px; }
-  #app { display: none; max-width: 1100px; margin: 0 auto; padding: 24px; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-  .topbar h1 { font-size: 18px; margin: 0; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  #app { display: none; }
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 230px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border);
+    padding: 16px 10px; overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
+  }
+  .sidebar.collapsed { width: 56px; }
+  .sidebar.collapsed .group-label, .sidebar.collapsed .tab span.label-text { display: none; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 14px; }
+  .sidebar-header h1 { font-size: 15px; margin: 0; white-space: nowrap; overflow: hidden; }
+  .sidebar-collapse-btn { background: none; border: none; color: var(--textSecondary); cursor: pointer; width: auto; padding: 4px; font-size: 16px; }
+  .group-label { color: var(--textSecondary); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; padding: 14px 10px 6px; }
+  .tabs { display: flex; flex-direction: column; gap: 2px; }
   .tab {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 1px solid transparent;
     color: var(--textSecondary);
-    padding: 8px 14px;
-    border-radius: 999px;
+    padding: 8px 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
   }
-  .tab.active { background: var(--accent); color: #0B0D12; border-color: var(--accent); font-weight: 600; }
+  .tab:hover { background: var(--surfaceElevated); }
+  .tab.active { background: var(--accent); color: #0B0D12; font-weight: 600; }
+  .tab.stub { opacity: 0.55; }
+  .tab .icon { width: 16px; text-align: center; flex-shrink: 0; }
+  .main-area { flex: 1; min-width: 0; padding: 24px; max-width: 1200px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .topbar h1 { font-size: 18px; margin: 0; }
+  .coming-soon { background: var(--surfaceElevated); border: 1px dashed var(--border); border-radius: 14px; padding: 24px; }
+  .coming-soon h2 { margin-top: 0; }
+  .coming-soon ul { color: var(--textSecondary); font-size: 13px; line-height: 1.8; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); display: inline-block; margin-right: 6px; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .feed-row { display: flex; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13px; align-items: center; }
+  .feed-row .feed-time { color: var(--textSecondary); font-size: 11px; width: 68px; flex-shrink: 0; }
+  .feed-row .feed-status.failure { color: #F28B82; }
+  .feed-row .feed-status.success { color: var(--secondary); }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
   .card {
     background: var(--surfaceElevated);
@@ -113,37 +141,74 @@
 
 <div id="login-screen">
   <div class="login-card">
-    <h1>Solune Admin</h1>
-    <p>This is a prototype-grade login with a single shared password and no session expiry beyond 24 hours. Not production-safe authentication.</p>
-    <input id="password-input" type="password" placeholder="Password" autocomplete="off" />
+    <h1>Palm Setu Admin</h1>
+    <p>Super Admin sign-in. Sessions last 24 hours and can be revoked from Settings &gt; Sessions.</p>
+    <input id="email-input" type="text" placeholder="Email" autocomplete="username" />
+    <input id="password-input" type="password" placeholder="Password" autocomplete="current-password" />
+    <input id="totp-input" type="text" placeholder="6-digit MFA code (if enabled)" autocomplete="one-time-code" />
     <button id="login-btn">Log in</button>
     <div class="error" id="login-error"></div>
   </div>
 </div>
 
 <div id="app">
-  <div class="topbar">
-    <h1>Solune Admin</h1>
-    <button class="logout" id="logout-btn">Log out</button>
+  <div class="shell">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>Palm Setu Admin</h1>
+        <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" title="Collapse">&laquo;</button>
+      </div>
+      <div class="tabs" id="nav-tabs">
+        <div class="group-label">Command Centre</div>
+        <div class="tab active" data-tab="overview"><span class="icon">&#9679;</span><span class="label-text">Overview</span></div>
+        <div class="tab" data-tab="live"><span class="icon">&#9679;</span><span class="label-text">Live Activity</span></div>
+        <div class="tab stub" data-tab="stub:alerts"><span class="icon">&#9679;</span><span class="label-text">Alerts &amp; Incidents</span></div>
+
+        <div class="group-label">Users &amp; Growth</div>
+        <div class="tab" data-tab="users"><span class="icon">&#9679;</span><span class="label-text">User Management</span></div>
+        <div class="tab stub" data-tab="stub:journey"><span class="icon">&#9679;</span><span class="label-text">User Journey</span></div>
+        <div class="tab stub" data-tab="stub:sessions"><span class="icon">&#9679;</span><span class="label-text">Sessions</span></div>
+        <div class="tab stub" data-tab="stub:acquisition"><span class="icon">&#9679;</span><span class="label-text">Acquisition</span></div>
+        <div class="tab stub" data-tab="stub:funnels"><span class="icon">&#9679;</span><span class="label-text">Funnels</span></div>
+        <div class="tab stub" data-tab="stub:retention"><span class="icon">&#9679;</span><span class="label-text">Retention &amp; Cohorts</span></div>
+
+        <div class="group-label">Product Intelligence</div>
+        <div class="tab" data-tab="features"><span class="icon">&#9679;</span><span class="label-text">Feature Analytics</span></div>
+        <div class="tab" data-tab="assistant"><span class="icon">&#9679;</span><span class="label-text">AI Assistant</span></div>
+
+        <div class="group-label">Business Intelligence</div>
+        <div class="tab" data-tab="revenue"><span class="icon">&#9679;</span><span class="label-text">Revenue</span></div>
+        <div class="tab" data-tab="subscriptions"><span class="icon">&#9679;</span><span class="label-text">Subscriptions</span></div>
+        <div class="tab stub" data-tab="stub:aicost"><span class="icon">&#9679;</span><span class="label-text">AI Cost Centre</span></div>
+
+        <div class="group-label">Infrastructure</div>
+        <div class="tab" data-tab="system"><span class="icon">&#9679;</span><span class="label-text">System Health</span></div>
+        <div class="tab stub" data-tab="stub:apm"><span class="icon">&#9679;</span><span class="label-text">API Monitoring</span></div>
+        <div class="tab stub" data-tab="stub:errors"><span class="icon">&#9679;</span><span class="label-text">Errors &amp; Crashes</span></div>
+
+        <div class="group-label">Administration</div>
+        <div class="tab" data-tab="audit"><span class="icon">&#9679;</span><span class="label-text">Audit Logs</span></div>
+        <div class="tab stub" data-tab="stub:flags"><span class="icon">&#9679;</span><span class="label-text">Feature Flags</span></div>
+        <div class="tab stub" data-tab="stub:export"><span class="icon">&#9679;</span><span class="label-text">Export Centre</span></div>
+        <div class="tab stub" data-tab="stub:security"><span class="icon">&#9679;</span><span class="label-text">Security</span></div>
+      </div>
+    </nav>
+    <div class="main-area">
+      <div class="topbar">
+        <h1 id="main-title">Overview</h1>
+        <button class="logout" id="logout-btn">Log out</button>
+      </div>
+      <div class="range-bar">
+        <label for="range-since">Since</label>
+        <input type="date" id="range-since" />
+        <label for="range-until">Until</label>
+        <input type="date" id="range-until" />
+        <button id="range-apply" style="width:auto;padding:7px 14px;">Apply</button>
+        <button id="range-clear" class="clear-range">Clear</button>
+      </div>
+      <div id="panel-content"></div>
+    </div>
   </div>
-  <div class="range-bar">
-    <label for="range-since">Since</label>
-    <input type="date" id="range-since" />
-    <label for="range-until">Until</label>
-    <input type="date" id="range-until" />
-    <button id="range-apply" style="width:auto;padding:7px 14px;">Apply</button>
-    <button id="range-clear" class="clear-range">Clear</button>
-  </div>
-  <div class="tabs">
-    <div class="tab active" data-tab="overview">Overview</div>
-    <div class="tab" data-tab="users">Users</div>
-    <div class="tab" data-tab="features">Features</div>
-    <div class="tab" data-tab="revenue">Revenue</div>
-    <div class="tab" data-tab="assistant">AI Chat</div>
-    <div class="tab" data-tab="audit">Audit Log</div>
-    <div class="tab" data-tab="system">System</div>
-  </div>
-  <div id="panel-content"></div>
 </div>
 
 <script>
@@ -187,23 +252,25 @@
       ...options,
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(options && options.headers) },
     });
-    if (res.status === 403) {
+    if (res.status === 401 || res.status === 403) {
       token = '';
       localStorage.removeItem('solune_admin_token');
       showLogin('Session expired, please log in again.');
-      throw new Error('Forbidden');
+      throw new Error('Unauthorized');
     }
     return res.json();
   }
 
   document.getElementById('login-btn').onclick = async () => {
+    const email = document.getElementById('email-input').value;
     const password = document.getElementById('password-input').value;
+    const totpCode = document.getElementById('totp-input').value;
     document.getElementById('login-error').textContent = '';
     try {
       const res = await fetch(API_BASE + '/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password, totpCode: totpCode || undefined }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -219,7 +286,8 @@
     }
   };
 
-  document.getElementById('logout-btn').onclick = () => {
+  document.getElementById('logout-btn').onclick = async () => {
+    try { await api('/admin/logout', { method: 'POST' }); } catch (err) { /* already logged out server-side */ }
     token = '';
     localStorage.removeItem('solune_admin_token');
     showLogin();
@@ -228,6 +296,12 @@
   document.querySelectorAll('.tab').forEach((tab) => {
     tab.onclick = () => renderTab(tab.dataset.tab);
   });
+
+  document.getElementById('sidebar-collapse-btn').onclick = () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+    document.getElementById('sidebar-collapse-btn').innerHTML = sidebar.classList.contains('collapsed') ? '&raquo;' : '&laquo;';
+  };
 
   document.getElementById('range-apply').onclick = () => renderTab(currentTab);
   document.getElementById('range-clear').onclick = () => {
@@ -239,14 +313,45 @@
   function setActiveTab(name) {
     currentTab = name;
     document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === name));
+    const label = document.querySelector('.tab[data-tab="' + CSS.escape(name) + '"] .label-text');
+    document.getElementById('main-title').textContent = label ? label.textContent : 'Palm Setu Admin';
   }
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  // Only the Live Activity tab polls - stop it the instant we navigate away
+  // so switching tabs never leaves a stray interval hitting the server.
+  let liveFeedTimer = null;
+  function stopLiveFeed() {
+    if (liveFeedTimer) { clearInterval(liveFeedTimer); liveFeedTimer = null; }
+  }
+
+  function renderComingSoon(el, title, bullets) {
+    el.innerHTML = '<div class="coming-soon"><h2>' + escapeHtml(title) + '</h2>' +
+      '<p class="unavailable">Not implemented yet - no fabricated numbers are shown here. This module needs:</p>' +
+      '<ul>' + bullets.map((b) => '<li>' + escapeHtml(b) + '</li>').join('') + '</ul></div>';
+  }
+
+  const STUB_PAGES = {
+    'stub:alerts': ['Alerts & Incidents', ['An alert-rule engine (thresholds on payment failures, AI spend, latency, etc.)', 'An incidents table (status, assignment, resolution notes)', 'A notification channel to actually page someone']],
+    'stub:journey': ['User Journey', ['Per-user event timeline UI built on the new user_events table (data already flows in - see Live Activity)', 'Screen-level navigation tracking from the mobile app, which does not exist yet']],
+    'stub:sessions': ['Sessions', ['A session table with start/end/duration', 'Client-side session start/end instrumentation in the Expo app - does not exist yet']],
+    'stub:acquisition': ['Acquisition', ['Install/attribution tracking (referral, campaign, deep link) - no attribution SDK is wired into the app yet']],
+    'stub:funnels': ['Funnels', ['A funnel-builder UI over user_events', 'More event coverage across features before funnel steps are meaningful (only auth/tarot/palm/AI/payments emit events so far)']],
+    'stub:retention': ['Retention & Cohorts', ['Cohort bucketing (by signup date/first feature/etc.) over user_events', 'A derived daily-aggregation job - currently every metric is computed live, which works at this scale but will not forever']],
+    'stub:aicost': ['AI Cost Centre', ['Real per-user AI cost attribution (GenerationOptions does not carry a userId yet, see ai/usageTracking.ts)', 'Real provider-reported cost - every figure today is a ~4-chars/token estimate, see the existing AI Chat tab']],
+    'stub:apm': ['API Monitoring', ['Request-level instrumentation (p50/p95/p99 latency, per-endpoint error rate) - no middleware captures this yet']],
+    'stub:errors': ['Errors & Crashes', ['A structured server error log (today errors only go to stdout)', 'Mobile crash reporting - no crash reporter is integrated in the Expo app']],
+    'stub:flags': ['Feature Flags', ['A feature-flag store and an app-side check - today features are enabled by code, not by configuration']],
+    'stub:export': ['Export Centre', ['Export jobs for the other data types (payments, AI usage, events) beyond the Users CSV export that already exists']],
+    'stub:security': ['Security', ['A dedicated security page is redundant with the existing Audit Logs + Sessions + MFA settings - consider this folded into Audit Logs rather than a true gap']],
+  };
+
   async function renderTab(name) {
     setActiveTab(name);
+    stopLiveFeed();
     const el = document.getElementById('panel-content');
     el.innerHTML = '<p class="unavailable">Loading...</p>';
     try {
@@ -257,6 +362,12 @@
       if (name === 'assistant') return renderAssistant(el);
       if (name === 'audit') return renderAudit(el);
       if (name === 'system') return renderSystem(el);
+      if (name === 'subscriptions') return renderSubscriptions(el);
+      if (name === 'live') return renderLiveActivity(el);
+      if (STUB_PAGES[name]) {
+        const [title, bullets] = STUB_PAGES[name];
+        return renderComingSoon(el, title, bullets);
+      }
     } catch (err) {
       el.innerHTML = '<p class="unavailable">Failed to load: ' + escapeHtml(err.message) + '</p>';
     }
@@ -275,7 +386,7 @@
       const recent = [...users.users].filter((u) => u.lastSeen).sort((a, b) => b.lastSeen.localeCompare(a.lastSeen)).slice(0, 5);
       recentRows = recent.map((u) => `
         <tr>
-          <td>${escapeHtml(u.userId)}</td>
+          <td>${escapeHtml(u.psuId || u.userId)}</td>
           <td><span class="pill ${u.tier === 'premium' ? 'premium' : ''}">${escapeHtml(u.tier)}</span></td>
           <td>${new Date(u.lastSeen).toLocaleString()}</td>
         </tr>
@@ -364,7 +475,7 @@
     const wrap = document.getElementById('users-table-wrap');
     const rows = data.users.map((u) => `
       <tr>
-        <td>${escapeHtml(u.userId)}</td>
+        <td>${escapeHtml(u.psuId || '-')}<br/><span style="color:var(--textSecondary);font-size:11px;">${escapeHtml(u.userId)}</span></td>
         <td><span class="pill ${u.tier === 'premium' ? 'premium' : ''}">${escapeHtml(u.tier)}</span></td>
         <td>${u.readingCounts.tarot}</td>
         <td>${u.readingCounts.gemstone}</td>
@@ -472,6 +583,35 @@
 
   function msOrDash(v) {
     return typeof v === 'number' ? Math.round(v) + 'ms' : '-';
+  }
+
+  async function renderSubscriptions(el) {
+    const data = await api('/admin/subscriptions?pageSize=50');
+    const planCards = Object.entries(data.byPlan).map(([planId, count]) => `
+      <div class="card"><div class="label">${escapeHtml(planId)}</div><div class="value">${count}</div></div>
+    `).join('');
+    const rows = data.subscriptions.map((s) => `
+      <tr>
+        <td>${escapeHtml(s.psuId || s.userId)}</td>
+        <td><span class="pill premium">${escapeHtml(s.planId || 'unknown')}</span></td>
+        <td>${escapeHtml(s.status)}</td>
+        <td>${s.priceCents != null ? formatCents(s.priceCents) : '-'}</td>
+        <td>${s.startedAt ? new Date(s.startedAt).toLocaleDateString() : '-'}</td>
+        <td>${s.renewsAt ? new Date(s.renewsAt).toLocaleDateString() : '-'}</td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">No real billing integration exists yet (no RevenueCat/StoreKit/Play Billing) - every row here was set via the dev-only tier override, not a verified purchase. See the Paywall implementation report for what's required to make this real.</p>
+      <div class="grid">
+        <div class="card"><div class="label">Total premium users</div><div class="value">${data.total}</div></div>
+        ${planCards}
+      </div>
+      <div class="section-title">Subscriptions</div>
+      <table>
+        <thead><tr><th>User</th><th>Plan</th><th>Status</th><th>Price</th><th>Started</th><th>Renews</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="6" class="unavailable">No premium users yet</td></tr>'}</tbody>
+      </table>
+    `;
   }
 
   async function renderAssistant(el) {
@@ -644,6 +784,47 @@
       <div class="section-title">Not yet instrumented</div>
       <div class="card"><div class="label">Error monitoring</div><div class="unavailable">${escapeHtml(data.errorMonitoring.reason)}</div></div>
     `;
+  }
+
+  // --- Live Activity: real events from user_events, via polling ------------
+  // No WebSocket/SSE server exists yet, so this polls /admin/events/live
+  // every 4s with the createdAt of the newest row already shown, and only
+  // ever appends truly new rows - never duplicates on refresh.
+  function eventRowHtml(e) {
+    const time = new Date(e.createdAt).toLocaleTimeString();
+    const meta = e.metadata ? Object.entries(e.metadata).map(([k, v]) => `${k}=${v}`).join(', ') : '';
+    return `
+      <div class="feed-row">
+        <span class="feed-time">${escapeHtml(time)}</span>
+        <span class="pill">${escapeHtml(e.feature)}</span>
+        <strong>${escapeHtml(e.eventType)}</strong>
+        <span class="feed-status ${e.status === 'failure' ? 'failure' : 'success'}">${escapeHtml(e.status)}</span>
+        <span class="unavailable">${escapeHtml(e.userId || 'no user')}${meta ? ' - ' + escapeHtml(meta) : ''}</span>
+      </div>
+    `;
+  }
+
+  async function renderLiveActivity(el) {
+    const initial = await api('/admin/events?pageSize=30');
+    const rows = [...initial.entries].reverse(); // oldest-first for a natural feed order
+    let lastSeenCreatedAt = rows.length ? rows[rows.length - 1].createdAt : null;
+
+    el.innerHTML = `
+      <p><span class="live-dot"></span>Live - polling every 4s. ${initial.total} total events recorded since instrumentation was added.</p>
+      <div class="sparkline-wrap" id="live-feed">${rows.map(eventRowHtml).join('') || '<p class="unavailable">No events recorded yet.</p>'}</div>
+    `;
+
+    liveFeedTimer = setInterval(async () => {
+      try {
+        const res = await api('/admin/events/live' + (lastSeenCreatedAt ? '?after=' + encodeURIComponent(lastSeenCreatedAt) : ''));
+        if (!res.entries.length) return;
+        const feed = document.getElementById('live-feed');
+        if (!feed) return; // navigated away before this tick landed
+        feed.insertAdjacentHTML('beforeend', res.entries.map(eventRowHtml).join(''));
+        feed.scrollTop = feed.scrollHeight;
+        lastSeenCreatedAt = res.entries[res.entries.length - 1].createdAt;
+      } catch (err) { /* transient poll failure, try again next tick */ }
+    }, 4000);
   }
 
   if (token) {

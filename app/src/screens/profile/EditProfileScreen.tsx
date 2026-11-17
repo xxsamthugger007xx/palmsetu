@@ -57,7 +57,13 @@ export function EditProfileScreen() {
   };
 
   return (
-    <PageContainer>
+    // No real re-fetch wired here deliberately: this form pre-fills from
+    // the user's saved profile once on mount, and name/gender are actively
+    // edited in place - re-fetching on every pull would silently discard an
+    // in-progress, unsaved edit. The gesture still responds (per "pull to
+    // refresh should work on all pages"), it just has nothing it's safe to
+    // reload without risking the user's current input.
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>

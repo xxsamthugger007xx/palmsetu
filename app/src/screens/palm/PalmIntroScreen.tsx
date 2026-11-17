@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScanEye, Sparkles, MessageCircleQuestion, ShieldCheck, ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
@@ -18,9 +18,11 @@ const steps = [
 
 export function PalmIntroScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'PalmIntro'>>();
+  const allowRescan = route.params?.allowRescan;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
@@ -55,7 +57,7 @@ export function PalmIntroScreen() {
         </View>
       </Card>
 
-      <Button label="Continue" fullWidth onPress={() => navigation.navigate('PalmCapture')} />
+      <Button label="Continue" fullWidth onPress={() => navigation.navigate('PalmCapture', { allowRescan })} />
     </PageContainer>
   );
 }

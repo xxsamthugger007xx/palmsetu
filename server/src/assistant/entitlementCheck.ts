@@ -8,13 +8,13 @@ import { UserFeatureData } from './dataRetrieval';
  *    has called POST /tarot/readings/:id/detailed-report (see routes/tarot.ts).
  *  - gemstone: free plan gets 1 report (MAX_REPORTS_FREE in routes/gemstone.ts);
  *    a premium user can have additional reports.
- *  - vastu: free plan gets 1 property/report (MAX_PROPERTIES_FREE in
- *    routes/vastu.ts); same shape as gemstone.
  *  - astrology: no premium gate exists in routes/astrology.ts today (only a
  *    free-tier follow-up question cap) - treated as free-only for the chat,
  *    never shown a premium card for it.
  *  - palm: no premium gate exists in routes/palm.ts today - treated as
  *    free-only, same as astrology.
+ *  - vastu: fully free by explicit product decision (no property limit, no
+ *    follow-up limit) - never shown a premium card, same as astrology/palm.
  */
 export interface PremiumCard {
   feature: AssistantFeature;
@@ -67,20 +67,6 @@ export function evaluateEntitlement(
     };
   }
 
-  if (feature === 'vastu' && data.vastu) {
-    return {
-      hasPremiumUpsell: true,
-      premiumCard: {
-        feature: 'vastu',
-        title: 'Analyze additional properties',
-        description: premiumRecommendationCopy,
-        ctaLabel: 'Upgrade to Premium',
-        navigateTo: 'Paywall',
-        deepLink: { screen: 'VastuReport', params: { reportId: data.vastu.id } },
-      },
-    };
-  }
-
-  // astrology, palm: no premium gate exists in this app today - free-only, no upsell.
+  // astrology, palm, vastu: no premium gate - free-only, no upsell.
   return { hasPremiumUpsell: false, premiumCard: null };
 }

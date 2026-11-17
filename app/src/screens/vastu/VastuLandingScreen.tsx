@@ -32,7 +32,7 @@ export function VastuLandingScreen() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <Text variant="display" weight="semibold">Vastu Compass</Text>
         <IconButton icon={History} onPress={() => navigation.navigate('VastuHistory')} />

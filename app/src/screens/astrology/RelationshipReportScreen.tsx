@@ -12,6 +12,7 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { RelationshipDailyReport } from '../../types/astrology';
+import { parseLocalDateString } from '../../utils/formatDate';
 
 export function RelationshipReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -39,7 +40,7 @@ export function RelationshipReportScreen() {
 
   const handleShare = async () => {
     if (!report) return;
-    await Share.share({ message: `${report.summary}\n\n - shared via Solune (reflection, not prediction)` });
+    await Share.share({ message: `${report.summary}\n\n - shared via Palm Setu (reflection, not prediction)` });
   };
 
   if (state === 'loading') {
@@ -53,7 +54,7 @@ export function RelationshipReportScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <IconButton icon={Share2} onPress={handleShare} />
@@ -61,7 +62,7 @@ export function RelationshipReportScreen() {
 
       <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{report.connectionTheme}</Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
-        {new Date(report.localDate).toLocaleDateString()} · {report.sharedAstrologyMode === 'cross-system' ? 'Cross-system reflection' : report.sharedAstrologyMode}
+        {parseLocalDateString(report.localDate).toLocaleDateString()} · {report.sharedAstrologyMode === 'cross-system' ? 'Cross-system reflection' : report.sharedAstrologyMode}
       </Text>
 
       <Section title="Our day at a glance"><Text variant="bodySm" tone="secondary">{report.summary}</Text></Section>

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ChevronLeft, Lock, Info } from 'lucide-react-native';
+import { ChevronLeft, Lock, Info, UserPlus } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { color, radius, spacing } from '../../theme/tokens';
+import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { SpreadDefinition } from '../../types/tarot';
@@ -24,20 +25,24 @@ export function TarotSpreadScreen() {
   const [spreads, setSpreads] = useState<SpreadDefinition[]>([]);
   const [selected, setSelected] = useState<SpreadDefinition | null>(null);
   const [tier, setTier] = useState<'free' | 'premium'>('free');
+  const [secondPersonName, setSecondPersonName] = useState('');
+  const MAX_SECOND_PERSON_NAME_LENGTH = 60;
+
+  const load = React.useCallback(async () => {
+    setState('loading');
+    try {
+      const [spreadsRes, limitsRes] = await Promise.all([tarotApi.getSpreads(), tarotApi.getLimits()]);
+      setSpreads(spreadsRes.spreads);
+      setTier(limitsRes.tier);
+      setState('ready');
+    } catch {
+      setState('error');
+    }
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      setState('loading');
-      try {
-        const [spreadsRes, limitsRes] = await Promise.all([tarotApi.getSpreads(), tarotApi.getLimits()]);
-        setSpreads(spreadsRes.spreads);
-        setTier(limitsRes.tier);
-        setState('ready');
-      } catch {
-        setState('error');
-      }
-    })();
-  }, []);
+    load();
+  }, [load]);
 
   if (state === 'loading') {
     return (
@@ -56,7 +61,7 @@ export function TarotSpreadScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
@@ -80,8 +85,8 @@ export function TarotSpreadScreen() {
               <Text variant="bodySm" weight="semibold">{spread.title}</Text>
               {locked && (
                 <View style={styles.lockBadge}>
-                  <Lock size={11} color={color.textMuted} strokeWidth={2} />
-                  <Text variant="caption" tone="muted" style={{ marginLeft: 4 }}>Premium</Text>
+                  <Lock size={11} color={tarotColor.gold} strokeWidth={2} />
+                  <Text variant="caption" style={{ color: tarotColor.gold, marginLeft: 4 }}>Premium</Text>
                 </View>
               )}
             </View>
@@ -91,7 +96,7 @@ export function TarotSpreadScreen() {
               <View style={{ marginTop: spacing.sm }}>
                 {spread.positions.map((p) => (
                   <View key={p.index} style={styles.positionRow}>
-                    <Text variant="caption" tone="accent" weight="semibold" style={{ width: 90 }}>{p.name}</Text>
+                    <Text variant="caption" weight="semibold" style={{ width: 90, color: tarotColor.lavender }}>{p.name}</Text>
                     <Text variant="caption" tone="muted" style={{ flex: 1 }}>{p.description}</Text>
                   </View>
                 ))}
@@ -100,6 +105,30 @@ export function TarotSpreadScreen() {
           </Card>
         );
       })}
+
+      {selected?.id === 'relationship-compatibility' && (
+        <Card style={{ marginTop: spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <UserPlus size={14} color={tarotColor.gold} strokeWidth={1.75} />
+            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>SECOND PERSON (OPTIONAL)</Text>
+          </View>
+          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.sm }}>
+            Add a first name or nickname only if you want the reading to refer to them by name instead of
+            "Them". This is never stored as an account, never shared with anyone, and is deleted automatically
+            if you delete this reading. We do not collect their birth details, contact information, or
+            anything else about them - and this reading never claims to know their actual private thoughts
+            or feelings, only a traditional symbolic reflection.
+          </Text>
+          <TextInput
+            value={secondPersonName}
+            onChangeText={setSecondPersonName}
+            placeholder="e.g. Alex (optional)"
+            placeholderTextColor={color.textMuted}
+            style={styles.nameInput}
+            maxLength={MAX_SECOND_PERSON_NAME_LENGTH}
+          />
+        </Card>
+      )}
 
       <Button
         label={selected?.premium && tier !== 'premium' ? 'Upgrade to use this spread' : 'Shuffle and draw'}
@@ -112,7 +141,12 @@ export function TarotSpreadScreen() {
             navigation.navigate('Paywall');
             return;
           }
-          navigation.navigate('TarotDraw', { category, question, spreadType: selected.id });
+          navigation.navigate('TarotDraw', {
+            category,
+            question,
+            spreadType: selected.id,
+            secondPersonName: selected.id === 'relationship-compatibility' ? secondPersonName.trim() || undefined : undefined,
+          });
         }}
       />
     </PageContainer>
@@ -122,8 +156,16 @@ export function TarotSpreadScreen() {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row' },
   spreadCard: { marginBottom: spacing.sm },
-  spreadCardSelected: { borderColor: color.accentBorder },
+  spreadCardSelected: { borderColor: tarotColor.goldMuted },
   spreadTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   lockBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: color.surfaceElevated, paddingHorizontal: spacing.xs, paddingVertical: 3, borderRadius: radius.sm },
   positionRow: { flexDirection: 'row', paddingVertical: 4 },
+  nameInput: {
+    borderWidth: 1,
+    borderColor: color.border,
+    backgroundColor: color.surface,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    color: color.textPrimary,
+  },
 });

@@ -49,7 +49,7 @@ export function KundliResultScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{STYLE_TITLE[chart.style]}</Text>
       {chart.subject === 'other' && chart.subjectName && (
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>{chart.subjectName}'s chart</Text>

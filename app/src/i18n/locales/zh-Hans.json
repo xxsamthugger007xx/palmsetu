@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "首页", "palmScan": "手相扫描", "discover": "发现", "wellness": "健康", "profile": "我的" },
-  "common": { "continue": "继续", "cancel": "取消", "save": "保存", "delete": "删除", "retry": "重试", "loading": "加载中...", "back": "返回", "skip": "跳过", "upgrade": "升级", "viewAll": "查看全部", "open": "打开", "getStarted": "开始使用" },
+  "nav": {
+    "home": "首页",
+    "palmScan": "手相扫描",
+    "discover": "发现",
+    "wellness": "健康",
+    "profile": "我的"
+  },
+  "common": {
+    "continue": "继续",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "retry": "重试",
+    "loading": "加载中...",
+    "back": "返回",
+    "skip": "跳过",
+    "upgrade": "升级",
+    "viewAll": "查看全部",
+    "open": "打开",
+    "getStarted": "开始使用",
+    "close": "关闭",
+    "comingSoon": "即将推出",
+    "saving": "保存中...",
+    "greetingMorning": "早上好",
+    "greetingAfternoon": "下午好",
+    "greetingEvening": "晚上好",
+    "feelingToday": "今天感觉{{mood}}",
+    "tapToEditCheckIn": "点击编辑你的打卡记录"
+  },
   "intro": {
     "screen1Badge": "AI 驱动的手相解读",
     "screen1Headline": "探索你的双手所揭示的一切",
@@ -29,44 +56,212 @@
     "footer": "你可以随时在个人资料中更改此设置。"
   },
   "home": {
-    "greetingMorning": "早上好",
-    "greetingAfternoon": "下午好",
-    "greetingEvening": "晚上好",
-    "heroLabel": "AI 洞察空间",
-    "heroTitle": "你的个人洞察空间",
-    "heroSubtitle": "探索你的手掌，理解你的模式，发现新的视角。",
-    "startPalmAnalysis": "开始手相分析",
-    "viewPreviousReading": "查看以往解读",
-    "quickActions": "快捷操作",
-    "palmAnalysisTitle": "手相分析",
-    "palmAnalysisDesc": "扫描并分析",
-    "astrologyTitle": "占星",
-    "astrologyDesc": "解读你的星盘",
-    "compatibilityTitle": "匹配度",
-    "compatibilityDesc": "与他人比较",
-    "companionTitle": "AI 伙伴",
-    "companionDesc": "聊聊你的心事",
-    "dailyInsight": "每日感悟",
-    "saveReflection": "保存感悟",
-    "recentActivity": "最近活动",
-    "wellnessSection": "健康",
-    "moodCheckIn": "记录今天的心情",
-    "breathingReady": "一个简短的呼吸练习已准备好",
-    "mockObservation": "你最近的感悟显示出一种总是先考虑他人需求而非自己需求的模式。",
-    "mockQuestion": "今天你能为自己做的一件事是什么？",
-    "activityPalmReadingType": "手相解读",
-    "activityPalmReadingSummary": "已分析感情线、智慧线和生命线",
-    "activityJournalType": "日记条目",
-    "activityJournalSummary": "反思了一个工作决定",
-    "statusComplete": "已完成",
-    "statusDraft": "草稿"
+    "moonTonightLabel": "今夜月相",
+    "moonLabel": "月亮",
+    "todaysTransits": "今日行星过境",
+    "transitBody": "天体",
+    "transitSign": "星座",
+    "transitDegree": "度数",
+    "setUpProfile": "设置你的资料",
+    "moonAddBirthDetails": "添加出生信息以进行校准",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "西方（回归黄道）月亮星座",
+    "transitRetrograde": "{{body}}目前处于逆行状态（从地球视角看呈现的表观倒退运动），这是传统上提醒你重新核查该天体所主管领域细节的信号。",
+    "transitDirect": "{{body}}今天正在顺行。",
+    "transitNote": "注意：本应用的引擎目前尚未计算该行星过境位置与你本命星盘之间的相位，因此此处未显示与你星盘相关的解读，仅显示上方实际计算出的当前星座和度数。",
+    "dailyGuidanceTitle": "你的每日指引",
+    "careerLabel": "事业：",
+    "relationshipsLabel": "人际关系：",
+    "energyLabel": "能量：",
+    "tryTodayLabel": "今日尝试：",
+    "dailyGuidanceEmpty": "添加你的出生信息以解锁个性化的每日指引。",
+    "feelingTitle": "你今天感觉如何？",
+    "goToWellness": "前往健康",
+    "palmInsightTitle": "你的手相洞察",
+    "palmInsightScanned": "于{{date}}扫描 · 已解读{{count}}项特征",
+    "palmInsightEmpty": "完成你的第一次手相扫描，即可在此查看你的洞察。",
+    "premiumTitle": "PALM SETU 高级版",
+    "premiumDesc": "解锁更深入的报告和无限次 AI 聊天",
+    "exploreTitle": "探索",
+    "sections": {
+      "palm": {
+        "title": "手相分析",
+        "description": "基于手掌照片的 AI 手相解读"
+      },
+      "tarot": {
+        "title": "塔罗牌",
+        "description": "抽取卡牌，反思你的道路"
+      },
+      "astrology": {
+        "title": "占星",
+        "description": "吠陀星盘与宇宙指引"
+      },
+      "moonsign": {
+        "title": "月亮星座",
+        "description": "你的恒星与回归黄道月亮星座"
+      },
+      "dailyreport": {
+        "title": "每日报告",
+        "description": "今天的个性化指引"
+      },
+      "horoscopes": {
+        "title": "星座运势",
+        "description": "按星座划分的运势"
+      },
+      "lovetest": {
+        "title": "爱情测试",
+        "description": "与伴侣连接进行共同解读"
+      },
+      "horoscopelauncher": {
+        "title": "延伸运势",
+        "description": "每周和每月的展望"
+      },
+      "numerology": {
+        "title": "数字命理学",
+        "description": "命运数与幸运数"
+      },
+      "western": {
+        "title": "西方占星",
+        "description": "回归黄道的太阳、月亮与行星过境"
+      },
+      "aichat": {
+        "title": "AI 聊天助手",
+        "description": "询问关于你任何一次解读的问题"
+      },
+      "myreports": {
+        "title": "我的报告",
+        "description": "你所有以往的解读，集中于一处"
+      },
+      "soulmate": {
+        "title": "灵魂伴侣素描",
+        "description": "由AI绘制的你想象中灵魂伴侣的肖像"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "无论何时有空，都可以做一些小小的重置。",
+    "todaySubtitle": "今天：{{title}}",
+    "moodSectionTitle": "心情",
+    "historyAction": "历史记录",
+    "feelingNowPrompt": "你现在感觉如何？",
+    "affirmationSectionTitle": "今日肯定语",
+    "challengeSectionTitle": "今日挑战",
+    "challengeView": "查看",
+    "challengeDayLabel": "第{{day}}天：{{title}}",
+    "challengeDuration": "{{days}}天计划",
+    "challengeCompletedToday": "今天已完成",
+    "challengeMarkComplete": "将今天标记为已完成",
+    "habitJourneyTitle": "习惯养成之旅",
+    "quickResetsTitle": "快速重置",
+    "tiles": {
+      "breathing": "呼吸",
+      "meditation": "冥想",
+      "journal": "日记",
+      "challenges": "挑战"
+    },
+    "breathingCount_other": "{{count}}个技巧",
+    "meditationCount_other": "{{count}}个课程",
+    "journalWrittenToday": "今天已写",
+    "journalReflectPrivately": "私下反思",
+    "challengesInProgress": "进行中",
+    "challengesBrowsePrograms": "浏览计划",
+    "thisWeekTitle": "本周",
+    "checkInsThisWeek_other": "本周{{count}}次每日打卡",
+    "averageEnergy": "平均能量 {{value}}/5",
+    "habitsDoneToday": "今天已完成{{done}}/{{total}}个习惯",
+    "noTrendYet": "本周再多打卡几次，你的趋势就会显示在这里。",
+    "activeGoalsTitle": "进行中的目标",
+    "checkInsLogged_other": "已记录{{count}}次打卡",
+    "inspirationLibrary": "灵感库",
+    "reminders": "提醒",
+    "disclaimer": "这些练习和 AI 伙伴提供日常支持，并不能替代专业的心理健康护理。"
+  },
+  "palm": {
+    "profileTitle": "手相档案",
+    "profileSubtitle": "你的永久手相解读，已保存到你的账户。",
+    "handLabel": "手",
+    "handNotSpecified": "未指定",
+    "handLeft": "左手",
+    "handRight": "右手",
+    "scanDateLabel": "扫描日期",
+    "statusLabel": "状态",
+    "statusSaved": "已保存",
+    "analysisSectionsTitle": "分析部分",
+    "noSectionsMatched": "此次扫描未能可靠匹配到任何特定特征。",
+    "viewCompleteReport": "查看完整手相报告",
+    "scanTitle": "手相扫描",
+    "scanSubtitle": "基于传统手相学。仅供反思和娱乐，并非医学或预测性建议。",
+    "newReadingTitle": "新解读",
+    "newReadingDesc": "拍摄一张清晰的手掌照片，创建你的永久手相档案",
+    "scanMyPalm": "扫描我的手掌",
+    "emptyTitle": "尚无手相档案",
+    "emptyDesc": "完成首次扫描后，你的手掌照片和完整分析将永久保存在此处。",
+    "photoUnavailable": "此次扫描的原始照片不可用。",
+    "saveLabel": "保存",
+    "scanAnother": "扫描另一只手掌",
+    "scanAnotherConfirmTitle": "要扫描另一只手掌吗？",
+    "scanAnotherConfirmDesc": "这将用新的扫描替换你当前保存的手相档案，仅保留最新的扫描作为你的当前档案。之前的扫描记录仍可在历史记录中查看。",
+    "viewHistory": "历史记录"
+  },
+  "tarot": {
+    "title": "塔罗牌",
+    "subtitle": "探索卡牌，反思你的道路。",
+    "loading": "加载中...",
+    "errorTitle": "无法加载塔罗牌",
+    "errorDesc": "请检查你的网络连接并重试。",
+    "dailyCardLabel": "每日卡牌",
+    "revealMyCard": "揭示我的卡牌",
+    "reversed": "逆位",
+    "upright": "正位",
+    "openFullReading": "打开完整解读",
+    "categoriesTitle": "解读类别",
+    "categoryComingSoon": "即将推出",
+    "recentReadingsTitle": "最近的解读",
+    "noReadingsTitle": "暂无解读",
+    "noReadingsDesc": "从单张卡牌抽取开始，在这里查看你的第一次解读。",
+    "startAReading": "开始解读",
+    "cardCount_other": "{{count}}张卡牌",
+    "categories": {
+      "oneCard": {
+        "title": "单张卡牌解读",
+        "description": "快速而专注的抽取"
+      },
+      "threeCard": {
+        "title": "三张卡牌解读",
+        "description": "过去、现在、未来"
+      },
+      "love": {
+        "title": "爱情与人际关系",
+        "description": "反思彼此的联系"
+      },
+      "career": {
+        "title": "事业与成长",
+        "description": "反思你的方向"
+      },
+      "general": {
+        "title": "综合指引",
+        "description": "开放式反思"
+      },
+      "celticCross": {
+        "title": "凯尔特十字",
+        "description": "进阶十张牌阵"
+      },
+      "yesNo": {
+        "title": "是 / 否",
+        "description": "快速的方向性答案"
+      },
+      "compatibility": {
+        "title": "匹配度",
+        "description": "你、对方，以及连接你们的事物"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "升级到高级版",
     "upgradeDesc": "无限次解读和完整的伙伴功能",
     "account": "账户",
     "personalInfo": "个人信息",
-    "birthDetails": "出生信息",
+    "birthDetails": "占星与出生信息",
     "birthDetailsDesc": "用于占星功能",
     "accountManagement": "账户管理",
     "preferences": "偏好设置",
@@ -87,14 +282,47 @@
     "privacyPolicy": "隐私政策",
     "signOut": "退出登录",
     "deleteAccountTitle": "删除账户",
-    "deleteAccountDesc": "这将永久删除你的账户、解读和日记数据，且无法恢复。"
+    "deleteAccountDesc": "这将永久删除你的账户、解读和日记数据，且无法恢复。",
+    "guestBannerTitle": "以访客身份浏览",
+    "guestBannerDesc": "创建一个免费账户以保存你的解读并在各设备间同步。",
+    "signUp": "注册",
+    "signedIn": "已登录",
+    "palmProfileGroup": "手相档案",
+    "rescanPalm": "重新扫描手掌",
+    "rescanPalmDesc": "将替换你现有的手相档案和报告",
+    "rescanConfirmTitle": "要重新扫描你的手掌吗？",
+    "rescanConfirmDesc": "你的手相档案设计为一次性解读。重新扫描将永久用新的照片和报告替换当前内容，此操作无法撤销。",
+    "rescanConfirm": "重新扫描",
+    "signInCreateAccount": "登录 / 创建账户"
   },
   "discover": {
     "title": "发现",
     "tarotTitle": "塔罗牌",
     "tarotDesc": "探索卡牌，反思你的道路。",
     "astrologyTitle": "每日宇宙指引",
-    "astrologyDesc": "个性化星座运势、行星过境与情侣解读。"
+    "astrologyDesc": "个性化星座运势、行星过境与情侣解读。",
+    "modules": {
+      "horoscope": {
+        "title": "每日运势",
+        "description": "今日简短解读。"
+      },
+      "compatibility": {
+        "title": "灵魂伴侣素描",
+        "description": "由AI绘制的你想象中灵魂伴侣的高级肖像。"
+      },
+      "vastu": {
+        "title": "风水罗盘",
+        "description": "根据传统方位指引调整你的空间。"
+      },
+      "selfDiscovery": {
+        "title": "自我发现",
+        "description": "关于身份与价值观的引导提示。"
+      },
+      "gemstone": {
+        "title": "宝石指南",
+        "description": "根据你的星盘提供传统宝石指引。"
+      }
+    }
   },
   "language": {
     "title": "语言",

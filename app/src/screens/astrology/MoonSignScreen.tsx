@@ -13,20 +13,24 @@ import { ZodiacWheel } from '../../components/ZodiacWheel';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
-import { BirthProfile } from '../../types/astrology';
+import { degreeReadout } from '../../utils/astrology';
+import { BirthProfile, DailyHoroscope } from '../../types/astrology';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
 /**
  * Focused moon-sign surface. Reuses the real birth profile the astrology
  * engine already computes (natal.moonSignTropical / moonSignSidereal /
- * moonNakshatra) - no new backend calculation, just a dedicated frontend
- * presentation of data that already exists on BirthProfile.
+ * moonNakshatra) plus, when available, today's real transit data
+ * (transitContext from the daily horoscope already computed server-side) -
+ * no new backend calculation beyond the engine's existing fields, just a
+ * dedicated frontend presentation.
  */
 export function MoonSignScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<LoadState>('loading');
   const [profile, setProfile] = useState<BirthProfile | null>(null);
+  const [dailyHoroscope, setDailyHoroscope] = useState<DailyHoroscope | null>(null);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -40,6 +44,12 @@ export function MoonSignScreen() {
         return;
       }
       setProfile(profileRes);
+      // Today's real transit (current Moon sign/phase/degree) is honest,
+      // already-computed data on the daily horoscope - never fabricated
+      // here. Never block the main ready state on this call failing.
+      astrologyApi.getDaily(astrologyApi.todayLocalDate())
+        .then((res) => setDailyHoroscope(res.generationStatus === 'ready' ? res : null))
+        .catch(() => setDailyHoroscope(null));
       setState('ready');
     } catch {
       setState('error');
@@ -83,7 +93,7 @@ export function MoonSignScreen() {
   const { natal } = profile;
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Moon Sign</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         Based on your birth details, {natal.birthTimeKnown ? 'including birth time' : 'birth date only'}
@@ -127,6 +137,44 @@ export function MoonSignScreen() {
           </View>
         </Card>
       </View>
+
+      {dailyHoroscope && (
+        <View style={{ marginTop: spacing.lg }}>
+          <SectionHeader title="Today's Moon" />
+          <Card elevated>
+            <View style={styles.dataRow}>
+              <Text variant="bodySm" tone="secondary">Current position</Text>
+              <Text variant="bodySm" weight="semibold">
+                {dailyHoroscope.astrologySystem === 'vedic'
+                  ? dailyHoroscope.transitContext.moonSignSidereal
+                  : dailyHoroscope.transitContext.moonSignTropical}{' '}
+                {degreeReadout(
+                  dailyHoroscope.astrologySystem === 'vedic'
+                    ? dailyHoroscope.transitContext.moonSiderealLongitude
+                    : dailyHoroscope.transitContext.moonTropicalLongitude
+                )}
+              </Text>
+            </View>
+            <FadeDivider style={{ marginVertical: spacing.sm }} />
+            <View style={styles.dataRow}>
+              <Text variant="bodySm" tone="secondary">Lunar phase</Text>
+              <Text variant="bodySm" weight="semibold">{dailyHoroscope.transitContext.moonPhase}</Text>
+            </View>
+            <View style={[styles.dataRow, { marginTop: spacing.xs }]}>
+              <Text variant="bodySm" tone="secondary">Next phase</Text>
+              <Text variant="bodySm" weight="semibold">
+                {dailyHoroscope.transitContext.nextMoonPhase} in ~{dailyHoroscope.transitContext.daysUntilNextMoonPhase}d
+              </Text>
+            </View>
+            <FadeDivider style={{ marginVertical: spacing.sm }} />
+            <Text variant="bodySm" tone="secondary">{dailyHoroscope.selfCarePrompt}</Text>
+          </Card>
+          <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
+            This app's engine doesn't currently calculate specific future lunar events (e.g. nakshatra
+            changes or eclipses) beyond the next phase estimate above, so none are fabricated here.
+          </Text>
+        </View>
+      )}
 
       {!natal.birthTimeKnown && (
         <Text variant="caption" tone="muted" style={{ marginTop: spacing.lg }}>

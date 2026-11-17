@@ -28,9 +28,13 @@ export function AstrologyNotificationSettingsScreen() {
   const [prefs, setPrefs] = useState<DailyDeliveryPreference | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    astrologyApi.getPreferences().then(setPrefs);
+  const load = React.useCallback(async () => {
+    await astrologyApi.getPreferences().then(setPrefs);
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const save = async (next: Partial<DailyDeliveryPreference>) => {
     if (!prefs) return;
@@ -49,7 +53,7 @@ export function AstrologyNotificationSettingsScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Notification Preferences</Text>

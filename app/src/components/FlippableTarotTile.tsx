@@ -9,6 +9,11 @@ type Props = {
   revealed: boolean;
   disabled?: boolean;
   onPress?: () => void;
+  /** Fired on touch-down, before any tap completes - lets the parent fan
+   * push neighboring tiles apart so there's more room to land the tap
+   * precisely, without waiting for a full press-and-release. */
+  onPressIn?: () => void;
+  onPressOut?: () => void;
   width?: number;
   height?: number;
   reduceMotion?: boolean;
@@ -19,7 +24,7 @@ type Props = {
  * server-side at draw time - tapping only decides reveal order, never which
  * card it turns out to be). */
 export function FlippableTarotTile({
-  card, orientation = 'upright', revealed, disabled, onPress, width = 84, height = 128, reduceMotion,
+  card, orientation = 'upright', revealed, disabled, onPress, onPressIn, onPressOut, width = 84, height = 128, reduceMotion,
 }: Props) {
   const flip = useRef(new Animated.Value(revealed ? 1 : 0)).current;
 
@@ -43,6 +48,8 @@ export function FlippableTarotTile({
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
+      onPressIn={disabled ? undefined : onPressIn}
+      onPressOut={disabled ? undefined : onPressOut}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={revealed ? `${card?.name ?? 'Card'}, ${orientation}` : 'Face-down tarot card, tap to select'}

@@ -5,26 +5,55 @@ import { VisionAssistedPalmAnalyzer } from '../palmAnalysis/visionAssistedAnalyz
 import { buildFreeReading } from '../palmistry/staticPalmistryEngine';
 import { generatePremiumReport } from '../palmistry/premiumPalmistryEngine';
 import { generateDailyGuidance } from '../palmistry/dailyGuidanceService';
-import { readingsById, dailyPalmGuidanceByKey, palmFollowupCounts, getUserTier, recordTransaction } from '../data/store';
+import {
+  readingsById, dailyPalmGuidanceByKey, palmFollowupCounts, getUserTier, recordTransaction,
+  isPalmSectionUnlocked, unlockedPalmSectionsFor, unlockPalmSection, sectionUnlocksUsedBy,
+  primaryReadingFor, setPrimaryReading,
+} from '../data/store';
 import { AiProvider } from '../ai/types';
 import { PALMISTRY_SYSTEM_PROMPT } from '../ai/systemPrompts';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
 import { recordCompletedReading, invalidateMemoryForSource } from '../memory/memoryService';
+import { recordEvent } from '../events/eventTracker';
 import { PalmReading } from '../types/palm';
 import { isAccepted } from '../palmistry/validation';
+import { buildPremiumSectionsByCategory } from '../palmistry/premiumPalmistryEngine';
+import { saveReadingImage, readReadingImage, deleteReadingImage } from '../palmistry/imageStorage';
 
 const analyzer = new VisionAssistedPalmAnalyzer();
 
-const submitSchema = z.object({ image: z.string().min(1) });
+const submitSchema = z.object({
+  image: z.string().min(1),
+  // Explicit, user-confirmed opt-in to replace an existing palm profile.
+  // Never defaults to true - a bare duplicate POST (double-tap, retry)
+  // must never silently create a second profile.
+  allowRescan: z.boolean().optional(),
+  // Which hand the user says they photographed - the vision model also
+  // guesses this from the image (analysis.hand), but the user's own
+  // selection is ground truth about their own body and must win when
+  // both exist (see below, after analysis runs).
+  hand: z.enum(['left', 'right']).optional(),
+});
 const askSchema = z.object({ question: z.string().min(1).max(1000) });
 const localDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 const MAX_FREE_PREMIUM_REPORTS = 1;
 const MAX_FOLLOWUP_FREE = 2;
+// Section-wise unlock quota is tracked independently from the whole-bundle
+// quota above (MAX_FREE_PREMIUM_REPORTS) - a free user gets one free single
+// section AND, separately, the existing one free complete-bundle report.
+// Keeping them independent avoids silently changing the behavior of the
+// already-tested whole-report quota.
+const MAX_FREE_SECTION_UNLOCKS = 1;
 
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
@@ -37,6 +66,16 @@ function summarizePalmReading(r: PalmReading): string {
 function premiumReportsUsedBy(userId: string): number {
   return [...readingsById.values()].filter((r) => r.userId === userId && r.premiumReportGeneratedAt).length;
 }
+
+/** The section keys actually detected on this reading - the only values a
+ * section-unlock request is ever allowed to name. Never derived from a
+ * fixed list of "all possible sections", only from what the free reading
+ * genuinely produced, so an undetected line can never be "unlocked". */
+function detectedSectionKeys(reading: PalmReading): string[] {
+  const keys = reading.freeReading.sections.map((s) => s.sectionKey).filter((k): k is NonNullable<typeof k> => !!k);
+  return [...new Set<string>(keys)];
+}
+
 
 export function buildPalmRouter(aiProvider: AiProvider) {
   const router = Router();
@@ -53,9 +92,37 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     }
 
     const userId = currentUserId(req);
+
+    // Palm scanning is a one-time profile, not a repeatable feature: if the
+    // user already has a primary reading, refuse to generate a new one
+    // unless they explicitly confirmed a rescan (allowRescan: true). This
+    // also protects against duplicate API calls (double-tap, retry after a
+    // slow response) ever producing two profiles - the check happens before
+    // any AI call or image persistence, so a blocked duplicate costs
+    // nothing and creates nothing.
+    const existingProfile = primaryReadingFor(userId);
+    if (existingProfile && !parsed.data.allowRescan) {
+      return res.status(409).json({
+        error: 'A palm profile already exists for this account. Confirm a rescan to replace it.',
+        code: 'PROFILE_EXISTS',
+        existingReadingId: existingProfile.id,
+      });
+    }
+
     const imageBuffer = Buffer.from(parsed.data.image, 'base64');
 
     const analysis = await analyzer.analyze(imageBuffer);
+
+    // The user's own stated hand always wins over the vision model's guess
+    // - it's a direct fact about their own body, not an interpretation, and
+    // the model can and does get left/right wrong (e.g. ambiguous framing,
+    // a photo of the hand from an angle the model misreads as mirrored).
+    // analysis.validation.handSide (the model's own raw guess, used for the
+    // separate "does this disagree with what you selected" warning on the
+    // client) is left untouched - only the displayed/stored hand changes.
+    if (parsed.data.hand) {
+      analysis.hand = parsed.data.hand;
+    }
 
     // Validation gate: an image that isn't a usable palm photo (no hand,
     // back of hand, wrong body part, multiple hands) or that fails the
@@ -72,9 +139,25 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     }
 
     const freeReading = buildFreeReading(analysis);
+    const readingId = uuid();
+
+    // Persist the original captured photo to disk, mirroring this app's
+    // existing solune.db on-disk persistence convention. A failure here must
+    // never block the reading itself from being saved/returned - the reading
+    // record is still complete and useful without its photo, so this is best
+    // effort, not a hard dependency.
+    let hasStoredImage = false;
+    let imageHash: string | undefined;
+    try {
+      const saved = saveReadingImage(readingId, imageBuffer);
+      hasStoredImage = true;
+      imageHash = saved.hash;
+    } catch {
+      hasStoredImage = false;
+    }
 
     const reading: PalmReading = {
-      id: uuid(),
+      id: readingId,
       userId,
       createdAt: new Date().toISOString(),
       analysis,
@@ -82,19 +165,48 @@ export function buildPalmRouter(aiProvider: AiProvider) {
       premiumReportAvailable: true,
       premiumReport: null,
       premiumReportGeneratedAt: null,
+      hasStoredImage,
+      imageHash,
     };
 
     readingsById.set(reading.id, reading);
+    // This becomes the user's one primary palm profile - demotes any prior
+    // primary reading (the rescan-replaced one) in the same operation.
+    setPrimaryReading(userId, reading.id);
     // Genuine completion point - the full reading (analysis + free reading)
     // was built successfully, not a partial/failed attempt.
     recordCompletedReading(userId, 'palm', reading.id, getUserTier(userId), summarizePalmReading(reading));
-    res.json(reading);
+    recordEvent({ userId, eventType: 'PALM_REPORT_GENERATED', feature: 'palm', metadata: { readingId: reading.id } });
+    res.json(readingsById.get(reading.id));
   });
 
   router.get('/readings/:id', (req, res) => {
     const reading = readingsById.get(req.params.id);
     if (!reading || reading.userId !== currentUserId(req)) return res.status(404).json({ error: 'Reading not found' });
     res.json(reading);
+  });
+
+  // Authenticated image fetch, same ownership check as every other
+  // /readings/:id route - never a public/unauthenticated URL.
+  router.get('/readings/:id/image', (req, res) => {
+    const reading = readingsById.get(req.params.id);
+    if (!reading || reading.userId !== currentUserId(req)) return res.status(404).json({ error: 'Reading not found' });
+    const buffer = readReadingImage(reading.id);
+    if (!buffer) return res.status(404).json({ error: 'No stored image for this reading' });
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'private, max-age=31536000, immutable');
+    res.send(buffer);
+  });
+
+  // The one-time palm profile: the user's single primary reading, if they
+  // have completed a scan. Returning users hit this on every Palm Scan
+  // visit instead of re-submitting a photo - never regenerates anything,
+  // just reads the already-saved reading.
+  router.get('/profile', (req, res) => {
+    const userId = currentUserId(req);
+    const profile = primaryReadingFor(userId);
+    if (!profile) return res.status(404).json({ error: 'No palm profile yet', code: 'NO_PROFILE' });
+    res.json(profile);
   });
 
   router.get('/readings', (req, res) => {
@@ -142,7 +254,87 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     if (tier === 'premium' && used >= MAX_FREE_PREMIUM_REPORTS) {
       recordTransaction(userId, 'palm_premium_report');
     }
+
+    // The complete-reading bundle is equivalent to unlocking every
+    // detected section at once - mark them as unlocked in the section-wise
+    // store too, so GET /readings/:id/sections (the new per-section view)
+    // reflects this without needing a separate "is this a legacy whole-
+    // report record" branch everywhere that endpoint is read from.
+    for (const section of detectedSectionKeys(reading)) {
+      unlockPalmSection(reading.id, userId, section);
+    }
     res.json(reading);
+  });
+
+  // Section-wise entitlement: unlock ONE detected line/section for this
+  // reading. Same simulated-purchase pattern as every other premium
+  // feature in this app (tier check -> quota check -> recordTransaction ->
+  // grant) - there is no real payment gateway, this never charges real
+  // money, it only writes a transaction row for the admin revenue report.
+  router.post('/readings/:id/sections/:section/unlock', async (req, res) => {
+    const userId = currentUserId(req);
+    const reading = readingsById.get(req.params.id);
+    if (!reading || reading.userId !== userId) return res.status(404).json({ error: 'Reading not found' });
+
+    const section = req.params.section;
+    if (!detectedSectionKeys(reading).includes(section)) {
+      // Never let a client "unlock" a line that was never actually
+      // detected in this reading - that would be fabricating a feature.
+      return res.status(400).json({ error: 'This section was not detected in this reading, so it cannot be unlocked.', code: 'SECTION_NOT_DETECTED' });
+    }
+
+    // Legacy whole-report records, or a section already unlocked, are
+    // idempotent no-ops - never re-charge.
+    if (reading.premiumReport || isPalmSectionUnlocked(reading.id, section)) {
+      return res.json({ unlocked: true, section, alreadyUnlocked: true });
+    }
+
+    const tier = getUserTier(userId);
+    const used = sectionUnlocksUsedBy(userId);
+    if (tier !== 'premium' && used >= MAX_FREE_SECTION_UNLOCKS) {
+      return res.status(403).json({ error: `Free plan allows ${MAX_FREE_SECTION_UNLOCKS} free section unlock. Upgrade for additional sections.`, code: 'LIMIT_REACHED' });
+    }
+
+    unlockPalmSection(reading.id, userId, section);
+    if (tier === 'premium' && used >= MAX_FREE_SECTION_UNLOCKS) {
+      recordTransaction(userId, 'palm_section_unlock');
+    }
+    res.json({ unlocked: true, section });
+  });
+
+  // Section-wise read: for each section the free reading actually
+  // detected, report whether it's unlocked and, only if so, include its
+  // detailed premium content (reusing premiumPalmistryEngine's existing
+  // per-line content generation - nothing new is generated here, only
+  // gated differently). Old whole-report records (premiumReport populated)
+  // are treated as every detected section being unlocked, for backward
+  // compatibility.
+  router.get('/readings/:id/sections', (req, res) => {
+    const userId = currentUserId(req);
+    const reading = readingsById.get(req.params.id);
+    if (!reading || reading.userId !== userId) return res.status(404).json({ error: 'Reading not found' });
+
+    const legacyAllUnlocked = !!reading.premiumReport;
+    const unlockedSet = new Set(unlockedPalmSectionsFor(reading.id));
+    const { byCategory } = buildPremiumSectionsByCategory(reading.analysis);
+    const detected = detectedSectionKeys(reading);
+
+    const sections = reading.freeReading.sections.map((s) => {
+      const key = s.sectionKey ?? 'unknown';
+      const unlocked = legacyAllUnlocked || unlockedSet.has(key);
+      return {
+        sectionKey: key,
+        title: s.title,
+        freeText: s.text,
+        unlocked,
+        detail: unlocked ? (byCategory[key] ?? []) : null,
+      };
+    });
+
+    res.json({
+      sections,
+      completeUnlocked: legacyAllUnlocked || (detected.length > 0 && detected.every((k) => unlockedSet.has(k))),
+    });
   });
 
   router.post('/readings/:id/ask', async (req, res) => {
@@ -183,6 +375,7 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     readingsById.delete(reading.id);
     palmFollowupCounts.delete(reading.id);
     invalidateMemoryForSource(userId, reading.id);
+    deleteReadingImage(reading.id);
     res.json({ ok: true });
   });
 

@@ -7,20 +7,21 @@ import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
 import { tarotCatalogue, getCardOrThrow } from '../tarot/catalogue';
 import { listAvailableSpreads, getSpread } from '../tarot/spreads';
 import { drawSpread } from '../tarot/drawService';
-import { buildStaticInterpretation, generateDetailedReport } from '../tarot/interpretationService';
+import { buildStaticInterpretation, generateDetailedReport, looksLikeRealAnswer } from '../tarot/interpretationService';
 import { personalizeDailyInterpretation } from '../tarot/dailyPersonalization';
 import { isSpreadAllowed, checkDailyReadingLimit, checkFollowupLimit } from '../tarot/entitlements';
 import {
   tarotReadingsById,
   tarotJournalById,
   dailyTarotByUserDate,
-  tarotFollowupCounts,
+  tarotFollowupEvents,
   getUserTier,
   recordTransaction,
   birthProfiles,
 } from '../data/store';
 import { ReadingCategory, SpreadType, TarotReading } from '../types/tarot';
 import { recordCompletedReading, invalidateMemoryForSource } from '../memory/memoryService';
+import { recordEvent } from '../events/eventTracker';
 import { getCardOrThrow as getCard } from '../tarot/catalogue';
 
 /** Compact, factual summary of a reading for the memory layer - card names,
@@ -40,22 +41,46 @@ function summarizeTarotReading(reading: TarotReading): string {
  * this header entirely, which silently broke multi-user testing/entitlement
  * checks for tarot specifically while every other feature already read it. */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
 const DATASET_VERSION = 'solune-tarot-1.0';
 const MAX_QUESTION_LENGTH = 500;
 
+/**
+ * TEMPORARY TESTING OVERRIDE - set TAROT_UNLIMITED_DAILY_REVEALS=true in
+ * .env to let GET /daily draw a brand-new card on every call instead of
+ * reusing the one real card already assigned for today, so the reveal
+ * animation/flow can be tested repeatedly without waiting for the next
+ * calendar day. Turn this off (unset the env var, or flip this constant
+ * back to always-false) before finishing the app - the real one-card-per-
+ * day rule lives in the `if (existing)` branch below and is otherwise
+ * untouched.
+ */
+const TESTING_UNLIMITED_DAILY_REVEALS = process.env.TAROT_UNLIMITED_DAILY_REVEALS === 'true';
+
 const categorySchema = z.enum(['general', 'love', 'career', 'question']);
 const spreadSchema = z.enum([
-  'one-card', 'three-card-ppf', 'three-card-scg', 'three-card-mbs', 'celtic-cross',
+  'one-card', 'three-card-ppf', 'three-card-scg', 'three-card-mbs', 'five-card', 'celtic-cross',
   'love-relationship', 'career-finance', 'yes-no', 'relationship-compatibility',
 ]);
+
+const MAX_SECOND_PERSON_NAME_LENGTH = 60;
 
 const startReadingSchema = z.object({
   readingType: categorySchema,
   spreadType: spreadSchema,
   question: z.string().trim().max(MAX_QUESTION_LENGTH).optional(),
+  // Only meaningful for 'relationship-compatibility' - a display label
+  // only (first name/nickname), never required. See TarotReading's own
+  // doc comment on secondPersonName for why this is intentionally NOT the
+  // Relationships/invitation system.
+  secondPersonName: z.string().trim().max(MAX_SECOND_PERSON_NAME_LENGTH).optional(),
 });
 
 const journalSchema = z.object({ content: z.string().trim().min(1).max(5000) });
@@ -100,12 +125,14 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     const key = `${userId}:${parsed.data.localDate}`;
     const existing = dailyTarotByUserDate.get(key);
 
-    if (existing) {
+    if (existing && !TESTING_UNLIMITED_DAILY_REVEALS) {
       const reading = tarotReadingsById.get(existing.readingId);
       return res.json({ daily: existing, reading });
     }
 
-    // First reveal of the day for this user: draw once and persist it. The
+    // First reveal of the day for this user (or, while
+    // TESTING_UNLIMITED_DAILY_REVEALS is on, every call): draw once and
+    // persist it. The
     // draw itself is never influenced by the user's birth profile - only the
     // interpretation text is personalized afterward, see dailyPersonalization.ts.
     const draws = drawSpread('one-card');
@@ -124,11 +151,13 @@ export function buildTarotRouter(aiProvider: AiProvider) {
       readingType: 'general',
       spreadType: 'one-card',
       question: null,
+      secondPersonName: null,
       status: 'interpreted',
       draws,
       interpretation,
       detailedReport: null,
       detailedReportStatus: 'none',
+      followupMessages: [],
       saved: false,
       createdAt: new Date().toISOString(),
       completedAt: new Date().toISOString(),
@@ -136,6 +165,7 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     };
     tarotReadingsById.set(readingId, reading);
     recordCompletedReading(userId, 'tarot', readingId, getUserTier(userId), summarizeTarotReading(reading));
+    recordEvent({ userId, eventType: 'DAILY_CARD_REVEALED', feature: 'tarot', metadata: { readingId, cardId: draws[0].cardId } });
 
     const daily = {
       id: uuid(),
@@ -156,7 +186,7 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
     const userId = currentUserId(req);
-    const { readingType, spreadType, question } = parsed.data;
+    const { readingType, spreadType, question, secondPersonName } = parsed.data;
 
     if (readingType === 'question' && (!question || question.trim().length < 3)) {
       return res.status(400).json({ error: 'A personal question reading requires a question of at least 3 characters.' });
@@ -179,11 +209,16 @@ export function buildTarotRouter(aiProvider: AiProvider) {
       readingType: readingType as ReadingCategory,
       spreadType: spreadType as SpreadType,
       question: question ?? null,
+      // Only ever persisted for the compatibility spread - stripped for
+      // every other spread type regardless of what the client sent, so a
+      // stray value can never leak into an unrelated reading's record.
+      secondPersonName: spreadType === 'relationship-compatibility' ? (secondPersonName || null) : null,
       status: 'drawn',
       draws,
       interpretation: null,
       detailedReport: null,
       detailedReportStatus: 'none',
+      followupMessages: [],
       saved: false,
       createdAt: new Date().toISOString(),
       completedAt: null,
@@ -215,6 +250,7 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     // interpretation, not just a draw. Never recorded on draw/start, and
     // never recorded for a reading that failed to interpret.
     recordCompletedReading(userId, 'tarot', reading.id, getUserTier(userId), summarizeTarotReading(reading));
+    recordEvent({ userId, eventType: 'TAROT_READING_COMPLETED', feature: 'tarot', metadata: { readingId: reading.id, spreadType: reading.spreadType, readingType: reading.readingType } });
 
     res.json(reading);
   });
@@ -228,13 +264,26 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     if (reading.detailedReportStatus === 'ready' && reading.detailedReport) {
       return res.json(reading); // idempotent - reopening never re-generates (or re-bills) it
     }
+    if (reading.detailedReportStatus === 'generating') {
+      // A second request (double-tap, a retried network call) arrived while
+      // the first is still mid-flight - reject rather than kicking off a
+      // second, duplicate AI call and risking a lost-update race on which
+      // result wins.
+      return res.status(409).json({ error: 'Your detailed reading is already being generated.', code: 'GENERATION_IN_PROGRESS' });
+    }
 
     const tier = getUserTier(userId);
     if (tier !== 'premium') {
-      return res.status(403).json({ error: 'Detailed AI readings require Solune Premium.', code: 'PREMIUM_REQUIRED' });
+      return res.status(403).json({ error: 'Detailed AI readings require Palm Setu Premium.', code: 'PREMIUM_REQUIRED' });
     }
 
-    const report = await generateDetailedReport(reading.draws, reading.readingType, reading.question, aiProvider, reading.spreadType);
+    // Claimed synchronously, before the only `await` in this handler, so a
+    // second concurrent request for the same reading sees 'generating'
+    // immediately above rather than racing this one to the AI call.
+    reading.detailedReportStatus = 'generating';
+
+    const birthProfile = birthProfiles.get(userId) ?? null;
+    const report = await generateDetailedReport(reading.draws, reading.readingType, reading.question, aiProvider, reading.spreadType, birthProfile);
     if (!report) {
       reading.detailedReportStatus = 'failed';
       return res.status(502).json({
@@ -262,9 +311,8 @@ export function buildTarotRouter(aiProvider: AiProvider) {
       return res.json({ answer: CRISIS_RESPONSE, crisisFlag: true });
     }
 
-    const askedSoFar = tarotFollowupCounts.get(reading.id) ?? 0;
-    const followupCheck = checkFollowupLimit(userId, reading.id, askedSoFar);
-    if (!followupCheck.allowed) return res.status(403).json({ error: followupCheck.reason });
+    const followupCheck = checkFollowupLimit(userId);
+    if (!followupCheck.allowed) return res.status(403).json({ error: followupCheck.reason, code: followupCheck.code });
 
     const cardContext = reading.draws
       .map((d) => {
@@ -276,32 +324,96 @@ export function buildTarotRouter(aiProvider: AiProvider) {
 
     let answer: string;
     try {
-      answer = await aiProvider.complete([
-        { role: 'system', content: TAROT_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content:
-            `Original reading (do not change these cards):\n${cardContext}\n\n` +
-            `Prior interpretation summary: ${interpretationContext}\n\n` +
-            `Follow-up question: ${parsed.data.question}`,
-        },
-      ]);
+      const raw = await aiProvider.complete(
+        [
+          { role: 'system', content: TAROT_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content:
+              `Original reading (do not change these cards):\n${cardContext}\n\n` +
+              `Prior interpretation summary: ${interpretationContext}\n\n` +
+              `Follow-up question: ${parsed.data.question}`,
+          },
+        ],
+        { feature: 'tarot', operation: 'followup' },
+      );
+      // Guards against an unconfigured/mock provider (no real AI key set)
+      // silently returning its own placeholder text as if it were a real
+      // answer - looksLikeRealAnswer covers the same malformed-output case
+      // interpretationService.ts already guards against; the explicit
+      // "[mock reply]" check catches MockProvider's own literal echo text,
+      // which is otherwise long enough and free of angle brackets to pass
+      // looksLikeRealAnswer unflagged.
+      if (!looksLikeRealAnswer(raw) || raw.startsWith('[mock reply]')) {
+        throw new Error('AI response did not look like a real answer');
+      }
+      answer = raw;
     } catch {
       answer = 'I’m unable to generate a follow-up response right now - please try again in a moment.';
     }
 
-    tarotFollowupCounts.set(reading.id, askedSoFar + 1);
-    res.json({ answer });
+    const createdAt = new Date().toISOString();
+    // Reassigning the array (not .push()) is required for the SqliteMap
+    // proxy's write-through to trigger - see sqliteCollections.ts's own
+    // doc comment on only trapping top-level property writes.
+    reading.followupMessages = [...reading.followupMessages, { question: parsed.data.question, answer, createdAt }];
+    tarotFollowupEvents.push({ id: uuid(), userId, readingId: reading.id, createdAt });
+
+    res.json({ answer, remainingToday: followupCheck.remainingToday });
   });
 
+  // Builds the searchable text for one reading - the "title" (spread +
+  // category), the question, every drawn card's name, the second-person
+  // name (compatibility only), and both the free static interpretation and
+  // the premium detailed report's text where they exist. Computed on every
+  // search request rather than stored/indexed, which is fine at this
+  // app's scale (an in-memory filter over one user's own readings, same
+  // approach as the saved/category filters above) - this is NOT a
+  // database-level full-text index and would need one if reading volume
+  // ever grew large enough for that to matter.
+  function searchableText(r: TarotReading): string {
+    const cardNames = r.draws.map((d) => {
+      try {
+        return getCardOrThrow(d.cardId).name;
+      } catch {
+        return '';
+      }
+    });
+    const interpretationText = r.interpretation
+      ? [r.interpretation.overallInterpretation, ...r.interpretation.cardInterpretations.map((c) => c.text)].join(' ')
+      : '';
+    const detailedText = r.detailedReport
+      ? [r.detailedReport.overallInterpretation, ...r.detailedReport.cardInterpretations.map((c) => c.text), ...(r.detailedReport.practicalSuggestions ?? [])].join(' ')
+      : '';
+    return [
+      r.spreadType.replace(/-/g, ' '),
+      r.readingType,
+      r.question ?? '',
+      r.secondPersonName ?? '',
+      ...cardNames,
+      interpretationText,
+      detailedText,
+    ].join(' ').toLowerCase();
+  }
+
   // --- History -----------------------------------------------------------------
+  // Optional ?saved=true, ?category=<ReadingCategory>, and ?q=<search text>
+  // narrow the results - all applied server-side (not just a client-side
+  // filter of one page) so pagination totals stay correct for the filtered
+  // set.
   router.get('/readings', (req, res) => {
     const userId = currentUserId(req);
     const page = Math.max(1, Number(req.query.page) || 1);
     const pageSize = Math.min(50, Number(req.query.pageSize) || 20);
+    const savedOnly = req.query.saved === 'true';
+    const categoryFilter = categorySchema.safeParse(req.query.category);
+    const searchQuery = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
 
     const all = [...tarotReadingsById.values()]
       .filter((r) => r.userId === userId)
+      .filter((r) => !savedOnly || r.saved)
+      .filter((r) => !categoryFilter.success || r.readingType === categoryFilter.data)
+      .filter((r) => !searchQuery || searchableText(r).includes(searchQuery))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
     const start = (page - 1) * pageSize;

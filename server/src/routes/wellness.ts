@@ -9,11 +9,17 @@ import {
   habitCompletionsByKey, challengeProgressByKey, meditationSessionsById, wellnessGoalsById,
   inspirationHistoryByUser, wellnessFavoritesByUser, wellnessPreferencesByUser,
   wellnessAiConversationsById, getUserTier,
+  discoveryAnswersByKey, discoveryQuestionSelectionsByKey, weeklyReportsByKey, monthlyReportsByKey,
 } from '../data/store';
 import {
   EMOTION_OPTIONS, JOURNAL_ENTRY_TYPES, BREATHING_TECHNIQUES, WELLNESS_GOAL_CATEGORIES,
   MoodEntry, JournalEntry, BreathingSession, Habit, ChallengeProgress, WellnessGoal,
+  DiscoveryAnswer, DiscoveryQuestionSelection,
 } from '../types/wellness';
+import { DISCOVERY_QUESTIONS, findDiscoveryQuestion } from '../wellness/discoveryQuestions';
+import { buildRecommendations } from '../wellness/discoveryRecommendations';
+import { generateTodaysInsight } from '../wellness/insight';
+import { computeWeeklyReport, computeMonthlyReport, mondayOf } from '../wellness/reports';
 import {
   MOOD_FREE_HISTORY_DAYS, moodHistoryWindowDays, MAX_FREE_HABITS, isHabitLimitReached,
   isChallengeAllowed, isBreathingTechniqueAllowed, FREE_JOURNAL_AI_DAILY_LIMIT,
@@ -29,6 +35,11 @@ import { recordWellnessEvent } from '../wellness/analytics';
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
 function currentUserId(req: any): string {
+  // Prefers the real resolved auth context (see auth/middleware.ts's
+  // attachAuthContext, mounted globally in index.ts) - falls back to the
+  // legacy header read directly only for a test harness that builds this
+  // router's Express app without that middleware mounted.
+  if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
@@ -50,7 +61,7 @@ function addDaysToDateString(dateStr: string, delta: number): string {
 const WELLNESS_SYSTEM_PROMPT = `
 You are not a licensed therapist, doctor, or medical professional, and must never claim to be one.
 Never diagnose a mental or physical health condition.
-You are Solune's wellness companion, a supportive guide for mood, habits, journaling, and daily wellbeing.
+You are Palm Setu's wellness companion, a supportive guide for mood, habits, journaling, and daily wellbeing.
 Your tone is warm, empathetic, nonjudgmental, and concise. Keep replies short (2-5 sentences) unless the user
 asks for more detail. You may suggest breathing exercises, journaling prompts, and habit ideas already present
 in the user's own wellness data, but you never fabricate progress or claim medical expertise.
@@ -377,7 +388,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     const userId = currentUserId(req);
 
     if (!isBreathingTechniqueAllowed(userId, parsed.data.technique)) {
-      return res.status(403).json({ error: 'This breathing technique requires Solune Premium.' });
+      return res.status(403).json({ error: 'This breathing technique requires Palm Setu Premium.' });
     }
 
     const session: BreathingSession = {
@@ -570,7 +581,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     const userId = currentUserId(req);
     const def = findChallengeDefinition(req.params.id);
     if (!def) return res.status(404).json({ error: 'Challenge not found.' });
-    if (!isChallengeAllowed(userId, def.id)) return res.status(403).json({ error: 'This challenge requires Solune Premium.' });
+    if (!isChallengeAllowed(userId, def.id)) return res.status(403).json({ error: 'This challenge requires Palm Setu Premium.' });
 
     const key = `${userId}:${def.id}`;
     const existing = challengeProgressByKey.get(key);
@@ -661,7 +672,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     if (!content) return res.status(404).json({ error: 'Content not found.' });
     const userId = currentUserId(req);
     if (content.premium && getUserTier(userId) !== 'premium') {
-      return res.status(403).json({ error: 'This content requires Solune Premium.' });
+      return res.status(403).json({ error: 'This content requires Palm Setu Premium.' });
     }
     const session = {
       id: uuid(), userId, contentId: content.id, startedAt: new Date().toISOString(),
@@ -988,6 +999,205 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     recordWellnessEvent(userId, 'ai_companion_message_sent', { mode });
 
     res.json({ conversationId, reply, mode, remainingToday: Math.max(0, dailyLimit - countToday - 1) });
+  });
+
+  // =========================================================================
+  // Daily Discovery
+  // =========================================================================
+  // How many questions make up "today's" rotating subset - deliberately
+  // small (one per category) rather than all 60+, per explicit spec
+  // instruction to never ask every question every day.
+  const DAILY_DISCOVERY_QUESTION_COUNT = DISCOVERY_QUESTIONS.length > 0
+    ? new Set(DISCOVERY_QUESTIONS.map((q) => q.category)).size
+    : 0;
+  const DISCOVERY_CATEGORIES = [...new Set(DISCOVERY_QUESTIONS.map((q) => q.category))];
+
+  function daysBetween(a: string, b: string): number {
+    return Math.round((new Date(`${b}T00:00:00.000Z`).getTime() - new Date(`${a}T00:00:00.000Z`).getTime()) / 86400000);
+  }
+
+  function seededTiebreak(seed: string): number {
+    let hash = 0;
+    for (const ch of seed) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    return hash;
+  }
+
+  /**
+   * Selects one question per category, preferring the LEAST recently
+   * answered question within that category (never-answered questions always
+   * win first). This both rotates content and naturally deprioritizes a
+   * question answered recently without hard-excluding it from a small pool -
+   * if every question in a category was answered yesterday, the one
+   * answered longest ago still gets picked rather than returning nothing.
+   * Ties (e.g. two never-answered questions) are broken with a stable
+   * per-user-per-day hash, so the same user calling this twice *today* gets
+   * the exact same picks (idempotent-per-day, enforced further by the
+   * selection cache below), while still varying day to day.
+   */
+  function selectTodaysQuestions(userId: string, today: string) {
+    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId);
+    const lastAnsweredByQuestion = new Map<string, string>();
+    for (const a of answers) {
+      const prev = lastAnsweredByQuestion.get(a.questionId);
+      if (!prev || a.localDate > prev) lastAnsweredByQuestion.set(a.questionId, a.localDate);
+    }
+    function priority(questionId: string): number {
+      const last = lastAnsweredByQuestion.get(questionId);
+      return last ? daysBetween(last, today) : Number.MAX_SAFE_INTEGER; // never-answered = highest priority
+    }
+    const picks = DISCOVERY_CATEGORIES.map((cat) => {
+      const pool = DISCOVERY_QUESTIONS.filter((q) => q.category === cat);
+      const sorted = [...pool].sort((a, b) => {
+        const diff = priority(b.id) - priority(a.id);
+        if (diff !== 0) return diff;
+        return seededTiebreak(`${userId}:${today}:${a.id}`) - seededTiebreak(`${userId}:${today}:${b.id}`);
+      });
+      return sorted[0];
+    }).filter(Boolean);
+    return picks;
+  }
+
+  router.get('/discovery/today', (req, res) => {
+    const userId = currentUserId(req);
+    const today = localDateToday();
+    const key = `${userId}:${today}`;
+    let selection = discoveryQuestionSelectionsByKey.get(key);
+
+    if (!selection) {
+      const picks = selectTodaysQuestions(userId, today);
+      selection = { userId, localDate: today, questionIds: picks.map((q) => q.id), createdAt: new Date().toISOString() };
+      discoveryQuestionSelectionsByKey.set(key, selection);
+    }
+
+    const questions = selection.questionIds.map((id) => findDiscoveryQuestion(id)).filter(Boolean);
+    const existingAnswers = selection.questionIds
+      .map((id) => discoveryAnswersByKey.get(`${userId}:${today}:${id}`))
+      .filter(Boolean);
+    res.json({ questions, existingAnswers, localDate: today, totalQuestionBankSize: DISCOVERY_QUESTIONS.length });
+  });
+
+  const discoveryAnswerSchema = z.object({
+    questionId: z.string(),
+    localDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    value: z.union([z.string().max(5000), z.array(z.string().max(100)).max(20), z.number()]).optional(),
+    skip: z.boolean().optional(),
+  });
+
+  router.post('/discovery/answer', (req, res) => {
+    const parsed = discoveryAnswerSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
+    const question = findDiscoveryQuestion(parsed.data.questionId);
+    if (!question) return res.status(404).json({ error: 'Unknown question id.' });
+
+    const skip = parsed.data.skip === true;
+    if (skip && !question.skippable) {
+      return res.status(400).json({ error: 'This question cannot be skipped.' });
+    }
+    if (!skip && parsed.data.value === undefined) {
+      return res.status(400).json({ error: 'value is required unless skip is true.' });
+    }
+
+    // Validate value shape matches the question type.
+    if (!skip) {
+      const v = parsed.data.value;
+      if (question.type === 'single-select' && (typeof v !== 'string' || (question.options && !question.options.includes(v)))) {
+        return res.status(400).json({ error: 'value must be one of this question\'s options.' });
+      }
+      if (question.type === 'multi-select' && (!Array.isArray(v) || (question.options && v.some((item) => !question.options!.includes(item))))) {
+        return res.status(400).json({ error: 'value must be an array of this question\'s options.' });
+      }
+      if (question.type === 'scale' && typeof v !== 'number') {
+        return res.status(400).json({ error: 'value must be a number for a scale question.' });
+      }
+      if (question.type === 'text' && typeof v !== 'string') {
+        return res.status(400).json({ error: 'value must be a string for a text question.' });
+      }
+      // Crisis check on every free-text answer before it is stored, same
+      // discipline applied everywhere else free text reaches this app.
+      if (question.type === 'text' && containsCrisisLanguage(v as string)) {
+        recordWellnessEvent(currentUserId(req), 'ai_companion_crisis_detected', { source: 'discovery_answer' });
+      }
+    }
+
+    const userId = currentUserId(req);
+    const key = `${userId}:${parsed.data.localDate}:${question.id}`;
+    const existing = discoveryAnswersByKey.get(key);
+    const now = new Date().toISOString();
+    const answer: DiscoveryAnswer = {
+      id: existing?.id ?? uuid(),
+      userId,
+      localDate: parsed.data.localDate,
+      questionId: question.id,
+      value: skip ? '' : (parsed.data.value as any),
+      skipped: skip,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+    discoveryAnswersByKey.set(key, answer);
+    res.json({ answer, wasUpdate: Boolean(existing) });
+  });
+
+  router.get('/discovery/history', (req, res) => {
+    const userId = currentUserId(req);
+    const { from, to } = req.query as { from?: string; to?: string };
+    let answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId);
+    if (from) answers = answers.filter((a) => a.localDate >= from);
+    if (to) answers = answers.filter((a) => a.localDate <= to);
+    answers.sort((a, b) => a.localDate.localeCompare(b.localDate));
+    res.json({ answers });
+  });
+
+  router.get('/discovery/recommendations', (req, res) => {
+    const userId = currentUserId(req);
+    const today = localDateToday();
+    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId && a.localDate === today);
+    res.json({ recommendations: buildRecommendations(answers), localDate: today });
+  });
+
+  // Today's Insight is computed on-demand via this POST, rather than fully
+  // automatically on every answer save - a user may answer several of
+  // today's questions one at a time, and generating (and AI-calling) after
+  // every single answer would be wasteful; the frontend calls this once
+  // when the user is done with today's Discovery session.
+  router.post('/discovery/insight', async (req, res) => {
+    const userId = currentUserId(req);
+    const today = localDateToday();
+    const mood = moodEntriesByUserDate.get(`${userId}:${today}`);
+    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId && a.localDate === today);
+    const result = await generateTodaysInsight(aiProvider, userId, today, mood, answers);
+    res.json(result);
+  });
+
+  // =========================================================================
+  // Weekly / Monthly Reports
+  // =========================================================================
+  router.get('/reports/weekly', (req, res) => {
+    const userId = currentUserId(req);
+    const requested = (req.query.weekStart as string | undefined) ?? localDateToday();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(requested)) return res.status(400).json({ error: 'weekStart must be YYYY-MM-DD.' });
+    const weekStart = mondayOf(requested);
+    const key = `${userId}:${weekStart}`;
+
+    const cached = weeklyReportsByKey.get(key);
+    if (cached) return res.json({ report: cached, cached: true });
+
+    const report = computeWeeklyReport(userId, weekStart);
+    weeklyReportsByKey.set(key, report);
+    res.json({ report, cached: false });
+  });
+
+  router.get('/reports/monthly', (req, res) => {
+    const userId = currentUserId(req);
+    const month = (req.query.month as string | undefined) ?? localDateToday().slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(month)) return res.status(400).json({ error: 'month must be YYYY-MM.' });
+    const key = `${userId}:${month}`;
+
+    const cached = monthlyReportsByKey.get(key);
+    if (cached) return res.json({ report: cached, cached: true });
+
+    const report = computeMonthlyReport(userId, month);
+    monthlyReportsByKey.set(key, report);
+    res.json({ report, cached: false });
   });
 
   return router;

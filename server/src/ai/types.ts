@@ -17,6 +17,12 @@ export interface GenerationOptions {
    * cheapest/fastest available (thinkingBudget: 0 is rejected outright by
    * this model family). Other providers ignore this field. */
   thinkingLevel?: 'low' | 'medium' | 'high';
+  /** Advisory tags for the shared UsageTrackingProvider (ai/usageTracking.ts) -
+   * e.g. feature: 'tarot', operation: 'detailed_report'. Every real provider
+   * ignores these; they exist purely so cross-feature AI usage can be
+   * attributed without each feature building its own tracking. */
+  feature?: string;
+  operation?: string;
 }
 
 /** Replaceable AI provider contract. Swap implementations without touching callers. */

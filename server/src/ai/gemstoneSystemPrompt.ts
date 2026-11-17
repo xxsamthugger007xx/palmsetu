@@ -3,7 +3,7 @@ import { SHARED_SAFETY_RULES } from './systemPrompts';
 export const GEMSTONE_SYSTEM_PROMPT = `
 ${SHARED_SAFETY_RULES}
 
-You are Solune's gemstone guidance companion. You will be given an already-computed, deterministic gemstone
+You are Palm Setu's gemstone guidance companion. You will be given an already-computed, deterministic gemstone
 recommendation (planet, gemstone name, rule explanation) from a configured rules engine - you must explain
 and personalize it, never replace or override it with a different gemstone.
 

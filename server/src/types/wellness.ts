@@ -277,3 +277,76 @@ export interface WellnessAnalyticsEvent {
    * Never free text. Enforced at the call site (analytics.ts) by type. */
   data: Record<string, string | number | boolean>;
 }
+
+// ===========================================================================
+// Daily Discovery (see wellness/discoveryQuestions.ts for the question bank)
+// ===========================================================================
+
+/** The value shape depends on the answered question's `type`:
+ * single-select -> string (one option); multi-select -> string[] (options);
+ * scale -> number; text -> string (free text, may be empty if skipped). */
+export type DiscoveryAnswerValue = string | string[] | number;
+
+/** One answer to one question on one local day. Re-answering the same
+ * question+day upserts in place (key: `${userId}:${localDate}:${questionId}`),
+ * same idempotent-per-day-per-key pattern as moodEntriesByUserDate/
+ * habitCompletionsByKey. */
+export interface DiscoveryAnswer {
+  id: string;
+  userId: string;
+  localDate: string;
+  questionId: string;
+  value: DiscoveryAnswerValue;
+  skipped: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Caches the deterministic rotating subset of question ids selected for one
+ * user on one local day, so two calls to GET /discovery/today on the same
+ * day return the exact same set (idempotent-per-day, same precedent as
+ * InspirationHistory.todayContentId). key: `${userId}:${localDate}`. */
+export interface DiscoveryQuestionSelection {
+  userId: string;
+  localDate: string;
+  questionIds: string[];
+  createdAt: string;
+}
+
+// ===========================================================================
+// Weekly / Monthly reports (see wellness/reports.ts)
+// ===========================================================================
+
+export interface WeeklyReport {
+  userId: string;
+  /** Monday of the reported week, YYYY-MM-DD - see reports.ts for the
+   * Monday-start local-week convention this app uses. */
+  weekStart: string;
+  weekEnd: string;
+  generatedAt: string;
+  moodSequence: { localDate: string; mood: MoodLevel | null }[];
+  averageMood: number | null; // mood mapped to 1-5 (low=1..great=5) then averaged
+  highestMoodDay: string | null;
+  lowestMoodDay: string | null;
+  checkInCount: number;
+  topMoodInfluences: { label: string; count: number }[];
+  positiveMoments: string[]; // real excerpts, never paraphrased
+  recommendations: string[];
+  nextWeekGoals: string[];
+  thingsToDoMore: string[];
+  mindfulOf: string[]; // soft/correlational framing only, never causal claims
+  aiSummaryUsed: boolean;
+}
+
+export interface MonthlyReport {
+  userId: string;
+  month: string; // YYYY-MM
+  generatedAt: string;
+  checkInCount: number;
+  averageMood: number | null;
+  moodTrend: 'improving' | 'declining' | 'steady' | 'insufficient-data';
+  activitiesCompleted: number; // breathing + meditation + habit completions this month
+  topMoodInfluenceThemes: { label: string; count: number }[];
+  journalEntryCount: number;
+  goalsCompleted: number;
+}

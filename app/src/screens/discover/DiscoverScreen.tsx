@@ -11,6 +11,14 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { discoverModules } from '../../data/mock';
 import { RootStackParamList } from '../../navigation/types';
 
+const MODULE_I18N_KEY: Record<string, string> = {
+  horoscope: 'horoscope',
+  compatibility: 'compatibility',
+  vastu: 'vastu',
+  'self-discovery': 'selfDiscovery',
+  gemstone: 'gemstone',
+};
+
 const iconFor: Record<string, typeof Sparkles> = {
   tarot: Layers,
   astrology: Sparkles,
@@ -29,7 +37,7 @@ export function DiscoverScreen() {
   const smalls = rest.filter((m) => m.size === 'small');
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('discover.title')}</Text>
 
       <FeatureCard
@@ -47,7 +55,11 @@ export function DiscoverScreen() {
         {mediums.map((m) => (
           <FeatureCard
             key={m.id}
-            module={m}
+            module={{
+              ...m,
+              title: t(`discover.modules.${MODULE_I18N_KEY[m.id]}.title`),
+              description: t(`discover.modules.${MODULE_I18N_KEY[m.id]}.description`),
+            }}
             style={{ flex: 1 }}
             onPress={() => (m.id === 'vastu' ? navigation.navigate('VastuLanding') : undefined)}
           />
@@ -58,11 +70,15 @@ export function DiscoverScreen() {
         {smalls.map((m) => (
           <FeatureCard
             key={m.id}
-            module={m}
+            module={{
+              ...m,
+              title: t(`discover.modules.${MODULE_I18N_KEY[m.id]}.title`),
+              description: t(`discover.modules.${MODULE_I18N_KEY[m.id]}.description`),
+            }}
             style={{ flex: 1 }}
             compact
             onPress={() => {
-              if (m.id === 'compatibility') navigation.navigate('SoulmateQuiz');
+              if (m.id === 'compatibility') navigation.navigate('SoulmateIntro');
               else if (m.id === 'gemstone') navigation.navigate('GemstoneLanding');
             }}
           />

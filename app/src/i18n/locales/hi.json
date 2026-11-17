@@ -1,6 +1,33 @@
 {
-  "nav": { "home": "होम", "palmScan": "हस्तरेखा स्कैन", "discover": "खोजें", "wellness": "वेलनेस", "profile": "प्रोफ़ाइल" },
-  "common": { "continue": "जारी रखें", "cancel": "रद्द करें", "save": "सहेजें", "delete": "हटाएं", "retry": "पुनः प्रयास करें", "loading": "लोड हो रहा है...", "back": "वापस", "skip": "छोड़ें", "upgrade": "अपग्रेड करें", "viewAll": "सभी देखें", "open": "खोलें", "getStarted": "शुरू करें" },
+  "nav": {
+    "home": "होम",
+    "palmScan": "हस्तरेखा स्कैन",
+    "discover": "खोजें",
+    "wellness": "वेलनेस",
+    "profile": "प्रोफ़ाइल"
+  },
+  "common": {
+    "continue": "जारी रखें",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "retry": "पुनः प्रयास करें",
+    "loading": "लोड हो रहा है...",
+    "back": "वापस",
+    "skip": "छोड़ें",
+    "upgrade": "अपग्रेड करें",
+    "viewAll": "सभी देखें",
+    "open": "खोलें",
+    "getStarted": "शुरू करें",
+    "close": "बंद करें",
+    "comingSoon": "जल्द आ रहा है",
+    "saving": "सहेज रहे हैं...",
+    "greetingMorning": "सुप्रभात",
+    "greetingAfternoon": "शुभ दोपहर",
+    "greetingEvening": "शुभ संध्या",
+    "feelingToday": "आज {{mood}} महसूस कर रहे हैं",
+    "tapToEditCheckIn": "अपनी चेक-इन संपादित करने के लिए टैप करें"
+  },
   "intro": {
     "screen1Badge": "AI-संचालित हस्तरेखा पठन",
     "screen1Headline": "जानिए आपके हाथ क्या बताते हैं",
@@ -29,44 +56,217 @@
     "footer": "आप इसे प्रोफ़ाइल में कभी भी बदल सकते हैं।"
   },
   "home": {
-    "greetingMorning": "सुप्रभात",
-    "greetingAfternoon": "शुभ दोपहर",
-    "greetingEvening": "शुभ संध्या",
-    "heroLabel": "AI इनसाइट स्पेस",
-    "heroTitle": "आपका व्यक्तिगत चिंतन स्थान",
-    "heroSubtitle": "अपनी हथेली को जानें, अपने पैटर्न समझें और नए दृष्टिकोण खोजें।",
-    "startPalmAnalysis": "हस्तरेखा विश्लेषण शुरू करें",
-    "viewPreviousReading": "पिछली रीडिंग देखें",
-    "quickActions": "त्वरित कार्य",
-    "palmAnalysisTitle": "हस्तरेखा विश्लेषण",
-    "palmAnalysisDesc": "स्कैन करें और विश्लेषण करें",
-    "astrologyTitle": "ज्योतिष",
-    "astrologyDesc": "आपकी कुंडली, समझाई गई",
-    "compatibilityTitle": "अनुकूलता",
-    "compatibilityDesc": "दूसरों से तुलना करें",
-    "companionTitle": "AI साथी",
-    "companionDesc": "अपने मन की बात करें",
-    "dailyInsight": "दैनिक चिंतन",
-    "saveReflection": "चिंतन सहेजें",
-    "recentActivity": "हाल की गतिविधि",
-    "wellnessSection": "वेलनेस",
-    "moodCheckIn": "आज का मूड दर्ज करें",
-    "breathingReady": "एक छोटा श्वास अभ्यास तैयार है",
-    "mockObservation": "आपके हाल के चिंतन दिखाते हैं कि आप अक्सर अपनी जरूरतों से पहले दूसरों की जरूरतों को प्राथमिकता देते हैं।",
-    "mockQuestion": "आज आप सिर्फ अपने लिए क्या कर सकते हैं?",
-    "activityPalmReadingType": "हस्तरेखा रीडिंग",
-    "activityPalmReadingSummary": "हृदय रेखा, मस्तिष्क रेखा और जीवन रेखा का विश्लेषण किया गया",
-    "activityJournalType": "जर्नल प्रविष्टि",
-    "activityJournalSummary": "एक कार्य निर्णय पर चिंतन किया",
-    "statusComplete": "पूर्ण",
-    "statusDraft": "ड्राफ्ट"
+    "moonTonightLabel": "आज रात चंद्रमा",
+    "moonLabel": "चंद्रमा",
+    "todaysTransits": "आज के गोचर",
+    "transitBody": "ग्रह",
+    "transitSign": "राशि",
+    "transitDegree": "अंश",
+    "setUpProfile": "अपनी प्रोफ़ाइल सेट करें",
+    "moonAddBirthDetails": "कैलिब्रेट करने के लिए अपना जन्म विवरण जोड़ें",
+    "moonPlaceholderReadout": "- -",
+    "moonWesternLabel": "पश्चिमी (ट्रॉपिकल) चंद्र राशि",
+    "transitRetrograde": "{{body}} वर्तमान में वक्री है (पृथ्वी के दृष्टिकोण से पीछे की ओर गति दिखना) - इस ग्रह के क्षेत्र में विवरण दोबारा जांचने का एक पारंपरिक संकेत।",
+    "transitDirect": "{{body}} आज मार्गी (सीधी) गति में है।",
+    "transitNote": "नोट: यह ऐप वर्तमान में इस गोचर स्थिति और आपकी जन्म कुंडली के बीच योग की गणना नहीं करता, इसलिए यहां कुंडली-सापेक्ष व्याख्या नहीं दिखाई गई है - केवल ऊपर दी गई वास्तविक, गणना की गई वर्तमान राशि और अंश।",
+    "dailyGuidanceTitle": "आपका दैनिक मार्गदर्शन",
+    "careerLabel": "करियर: ",
+    "relationshipsLabel": "रिश्ते: ",
+    "energyLabel": "ऊर्जा: ",
+    "tryTodayLabel": "आज आज़माएं: ",
+    "dailyGuidanceEmpty": "अपना व्यक्तिगत दैनिक मार्गदर्शन अनलॉक करने के लिए अपना जन्म विवरण जोड़ें।",
+    "feelingTitle": "आज आप कैसा महसूस कर रहे हैं?",
+    "goToWellness": "वेलनेस पर जाएं",
+    "palmInsightTitle": "आपकी हस्तरेखा अंतर्दृष्टि",
+    "palmInsightScanned": "{{date}} को स्कैन किया गया · {{count}} विशेषताएं पढ़ी गईं",
+    "palmInsightEmpty": "अपनी अंतर्दृष्टि यहां देखने के लिए अपना पहला हस्तरेखा स्कैन पूरा करें।",
+    "premiumTitle": "पाम सेतु प्रीमियम",
+    "premiumDesc": "गहरी रिपोर्ट और असीमित AI चैट अनलॉक करें",
+    "exploreTitle": "खोजें",
+    "sections": {
+      "palm": {
+        "title": "हस्तरेखा विश्लेषण",
+        "description": "आपकी हथेली की फोटो से AI हस्तरेखा विद्या"
+      },
+      "tarot": {
+        "title": "टैरो",
+        "description": "कार्ड्स निकालें और अपने मार्ग पर चिंतन करें"
+      },
+      "astrology": {
+        "title": "ज्योतिष",
+        "description": "वैदिक कुंडली और ब्रह्मांडीय मार्गदर्शन"
+      },
+      "moonsign": {
+        "title": "चंद्र राशि",
+        "description": "आपकी सिडेरियल और ट्रॉपिकल चंद्र राशि"
+      },
+      "dailyreport": {
+        "title": "दैनिक रिपोर्ट",
+        "description": "आज का व्यक्तिगत मार्गदर्शन"
+      },
+      "horoscopes": {
+        "title": "राशिफल",
+        "description": "राशि के अनुसार राशिफल"
+      },
+      "lovetest": {
+        "title": "लव टेस्ट",
+        "description": "साझा रीडिंग के लिए किसी साथी से जुड़ें"
+      },
+      "horoscopelauncher": {
+        "title": "विस्तृत राशिफल",
+        "description": "साप्ताहिक और मासिक दृष्टिकोण"
+      },
+      "numerology": {
+        "title": "अंक ज्योतिष",
+        "description": "मूलांक और भाग्यांक"
+      },
+      "western": {
+        "title": "पश्चिमी ज्योतिष",
+        "description": "ट्रॉपिकल सूर्य, चंद्र और गोचर"
+      },
+      "aichat": {
+        "title": "AI चैट सहायक",
+        "description": "अपनी किसी भी रीडिंग के बारे में पूछें"
+      },
+      "myreports": {
+        "title": "मेरी रिपोर्ट्स",
+        "description": "आपकी सभी पिछली रीडिंग्स, एक ही जगह पर"
+      },
+      "soulmate": {
+        "title": "सोलमेट स्केच",
+        "description": "आपके कल्पित सोलमेट का AI-निर्मित चित्र"
+      }
+    }
+  },
+  "wellness": {
+    "defaultSubtitle": "कुछ छोटे रीसेट, जब भी आपके पास समय हो।",
+    "todaySubtitle": "आज: {{title}}",
+    "moodSectionTitle": "मूड",
+    "historyAction": "इतिहास",
+    "feelingNowPrompt": "अभी आप कैसा महसूस कर रहे हैं?",
+    "affirmationSectionTitle": "आज का सकारात्मक वाक्य",
+    "challengeSectionTitle": "आज की चुनौती",
+    "challengeView": "देखें",
+    "challengeDayLabel": "दिन {{day}}: {{title}}",
+    "challengeDuration": "{{days}}-दिन का कार्यक्रम",
+    "challengeCompletedToday": "आज पूरा हुआ",
+    "challengeMarkComplete": "आज को पूर्ण के रूप में चिह्नित करें",
+    "habitJourneyTitle": "आदत यात्रा",
+    "quickResetsTitle": "त्वरित रीसेट",
+    "tiles": {
+      "breathing": "श्वास",
+      "meditation": "ध्यान",
+      "journal": "जर्नल",
+      "challenges": "चुनौतियां"
+    },
+    "breathingCount": "{{count}} तकनीक",
+    "breathingCount_other": "{{count}} तकनीकें",
+    "meditationCount": "{{count}} सत्र",
+    "meditationCount_other": "{{count}} सत्र",
+    "journalWrittenToday": "आज लिखा गया",
+    "journalReflectPrivately": "निजी तौर पर चिंतन करें",
+    "challengesInProgress": "प्रगति में",
+    "challengesBrowsePrograms": "कार्यक्रम ब्राउज़ करें",
+    "thisWeekTitle": "इस सप्ताह",
+    "checkInsThisWeek": "इस सप्ताह {{count}} दैनिक चेक-इन",
+    "checkInsThisWeek_other": "इस सप्ताह {{count}} दैनिक चेक-इन",
+    "averageEnergy": "औसत ऊर्जा {{value}}/5",
+    "habitsDoneToday": "आज {{done}}/{{total}} आदतें पूरी हुईं",
+    "noTrendYet": "इस सप्ताह कुछ और बार चेक इन करें और आपके रुझान यहां दिखाई देंगे।",
+    "activeGoalsTitle": "सक्रिय लक्ष्य",
+    "checkInsLogged": "{{count}} चेक-इन दर्ज",
+    "checkInsLogged_other": "{{count}} चेक-इन दर्ज",
+    "inspirationLibrary": "प्रेरणा लाइब्रेरी",
+    "reminders": "अनुस्मारक",
+    "disclaimer": "ये अभ्यास और AI साथी रोजमर्रा का सहयोग प्रदान करते हैं और पेशेवर मानसिक स्वास्थ्य देखभाल का विकल्प नहीं हैं।"
+  },
+  "palm": {
+    "profileTitle": "हस्तरेखा प्रोफ़ाइल",
+    "profileSubtitle": "आपकी स्थायी हस्तरेखा रीडिंग, आपके खाते में सहेजी गई।",
+    "handLabel": "हाथ",
+    "handNotSpecified": "निर्दिष्ट नहीं",
+    "handLeft": "बायां",
+    "handRight": "दायां",
+    "scanDateLabel": "स्कैन तिथि",
+    "statusLabel": "स्थिति",
+    "statusSaved": "सहेजा गया",
+    "analysisSectionsTitle": "विश्लेषण अनुभाग",
+    "noSectionsMatched": "इस स्कैन से कोई विशिष्ट विशेषता आत्मविश्वास के साथ मेल नहीं खा सकी।",
+    "viewCompleteReport": "पूरी हस्तरेखा रिपोर्ट देखें",
+    "scanTitle": "हस्तरेखा स्कैन",
+    "scanSubtitle": "पारंपरिक हस्तरेखा विद्या में निहित। चिंतन और मनोरंजन के लिए, चिकित्सा या भविष्यसूचक सलाह नहीं।",
+    "newReadingTitle": "नई रीडिंग",
+    "newReadingDesc": "अपनी स्थायी हस्तरेखा प्रोफ़ाइल बनाने के लिए अपनी हथेली की स्पष्ट फोटो लें",
+    "scanMyPalm": "मेरी हथेली स्कैन करें",
+    "emptyTitle": "अभी तक कोई हस्तरेखा प्रोफ़ाइल नहीं",
+    "emptyDesc": "आपकी पहली स्कैन के बाद आपकी हथेली की फोटो और पूर्ण विश्लेषण यहां स्थायी रूप से सहेजा जाएगा।",
+    "photoUnavailable": "इस स्कैन के लिए मूल फोटो उपलब्ध नहीं है।",
+    "saveLabel": "सहेजें",
+    "scanAnother": "दूसरी हथेली स्कैन करें",
+    "scanAnotherConfirmTitle": "दूसरी हथेली स्कैन करें?",
+    "scanAnotherConfirmDesc": "इससे आपकी वर्तमान सहेजी गई हस्तरेखा प्रोफ़ाइल एक नए स्कैन से बदल जाएगी - केवल आपका सबसे हालिया स्कैन ही आपकी सक्रिय प्रोफ़ाइल के रूप में रखा जाता है। आपके पिछले स्कैन इतिहास में उपलब्ध रहते हैं।",
+    "viewHistory": "इतिहास"
+  },
+  "tarot": {
+    "title": "टैरो",
+    "subtitle": "कार्ड्स को जानें। अपने मार्ग पर चिंतन करें।",
+    "loading": "लोड हो रहा है...",
+    "errorTitle": "टैरो लोड नहीं हो सका",
+    "errorDesc": "अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+    "dailyCardLabel": "दैनिक कार्ड",
+    "revealMyCard": "मेरा कार्ड प्रकट करें",
+    "reversed": "उल्टा",
+    "upright": "सीधा",
+    "openFullReading": "पूरी रीडिंग खोलें",
+    "categoriesTitle": "रीडिंग श्रेणियां",
+    "categoryComingSoon": "जल्द आ रहा है",
+    "recentReadingsTitle": "हाल की रीडिंग्स",
+    "noReadingsTitle": "अभी तक कोई रीडिंग नहीं",
+    "noReadingsDesc": "अपनी पहली रीडिंग यहां देखने के लिए एक-कार्ड ड्रॉ से शुरुआत करें।",
+    "startAReading": "रीडिंग शुरू करें",
+    "cardCount": "{{count}} कार्ड",
+    "cardCount_other": "{{count}} कार्ड",
+    "categories": {
+      "oneCard": {
+        "title": "एक-कार्ड रीडिंग",
+        "description": "एक त्वरित, केंद्रित ड्रॉ"
+      },
+      "threeCard": {
+        "title": "तीन-कार्ड रीडिंग",
+        "description": "भूत, वर्तमान, भविष्य"
+      },
+      "love": {
+        "title": "प्रेम और रिश्ते",
+        "description": "संबंध पर चिंतन करें"
+      },
+      "career": {
+        "title": "करियर और विकास",
+        "description": "दिशा पर चिंतन करें"
+      },
+      "general": {
+        "title": "सामान्य मार्गदर्शन",
+        "description": "खुला चिंतन"
+      },
+      "celticCross": {
+        "title": "सेल्टिक क्रॉस",
+        "description": "उन्नत 10-कार्ड स्प्रेड"
+      },
+      "yesNo": {
+        "title": "हां / नहीं",
+        "description": "एक त्वरित दिशात्मक उत्तर"
+      },
+      "compatibility": {
+        "title": "अनुकूलता",
+        "description": "आप, वे, और जो आपको जोड़ता है"
+      }
+    }
   },
   "profile": {
     "upgradeTitle": "प्रीमियम में अपग्रेड करें",
     "upgradeDesc": "असीमित रीडिंग और पूर्ण साथी एक्सेस",
     "account": "खाता",
     "personalInfo": "व्यक्तिगत जानकारी",
-    "birthDetails": "जन्म विवरण",
+    "birthDetails": "ज्योतिष और जन्म विवरण",
     "birthDetailsDesc": "ज्योतिष सुविधाओं के लिए उपयोग किया जाता है",
     "accountManagement": "खाता प्रबंधन",
     "preferences": "प्राथमिकताएं",
@@ -87,14 +287,47 @@
     "privacyPolicy": "गोपनीयता नीति",
     "signOut": "साइन आउट करें",
     "deleteAccountTitle": "खाता हटाएं",
-    "deleteAccountDesc": "इससे आपका खाता, रीडिंग और जर्नल डेटा स्थायी रूप से हट जाएगा। इसे पूर्ववत नहीं किया जा सकता।"
+    "deleteAccountDesc": "इससे आपका खाता, रीडिंग और जर्नल डेटा स्थायी रूप से हट जाएगा। इसे पूर्ववत नहीं किया जा सकता।",
+    "guestBannerTitle": "अतिथि के रूप में ब्राउज़ कर रहे हैं",
+    "guestBannerDesc": "अपनी रीडिंग सहेजने और डिवाइसों में सिंक करने के लिए एक मुफ़्त खाता बनाएं।",
+    "signUp": "साइन अप करें",
+    "signedIn": "साइन इन किया गया",
+    "palmProfileGroup": "हस्तरेखा प्रोफ़ाइल",
+    "rescanPalm": "दोबारा स्कैन करें",
+    "rescanPalmDesc": "आपकी मौजूदा हस्तरेखा प्रोफ़ाइल और रिपोर्ट को बदल देता है",
+    "rescanConfirmTitle": "अपनी हथेली दोबारा स्कैन करें?",
+    "rescanConfirmDesc": "आपकी हस्तरेखा प्रोफ़ाइल एक बार की रीडिंग के रूप में डिज़ाइन की गई है। दोबारा स्कैन करने से आपकी मौजूदा फोटो और रिपोर्ट स्थायी रूप से नई से बदल जाएगी - इसे पूर्ववत नहीं किया जा सकता।",
+    "rescanConfirm": "दोबारा स्कैन करें",
+    "signInCreateAccount": "साइन इन करें / खाता बनाएं"
   },
   "discover": {
     "title": "खोजें",
     "tarotTitle": "टैरो",
     "tarotDesc": "कार्ड्स को जानें। अपने मार्ग पर चिंतन करें।",
     "astrologyTitle": "दैनिक कॉस्मिक मार्गदर्शन",
-    "astrologyDesc": "व्यक्तिगत राशिफल, गोचर और जोड़े के लिए रीडिंग।"
+    "astrologyDesc": "व्यक्तिगत राशिफल, गोचर और जोड़े के लिए रीडिंग।",
+    "modules": {
+      "horoscope": {
+        "title": "दैनिक राशिफल",
+        "description": "आज के लिए एक संक्षिप्त पठन।"
+      },
+      "compatibility": {
+        "title": "सोलमेट स्केच",
+        "description": "आपके कल्पित सोलमेट का एक प्रीमियम AI-निर्मित चित्र।"
+      },
+      "vastu": {
+        "title": "वास्तु कम्पास",
+        "description": "पारंपरिक दिशा मार्गदर्शन के साथ अपने स्थान को संरेखित करें।"
+      },
+      "selfDiscovery": {
+        "title": "आत्म-खोज",
+        "description": "पहचान और मूल्यों पर निर्देशित संकेत।"
+      },
+      "gemstone": {
+        "title": "रत्न गाइड",
+        "description": "आपकी कुंडली से पारंपरिक रत्न मार्गदर्शन।"
+      }
+    }
   },
   "language": {
     "title": "भाषा",

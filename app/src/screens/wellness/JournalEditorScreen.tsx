@@ -110,7 +110,13 @@ export function JournalEditorScreen() {
   };
 
   return (
-    <PageContainer>
+    <PageContainer
+      // Only re-fetches the reflective prompts list on pull, never the
+      // entry's own title/content/tags/favorite - those are actively being
+      // edited in this form, and silently overwriting unsaved text on a
+      // pull gesture would be a real data-loss bug, not a refresh.
+      onRefresh={async () => { await wellnessApi.getJournalPrompts().then((res) => setPrompts(res.prompts)).catch(() => {}); }}
+    >
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>
         {entry ? 'Edit entry' : 'New entry'}
       </Text>
@@ -191,7 +197,7 @@ export function JournalEditorScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.sm }}>
                 <Sparkles size={15} color={color.accent} strokeWidth={1.75} style={{ marginTop: 2 }} />
                 <Text variant="bodySm" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-                  This entry's text would be sent to Solune's AI to generate an insight. It is never sent
+                  This entry's text would be sent to Palm Setu's AI to generate an insight. It is never sent
                   without your explicit permission below, and each request requires this to be checked again.
                 </Text>
               </View>

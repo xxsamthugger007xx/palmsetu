@@ -63,7 +63,7 @@ export function VastuReportScreen() {
 
   const handleShare = async () => {
     if (!report) return;
-    await Share.share({ message: `My Vastu property reflection (via Solune): ${report.explanation}` });
+    await Share.share({ message: `My Vastu property reflection (via Palm Setu): ${report.explanation}` });
   };
 
   const handleDelete = async () => {
@@ -95,7 +95,7 @@ export function VastuReportScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
@@ -130,7 +130,7 @@ export function VastuReportScreen() {
       <View style={{ marginTop: spacing.lg }}>
         <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Direction analysis</Text>
         {report.roomAnalyses.map((a) => (
-          <Section key={a.room} title={a.roomLabel}>
+          <Section key={a.roomId} title={a.roomLabel}>
             <View style={styles.badgeRow}>
               <StatusBadge label={a.direction} status="accent" />
               <StatusBadge

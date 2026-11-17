@@ -39,7 +39,7 @@ export function AdminEntryScreen() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>

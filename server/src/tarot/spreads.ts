@@ -33,6 +33,17 @@ export const spreadDefinitions: Record<SpreadType, SpreadDefinition> = {
       { index: 2, name: 'Spirit', description: 'What might nourish you on a deeper level right now.' },
     ],
   },
+  'five-card': {
+    id: 'five-card', title: 'Five-Card Path', cardCount: 5, premium: true, available: true,
+    description: 'A five-card spread tracing your current situation, its challenge, a hidden influence, guidance, and a potential direction.',
+    positions: [
+      { index: 0, name: 'Current Situation', description: 'Where things stand right now.' },
+      { index: 1, name: 'Challenge', description: 'What is making this harder.' },
+      { index: 2, name: 'Hidden Influence', description: 'Something beneath the surface shaping this, that may not be obvious yet.' },
+      { index: 3, name: 'Guidance', description: 'A traditional reflection on how to approach it.' },
+      { index: 4, name: 'Potential Direction', description: 'A traditional reflection on where this may be heading - not a fixed outcome.' },
+    ],
+  },
   'celtic-cross': {
     id: 'celtic-cross', title: 'Celtic Cross', cardCount: 10, premium: true, available: true,
     description: 'A ten-card in-depth spread tracing the full shape of a situation.',
