@@ -4,3 +4,4 @@ run = "cd server && npm run dev"
 [deployment]
 build = ["bash", "-c", "cd server && npm install && npm run build"]
 run = ["bash", "-c", "cd server && npm run start"]
+deploymentTarget = "vm"
