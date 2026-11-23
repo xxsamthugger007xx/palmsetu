@@ -13,6 +13,7 @@ import { verifyTurnstileToken } from '../auth/turnstile';
 import { checkAuthRateLimit, recordAuthAttempt, clearAuthAttempts } from '../auth/rateLimit';
 import { migrateGuestDataToAccount } from '../auth/guestMigration';
 import { requireAccount } from '../auth/middleware';
+import { sendVerificationEmail, consumeVerificationToken } from '../auth/emailVerification';
 import { deleteReadingImage } from '../palmistry/imageStorage';
 import { getOrCreatePsuId } from '../auth/psuId';
 import { recordEvent } from '../events/eventTracker';
@@ -101,6 +102,8 @@ export function buildAuthRouter() {
 
     migrateIfGuest(req, account.id);
     recordEvent({ userId: account.id, eventType: 'USER_REGISTERED', feature: 'auth' });
+    sendVerificationEmail(account.id, account.email).catch((err) =>
+      console.warn('[auth] verification email failed to send:', err));
 
     res.json({ token: signUserToken(account.id), account: accountPublicShape(account) });
   });
@@ -153,6 +156,56 @@ export function buildAuthRouter() {
 
     const result = migrateGuestDataToAccount(payload.guestId, req.auth!.userId);
     res.json(result);
+  });
+
+  // Link target from the verification email - GET since it is opened
+  // straight from an email client, not called by the app. Renders a small
+  // standalone HTML page (no app deep-link wiring exists yet) telling the
+  // user to go back to the app.
+  router.get('/verify-email', (req, res) => {
+    const token = req.query.token as string | undefined;
+    const accountId = token ? consumeVerificationToken(token) : null;
+    const account = accountId ? accountsById.get(accountId) : null;
+
+    if (account) {
+      accountsById.set(account.id, { ...account, emailVerified: true, updatedAt: new Date().toISOString() });
+    }
+
+    const ok = !!account;
+    res.status(ok ? 200 : 400).send(`
+      <!doctype html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>${ok ? 'Email verified' : 'Verification link invalid'}</title>
+          <style>
+            body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #161826; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+            .card { text-align: center; max-width: 360px; padding: 32px; }
+            h1 { color: ${ok ? '#9184d9' : '#e06666'}; font-size: 22px; }
+            p { color: #cfcfdb; font-size: 15px; line-height: 1.5; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>${ok ? 'Email verified' : 'This link is invalid or has expired'}</h1>
+            <p>${ok ? 'You can return to the Palm Setu app now.' : 'Open the app and request a new verification email from your account settings.'}</p>
+          </div>
+        </body>
+      </html>
+    `);
+  });
+
+  // Lets a signed-in account request a fresh link, e.g. the first one
+  // expired or landed in spam - always a generic success response, same
+  // reasoning as the signup EMAIL_TAKEN message, so this can't be used to
+  // probe whether a given account exists.
+  router.post('/resend-verification', requireAccount, async (req, res) => {
+    const account = accountsById.get(req.auth!.userId);
+    if (account && !account.emailVerified) {
+      await sendVerificationEmail(account.id, account.email).catch((err) =>
+        console.warn('[auth] resend verification email failed:', err));
+    }
+    res.json({ ok: true });
   });
 
   router.get('/me', (req, res) => {

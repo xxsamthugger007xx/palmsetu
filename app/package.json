@@ -2,6 +2,9 @@
   "name": "app",
   "version": "1.0.0",
   "main": "index.ts",
+  "overrides": {
+    "vite": "7.3.8"
+  },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
@@ -25,6 +28,7 @@
     "expo-notifications": "~58.1.8",
     "expo-secure-store": "~58.0.2",
     "expo-sharing": "~58.0.22",
+    "expo-splash-screen": "~58.0.14",
     "expo-status-bar": "~58.0.4",
     "expo-updates": "~58.0.22",
     "i18next": "^26.5.8",

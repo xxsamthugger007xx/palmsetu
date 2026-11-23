@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import { handleAppStateChange } from './src/services/sessionTracker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -12,11 +13,27 @@ import { OnboardingIntroProvider } from './src/context/OnboardingIntroContext';
 import { AdminRoleProvider } from './src/context/AdminRoleContext';
 import { AstrologyOnboardingStatusProvider } from './src/context/AstrologyOnboardingStatus';
 import { useNocturneFonts } from './src/theme/useNocturneFonts';
+import { AnimatedSplash } from './src/components/AnimatedSplash';
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
+const MIN_SPLASH_MS = 1400;
 
 export default function App() {
   // Fonts load in the background; the system font fallback renders in the
   // meantime so startup is never blocked on a network font fetch.
-  useNocturneFonts();
+  const fontsReady = useNocturneFonts();
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const appReady = fontsReady && minTimeElapsed;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinTimeElapsed(true), MIN_SPLASH_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
 
   // App-lifecycle session tracking (Phase 2's Session Intelligence - see
   // src/services/sessionTracker.ts for what this can and can't observe).
@@ -37,19 +54,21 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AuthProvider>
-          <UserProfileProvider>
-            <LanguageProvider>
-              <OnboardingIntroProvider>
-                <AdminRoleProvider>
-                  <AstrologyOnboardingStatusProvider>
-                    <RootNavigator />
-                  </AstrologyOnboardingStatusProvider>
-                </AdminRoleProvider>
-              </OnboardingIntroProvider>
-            </LanguageProvider>
-          </UserProfileProvider>
-        </AuthProvider>
+        <AnimatedSplash ready={appReady} onFinished={() => {}}>
+          <AuthProvider>
+            <UserProfileProvider>
+              <LanguageProvider>
+                <OnboardingIntroProvider>
+                  <AdminRoleProvider>
+                    <AstrologyOnboardingStatusProvider>
+                      <RootNavigator />
+                    </AstrologyOnboardingStatusProvider>
+                  </AdminRoleProvider>
+                </OnboardingIntroProvider>
+              </LanguageProvider>
+            </UserProfileProvider>
+          </AuthProvider>
+        </AnimatedSplash>
         <StatusBar style="light" />
       </SafeAreaProvider>
     </GestureHandlerRootView>

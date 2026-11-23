@@ -2,8 +2,14 @@ import { AiProvider } from '../ai/types';
 import { AssistantFeature, AssistantMessage } from '../data/store';
 import { AssistantConfig } from '../data/assistantConfig';
 import { buildAssistantSystemPrompt } from './systemPrompts';
-import { detectFeature, detectFeatureHeuristic, detectAstrologyTopic } from './intentDetection';
+import {
+  detectFeature, detectFeatureHeuristic, detectAstrologyTopic,
+  detectTarotCard, detectGemstonePlanet, detectVastuDirection, detectPalmCategory,
+} from './intentDetection';
 import { getAstrologyKnowledge } from '../astrology/knowledgeBase/knowledgeBaseService';
+import { buildGemstoneDefinition } from '../gemstone/recommendationEngine';
+import { getDirectionEntry } from '../vastu/knowledgeEngine';
+import { getKnowledgeEntriesByCategory } from '../palmistry/knowledgeBase/knowledgeBaseService';
 import { retrieveUserData, retrieveUserDataForFeature, hasDataFor, UserFeatureData } from './dataRetrieval';
 import { evaluateEntitlement, PremiumCard } from './entitlementCheck';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
@@ -178,6 +184,76 @@ function defaultFollowUps(feature: AssistantFeature | null, data: UserFeatureDat
   if (feature === 'palm' && data.palmRecent.length >= 2) out.push('Compare my last two palm readings');
   if (out.length === 0) out.push('What can you help me with?');
   return out;
+}
+
+/**
+ * Shared general-knowledge answer path for tarot/gemstone/vastu/palm,
+ * mirroring the astrology knowledge-base branch in buildAssistantReply
+ * below: a conceptual question ("what is the Fool card", "what is the
+ * heart line") is answered from real, typed reference content, grounded
+ * with the same "use ONLY this content, never invent" instruction, rather
+ * than requiring a personal reading/profile/report to exist first.
+ */
+async function answerFromReferenceContent(opts: {
+  aiProvider: AiProvider;
+  config: AssistantConfig;
+  history: AssistantMessage[];
+  message: string;
+  feature: AssistantFeature;
+  data: UserFeatureData;
+  onStage?: OnStage;
+  knowledgeBlock: string;
+  fallbackText: string;
+  stageLabel: string;
+  intentDetectionMs: number;
+  dataRetrievalMs: number;
+  t0: number;
+}): Promise<AssistantReplyResult> {
+  const {
+    aiProvider, config, history, message, feature, data, onStage,
+    knowledgeBlock, fallbackText, stageLabel, intentDetectionMs, dataRetrievalMs, t0,
+  } = opts;
+
+  onStage?.({ key: 'data', label: stageLabel });
+  const systemPrompt = buildAssistantSystemPrompt(config);
+  const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-6).map((m) => ({ role: m.role, content: m.content } as const)),
+    {
+      role: 'user',
+      content:
+        `Answer the user's general knowledge question using ONLY the real traditional reference content below - ` +
+        `do not invent, add, or imply any claim beyond it. Keep the tone traditional/symbolic, never a guaranteed ` +
+        `prediction, and never present this as the user's own personal reading unless their real data is also given.\n\n` +
+        `=== REAL REFERENCE CONTENT - the only facts you may reference ===\n${knowledgeBlock}\n=== END REFERENCE CONTENT ===\n\n` +
+        `User question: ${message}`,
+    },
+  ];
+
+  onStage?.({ key: 'generation', label: 'Writing your answer...' });
+  const generationStart = Date.now();
+  let reply: string;
+  let success = true;
+  try {
+    reply = await aiProvider.complete(messages, generationOptionsForMode('fast'));
+    if (!reply.trim()) reply = fallbackText;
+  } catch {
+    success = false;
+    reply = fallbackText; // honest static fallback: the real reference content itself, never fabricated
+  }
+  const generationMs = Date.now() - generationStart;
+
+  return {
+    reply,
+    detectedFeature: feature,
+    premiumCard: null,
+    suggestedFollowUps: defaultFollowUps(feature, data),
+    estimatedInputTokens: estimateTokens(systemPrompt + knowledgeBlock + message),
+    estimatedOutputTokens: estimateTokens(reply),
+    success,
+    mode: 'fast',
+    timings: { intentDetectionMs, dataRetrievalMs, generationMs, totalMs: Date.now() - t0 },
+  };
 }
 
 /**
@@ -439,6 +515,93 @@ export async function buildAssistantReply(
     // "not grounded in specific reference content" fallback: the reply will
     // either come from the user's real chart data, or (if that is also
     // missing) the normal noDataMessage below.
+  }
+
+  // General tarot/gemstone/vastu/palm knowledge questions (card meaning,
+  // gemstone tradition, direction meaning, palm line/feature meaning) are
+  // answered from real reference content the same way astrology's is
+  // above - "what is the Fool card" or "what is the heart line" are real
+  // questions even for a user with no reading/profile/report on file yet.
+  // Same "my"-guard as astrology: a personal question ("what does my
+  // latest card mean") must keep going through the real-reading flow below,
+  // never get short-circuited into a generic lookup.
+  if (!isPersonalChartQuestion) {
+    if (feature === 'tarot') {
+      const card = detectTarotCard(message);
+      if (card) {
+        const knowledgeBlock =
+          `Tarot reference for "${card.name}" (${card.arcana} arcana${card.suit ? `, suit of ${card.suit}` : ''}):\n` +
+          `Upright keywords: ${card.uprightKeywords.join(', ')}\nReversed keywords: ${card.reversedKeywords.join(', ')}\n` +
+          `General meaning: ${card.general}\nSymbolism: ${card.symbolism}\nReflection prompt: ${card.reflectionPrompt}`;
+        return answerFromReferenceContent({
+          aiProvider, config, history, message, feature, data, onStage,
+          knowledgeBlock, fallbackText: card.general, stageLabel: 'Consulting the tarot catalogue...',
+          intentDetectionMs, dataRetrievalMs, t0,
+        });
+      }
+    }
+
+    if (feature === 'gemstone') {
+      const planet = detectGemstonePlanet(message);
+      if (planet) {
+        const g = buildGemstoneDefinition(planet);
+        const knowledgeBlock =
+          `Traditional gemstone reference for ${g.nameEnglish} (${g.nameHindi}), associated with ${planet}:\n` +
+          `Traditional day to wear: ${g.traditionalDay}\nTraditional finger: ${g.traditionalFinger}\n` +
+          `Traditional metal: ${g.traditionalMetal}\nCustomary practice: ${g.customaryPractice}\n` +
+          `Alternative stone: ${g.alternativeName} (never astrologically equivalent to the primary stone).\n` +
+          `Limitations: this is a traditional astrological association only, never a medical, financial, or guaranteed-outcome claim.`;
+        return answerFromReferenceContent({
+          aiProvider, config, history, message, feature, data, onStage,
+          knowledgeBlock, fallbackText: g.customaryPractice, stageLabel: 'Consulting gemstone tradition...',
+          intentDetectionMs, dataRetrievalMs, t0,
+        });
+      }
+    }
+
+    if (feature === 'vastu') {
+      const direction = detectVastuDirection(message);
+      if (direction) {
+        const entry = getDirectionEntry(direction);
+        const knowledgeBlock =
+          `Traditional Vastu reference for the ${entry.label} direction${entry.sanskritName ? ` (${entry.sanskritName})` : ''}:\n` +
+          `Traditional association: ${entry.traditionalAssociation}\nRecommendations: ${entry.recommendations.join('; ')}\n` +
+          `Best for home: ${entry.bestForHome.join(', ') || 'none specifically documented'}\n` +
+          `Best for work: ${entry.bestForWork.join(', ') || 'none specifically documented'}\n` +
+          `Limitations: ${entry.limitations}\nSource: ${entry.sourceReference}`;
+        return answerFromReferenceContent({
+          aiProvider, config, history, message, feature, data, onStage,
+          knowledgeBlock, fallbackText: entry.traditionalAssociation, stageLabel: 'Consulting Vastu reference...',
+          intentDetectionMs, dataRetrievalMs, t0,
+        });
+      }
+    }
+
+    if (feature === 'palm') {
+      const category = detectPalmCategory(message);
+      if (category) {
+        // No single "general" entry per category exists in this knowledge
+        // base (only per-variation ones, e.g. "heart-line-long",
+        // "heart-line-short") - picking just one variation and presenting
+        // it as THE definition would misrepresent the real content. Instead,
+        // a handful of real variations are summarized together, honestly
+        // framed as "this is one of several forms, here is what a few of
+        // them traditionally mean" rather than a single verdict.
+        const entries = getKnowledgeEntriesByCategory(category).slice(0, 4);
+        if (entries.length > 0) {
+          const knowledgeBlock =
+            `Traditional palmistry reference for this feature - it can appear in different forms, each with its own ` +
+            `traditional meaning (the user's own palm reading would show which form actually applies to them):\n` +
+            entries.map((e) => `- ${e.featureName}: ${e.traditionalMeaning}`).join('\n') +
+            `\nLimitations: ${entries[0].limitations}`;
+          return answerFromReferenceContent({
+            aiProvider, config, history, message, feature, data, onStage,
+            knowledgeBlock, fallbackText: entries[0].traditionalMeaning, stageLabel: 'Consulting palmistry reference...',
+            intentDetectionMs, dataRetrievalMs, t0,
+          });
+        }
+      }
+    }
   }
 
   if (!hasDataFor(feature, data)) {

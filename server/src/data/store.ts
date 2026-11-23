@@ -417,6 +417,17 @@ export const accountsById = new SqliteMap<string, Account>('accounts');
 export const guestSessionsById = new SqliteMap<string, GuestSession>('guestSessions');
 export const authAttempts = new SqliteMap<string, AuthAttemptRecord>('authAttempts');
 
+/** One row per outstanding email-verification link, keyed by the random
+ * token embedded in that link (see auth/emailVerification.ts). Consumed
+ * (deleted) the moment it is successfully used, so a link only ever works
+ * once. */
+export interface EmailVerificationRecord {
+  token: string;
+  accountId: string;
+  expiresAt: string;
+}
+export const emailVerificationsByToken = new SqliteMap<string, EmailVerificationRecord>('emailVerifications');
+
 /** Email lookups are rare enough (only on signup/login) that a linear scan
  * over accountsById is fine - no separate email index table needed for
  * this app's scale. Case-insensitive, since email addresses are compared

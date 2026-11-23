@@ -59,7 +59,9 @@ export function OnboardingDobScreen() {
   return (
     <PageContainer>
       <View style={styles.header}>
-        <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        {navigation.canGoBack() && (
+          <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        )}
       </View>
       <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 2 OF 5</Text>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>When were you born?</Text>
@@ -78,6 +80,7 @@ export function OnboardingDobScreen() {
           value={date ?? new Date(2000, 0, 1)}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           maximumDate={new Date()}
           onChange={handleChange}
         />

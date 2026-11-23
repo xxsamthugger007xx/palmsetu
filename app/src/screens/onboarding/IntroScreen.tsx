@@ -127,16 +127,16 @@ export function IntroScreen() {
                 <p.Hero size={Math.min(SCREEN_WIDTH * 0.62, 260)} />
               </View>
 
-              <Text variant="label" tone="accent" style={{ marginTop: spacing.xl, textAlign: 'center' }}>
+              <Text variant="label" tone="accent" style={{ marginTop: spacing.xl, textAlign: 'center', width: '100%' }}>
                 {p.badge}
               </Text>
-              <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
+              <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, textAlign: 'center', width: '100%' }}>
                 {p.headline}
               </Text>
               <Text
                 variant="bodySm"
                 tone="secondary"
-                style={{ marginTop: spacing.sm, textAlign: 'center', paddingHorizontal: spacing.md }}
+                style={{ marginTop: spacing.sm, textAlign: 'center', paddingHorizontal: spacing.md, width: '100%' }}
                 numberOfLines={3}
               >
                 {p.body}

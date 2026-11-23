@@ -9,9 +9,19 @@ export const RULE_ENGINE_VERSION: string = rulesData.ruleEngineVersion;
 const gemstoneTable = rulesData.gemstones as Record<GemstonePlanet, Omit<GemstoneDefinition, 'planet' | 'alternativeIsEquivalent'>>;
 const rashiLordTable = rulesData.rashiLord as Record<TropicalSign, GemstonePlanet>;
 
-function buildGemstoneDefinition(planet: GemstonePlanet): GemstoneDefinition {
+export function buildGemstoneDefinition(planet: GemstonePlanet): GemstoneDefinition {
   const entry = gemstoneTable[planet];
   return { planet, alternativeIsEquivalent: false, ...entry };
+}
+
+const ALL_PLANETS = Object.keys(gemstoneTable) as GemstonePlanet[];
+
+/** Every gemstone definition, for general-knowledge lookup (e.g. matching a
+ * stone or planet name mentioned in a chat message) - distinct from the
+ * personalized recommendation functions above, which require a real natal
+ * chart. */
+export function allGemstoneDefinitions(): GemstoneDefinition[] {
+  return ALL_PLANETS.map(buildGemstoneDefinition);
 }
 
 /**

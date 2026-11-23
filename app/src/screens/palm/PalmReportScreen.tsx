@@ -32,7 +32,7 @@ export function PalmReportScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PalmReport'>>();
-  const { readingId, justCompleted } = route.params;
+  const { readingId } = route.params;
 
   const [reading, setReading] = useState<PalmReading | null>(null);
   const [sectionsData, setSectionsData] = useState<PalmSectionsResponse | null>(null);
@@ -144,8 +144,8 @@ export function PalmReportScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">Palm Reading</Text>
         <View style={styles.headerActions}>
-          {justCompleted && (
-            <Card onPress={goHome} style={styles.saveBadge} padded={false}>
+          {state === 'ready' && (
+            <Card style={styles.saveBadge} padded={false}>
               <Check size={13} color={color.success} strokeWidth={2.5} />
               <Text variant="caption" tone="success" weight="semibold" style={{ marginLeft: 4 }}>{t('palm.saveLabel')}</Text>
             </Card>
@@ -339,17 +339,13 @@ export function PalmReportScreen() {
         />
       </View>
 
-      {justCompleted && (
-        <Card style={styles.doneCard}>
-          <CheckCircle2 size={18} color={color.secondary} strokeWidth={1.75} />
-          <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm, flex: 1 }}>
-            Your reading has been saved.
-          </Text>
-        </Card>
-      )}
-      {justCompleted && (
-        <Button label="Done" fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
-      )}
+      <Card style={styles.doneCard}>
+        <CheckCircle2 size={18} color={color.secondary} strokeWidth={1.75} />
+        <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm, flex: 1 }}>
+          Your reading has been saved. It's now visible from Home and in your Palm History.
+        </Text>
+      </Card>
+      <Button label="Save and Continue" fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
 
     </PageContainer>
   );

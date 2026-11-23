@@ -54,7 +54,9 @@ export function OnboardingPlaceScreen() {
   return (
     <PageContainer>
       <View style={styles.header}>
-        <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        {navigation.canGoBack() && (
+          <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        )}
       </View>
       <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 4 OF 5</Text>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>Where were you born?</Text>

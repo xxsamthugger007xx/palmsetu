@@ -82,7 +82,7 @@ export function runMigrations() {
     'wellnessFavorites', 'wellnessPreferences', 'wellnessAiConversations',
     'discoveryAnswers', 'discoveryQuestionSelections', 'weeklyReports', 'monthlyReports',
     // Auth (see data/store.ts and auth/).
-    'accounts', 'guestSessions', 'authAttempts',
+    'accounts', 'guestSessions', 'authAttempts', 'emailVerifications',
     // Soulmate Sketch (see data/store.ts and routes/soulmate.ts).
     'soulmateSketches',
   ];

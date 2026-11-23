@@ -205,6 +205,7 @@ export function AstrologyProfileSetupScreen() {
           value={birthDate ?? new Date(2000, 0, 1)}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           maximumDate={new Date()}
           onChange={handleDateChange}
         />
@@ -226,6 +227,7 @@ export function AstrologyProfileSetupScreen() {
           value={birthTime ?? new Date(2000, 0, 1, 12, 0)}
           mode="time"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           onChange={handleTimeChange}
         />
       )}

@@ -2,6 +2,13 @@ import { AiProvider } from '../ai/types';
 import { AssistantFeature } from '../data/store';
 import { getAllAstrologyKnowledgeEntries } from '../astrology/knowledgeBase/knowledgeBaseService';
 import { AstrologySystemId } from '../astrology/knowledgeBase/types';
+import { tarotCatalogue } from '../tarot/catalogue';
+import { TarotCard } from '../types/tarot';
+import { allGemstoneDefinitions } from '../gemstone/recommendationEngine';
+import { GemstonePlanet } from '../types/gemstone';
+import { listDirections } from '../vastu/knowledgeEngine';
+import { Direction } from '../types/vastu';
+import { KnowledgeEntry } from '../palmistry/knowledgeBase/types';
 
 /**
  * Intent/feature detection for the assistant.
@@ -98,6 +105,112 @@ export function detectAstrologyTopic(message: string, system: AstrologySystemId)
       if (cleaned.length >= 3 && text.includes(cleaned) && cleaned.length > bestLength) {
         best = cleaned;
         bestLength = cleaned.length;
+      }
+    }
+  }
+  return best;
+}
+
+/**
+ * General-knowledge topic detectors for tarot/gemstone/vastu/palm, same
+ * deterministic keyword-matching design as detectAstrologyTopic above (no
+ * AI call, "no match" -> null is an honest signal, never a guess). These
+ * let a conceptual question ("what is the heart line", "what is the Fool
+ * card") be answered from real reference content even when the user has no
+ * personal reading/profile/report on file yet - see responseBuilder.ts for
+ * how each is wired into the reply pipeline.
+ */
+
+/** Matches a tarot card by name, e.g. "the fool", "ace of wands". Prefers
+ * the longest matching name so "the sun" doesn't win over "the sun
+ * reversed" (not a real card id, but the longest-match rule is cheap
+ * insurance against any such future card-name overlap). */
+export function detectTarotCard(message: string): TarotCard | null {
+  const text = message.toLowerCase();
+  let best: TarotCard | null = null;
+  let bestLength = 0;
+  for (const card of tarotCatalogue) {
+    const name = card.name.toLowerCase();
+    const bare = name.replace(/^the\s+/, '');
+    for (const needle of [name, bare]) {
+      if (needle.length >= 3 && text.includes(needle) && needle.length > bestLength) {
+        best = card;
+        bestLength = needle.length;
+      }
+    }
+  }
+  return best;
+}
+
+const PLANET_ALIASES: Record<GemstonePlanet, string[]> = {
+  Sun: ['sun'], Moon: ['moon'], Mars: ['mars'], Mercury: ['mercury'], Jupiter: ['jupiter'],
+  Venus: ['venus'], Saturn: ['saturn'], Rahu: ['rahu'], Ketu: ['ketu'],
+};
+
+/** Matches a gemstone by its own name (e.g. "ruby", "blue sapphire") or by
+ * the planet it is traditionally associated with (e.g. "saturn's gemstone"). */
+export function detectGemstonePlanet(message: string): GemstonePlanet | null {
+  const text = message.toLowerCase();
+  let best: GemstonePlanet | null = null;
+  let bestLength = 0;
+  for (const def of allGemstoneDefinitions()) {
+    const needles = [
+      def.nameEnglish.toLowerCase(), def.nameHindi.toLowerCase(), def.alternativeName.toLowerCase(),
+      ...PLANET_ALIASES[def.planet],
+    ];
+    for (const needle of needles) {
+      if (needle.length >= 3 && text.includes(needle) && needle.length > bestLength) {
+        best = def.planet;
+        bestLength = needle.length;
+      }
+    }
+  }
+  return best;
+}
+
+/** Matches a vastu direction by its label or Sanskrit name (e.g.
+ * "northeast", "ishan corner"). Checks longer/more specific labels (e.g.
+ * "Northeast") before their substrings (e.g. "North", "East") so a compound
+ * direction is never mis-split into its two component directions. */
+export function detectVastuDirection(message: string): Direction | null {
+  const text = message.toLowerCase();
+  const entries = [...listDirections()].sort((a, b) => b.label.length - a.label.length);
+  for (const entry of entries) {
+    const needles = [entry.label.toLowerCase(), ...(entry.sanskritName ? [entry.sanskritName.toLowerCase()] : [])];
+    if (needles.some((n) => text.includes(n))) return entry.code;
+  }
+  return null;
+}
+
+const PALM_CATEGORY_KEYWORDS: Record<KnowledgeEntry['category'], string[]> = {
+  heartLine: ['heart line'],
+  headLine: ['head line'],
+  lifeLine: ['life line'],
+  fateLine: ['fate line'],
+  minorLine: ['sun line', 'mercury line', 'girdle of venus', 'bracelet', 'minor line'],
+  mount: ['mount of venus', 'mount of jupiter', 'mount of saturn', 'mount of sun', 'mount of mercury', 'mount of mars', 'mount of moon', 'mount'],
+  finger: ['index finger', 'middle finger', 'ring finger', 'little finger', 'pinky finger', 'finger length', 'finger'],
+  thumb: ['thumb'],
+  nail: ['nail shape', 'nails', 'fingernail'],
+  handShape: ['hand shape', 'square hand', 'earth hand', 'air hand', 'water hand', 'fire hand', 'conic hand', 'spatulate hand'],
+  marking: ['star on', 'cross on', 'triangle on', 'grille on', 'island on', 'palm marking'],
+};
+
+/** Matches a palmistry feature category (e.g. "heart line", "mount of
+ * venus") from the message text. Unlike the other three detectors above,
+ * this resolves to a CATEGORY, not one specific knowledge-base entry -
+ * the palmistry knowledge base has no single "general" entry per category,
+ * only per-variation ones (see getKnowledgeEntriesByCategory in
+ * responseBuilder.ts for how a category answer is synthesized from those). */
+export function detectPalmCategory(message: string): KnowledgeEntry['category'] | null {
+  const text = message.toLowerCase();
+  let best: KnowledgeEntry['category'] | null = null;
+  let bestLength = 0;
+  for (const [category, keywords] of Object.entries(PALM_CATEGORY_KEYWORDS) as [KnowledgeEntry['category'], string[]][]) {
+    for (const kw of keywords) {
+      if (text.includes(kw) && kw.length > bestLength) {
+        best = category;
+        bestLength = kw.length;
       }
     }
   }

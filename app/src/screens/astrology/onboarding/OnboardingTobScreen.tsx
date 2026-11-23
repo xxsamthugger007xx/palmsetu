@@ -74,7 +74,9 @@ export function OnboardingTobScreen() {
   return (
     <PageContainer>
       <View style={styles.header}>
-        <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        {navigation.canGoBack() && (
+          <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
+        )}
       </View>
       <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 3 OF 5</Text>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>What time were you born?</Text>
@@ -97,6 +99,7 @@ export function OnboardingTobScreen() {
           value={time ?? new Date(2000, 0, 1, 12, 0)}
           mode="time"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          themeVariant="dark"
           onChange={handleChange}
         />
       )}
