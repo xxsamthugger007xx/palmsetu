@@ -159,6 +159,8 @@ export interface CombinedInterpretation {
   ruleId: string;
   title: string;
   text: string;
+  /** true when `text` was cut to a teaser */
+  textTruncated?: boolean;
   involvedFeatureIds: string[];
 }
 
@@ -172,11 +174,13 @@ export type PalmSectionKey =
 
 export interface PalmFreeReading {
   summary: string;
+  /** true when `summary` was cut to a teaser (not every section is unlocked yet) */
+  summaryTruncated?: boolean;
   /** `sectionKey` is additive/optional so older cached PalmFreeReading
    * records (written before section-wise unlocking existed) still satisfy
    * this type - they simply won't have a gateable key, which is handled
    * as "unknown" wherever this is read for entitlement purposes. */
-  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey }[];
+  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey; /** true when `text` was cut to a teaser because the section is locked */ textTruncated?: boolean }[];
   combinedInterpretations: CombinedInterpretation[];
   reflectiveQuestions: string[];
   /** True when the underlying analysis came from an accepted_partial image

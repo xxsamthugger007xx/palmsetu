@@ -13,10 +13,12 @@ import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { SpreadDefinition } from '../../types/tarot';
+import { useTranslation } from 'react-i18next';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
 export function TarotSpreadScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TarotSpread'>>();
   const { category, question } = route.params;
@@ -47,7 +49,7 @@ export function TarotSpreadScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl }}>Loading spreads...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl }}>{t('ui.TarotSpreadScreen.loadingSpreads')}</Text>
       </PageContainer>
     );
   }
@@ -55,7 +57,7 @@ export function TarotSpreadScreen() {
   if (state === 'error') {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load spreads" description="Check your connection and try again." actionLabel="Back" onAction={() => navigation.goBack()} />
+        <EmptyState icon={Info} title={t('ui.TarotSpreadScreen.couldnTLoadSpreads')} description={t('ui.TarotReportScreen.checkYourConnectionAndTry')} actionLabel={t('ui.KundliResultScreen.back')} onAction={() => navigation.goBack()} />
       </PageContainer>
     );
   }
@@ -66,9 +68,9 @@ export function TarotSpreadScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Choose a spread</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.TarotCategoryScreen.chooseASpread')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Each position has its own meaning - shown below once you select a spread.
+        {t('ui.TarotSpreadScreen.eachPositionHasItsOwn')}
       </Text>
 
       {spreads.filter((s) => s.available).map((spread) => {
@@ -86,7 +88,7 @@ export function TarotSpreadScreen() {
               {locked && (
                 <View style={styles.lockBadge}>
                   <Lock size={11} color={tarotColor.gold} strokeWidth={2} />
-                  <Text variant="caption" style={{ color: tarotColor.gold, marginLeft: 4 }}>Premium</Text>
+                  <Text variant="caption" style={{ color: tarotColor.gold, marginLeft: 4 }}>{t('ui.SelectAstrologyProfileScreen.premium')}</Text>
                 </View>
               )}
             </View>
@@ -110,19 +112,15 @@ export function TarotSpreadScreen() {
         <Card style={{ marginTop: spacing.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <UserPlus size={14} color={tarotColor.gold} strokeWidth={1.75} />
-            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>SECOND PERSON (OPTIONAL)</Text>
+            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>{t('ui.TarotSpreadScreen.secondPersonOptional')}</Text>
           </View>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.sm }}>
-            Add a first name or nickname only if you want the reading to refer to them by name instead of
-            "Them". This is never stored as an account, never shared with anyone, and is deleted automatically
-            if you delete this reading. We do not collect their birth details, contact information, or
-            anything else about them - and this reading never claims to know their actual private thoughts
-            or feelings, only a traditional symbolic reflection.
+            {t('ui.TarotSpreadScreen.addAFirstNameOr')}
           </Text>
           <TextInput
             value={secondPersonName}
             onChangeText={setSecondPersonName}
-            placeholder="e.g. Alex (optional)"
+            placeholder={t('ui.TarotSpreadScreen.eGAlexOptional')} accessibilityLabel={t('ui.TarotSpreadScreen.eGAlexOptional')}
             placeholderTextColor={color.textMuted}
             style={styles.nameInput}
             maxLength={MAX_SECOND_PERSON_NAME_LENGTH}

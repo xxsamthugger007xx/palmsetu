@@ -11,6 +11,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { ReadingCategory } from '../../types/tarot';
+import { useTranslation } from 'react-i18next';
 
 const MIN_QUESTION_LENGTH = 3;
 const MAX_QUESTION_LENGTH = 500;
@@ -23,6 +24,7 @@ const categories: { id: ReadingCategory; title: string; description: string; ico
 ];
 
 export function TarotCategoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TarotCategory'>>();
   const [category, setCategory] = useState<ReadingCategory>(route.params?.presetCategory ?? 'general');
@@ -37,10 +39,9 @@ export function TarotCategoryScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>What would you like to explore?</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.TarotCategoryScreen.whatWouldYouLikeTo')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Tarot here is a traditional, interpretive practice for reflection - not a scientifically validated
-        way to predict future events.
+        {t('ui.TarotCategoryScreen.tarotHereIsATraditional')}
       </Text>
 
       {categories.map((c) => {
@@ -70,7 +71,7 @@ export function TarotCategoryScreen() {
           <TextInput
             value={question}
             onChangeText={setQuestion}
-            placeholder="What's on your mind? (kept private unless you choose to share it)"
+            placeholder={t('ui.TarotCategoryScreen.whatSOnYourMind')} accessibilityLabel={t('ui.TarotCategoryScreen.whatSOnYourMind')}
             placeholderTextColor={color.textMuted}
             style={styles.input}
             multiline
@@ -83,7 +84,7 @@ export function TarotCategoryScreen() {
       )}
 
       <Button
-        label="Choose a spread"
+        label={t('ui.TarotCategoryScreen.chooseASpread')}
         fullWidth
         disabled={!questionValid}
         style={{ marginTop: spacing.lg }}

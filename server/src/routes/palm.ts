@@ -1,4 +1,6 @@
-import { Router } from 'express';
+import { signPath, verifySignedPath } from '../auth/signedUrl';
+import { redactLockedSections, teaserText } from '../palmistry/teaser';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { VisionAssistedPalmAnalyzer } from '../palmAnalysis/visionAssistedAnalyzer';
@@ -48,7 +50,7 @@ const MAX_FREE_SECTION_UNLOCKS = 1;
 
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -64,7 +66,7 @@ function summarizePalmReading(r: PalmReading): string {
 }
 
 function premiumReportsUsedBy(userId: string): number {
-  return [...readingsById.values()].filter((r) => r.userId === userId && r.premiumReportGeneratedAt).length;
+  return readingsById.valuesForUser(userId).filter((r) => r.premiumReportGeneratedAt).length;
 }
 
 /** The section keys actually detected on this reading - the only values a
@@ -79,6 +81,9 @@ function detectedSectionKeys(reading: PalmReading): string[] {
 
 export function buildPalmRouter(aiProvider: AiProvider) {
   const router = Router();
+
+  /** What the owner may see: locked sections reduced to a teaser (see palmistry/teaser.ts). */
+  const forOwner = (reading: PalmReading) => redactLockedSections(reading, new Set(unlockedPalmSectionsFor(reading.id)));
 
   // Free reading generation - this handler must NEVER call into any AI
   // provider. Only VisionAssistedPalmAnalyzer (image quality + vision
@@ -177,25 +182,36 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     // was built successfully, not a partial/failed attempt.
     recordCompletedReading(userId, 'palm', reading.id, getUserTier(userId), summarizePalmReading(reading));
     recordEvent({ userId, eventType: 'PALM_REPORT_GENERATED', feature: 'palm', metadata: { readingId: reading.id } });
-    res.json(readingsById.get(reading.id));
+    res.json(forOwner(readingsById.get(reading.id)!));
   });
 
   router.get('/readings/:id', (req, res) => {
     const reading = readingsById.get(req.params.id);
     if (!reading || reading.userId !== currentUserId(req)) return res.status(404).json({ error: 'Reading not found' });
-    res.json(reading);
+    res.json(forOwner(reading));
   });
 
-  // Authenticated image fetch, same ownership check as every other
-  // /readings/:id route - never a public/unauthenticated URL.
+  // Stored palm photo. Served to the owner (Authorization header) OR to anyone holding a short-lived signed URL
+  // minted by /readings/:id/image-url below - <Image> cannot send custom headers reliably, and the old workaround
+  // (session token in the query string) leaked long-lived credentials into URLs/logs.
   router.get('/readings/:id/image', (req, res) => {
     const reading = readingsById.get(req.params.id);
-    if (!reading || reading.userId !== currentUserId(req)) return res.status(404).json({ error: 'Reading not found' });
+    const signedOk = verifySignedPath(`/palm/readings/${req.params.id}/image`, req.query.exp, req.query.sig);
+    if (!reading || (!signedOk && reading.userId !== currentUserId(req))) return res.status(404).json({ error: 'Reading not found' });
     const buffer = readReadingImage(reading.id);
     if (!buffer) return res.status(404).json({ error: 'No stored image for this reading' });
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'private, max-age=31536000, immutable');
+    res.setHeader('Cache-Control', 'private, max-age=600');
     res.send(buffer);
+  });
+
+  // Owner-only: mints a 10-minute signed URL for the photo above.
+  router.get('/readings/:id/image-url', (req, res) => {
+    const reading = readingsById.get(req.params.id);
+    if (!reading || reading.userId !== currentUserId(req)) return res.status(404).json({ error: 'Reading not found' });
+    const path = `/palm/readings/${reading.id}/image`;
+    const { exp, sig } = signPath(path);
+    res.json({ url: `${path}?exp=${exp}&sig=${sig}`, expiresAt: new Date(exp * 1000).toISOString() });
   });
 
   // The one-time palm profile: the user's single primary reading, if they
@@ -206,14 +222,14 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     const userId = currentUserId(req);
     const profile = primaryReadingFor(userId);
     if (!profile) return res.status(404).json({ error: 'No palm profile yet', code: 'NO_PROFILE' });
-    res.json(profile);
+    res.json(forOwner(profile));
   });
 
   router.get('/readings', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...readingsById.values()]
-      .filter((r) => r.userId === userId)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const items = readingsById.valuesForUser(userId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map(forOwner);
     res.json({ items });
   });
 
@@ -325,7 +341,9 @@ export function buildPalmRouter(aiProvider: AiProvider) {
       return {
         sectionKey: key,
         title: s.title,
-        freeText: s.text,
+        // Locked sections get only the opening line; the rest is part of what unlocking reveals.
+        freeText: unlocked ? s.text : teaserText(s.text),
+        freeTextTruncated: !unlocked,
         unlocked,
         detail: unlocked ? (byCategory[key] ?? []) : null,
       };
@@ -393,8 +411,7 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     const cached = dailyPalmGuidanceByKey.get(key);
     if (cached) return res.json(cached);
 
-    const latestReading = [...readingsById.values()]
-      .filter((r) => r.userId === userId)
+    const latestReading = readingsById.valuesForUser(userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
     if (!latestReading) {
       return res.status(400).json({ error: 'No saved palm reading yet - submit a palm photo first.', code: 'NO_READING' });

@@ -14,7 +14,9 @@ import { OnboardingDraft } from '../../../types/astrology';
 import { useLanguage } from '../../../context/LanguageContext';
 import { LANGUAGES } from '../../../data/languages';
 import { useAstrologyOnboardingStatus } from '../../../context/AstrologyOnboardingStatus';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../../services/apiRequest';
 function formatDateLabel(isoDate: string): string {
   return new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -40,6 +42,7 @@ function Row({ label, value, onEdit }: { label: string; value: string; onEdit: (
 }
 
 export function OnboardingConfirmScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<AstrologyOnboardingStackParamList>>();
   const { languageCode } = useLanguage();
   const { refresh } = useAstrologyOnboardingStatus();
@@ -76,8 +79,9 @@ export function OnboardingConfirmScreen() {
       // actually flips the app from the onboarding stack to MainTabs, no
       // separate "mark complete" flag involved.
       refresh();
-    } catch (err: any) {
-      setError(err?.message ?? 'Something went wrong saving your profile.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.AstrologyProfileSetupScreen.somethingWentWrongSavingYour'));
     } finally {
       setConfirming(false);
     }
@@ -92,8 +96,8 @@ export function OnboardingConfirmScreen() {
           <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         )}
       </View>
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 5 OF 5</Text>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>Confirm your details</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.OnboardingConfirmScreen.step5Of5')}</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>{t('ui.OnboardingConfirmScreen.confirmYourDetails')}</Text>
 
       {/* Language is shown for a complete summary but is not editable from
           here - it was already confirmed before this flow started and its
@@ -101,28 +105,28 @@ export function OnboardingConfirmScreen() {
       <Card padded={false} style={styles.row}>
         <View style={styles.rowInner}>
           <View style={{ flex: 1 }}>
-            <Text variant="caption" tone="muted">LANGUAGE</Text>
+            <Text variant="caption" tone="muted">{t('ui.OnboardingConfirmScreen.language')}</Text>
             <Text variant="bodySm" weight="medium" style={{ marginTop: 2 }}>{languageName}</Text>
           </View>
         </View>
       </Card>
       <Row
-        label="ASTROLOGY SYSTEM"
+        label={t('ui.AstrologyProfileSetupScreen.astrologySystem')}
         value={draft.preferredSystem === 'vedic' ? 'Vedic' : 'Western'}
         onEdit={() => navigation.navigate('OnboardingAstrologySystem')}
       />
       <Row
-        label="DATE OF BIRTH"
+        label={t('ui.AstrologyProfileSetupScreen.dateOfBirth')}
         value={draft.birthDate ? formatDateLabel(draft.birthDate) : 'Not set'}
         onEdit={() => navigation.navigate('OnboardingDob')}
       />
       <Row
-        label="TIME OF BIRTH"
+        label={t('ui.OnboardingConfirmScreen.timeOfBirth')}
         value={draft.birthTime ? formatTimeLabel(draft.birthTime) : 'Not known (some calculations will be less precise)'}
         onEdit={() => navigation.navigate('OnboardingTob')}
       />
       <Row
-        label="BIRTHPLACE"
+        label={t('ui.AstrologyProfileSetupScreen.birthplace')}
         value={draft.birthPlace ?? 'Not set'}
         onEdit={() => navigation.navigate('OnboardingPlace')}
       />
@@ -134,7 +138,7 @@ export function OnboardingConfirmScreen() {
       )}
 
       <Button
-        label="Confirm and continue"
+        label={t('ui.OnboardingConfirmScreen.confirmAndContinue')}
         fullWidth
         loading={confirming}
         style={{ marginTop: spacing.xl }}

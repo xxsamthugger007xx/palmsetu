@@ -12,11 +12,14 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, ChallengeDefinition, ChallengeProgress } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError, ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'ChallengeDetail'>;
 
 export function ChallengeDetailScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const { params } = useRoute<Route>();
   const [loading, setLoading] = React.useState(true);
@@ -35,7 +38,7 @@ export function ChallengeDetailScreen() {
         setAllowed(c.allowed);
         setProgress(p.progress.find((pr) => pr.challengeId === params.id) ?? null);
       })
-      .catch((err: any) => setError(err.message ?? 'Could not load this challenge.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.ChallengeDetailScreen.couldNotLoadThisChallenge')))
       .finally(() => setLoading(false));
   }, [params.id]);
 
@@ -47,9 +50,10 @@ export function ChallengeDetailScreen() {
     try {
       const res = await wellnessApi.joinChallenge(params.id);
       setProgress(res.progress);
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err?.status === 403) navigation.navigate('Paywall');
-      else setError(err?.message ?? 'Could not join this challenge.');
+      else setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotJoinThisChallenge'));
     } finally {
       setBusy(false);
     }
@@ -60,8 +64,9 @@ export function ChallengeDetailScreen() {
     try {
       const res = await wellnessApi.completeChallengeDay(params.id, day);
       setProgress(res.progress);
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not mark this day complete.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotMarkThisDay'));
     } finally {
       setBusy(false);
     }
@@ -69,20 +74,21 @@ export function ChallengeDetailScreen() {
 
   const restart = () => {
     Alert.alert(
-      'Restart this challenge?',
-      'This wipes all your progress on this challenge and starts again from day 1. This cannot be undone.',
+      t('ui.ChallengeDetailScreen.restartThisChallenge'),
+      t('ui.ChallengeDetailScreen.thisWipesAllYourProgress'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
         {
-          text: 'Restart',
+          text: t('ui.ChallengeDetailScreen.restart'),
           style: 'destructive',
           onPress: async () => {
             setBusy(true);
             try {
               const res = await wellnessApi.restartChallenge(params.id);
               setProgress(res.progress);
-            } catch (err: any) {
-              setError(err?.message ?? 'Could not restart this challenge.');
+            } catch (__err) {
+              const err = asApiError(__err);
+              setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotRestartThisChallenge'));
             } finally {
               setBusy(false);
             }
@@ -93,18 +99,19 @@ export function ChallengeDetailScreen() {
   };
 
   const leave = () => {
-    Alert.alert('Leave this challenge?', 'Your progress is kept, but it will no longer be active.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('ui.ChallengeDetailScreen.leaveThisChallenge'), t('ui.ChallengeDetailScreen.yourProgressIsKeptBut'), [
+      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
       {
-        text: 'Leave',
+        text: t('ui.ChallengeDetailScreen.leave'),
         style: 'destructive',
         onPress: async () => {
           setBusy(true);
           try {
             const res = await wellnessApi.leaveChallenge(params.id);
             setProgress(res.progress);
-          } catch (err: any) {
-            setError(err?.message ?? 'Could not leave this challenge.');
+          } catch (__err) {
+            const err = asApiError(__err);
+            setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotLeaveThisChallenge'));
           } finally {
             setBusy(false);
           }
@@ -116,7 +123,7 @@ export function ChallengeDetailScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -124,7 +131,7 @@ export function ChallengeDetailScreen() {
   if (error && !challenge) {
     return (
       <PageContainer>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
@@ -160,11 +167,11 @@ export function ChallengeDetailScreen() {
       {isCompleted && (
         <Card elevated style={{ marginBottom: spacing.lg, alignItems: 'center' }}>
           <Check size={20} color={color.success} strokeWidth={2} />
-          <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xs }}>Challenge completed</Text>
+          <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xs }}>{t('ui.ChallengeDetailScreen.challengeCompleted')}</Text>
           <Text variant="caption" tone="muted" style={{ marginTop: 2, textAlign: 'center' }}>
             You completed all {challenge.durationDays} days. You can restart it any time.
           </Text>
-          <Button label="Restart" icon={RotateCcw} variant="secondary" size="sm" onPress={restart} style={{ marginTop: spacing.sm }} />
+          <Button label={t('ui.ChallengeDetailScreen.restart')} icon={RotateCcw} variant="secondary" size="sm" onPress={restart} style={{ marginTop: spacing.sm }} />
         </Card>
       )}
 
@@ -180,13 +187,13 @@ export function ChallengeDetailScreen() {
             <View style={{ height: 6, borderRadius: 3, backgroundColor: color.accent, width: `${Math.round((progress.completedDays.length / challenge.durationDays) * 100)}%` }} />
           </View>
           <View style={{ flexDirection: 'row', marginTop: spacing.sm }}>
-            <Button label="Restart" icon={RotateCcw} variant="ghost" size="sm" onPress={restart} />
-            <Button label="Leave" icon={LogOut} variant="ghost" size="sm" onPress={leave} style={{ marginLeft: spacing.sm }} />
+            <Button label={t('ui.ChallengeDetailScreen.restart')} icon={RotateCcw} variant="ghost" size="sm" onPress={restart} />
+            <Button label={t('ui.ChallengeDetailScreen.leave')} icon={LogOut} variant="ghost" size="sm" onPress={leave} style={{ marginLeft: spacing.sm }} />
           </View>
         </Card>
       )}
 
-      <SectionHeader title="Day-by-day tasks" />
+      <SectionHeader title={t('ui.ChallengeDetailScreen.dayByDayTasks')} />
       {challenge.tasks.map((t) => {
         const done = progress?.completedDays.includes(t.day) ?? false;
         const unlockedForTap = isActive && !done;

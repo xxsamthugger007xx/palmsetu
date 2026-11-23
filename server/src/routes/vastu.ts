@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
@@ -13,7 +13,7 @@ import { PropertyProfile, VastuReport } from '../types/vastu';
 import { recordCompletedReading, invalidateMemoryForSource } from '../memory/memoryService';
 
 /** TEMPORARY testing shim, same as the rest of this app's routes: no real auth yet. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -61,7 +61,7 @@ function validateUniqueRoomIds(rooms: { roomId: string }[]): string | null {
   return null;
 }
 
-function ownedPropertyOr404(res: any, userId: string, id: string): PropertyProfile | undefined {
+function ownedPropertyOr404(res: Response, userId: string, id: string): PropertyProfile | undefined {
   const p = vastuPropertiesById.get(id);
   if (!p || p.userId !== userId) {
     res.status(404).json({ error: 'Property not found' });
@@ -70,7 +70,7 @@ function ownedPropertyOr404(res: any, userId: string, id: string): PropertyProfi
   return p;
 }
 
-function ownedReportOr404(res: any, userId: string, id: string): VastuReport | undefined {
+function ownedReportOr404(res: Response, userId: string, id: string): VastuReport | undefined {
   const r = vastuReportsById.get(id);
   if (!r || r.userId !== userId) {
     res.status(404).json({ error: 'Report not found' });
@@ -93,7 +93,7 @@ export function buildVastuRouter(aiProvider: AiProvider) {
   // endpoint don't need a shape change, but they now always report "no limit".
   router.get('/limits', (req, res) => {
     const userId = currentUserId(req);
-    const propertyCount = [...vastuPropertiesById.values()].filter((p) => p.userId === userId).length;
+    const propertyCount = vastuPropertiesById.valuesForUser(userId).length;
     res.json({
       tier: getUserTier(userId),
       canCreateProperty: true,
@@ -129,8 +129,7 @@ export function buildVastuRouter(aiProvider: AiProvider) {
 
   router.get('/properties', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...vastuPropertiesById.values()]
-      .filter((p) => p.userId === userId)
+    const items = vastuPropertiesById.valuesForUser(userId)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     res.json({ items });
   });
@@ -207,8 +206,7 @@ export function buildVastuRouter(aiProvider: AiProvider) {
 
   router.get('/reports', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...vastuReportsById.values()]
-      .filter((r) => r.userId === userId)
+    const items = vastuReportsById.valuesForUser(userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ items });
   });

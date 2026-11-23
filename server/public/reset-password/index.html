@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reset your password - Palm Setu</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; font-family: -apple-system, Helvetica, Arial, sans-serif; background: #161826; color: #eceaf5; display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+  .card { width: 100%; max-width: 400px; background: #232532; border: 1px solid #343748; border-radius: 14px; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  p { color: #b6b4c6; font-size: 14px; line-height: 1.5; margin: 0 0 16px; }
+  label { display: block; font-size: 13px; margin: 12px 0 6px; color: #b6b4c6; }
+  input { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #343748; background: #161826; color: #eceaf5; font-size: 16px; }
+  button { width: 100%; margin-top: 18px; padding: 13px; border: 0; border-radius: 8px; background: #8b7fd1; color: #161826; font-weight: 600; font-size: 16px; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  .msg { margin-top: 14px; font-size: 14px; }
+  .err { color: #d9706a; } .ok { color: #6fbe8f; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Choose a new password</h1>
+  <p id="intro">Enter a new password for your Palm Setu account.</p>
+  <form id="f">
+    <label for="p1">New password</label>
+    <input id="p1" type="password" autocomplete="new-password" minlength="8" required>
+    <label for="p2">Confirm new password</label>
+    <input id="p2" type="password" autocomplete="new-password" minlength="8" required>
+    <button id="b" type="submit">Save new password</button>
+  </form>
+  <div id="m" class="msg" role="status"></div>
+</div>
+<script>
+  var token = new URLSearchParams(location.search).get('token') || '';
+  var f = document.getElementById('f'), m = document.getElementById('m'), b = document.getElementById('b');
+  function show(t, cls) { m.textContent = t; m.className = 'msg ' + cls; }
+  if (!token) { f.style.display = 'none'; show('This link is missing its reset code. Request a new link from the app.', 'err'); }
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var p1 = document.getElementById('p1').value, p2 = document.getElementById('p2').value;
+    if (p1.length < 8) return show('Use at least 8 characters.', 'err');
+    if (p1 !== p2) return show('The two passwords do not match.', 'err');
+    b.disabled = true; show('Saving...', '');
+    fetch('/auth/reset-password', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, password: p1 }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (x.ok) { f.style.display = 'none'; document.getElementById('intro').textContent = ''; show('Your password has been changed. Open the Palm Setu app and log in with your new password. You have been signed out on all devices.', 'ok'); }
+        else { b.disabled = false; show((x.d && x.d.error) || 'Something went wrong. Please try again.', 'err'); }
+      })
+      .catch(function () { b.disabled = false; show('Could not reach the server. Check your connection and try again.', 'err'); });
+  });
+</script>
+</body>
+</html>

@@ -27,6 +27,8 @@
  */
 
 const REQUEST_TIMEOUT_MS = 25_000;
+import { addSpend, currentAiUserId, estimateCostInr } from '../ai/budget';
+
 const DEFAULT_MODEL = process.env.GEMINI_VISION_MODEL ?? process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
 
 export interface RawLineSignal {
@@ -190,7 +192,12 @@ export async function runVisionDetection(imageBuffer: Buffer): Promise<RawDetect
       }
     );
     if (!res.ok) return null;
-    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[]; usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number } };
+    // This call bypasses the AiProvider wrapper, so charge the caller's monthly AI budget here (real token counts).
+    const spendUser = currentAiUserId();
+    if (spendUser && data.usageMetadata) {
+      addSpend(spendUser, estimateCostInr(data.usageMetadata.promptTokenCount ?? 0, (data.usageMetadata.candidatesTokenCount ?? 0) + (data.usageMetadata.thoughtsTokenCount ?? 0), true, 'gemini'), 'gemini');
+    }
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) return null;

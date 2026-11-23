@@ -7,6 +7,7 @@ import { IconButton } from './Button';
 import { color, radius, spacing } from '../theme/tokens';
 import { Direction, RoomCategory } from '../types/vastu';
 import { roomCategoryColor, roomCategoryMutedBg } from '../theme/vastuTheme';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Attractive 3x3 compass-style direction picker, shared by every room card
@@ -44,6 +45,7 @@ export function DirectionSelectorModal({
   onSkip: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const accent = roomCategoryColor[category];
 
   const handleSelect = (d: Direction) => {
@@ -57,14 +59,14 @@ export function DirectionSelectorModal({
         <View style={styles.sheet}>
           <View style={styles.header}>
             <View style={{ flex: 1 }}>
-              <Text variant="caption" tone="muted">DIRECTION</Text>
+              <Text variant="caption" tone="muted">{t('ui.DirectionSelectorModal.direction')}</Text>
               <Text variant="subtitle" weight="semibold" numberOfLines={1}>{roomName}</Text>
             </View>
             <IconButton icon={X} onPress={onClose} />
           </View>
 
           <Text variant="caption" tone="secondary" style={{ marginBottom: spacing.md }}>
-            Choose the direction this room actually faces in your property - this is never guessed for you.
+            {t('ui.DirectionSelectorModal.chooseTheDirectionThisRoom')}
           </Text>
 
           <View style={styles.grid}>
@@ -73,7 +75,7 @@ export function DirectionSelectorModal({
                 {row.map((d) => {
                   const selected = current === d;
                   return (
-                    <Pressable
+                    <Pressable accessibilityRole="button"
                       key={d}
                       onPress={() => handleSelect(d)}
                       style={[
@@ -100,8 +102,8 @@ export function DirectionSelectorModal({
             ))}
           </View>
 
-          <Pressable onPress={onSkip} style={styles.skipRow}>
-            <Text variant="bodySm" tone="secondary">I'm not sure, skip for now</Text>
+          <Pressable accessibilityRole="button" onPress={onSkip} style={styles.skipRow}>
+            <Text variant="bodySm" tone="secondary">{t('ui.DirectionSelectorModal.iMNotSureSkip')}</Text>
           </Pressable>
         </View>
       </View>

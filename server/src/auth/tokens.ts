@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { randomUUID } from 'crypto';
 
 /**
  * JWT session tokens for both real accounts and guest sessions. Both are the
@@ -16,9 +17,12 @@ import jwt from 'jsonwebtoken';
 const INSECURE_DEV_SECRET = 'solune-dev-insecure-secret-do-not-use-in-production';
 let warnedInsecureSecret = false;
 
-function getSecret(): string {
+export function getSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be set in production.');
+    }
     if (!warnedInsecureSecret) {
       console.warn('[auth/tokens] JWT_SECRET is not set - using an insecure development default. Set a real random secret before deploying.');
       warnedInsecureSecret = true;
@@ -29,8 +33,8 @@ function getSecret(): string {
 }
 
 export type AuthTokenPayload =
-  | { kind: 'user'; userId: string }
-  | { kind: 'guest'; guestId: string };
+  | { kind: 'user'; userId: string; tv?: number; jti?: string; exp?: number }
+  | { kind: 'guest'; guestId: string; jti?: string; exp?: number };
 
 // Guest sessions and real account sessions both get a generous expiry - this
 // app has no refresh-token rotation, so the token itself is the session.
@@ -38,21 +42,24 @@ export type AuthTokenPayload =
 // policy (see auth/guestMigration.ts) and nothing valuable is lost if a
 // guest session quietly expires and a new one is created.
 const USER_TOKEN_TTL = '30d';
-const GUEST_TOKEN_TTL = '14d';
+// 60 days (was 14): a casual guest who comes back after a few weeks keeps their data instead of silently getting a
+// brand-new empty guest session. Guest data itself is deleted by ops/guestCleanup.ts after GUEST_RETENTION_DAYS (90).
+const GUEST_TOKEN_TTL_SECONDS = Math.max(1, Number(process.env.GUEST_TOKEN_DAYS) || 60) * 86_400;
 
-export function signUserToken(userId: string): string {
-  return jwt.sign({ kind: 'user', userId } satisfies AuthTokenPayload, getSecret(), { expiresIn: USER_TOKEN_TTL });
+export function signUserToken(userId: string, tokenVersion = 0): string {
+  return jwt.sign({ kind: 'user', userId, tv: tokenVersion } satisfies AuthTokenPayload, getSecret(), { expiresIn: USER_TOKEN_TTL, jwtid: randomUUID() });
 }
 
 export function signGuestToken(guestId: string): string {
-  return jwt.sign({ kind: 'guest', guestId } satisfies AuthTokenPayload, getSecret(), { expiresIn: GUEST_TOKEN_TTL });
+  return jwt.sign({ kind: 'guest', guestId } satisfies AuthTokenPayload, getSecret(), { expiresIn: GUEST_TOKEN_TTL_SECONDS, jwtid: randomUUID() });
 }
 
 export function verifyToken(token: string): AuthTokenPayload | null {
   try {
     const decoded = jwt.verify(token, getSecret());
     if (typeof decoded === 'object' && decoded && 'kind' in decoded) {
-      return decoded as AuthTokenPayload;
+      const d = decoded as AuthTokenPayload & { jti?: string; exp?: number };
+      return d;
     }
     return null;
   } catch {

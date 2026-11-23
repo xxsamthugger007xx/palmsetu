@@ -1,4 +1,6 @@
+import { tr } from '../../utils/tr';
 import React, { useEffect, useState } from 'react';
+import { usePalmImageUrl } from '../../hooks/usePalmImageUrl';
 import { StyleSheet, View, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
@@ -18,6 +20,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading, PalmSectionsResponse } from '../../types/palm';
 
+import { asApiError } from '../../services/apiRequest';
 const SECTION_ICONS: Record<string, typeof Heart> = {
   heartLine: Heart, headLine: Brain, lifeLine: Activity, fateLine: TrendingUp,
   minorLine: Tag, mount: Gem, finger: Hand, thumb: Hand, nail: Fingerprint,
@@ -35,6 +38,7 @@ export function PalmReportScreen() {
   const { readingId } = route.params;
 
   const [reading, setReading] = useState<PalmReading | null>(null);
+  const scanImageUrl = usePalmImageUrl(reading?.id, !!reading?.hasStoredImage);
   const [sectionsData, setSectionsData] = useState<PalmSectionsResponse | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -70,11 +74,12 @@ export function PalmReportScreen() {
       const refreshed = await palmApi.getSections(readingId);
       setSectionsData(refreshed);
       setExpanded(sectionKey);
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'LIMIT_REACHED' || err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setSectionError(err.message ?? 'Could not unlock this section. Please try again.');
+        setSectionError(err.message ?? t('ui.PalmReportScreen.couldNotUnlockThisSection'));
       }
     } finally {
       setUnlockingSection(null);
@@ -88,11 +93,12 @@ export function PalmReportScreen() {
       await palmApi.generatePremiumReport(readingId);
       const refreshed = await palmApi.getSections(readingId);
       setSectionsData(refreshed);
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'LIMIT_REACHED' || err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setSectionError(err.message ?? 'Could not unlock your complete reading. Please try again.');
+        setSectionError(err.message ?? t('ui.PalmReportScreen.couldNotUnlockYourComplete'));
       }
     } finally {
       setGeneratingComplete(false);
@@ -112,7 +118,7 @@ export function PalmReportScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading your reading...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.PalmReportScreen.loadingYourReading')}</Text>
       </PageContainer>
     );
   }
@@ -122,13 +128,13 @@ export function PalmReportScreen() {
       <PageContainer>
         <View style={styles.header}>
           <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-          <Text variant="bodySm" weight="semibold">Palm Reading</Text>
+          <Text variant="bodySm" weight="semibold">{t('ui.PalmReportScreen.palmReading')}</Text>
           <View style={{ width: 36 }} />
         </View>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xl, textAlign: 'center' }}>
-          Couldn't load this reading. Please try again.
+          {t('ui.PalmReportScreen.couldnTLoadThisReading')}
         </Text>
-        <Button label="Retry" fullWidth style={{ marginTop: spacing.md }} onPress={load} />
+        <Button label={t('ui.AstrologyLandingScreen.retry')} fullWidth style={{ marginTop: spacing.md }} onPress={load} />
       </PageContainer>
     );
   }
@@ -142,7 +148,7 @@ export function PalmReportScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Palm Reading</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.PalmReportScreen.palmReading')}</Text>
         <View style={styles.headerActions}>
           {state === 'ready' && (
             <Card style={styles.saveBadge} padded={false}>
@@ -154,14 +160,15 @@ export function PalmReportScreen() {
         </View>
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Palm Reading</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.PalmReportScreen.palmReading')}</Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         {new Date(reading.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
 
-      {reading.hasStoredImage && (
+      {reading.hasStoredImage && !!scanImageUrl && (
         <Image
-          source={{ uri: palmApi.imageUrl(reading.id), headers: palmApi.imageHeaders() }}
+          source={{ uri: scanImageUrl }}
+          accessibilityLabel={tr('a11y.palmPhoto')}
           style={styles.scanImage}
           resizeMode="cover"
         />
@@ -171,17 +178,17 @@ export function PalmReportScreen() {
         <Card style={styles.limitedCard}>
           <AlertTriangle size={16} color={color.warning} strokeWidth={1.75} />
           <Text variant="caption" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-            Limited visibility: only part of your palm was clearly in frame, so this reading covers fewer features than a full scan would.
+            {t('ui.PalmReportScreen.limitedVisibilityOnlyPartOf')}
           </Text>
         </Card>
       )}
 
       <Card elevated>
-        <Text variant="label" tone="muted">ANALYSIS OVERVIEW</Text>
+        <Text variant="label" tone="muted">{t('ui.PalmReportScreen.analysisOverview')}</Text>
         <View style={styles.overviewGrid}>
-          <OverviewStat label="Sections matched" value={`${freeReading.sections.length}`} />
-          <OverviewStat label="Image quality" value={analysis.imageQuality.ok ? 'Good' : 'Needs retake'} />
-          <OverviewStat label="Unlocked" value={`${unlockedCount}/${sections.length}`} highlight={unlockedCount > 0} />
+          <OverviewStat label={t('ui.PalmReportScreen.sectionsMatched')} value={`${freeReading.sections.length}`} />
+          <OverviewStat label={t('ui.PalmReportScreen.imageQuality')} value={analysis.imageQuality.ok ? 'Good' : 'Needs retake'} />
+          <OverviewStat label={t('ui.PalmReportScreen.unlocked')} value={`${unlockedCount}/${sections.length}`} highlight={unlockedCount > 0} />
         </View>
         {analysis.uncertainFeatures.length > 0 && (
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
@@ -189,24 +196,34 @@ export function PalmReportScreen() {
           </Text>
         )}
         <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
-          This analysis reports qualitative observations with a confidence score, not precise pixel coordinates - so we do not draw line-path overlays on your photo, to avoid showing anything that is not genuinely your real palm-line geometry.
+          {t('ui.PalmReportScreen.thisAnalysisReportsQualitativeObservations')}
         </Text>
       </Card>
 
-      <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.lg }}>{freeReading.summary}</Text>
+      <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.lg }}>
+        {freeReading.summary}
+        {freeReading.summaryTruncated && (
+          <>
+            …{' '}
+            <Text variant="bodySm" tone="accent" weight="semibold" accessibilityRole="button" onPress={handleUnlockComplete}>
+              {t('ui.PalmReportScreen.upgradeToSeeMore')}
+            </Text>
+          </>
+        )}
+      </Text>
 
       <View style={{ marginTop: spacing.lg }}>
         <View style={styles.sectionHeader}>
-          <Text variant="subtitle" weight="semibold">Reading sections</Text>
+          <Text variant="subtitle" weight="semibold">{t('ui.PalmReportScreen.readingSections')}</Text>
           {sections.length > 0 && (
             <Text variant="caption" tone="muted">{unlockedCount}/{sections.length} unlocked</Text>
           )}
         </View>
         <Text variant="caption" tone="muted" style={{ marginBottom: spacing.sm }}>
-          Every line below includes one free, genuine observation from your scan. Unlock a line for its full breakdown.
+          {t('ui.PalmReportScreen.everyLineBelowIncludesOne')}
         </Text>
         {sections.length === 0 ? (
-          <Text variant="bodySm" tone="muted">No specific features could be confidently matched from this photo.</Text>
+          <Text variant="bodySm" tone="muted">{t('ui.PalmReportScreen.noSpecificFeaturesCouldBe')}</Text>
         ) : (
           sections.map((section) => {
             const Icon = sectionIcon(section.sectionKey);
@@ -222,10 +239,26 @@ export function PalmReportScreen() {
                     </View>
                     <View style={styles.freeBadge}>
                       <CheckCircle size={11} color={color.success} strokeWidth={2} />
-                      <Text variant="caption" tone="success" style={{ marginLeft: 3 }}>FREE</Text>
+                      <Text variant="caption" tone="success" style={{ marginLeft: 3 }}>{t('ui.PalmReportScreen.free')}</Text>
                     </View>
                   </View>
-                  <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>{section.freeText}</Text>
+                  {section.unlocked ? (
+                    <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>{section.freeText}</Text>
+                  ) : (
+                    // Locked: only the opening line, then a tappable nudge to unlock the rest.
+                    <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>
+                      {section.freeText}…{' '}
+                      <Text
+                        variant="bodySm"
+                        tone="accent"
+                        weight="semibold"
+                        accessibilityRole="button"
+                        onPress={() => handleUnlockSection(section.sectionKey)}
+                      >
+                        {t('ui.PalmReportScreen.upgradeToSeeMore')}
+                      </Text>
+                    </Text>
+                  )}
                 </Card>
 
                 {section.unlocked ? (
@@ -253,7 +286,7 @@ export function PalmReportScreen() {
                       </Text>
                     </View>
                     <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-                      Full structure, additional detected characteristics and the complete traditional interpretation for this line.
+                      {t('ui.PalmReportScreen.fullStructureAdditionalDetectedCharacteristics')}
                     </Text>
                     <Button
                       label={`Unlock ${section.title} Analysis`}
@@ -276,11 +309,21 @@ export function PalmReportScreen() {
 
       {freeReading.combinedInterpretations.length > 0 && (
         <Card style={{ marginTop: spacing.lg }}>
-          <Text variant="subtitle" weight="semibold">Combined patterns</Text>
+          <Text variant="subtitle" weight="semibold">{t('ui.PalmReportScreen.combinedPatterns')}</Text>
           {freeReading.combinedInterpretations.map((c) => (
             <View key={c.ruleId} style={{ marginTop: spacing.sm }}>
               <Text variant="bodySm" weight="semibold">{c.title}</Text>
-              <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>{c.text}</Text>
+              <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
+                {c.text}
+                {c.textTruncated && (
+                  <>
+                    …{' '}
+                    <Text variant="bodySm" tone="accent" weight="semibold" accessibilityRole="button" onPress={handleUnlockComplete}>
+                      {t('ui.PalmReportScreen.upgradeToSeeMore')}
+                    </Text>
+                  </>
+                )}
+              </Text>
             </View>
           ))}
         </Card>
@@ -295,14 +338,13 @@ export function PalmReportScreen() {
         >
           <View style={styles.labelRow}>
             <Crown size={16} color={color.accent} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Your palm has more to reveal</Text>
+            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.PalmReportScreen.yourPalmHasMoreTo')}</Text>
           </View>
           <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-            Unlock your complete palm reading to explore every detected feature and its traditional interpretation,
-            across every line and mount in this reading.
+            {t('ui.PalmReportScreen.unlockYourCompletePalmReading')}
           </Text>
           <Button
-            label="Unlock Complete Reading"
+            label={t('ui.PalmReportScreen.unlockCompleteReading')}
             fullWidth
             loading={generatingComplete}
             disabled={generatingComplete}
@@ -313,7 +355,7 @@ export function PalmReportScreen() {
       )}
 
       <Card style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold">Reflective questions</Text>
+        <Text variant="subtitle" weight="semibold">{t('ui.PalmReportScreen.reflectiveQuestions')}</Text>
         {freeReading.reflectiveQuestions.map((q) => (
           <View key={q} style={styles.questionRow}>
             <Lightbulb size={14} color={color.textMuted} strokeWidth={1.75} style={{ marginTop: 2 }} />
@@ -323,7 +365,7 @@ export function PalmReportScreen() {
       </Card>
 
       <Button
-        label="Ask about this reading"
+        label={t('ui.PalmReportScreen.askAboutThisReading')}
         icon={MessageCircle}
         variant="secondary"
         fullWidth
@@ -334,18 +376,18 @@ export function PalmReportScreen() {
       <View style={{ marginTop: spacing.lg }}>
         <SignUpPromptCard
           storageKey="palm-report"
-          title="Your palm reading is ready!"
-          description="Create your free account to save your palm profile and access your complete report anytime, on any device."
+          title={t('ui.PalmReportScreen.yourPalmReadingIsReady')}
+          description={t('ui.PalmReportScreen.createYourFreeAccountTo')}
         />
       </View>
 
       <Card style={styles.doneCard}>
         <CheckCircle2 size={18} color={color.secondary} strokeWidth={1.75} />
         <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm, flex: 1 }}>
-          Your reading has been saved. It's now visible from Home and in your Palm History.
+          {t('ui.PalmReportScreen.yourReadingHasBeenSaved')}
         </Text>
       </Card>
-      <Button label="Save and Continue" fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
+      <Button label={t('ui.PalmReportScreen.saveAndContinue')} fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
 
     </PageContainer>
   );
@@ -371,6 +413,7 @@ function ReportSection({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Card style={{ marginBottom: spacing.sm }} onPress={onToggle}>
       <View style={styles.sectionHeader}>
@@ -385,7 +428,7 @@ function ReportSection({
         <View style={{ marginTop: spacing.sm }}>
           <View style={styles.labelRow}>
             <Eye size={13} color={color.textMuted} strokeWidth={1.75} />
-            <Text variant="label" tone="muted" style={{ marginLeft: 6 }}>TRADITIONAL INTERPRETATION</Text>
+            <Text variant="label" tone="muted" style={{ marginLeft: 6 }}>{t('ui.ReportSection.traditionalInterpretation')}</Text>
           </View>
           <Text variant="bodySm" tone="secondary" style={{ marginTop: 4 }}>{text}</Text>
         </View>

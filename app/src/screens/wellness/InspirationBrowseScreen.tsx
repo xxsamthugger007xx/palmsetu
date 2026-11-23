@@ -13,7 +13,9 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, InspirationContent, InspirationType } from '../../services/wellnessApi';
 import { shareText } from '../../utils/shareContent';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const TYPE_LABELS: Record<InspirationType, string> = {
@@ -34,6 +36,7 @@ const TYPE_LABELS: Record<InspirationType, string> = {
  * assumed category list.
  */
 export function InspirationBrowseScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -49,7 +52,7 @@ export function InspirationBrowseScreen() {
         setItems(lib.items);
         setFavoriteIds(new Set(favs.items.map((i) => i.id)));
       })
-      .catch((err: any) => setError(err.message ?? 'Could not load the inspiration library.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.InspirationBrowseScreen.couldNotLoadTheInspiration')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -76,8 +79,8 @@ export function InspirationBrowseScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Inspiration</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.InspirationBrowseScreen.inspiration')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -85,25 +88,25 @@ export function InspirationBrowseScreen() {
   if (error) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Inspiration</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.InspirationBrowseScreen.inspiration')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Inspiration</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.InspirationBrowseScreen.inspiration')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.sm }}>
-        Browse the full library, organized by type.
+        {t('ui.InspirationBrowseScreen.browseTheFullLibraryOrganized')}
       </Text>
 
       <View style={{ flexDirection: 'row', marginBottom: spacing.lg }}>
         <Card onPress={() => setShowFavoritesOnly(false)} padded={false} style={{ paddingVertical: spacing.xs, paddingHorizontal: spacing.md, marginRight: spacing.sm, backgroundColor: !showFavoritesOnly ? color.accentMuted : color.surface, borderColor: !showFavoritesOnly ? color.accentBorder : color.border }}>
-          <Text variant="bodySm" tone={!showFavoritesOnly ? 'accent' : 'secondary'}>All</Text>
+          <Text variant="bodySm" tone={!showFavoritesOnly ? 'accent' : 'secondary'}>{t('ui.InspirationBrowseScreen.all')}</Text>
         </Card>
         <Card onPress={() => setShowFavoritesOnly(true)} padded={false} style={{ paddingVertical: spacing.xs, paddingHorizontal: spacing.md, backgroundColor: showFavoritesOnly ? color.accentMuted : color.surface, borderColor: showFavoritesOnly ? color.accentBorder : color.border }}>
-          <Text variant="bodySm" tone={showFavoritesOnly ? 'accent' : 'secondary'}>Favorites</Text>
+          <Text variant="bodySm" tone={showFavoritesOnly ? 'accent' : 'secondary'}>{t('ui.InspirationBrowseScreen.favorites')}</Text>
         </Card>
       </View>
 

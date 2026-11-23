@@ -1,3 +1,4 @@
+import { devWarn } from '../../../utils/log';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -12,8 +13,11 @@ import { AstrologyOnboardingStackParamList } from '../../../navigation/Astrology
 import { astrologyApi } from '../../../services/astrologyApi';
 import { BirthplaceOption } from '../../../data/birthplaces';
 import { BirthplacePickerModal } from './BirthplacePickerModal';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../../services/apiRequest';
 export function OnboardingPlaceScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<AstrologyOnboardingStackParamList>>();
   const [place, setPlace] = useState<BirthplaceOption | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -43,9 +47,10 @@ export function OnboardingPlaceScreen() {
         timezone: place.timezone,
       });
       navigation.navigate('OnboardingConfirm');
-    } catch (err: any) {
-      console.warn('[onboarding] failed to save birthplace:', err);
-      setError(err?.isNetworkError ? 'Unable to connect. Check your connection and try again.' : (err?.message ?? 'Something went wrong. Please try again.'));
+    } catch (__err) {
+      const err = asApiError(__err);
+      devWarn('[onboarding] failed to save birthplace:', err);
+      setError(err?.isNetworkError ? t('ui.OnboardingAstrologySystemScreen.unableToConnectCheckYour') : (err?.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry')));
     } finally {
       setSaving(false);
     }
@@ -58,10 +63,10 @@ export function OnboardingPlaceScreen() {
           <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         )}
       </View>
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 4 OF 5</Text>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>Where were you born?</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.OnboardingPlaceScreen.step4Of5')}</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>{t('ui.OnboardingPlaceScreen.whereWereYouBorn')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Choose the closest major city - this also sets your birth time zone for accurate calculation.
+        {t('ui.AstrologyProfileSetupScreen.chooseTheClosestMajorCity')}
       </Text>
 
       <Card onPress={() => setShowPicker(true)} style={styles.selectorCard}>
@@ -76,7 +81,7 @@ export function OnboardingPlaceScreen() {
       )}
 
       <Button
-        label="Continue"
+        label={t('ui.OnboardingAstrologySystemScreen.continue')}
         fullWidth
         disabled={!place}
         loading={saving}

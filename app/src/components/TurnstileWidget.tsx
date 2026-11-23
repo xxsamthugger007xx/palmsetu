@@ -3,6 +3,7 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Text } from './Text';
 import { color, radius, spacing } from '../theme/tokens';
+import { useTranslation } from 'react-i18next';
 
 const SITE_KEY = process.env.EXPO_PUBLIC_TURNSTILE_SITE_KEY;
 
@@ -49,6 +50,7 @@ function buildHtml(siteKey: string): string {
 }
 
 export function TurnstileWidget({ onToken }: { onToken: (token: string | null) => void }) {
+  const { t } = useTranslation();
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -74,7 +76,7 @@ export function TurnstileWidget({ onToken }: { onToken: (token: string | null) =
       )}
       {failed ? (
         <Text variant="caption" tone="danger" style={{ padding: spacing.sm }}>
-          Verification widget failed to load. Please check your connection and try again.
+          {t('ui.TurnstileWidget.verificationWidgetFailedToLoad')}
         </Text>
       ) : (
         <WebView

@@ -1,3 +1,4 @@
+import { tr } from '../../utils/tr';
 import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -17,6 +18,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { assessImageQuality } from '../../services/palmAnalysis';
 import { PalmHeroVisual } from '../onboarding/intro/PalmHeroVisual';
 import { CornerBrackets } from '../../components/CornerBrackets';
+import { useTranslation } from 'react-i18next';
 
 type Hand = 'left' | 'right';
 
@@ -28,6 +30,7 @@ const avoidExamples = [
 ];
 
 export function PalmCaptureScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PalmCapture'>>();
   const allowRescan = route.params?.allowRescan;
@@ -41,7 +44,7 @@ export function PalmCaptureScreen() {
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert('Permission needed', `Please allow ${useCamera ? 'camera' : 'photo library'} access to continue.`);
+      Alert.alert(t('ui.PalmCaptureScreen.permissionNeeded'), `Please allow ${useCamera ? 'camera' : 'photo library'} access to continue.`);
       return;
     }
 
@@ -93,13 +96,13 @@ export function PalmCaptureScreen() {
     <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Capture</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.PalmCaptureScreen.capture')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Analyze your palm</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.PalmCaptureScreen.analyzeYourPalm')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
-        Use natural light, hold your hand flat with fingers slightly spread, and fill most of the frame.
+        {t('ui.PalmCaptureScreen.useNaturalLightHoldYour')}
       </Text>
 
       <View style={styles.handSelector}>
@@ -118,7 +121,7 @@ export function PalmCaptureScreen() {
       {imageUri ? (
         <View style={{ marginTop: spacing.md }}>
           <View style={styles.previewWrap}>
-            <Image source={{ uri: imageUri }} style={styles.preview} />
+            <Image source={{ uri: imageUri }} accessibilityLabel={tr('a11y.palmPreview')} style={styles.preview} />
             <CornerBrackets />
             <View style={styles.removeBtn}>
               <IconButton icon={X} onPress={handleRemove} tone={color.textPrimary} />
@@ -135,10 +138,10 @@ export function PalmCaptureScreen() {
           )}
 
           <View style={styles.row}>
-            <Button label="Retake" variant="secondary" style={{ flex: 1 }} onPress={() => handlePick(true)} />
+            <Button label={t('ui.PalmCaptureScreen.retake')} variant="secondary" style={{ flex: 1 }} onPress={() => handlePick(true)} />
           </View>
           <Button
-            label="Continue"
+            label={t('ui.OnboardingAstrologySystemScreen.continue')}
             fullWidth
             disabled={!!qualityWarning}
             style={{ marginTop: spacing.sm }}
@@ -150,29 +153,29 @@ export function PalmCaptureScreen() {
           <Card style={styles.placeholder}>
             <CornerBrackets size={20} />
             <Camera size={24} color={color.textMuted} strokeWidth={1.5} />
-            <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>No photo yet</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.PalmCaptureScreen.noPhotoYet')}</Text>
           </Card>
-          <Button label="Take photo" icon={Camera} fullWidth style={{ marginTop: spacing.md }} onPress={() => handlePick(true)} />
-          <Button label="Upload from library" icon={ImagePlus} variant="secondary" fullWidth style={{ marginTop: spacing.sm }} onPress={() => handlePick(false)} />
+          <Button label={t('ui.PalmCaptureScreen.takePhoto')} icon={Camera} fullWidth style={{ marginTop: spacing.md }} onPress={() => handlePick(true)} />
+          <Button label={t('ui.PalmCaptureScreen.uploadFromLibrary')} icon={ImagePlus} variant="secondary" fullWidth style={{ marginTop: spacing.sm }} onPress={() => handlePick(false)} />
 
           <View style={{ marginTop: spacing.xl }}>
-            <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>PHOTO GUIDELINES</Text>
+            <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>{t('ui.PalmCaptureScreen.photoGuidelines')}</Text>
 
             <Card elevated style={styles.goodExampleCard}>
               <PalmHeroVisual size={96} />
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <View style={styles.goodBadge}>
                   <Check size={12} color={color.bg} strokeWidth={2.5} />
-                  <Text variant="caption" weight="semibold" tone="inverted" style={{ marginLeft: 4 }}>GOOD EXAMPLE</Text>
+                  <Text variant="caption" weight="semibold" tone="inverted" style={{ marginLeft: 4 }}>{t('ui.PalmCaptureScreen.goodExample')}</Text>
                 </View>
                 <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-                  Flat, open palm filling the frame, in even lighting with no accessories.
+                  {t('ui.PalmCaptureScreen.flatOpenPalmFillingThe')}
                 </Text>
               </View>
             </Card>
 
             <Text variant="caption" tone="muted" style={{ marginTop: spacing.md, marginBottom: spacing.sm }}>
-              Avoid photos like these, they may affect analysis accuracy:
+              {t('ui.PalmCaptureScreen.avoidPhotosLikeTheseThey')}
             </Text>
             <View style={styles.avoidGrid}>
               {avoidExamples.map((ex) => (
@@ -194,7 +197,7 @@ export function PalmCaptureScreen() {
       <Card style={styles.privacyCard}>
         <Lock size={14} color={color.textMuted} strokeWidth={1.75} />
         <Text variant="caption" tone="muted" style={{ marginLeft: spacing.sm, flex: 1 }}>
-          Your photo is uploaded securely for analysis. You can delete it from Profile → Privacy at any time.
+          {t('ui.PalmCaptureScreen.yourPhotoIsUploadedSecurely')}
         </Text>
       </Card>
     </PageContainer>

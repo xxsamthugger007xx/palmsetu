@@ -14,7 +14,9 @@ import { kundliApi } from '../../services/kundliApi';
 import { astrologyApi } from '../../services/astrologyApi';
 import { KundliChartStyle, KundliLimits } from '../../types/kundli';
 import { BIRTHPLACES, BirthplaceOption } from '../../data/birthplaces';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'KundliStyle'>;
 
@@ -25,6 +27,7 @@ const STYLES: { key: KundliChartStyle; title: string; description: string; icon:
 ];
 
 export function KundliStyleScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteT>();
   const { subject } = route.params;
@@ -82,15 +85,16 @@ export function KundliStyleScreen() {
         style: selected,
         subject,
         ...(subject === 'other' && birthplace
-          ? { subjectName, birthDate, birthTime, latitude: birthplace.latitude, longitude: birthplace.longitude }
+          ? { subjectName, birthDate, birthTime, latitude: birthplace.latitude, longitude: birthplace.longitude, timezone: birthplace.timezone }
           : {}),
       });
       navigation.navigate('KundliResult', { chartId: chart.id });
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'LIMIT_REACHED' || err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setError(err.message ?? 'Could not generate your chart. Please try again.');
+        setError(err.message ?? t('ui.KundliStyleScreen.couldNotGenerateYourChart'));
       }
     } finally {
       setGenerating(false);
@@ -100,8 +104,8 @@ export function KundliStyleScreen() {
   if (profileReady === 'loading') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Style Chart</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -109,12 +113,12 @@ export function KundliStyleScreen() {
   if (profileReady === 'incomplete') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Style Chart</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
         <EmptyState
           icon={UserCog}
-          title="Complete your birth details"
-          description="Your name, birth date and time, and birthplace are needed to calculate your ascendant and houses."
-          actionLabel="Add birth details"
+          title={t('ui.KundliStyleScreen.completeYourBirthDetails')}
+          description={t('ui.KundliStyleScreen.yourNameBirthDateAnd')}
+          actionLabel={t('ui.KundliStyleScreen.addBirthDetails')}
           onAction={() => navigation.navigate('AstrologyProfileSetup')}
         />
       </PageContainer>
@@ -124,14 +128,14 @@ export function KundliStyleScreen() {
   if (gated) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Style Chart</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
         <EmptyState
           icon={Crown}
           title={subject === 'other' ? "Other person's astrology is premium" : 'Free kundli generation used'}
           description={subject === 'other'
             ? 'Generating another person\'s chart requires Premium.'
             : 'Your free kundli generation has been used. Upgrade for additional charts.'}
-          actionLabel="Upgrade"
+          actionLabel={t('ui.KundliStyleScreen.upgrade')}
           onAction={() => navigation.navigate('Paywall')}
         />
       </PageContainer>
@@ -140,9 +144,9 @@ export function KundliStyleScreen() {
 
   return (
     <PageContainer onRefresh={async () => {}}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Style Chart</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Choose a chart style and confirm the birth details to generate.
+        {t('ui.KundliStyleScreen.chooseAChartStyleAnd')}
       </Text>
 
       {STYLES.map(({ key, title, description, icon: Icon }) => {
@@ -171,10 +175,10 @@ export function KundliStyleScreen() {
 
       {subject === 'other' && (
         <View style={{ marginTop: spacing.lg }}>
-          <Text variant="label" tone="muted">THEIR DETAILS</Text>
-          <TextInput value={subjectName} onChangeText={setSubjectName} placeholder="Name" placeholderTextColor={color.textMuted} style={styles.input} />
-          <TextInput value={birthDate} onChangeText={setBirthDate} placeholder="Birth date (YYYY-MM-DD)" placeholderTextColor={color.textMuted} style={styles.input} />
-          <TextInput value={birthTime} onChangeText={setBirthTime} placeholder="Birth time (HH:MM, 24h)" placeholderTextColor={color.textMuted} style={styles.input} />
+          <Text variant="label" tone="muted">{t('ui.KundliStyleScreen.theirDetails')}</Text>
+          <TextInput value={subjectName} onChangeText={setSubjectName} placeholder={t('ui.KundliStyleScreen.name')} accessibilityLabel={t('ui.KundliStyleScreen.name')} placeholderTextColor={color.textMuted} style={styles.input} />
+          <TextInput value={birthDate} onChangeText={setBirthDate} placeholder={t('ui.KundliStyleScreen.birthDateYyyyMmDd')} accessibilityLabel={t('ui.KundliStyleScreen.birthDateYyyyMmDd')} placeholderTextColor={color.textMuted} style={styles.input} />
+          <TextInput value={birthTime} onChangeText={setBirthTime} placeholder={t('ui.KundliStyleScreen.birthTimeHhMm24h')} accessibilityLabel={t('ui.KundliStyleScreen.birthTimeHhMm24h')} placeholderTextColor={color.textMuted} style={styles.input} />
           <Card onPress={() => setShowPlacePicker(true)} style={[styles.input, styles.placeSelector] as any}>
             <MapPin size={16} color={color.accent} strokeWidth={1.75} />
             <Text variant="bodySm" tone={birthplace ? 'primary' : 'muted'} style={{ marginLeft: spacing.sm }}>
@@ -187,7 +191,7 @@ export function KundliStyleScreen() {
       {error && <Text variant="caption" tone="danger" style={{ marginTop: spacing.sm }}>{error}</Text>}
 
       <Button
-        label="Generate"
+        label={t('ui.KundliStyleScreen.generate')}
         onPress={handleGenerate}
         loading={generating}
         disabled={!canSubmit || generating}
@@ -198,7 +202,7 @@ export function KundliStyleScreen() {
       <Modal visible={showPlacePicker} animationType="slide" onRequestClose={() => setShowPlacePicker(false)}>
         <PageContainer scroll={false}>
           <View style={styles.modalHeader}>
-            <Text variant="bodySm" weight="semibold">Select birthplace</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.KundliStyleScreen.selectBirthplace')}</Text>
             <IconButton icon={X} onPress={() => setShowPlacePicker(false)} />
           </View>
 
@@ -207,7 +211,7 @@ export function KundliStyleScreen() {
             <TextInput
               value={placeQuery}
               onChangeText={setPlaceQuery}
-              placeholder="Search city or country"
+              placeholder={t('ui.KundliStyleScreen.searchCityOrCountry')} accessibilityLabel={t('ui.KundliStyleScreen.searchCityOrCountry')}
               placeholderTextColor={color.textMuted}
               style={styles.searchInput}
               autoFocus

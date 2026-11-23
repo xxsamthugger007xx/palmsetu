@@ -12,6 +12,7 @@ import { spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { BirthProfile, DailyHoroscope } from '../../types/astrology';
+import { useTranslation } from 'react-i18next';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
@@ -23,6 +24,7 @@ type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
  * duplicating the whole astrology screen.
  */
 export function WesternAstrologyScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<LoadState>('loading');
   const [daily, setDaily] = useState<DailyHoroscope | null>(null);
@@ -52,8 +54,8 @@ export function WesternAstrologyScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Western Astrology</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.WesternAstrologyScreen.westernAstrology')}</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -61,12 +63,12 @@ export function WesternAstrologyScreen() {
   if (state === 'needsProfile') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Western Astrology</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.WesternAstrologyScreen.westernAstrology')}</Text>
         <EmptyState
           icon={Sun}
-          title="Set up your birth details"
-          description="Add your birth date and place to get a tropical, western-style reading."
-          actionLabel="Get started"
+          title={t('ui.AstrologyLandingScreen.setUpYourBirthDetails')}
+          description={t('ui.WesternAstrologyScreen.addYourBirthDateAnd')}
+          actionLabel={t('ui.AstrologyLandingScreen.getStarted')}
           onAction={() => navigation.navigate('AstrologyProfileSetup')}
         />
       </PageContainer>
@@ -76,28 +78,28 @@ export function WesternAstrologyScreen() {
   if (state === 'error') {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this section" actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.AstrologyLandingScreen.couldnTLoadThisSection')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Western Astrology</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.WesternAstrologyScreen.westernAstrology')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
-        Tropical sun, moon and transits, read the western way
+        {t('ui.WesternAstrologyScreen.tropicalSunMoonAndTransits')}
       </Text>
 
       <Card elevated>
-        <Text variant="label" tone="accent">TODAY'S READING</Text>
+        <Text variant="label" tone="accent">{t('ui.WesternAstrologyScreen.todaySReading')}</Text>
         {!daily ? (
-          <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Still preparing today's reading...</Text>
+          <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.WesternAstrologyScreen.stillPreparingTodaySReading')}</Text>
         ) : (
           <>
             <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.sm }}>{daily.dailyTheme}</Text>
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }} numberOfLines={3}>{daily.summary}</Text>
             <Button
-              label="Open full reading"
+              label={t('ui.WesternAstrologyScreen.openFullReading')}
               size="sm"
               style={{ marginTop: spacing.md }}
               onPress={() => navigation.navigate('DailyHoroscope', { localDate: daily.localDate })}
@@ -108,7 +110,7 @@ export function WesternAstrologyScreen() {
 
       <View style={{ marginTop: spacing.lg }}>
         <Text variant="caption" tone="muted">
-          Want the Vedic (sidereal) view instead? Open Astrology or Moon Sign from Home.
+          {t('ui.WesternAstrologyScreen.wantTheVedicSiderealView')}
         </Text>
       </View>
     </PageContainer>

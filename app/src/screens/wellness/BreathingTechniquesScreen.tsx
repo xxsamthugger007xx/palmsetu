@@ -10,10 +10,13 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, BreathingTechniqueCatalogueEntry } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function BreathingTechniquesScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -24,7 +27,7 @@ export function BreathingTechniquesScreen() {
     setError(null);
     wellnessApi.getBreathingTechniques()
       .then((res) => setTechniques(res.techniques))
-      .catch((err: any) => setError(err.message ?? 'Could not load breathing techniques. Please try again.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.BreathingTechniquesScreen.couldNotLoadBreathingTechniques')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -41,8 +44,8 @@ export function BreathingTechniquesScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Breathing</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.BreathingTechniquesScreen.breathing')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -50,21 +53,21 @@ export function BreathingTechniquesScreen() {
   if (error) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Breathing</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.BreathingTechniquesScreen.breathing')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Breathing</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.BreathingTechniquesScreen.breathing')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Choose a guided breathing technique.
+        {t('ui.BreathingTechniquesScreen.chooseAGuidedBreathingTechnique')}
       </Text>
 
       {techniques.length === 0 ? (
-        <EmptyState icon={Wind} title="No techniques available" description="Please try again later." />
+        <EmptyState icon={Wind} title={t('ui.BreathingTechniquesScreen.noTechniquesAvailable')} description={t('ui.BreathingTechniquesScreen.pleaseTryAgainLater')} />
       ) : (
         techniques.map((t) => (
           <Card key={t.id} onPress={() => handleSelect(t)} style={{ marginBottom: spacing.sm }}>

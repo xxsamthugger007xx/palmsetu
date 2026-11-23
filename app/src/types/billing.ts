@@ -21,3 +21,12 @@ export interface SubscriptionStatus {
   renewsAt: string | null;
   expiresAt: string | null;
 }
+
+/** Premium users' monthly AI allowance (estimated spend), from GET /billing/ai-budget. */
+export interface AiBudgetStatus {
+  capped: boolean;
+  limitInr: number | null;
+  usedInr: number;
+  remainingInr: number | null;
+  resetsOn: string; // YYYY-MM-DD, first day of next month (UTC)
+}

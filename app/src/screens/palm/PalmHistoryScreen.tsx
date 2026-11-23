@@ -12,8 +12,10 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
+import { useTranslation } from 'react-i18next';
 
 export function PalmHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<PalmReading[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -34,17 +36,17 @@ export function PalmHistoryScreen() {
   }, [load]);
 
   const handleDelete = (id: string) => {
-    Alert.alert('Delete reading', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('ui.PalmHistoryScreen.deleteReading'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
+      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('ui.AssistantHistoryScreen.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await palmApi.deleteReading(id);
             setItems((prev) => prev.filter((r) => r.id !== id));
           } catch {
-            Alert.alert('Could not delete this reading. Please try again.');
+            Alert.alert(t('ui.PalmHistoryScreen.couldNotDeleteThisReading'));
           }
         },
       },
@@ -55,24 +57,24 @@ export function PalmHistoryScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Palm Reading History</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.PalmHistoryScreen.palmReadingHistory')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       )}
 
       {state === 'error' && (
-        <EmptyState icon={Info} title="Couldn't load history" actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.AstrologyHistoryScreen.couldnTLoadHistory')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       )}
 
       {state === 'ready' && items.length === 0 && (
         <EmptyState
           icon={ScanLine}
-          title="No palm readings yet"
-          description="Your past palm scans will appear here."
-          actionLabel="Scan your palm"
+          title={t('ui.PalmHistoryScreen.noPalmReadingsYet')}
+          description={t('ui.PalmHistoryScreen.yourPastPalmScansWill')}
+          actionLabel={t('ui.PalmHistoryScreen.scanYourPalm')}
           onAction={() => navigation.navigate('PalmCapture')}
         />
       )}

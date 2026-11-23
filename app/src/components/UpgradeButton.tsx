@@ -5,6 +5,7 @@ import { Crown } from 'lucide-react-native';
 import { color, radius, spacing } from '../theme/tokens';
 import { Text } from './Text';
 import { pullOffset } from '../services/pullOffsetTracker';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   onPress: () => void;
@@ -31,6 +32,7 @@ const MAX_PULL_TRAVEL = 72;
  * pull-to-refresh gesture itself.
  */
 export function UpgradeButton({ onPress }: Props) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const translateY = pullOffset.interpolate({
     inputRange: [-MAX_PULL_TRAVEL, 0],
@@ -39,13 +41,13 @@ export function UpgradeButton({ onPress }: Props) {
   });
   return (
     <Animated.View style={[styles.base, { top: insets.top + spacing.sm, transform: [{ translateY }] }]}>
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={onPress}
         hitSlop={8}
         style={({ pressed }) => [styles.inner, pressed && styles.pressed]}
       >
         <Crown size={13} color={color.accent} strokeWidth={2} />
-        <Text variant="label" tone="accent" style={styles.label}>UPGRADE</Text>
+        <Text variant="label" tone="accent" style={styles.label}>{t('ui.UpgradeButton.upgrade')}</Text>
       </Pressable>
     </Animated.View>
   );

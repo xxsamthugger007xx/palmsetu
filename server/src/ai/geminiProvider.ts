@@ -58,6 +58,17 @@ function toGeminiContents(messages: ChatMessage[]) {
   return { system, contents };
 }
 
+export interface GeminiUsageMetadata { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number }
+
+/** Forwards Google's real token counts (thinking tokens are billed as output) to the caller. */
+export function reportUsage(meta: GeminiUsageMetadata | undefined, options?: GenerationOptions): void {
+  if (!meta || !options?.onUsage) return;
+  options.onUsage({
+    inputTokens: meta.promptTokenCount ?? 0,
+    outputTokens: (meta.candidatesTokenCount ?? 0) + (meta.thoughtsTokenCount ?? 0),
+  });
+}
+
 export class GeminiProvider implements AiProvider {
   constructor(
     private apiKey: string = process.env.GEMINI_API_KEY ?? '',
@@ -102,7 +113,9 @@ export class GeminiProvider implements AiProvider {
 
     const data = (await res.json()) as {
       candidates?: { content?: { parts?: { text?: string }[] } }[];
+      usageMetadata?: GeminiUsageMetadata;
     };
+    reportUsage(data.usageMetadata, options);
     return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
   }
 
@@ -157,6 +170,7 @@ export class GeminiProvider implements AiProvider {
 
     let full = '';
     let buffer = '';
+    let lastMeta: GeminiUsageMetadata | undefined;
     const reader = (res.body as any).getReader
       ? (res.body as ReadableStream<Uint8Array>).getReader()
       : null;
@@ -168,19 +182,20 @@ export class GeminiProvider implements AiProvider {
           const { done, value } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
-          full = this.drainSseBuffer(buffer, onChunk, (rest) => { buffer = rest; }, full);
+          full = this.drainSseBuffer(buffer, onChunk, (rest) => { buffer = rest; }, full, (m) => { lastMeta = m; });
         }
       } else {
         // Node fetch (undici) response bodies are async-iterable.
         for await (const chunk of res.body as any) {
           buffer += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
-          full = this.drainSseBuffer(buffer, onChunk, (rest) => { buffer = rest; }, full);
+          full = this.drainSseBuffer(buffer, onChunk, (rest) => { buffer = rest; }, full, (m) => { lastMeta = m; });
         }
       }
     } finally {
       clearTimeout(timeout);
     }
 
+    reportUsage(lastMeta, options);
     if (!full) {
       throw new Error('Gemini stream produced no content.');
     }
@@ -193,7 +208,8 @@ export class GeminiProvider implements AiProvider {
     buffer: string,
     onChunk: (text: string) => void,
     setRemainder: (rest: string) => void,
-    fullSoFar: string
+    fullSoFar: string,
+    onMeta?: (m: GeminiUsageMetadata) => void
   ): string {
     const lines = buffer.split('\n');
     const remainder = lines.pop() ?? '';
@@ -206,7 +222,9 @@ export class GeminiProvider implements AiProvider {
       try {
         const parsed = JSON.parse(jsonStr) as {
           candidates?: { content?: { parts?: { text?: string }[] } }[];
+          usageMetadata?: GeminiUsageMetadata;
         };
+        if (parsed.usageMetadata) onMeta?.(parsed.usageMetadata);
         const text = parsed.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
         if (text) {
           full += text;

@@ -12,6 +12,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { Gender, useUserProfile } from '../../context/UserProfileContext';
 
+import { asApiError } from '../../services/apiRequest';
 /**
  * Edit Profile: the name/gender identity fields, separate from birth
  * details (date/time/place, which AstrologyProfileSetupScreen already
@@ -44,13 +45,14 @@ export function EditProfileScreen() {
     try {
       await setProfile({ name: name.trim(), gender: gender ?? 'prefer-not-to-say' });
       navigation.goBack();
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       // Same network-vs-backend distinction as AstrologyProfileSetupScreen:
       // err.isNetworkError means the request never reached the server, so
       // the generic friendly message is already in err.message (see
       // services/apiRequest.ts). Entered name/gender stay in the form
       // either way - nothing above is cleared on failure.
-      setError(err?.message ?? 'Something went wrong saving your profile.');
+      setError(err?.message ?? t('ui.AstrologyProfileSetupScreen.somethingWentWrongSavingYour'));
     } finally {
       setSaving(false);
     }
@@ -68,17 +70,16 @@ export function EditProfileScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Personal info</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.EditProfileScreen.personalInfo')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Your name and how you'd like to be addressed. Birth date, time and place are edited separately
-        under Daily Cosmic Guidance.
+        {t('ui.EditProfileScreen.yourNameAndHowYou')}
       </Text>
 
       <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>{t('onboarding.nameLabel')}</Text>
       <TextInput
         value={name}
         onChangeText={setName}
-        placeholder={t('onboarding.namePlaceholder')}
+        placeholder={t('onboarding.namePlaceholder')} accessibilityLabel={t('onboarding.namePlaceholder')}
         placeholderTextColor={color.textMuted}
         style={styles.input}
         autoCapitalize="words"
@@ -112,7 +113,7 @@ export function EditProfileScreen() {
       )}
 
       <Button
-        label="Save changes"
+        label={t('ui.EditProfileScreen.saveChanges')}
         fullWidth
         disabled={!canSave}
         loading={saving}

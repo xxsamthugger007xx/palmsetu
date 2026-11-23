@@ -12,8 +12,10 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { vastuApi } from '../../services/vastuApi';
 import { VastuReport } from '../../types/vastu';
+import { useTranslation } from 'react-i18next';
 
 export function VastuLandingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [recent, setRecent] = useState<VastuReport[]>([]);
@@ -34,21 +36,20 @@ export function VastuLandingScreen() {
   return (
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
-        <Text variant="display" weight="semibold">Vastu Compass</Text>
+        <Text variant="display" weight="semibold">{t('ui.VastuCompassScreen.vastuCompass')}</Text>
         <IconButton icon={History} onPress={() => navigation.navigate('VastuHistory')} />
       </View>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
-        Align Your Space - traditional direction guidance for reflection, not a scientifically validated
-        property assessment.
+        {t('ui.VastuLandingScreen.alignYourSpaceTraditionalDirection')}
       </Text>
 
       <Card elevated onPress={() => navigation.navigate('VastuCompass')} style={{ marginBottom: spacing.md }}>
         <View style={styles.iconWrap}>
           <CompassIcon size={22} color={color.accent} strokeWidth={1.75} />
         </View>
-        <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>Open the compass</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.VastuLandingScreen.openTheCompass')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-          Find your current facing direction with your device's sensor, or select manually.
+          {t('ui.VastuLandingScreen.findYourCurrentFacingDirection')}
         </Text>
       </Card>
 
@@ -56,15 +57,15 @@ export function VastuLandingScreen() {
         <View style={styles.iconWrap}>
           <Home size={22} color={color.accent} strokeWidth={1.75} />
         </View>
-        <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>Analyze a property</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.VastuLandingScreen.analyzeAProperty')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-          Add room directions for a personalized report with practical, low-cost suggestions.
+          {t('ui.VastuLandingScreen.addRoomDirectionsForA')}
         </Text>
       </Card>
 
       {state === 'ready' && recent.length > 0 && (
         <View style={{ marginTop: spacing.xl }}>
-          <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Recent reports</Text>
+          <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.GemstoneLandingScreen.recentReports')}</Text>
           {recent.map((r) => (
             <Card key={r.id} style={styles.row} onPress={() => navigation.navigate('VastuReport', { reportId: r.id })}>
               <View style={{ flex: 1 }}>
@@ -79,16 +80,14 @@ export function VastuLandingScreen() {
 
       {state === 'ready' && recent.length === 0 && (
         <View style={{ marginTop: spacing.xl }}>
-          <EmptyState icon={Home} title="No reports yet" description="Analyze a property to see your first report here." />
+          <EmptyState icon={Home} title={t('ui.GemstoneHistoryScreen.noReportsYet')} description={t('ui.VastuLandingScreen.analyzeAPropertyToSee')} />
         </View>
       )}
 
       <Card style={{ marginTop: spacing.xl, flexDirection: 'row', alignItems: 'flex-start' }}>
         <Info size={14} color={color.textMuted} strokeWidth={1.75} style={{ marginTop: 2 }} />
         <Text variant="caption" tone="muted" style={{ marginLeft: spacing.sm, flex: 1 }}>
-          Vastu is a traditional architectural and cultural belief system. Its spiritual and prosperity-related
-          claims are not scientifically established, and no direction is ever presented as causing illness,
-          financial loss, or relationship problems.
+          {t('ui.VastuLandingScreen.vastuIsATraditionalArchitectural')}
         </Text>
       </Card>
     </PageContainer>

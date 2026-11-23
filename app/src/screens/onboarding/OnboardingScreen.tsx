@@ -1,3 +1,4 @@
+import { devWarn } from '../../utils/log';
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +39,7 @@ export function OnboardingScreen() {
       // the identity is saved (e.g. from the edit-profile screen).
       await setProfile({ name: name.trim(), gender });
     } catch (err) {
-      console.warn('[onboarding] identity save to backend failed (will retry on next save):', err);
+      devWarn('[onboarding] identity save to backend failed (will retry on next save):', err);
     } finally {
       setSubmitting(false);
     }
@@ -61,7 +62,7 @@ export function OnboardingScreen() {
       <TextInput
         value={name}
         onChangeText={setName}
-        placeholder={t('onboarding.namePlaceholder')}
+        placeholder={t('onboarding.namePlaceholder')} accessibilityLabel={t('onboarding.namePlaceholder')}
         placeholderTextColor={color.textMuted}
         style={styles.input}
         autoCapitalize="words"

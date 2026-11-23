@@ -16,7 +16,9 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { gemstoneApi } from '../../services/gemstoneApi';
 import { GemstoneReport } from '../../types/gemstone';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card style={{ marginBottom: spacing.sm }}>
@@ -36,6 +38,7 @@ const buyingGuidePoints = [
 ];
 
 export function GemstoneReportScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'GemstoneReport'>>();
   const { reportId } = route.params;
@@ -89,7 +92,8 @@ export function GemstoneReportScreen() {
       const res = await gemstoneApi.askFollowup(report.id, question.trim());
       setAnswers((prev) => [...prev, `Q: ${question.trim()}\n\n${res.answer}`]);
       setQuestion('');
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setAnswers((prev) => [...prev, `Couldn't get a response: ${err.message ?? 'please try again.'}`]);
     } finally {
       setAsking(false);
@@ -97,10 +101,10 @@ export function GemstoneReportScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
   if (state === 'error' || !report) {
-    return <PageContainer><EmptyState icon={Info} title="Couldn't load this report" actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.GemstoneReportScreen.couldnTLoadThisReport')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   const { primary, alternative, caratGuidance } = report;
@@ -120,7 +124,7 @@ export function GemstoneReportScreen() {
       {!hasPrimary ? (
         <EmptyState
           icon={Gem}
-          title="No recommendation available"
+          title={t('ui.GemstoneReportScreen.noRecommendationAvailable')}
           description={primary.reasonUnavailable}
         />
       ) : (
@@ -140,7 +144,7 @@ export function GemstoneReportScreen() {
                 label={report.dataCompleteness === 'full' ? 'Full chart data' : 'Partial chart data'}
                 status={report.dataCompleteness === 'full' ? 'success' : 'warning'}
               />
-              {report.saved && <StatusBadge label="Saved" status="accent" />}
+              {report.saved && <StatusBadge label={t('ui.GemstoneReportScreen.saved')} status="accent" />}
             </View>
 
             {caratGuidance.available && caratGuidance.suggestedRangeCarats && (
@@ -158,7 +162,7 @@ export function GemstoneReportScreen() {
           {/* B. Why this gemstone */}
           <Card style={{ marginTop: spacing.sm }} onPress={() => setExplanationOpen((o) => !o)}>
             <View style={styles.sectionHeader}>
-              <Text variant="bodySm" weight="semibold">Why this gemstone was recommended</Text>
+              <Text variant="bodySm" weight="semibold">{t('ui.GemstoneReportScreen.whyThisGemstoneWasRecommended')}</Text>
               {explanationOpen ? <ChevronUp size={16} color={color.textMuted} /> : <ChevronDown size={16} color={color.textMuted} />}
             </View>
             {explanationOpen && (
@@ -172,15 +176,15 @@ export function GemstoneReportScreen() {
           </Card>
 
           {/* C. Wearing guidance */}
-          <Section title="Wearing guidance (customary practice)">
-            <GuidanceRow label="Traditional day" value={primary.gemstone!.traditionalDay} />
-            <GuidanceRow label="Traditional finger" value={primary.gemstone!.traditionalFinger} />
-            <GuidanceRow label="Traditional metal" value={primary.gemstone!.traditionalMetal} />
+          <Section title={t('ui.GemstoneReportScreen.wearingGuidanceCustomaryPractice')}>
+            <GuidanceRow label={t('ui.GemstoneReportScreen.traditionalDay')} value={primary.gemstone!.traditionalDay} />
+            <GuidanceRow label={t('ui.GemstoneReportScreen.traditionalFinger')} value={primary.gemstone!.traditionalFinger} />
+            <GuidanceRow label={t('ui.GemstoneReportScreen.traditionalMetal')} value={primary.gemstone!.traditionalMetal} />
             <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>{primary.gemstone!.customaryPractice}</Text>
           </Section>
 
           {/* D. Alternatives */}
-          <Section title="Alternative option">
+          <Section title={t('ui.GemstoneReportScreen.alternativeOption')}>
             {alternative.strength === 'alternative' && alternative.gemstone ? (
               <>
                 <Text variant="bodySm" weight="semibold">{alternative.gemstone.nameEnglish}</Text>
@@ -194,7 +198,7 @@ export function GemstoneReportScreen() {
           {/* E. Buying guide */}
           <Card style={{ marginBottom: spacing.sm }} onPress={() => setBuyingGuideOpen((o) => !o)}>
             <View style={styles.sectionHeader}>
-              <Text variant="bodySm" weight="semibold">Gemstone buying guide</Text>
+              <Text variant="bodySm" weight="semibold">{t('ui.GemstoneReportScreen.gemstoneBuyingGuide')}</Text>
               {buyingGuideOpen ? <ChevronUp size={16} color={color.textMuted} /> : <ChevronDown size={16} color={color.textMuted} />}
             </View>
             {buyingGuideOpen && (
@@ -203,7 +207,7 @@ export function GemstoneReportScreen() {
                   <Text key={p} variant="caption" tone="secondary" style={{ marginBottom: spacing.sm }}>• {p}</Text>
                 ))}
                 <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-                  This app does not sell gemstones or verify sellers - this guide is educational only.
+                  {t('ui.GemstoneReportScreen.thisAppDoesNotSell')}
                 </Text>
               </View>
             )}
@@ -211,27 +215,27 @@ export function GemstoneReportScreen() {
 
           {/* F. Ask AI */}
           <View style={{ marginTop: spacing.lg }}>
-            <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Ask a follow-up question</Text>
+            <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.DailyHoroscopeScreen.askAFollowUpQuestion')}</Text>
             {answers.map((a, i) => (
               <Card key={i} style={{ marginBottom: spacing.sm }}><Text variant="bodySm" tone="secondary">{a}</Text></Card>
             ))}
             <TextInput
               value={question}
               onChangeText={setQuestion}
-              placeholder="Ask about this recommendation..."
+              placeholder={t('ui.GemstoneReportScreen.askAboutThisRecommendation')} accessibilityLabel={t('ui.GemstoneReportScreen.askAboutThisRecommendation')}
               placeholderTextColor={color.textMuted}
               style={styles.input}
             />
-            <Button label="Ask" loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
+            <Button label={t('ui.DailyHoroscopeScreen.ask')} loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
           </View>
         </>
       )}
 
       <ConfirmationModal
         visible={confirmDelete}
-        title="Delete this report"
-        description="This permanently deletes the gemstone report."
-        confirmLabel="Delete"
+        title={t('ui.GemstoneReportScreen.deleteThisReport')}
+        description={t('ui.GemstoneReportScreen.thisPermanentlyDeletesTheGemstone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}

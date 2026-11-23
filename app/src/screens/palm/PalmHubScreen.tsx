@@ -1,4 +1,6 @@
+import { tr } from '../../utils/tr';
 import React, { useState } from 'react';
+import { usePalmImageUrl } from '../../hooks/usePalmImageUrl';
 import { StyleSheet, View, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,6 +25,7 @@ export function PalmHubScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [profile, setProfile] = useState<PalmReading | null>(null);
+  const heroImageUrl = usePalmImageUrl(profile?.id, !!profile?.hasStoredImage);
   const [loaded, setLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const [confirmRescan, setConfirmRescan] = useState(false);
@@ -70,9 +73,10 @@ export function PalmHubScreen() {
           {t('palm.profileSubtitle')}
         </Text>
 
-        {profile.hasStoredImage && !imageFailed ? (
+        {profile.hasStoredImage && !imageFailed && !!heroImageUrl ? (
           <Image
-            source={{ uri: palmApi.imageUrl(profile.id), headers: palmApi.imageHeaders() }}
+            source={{ uri: heroImageUrl }}
+            accessibilityLabel={tr('a11y.palmPhoto')}
             style={styles.heroImage}
             resizeMode="cover"
             onError={() => setImageFailed(true)}

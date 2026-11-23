@@ -6,6 +6,7 @@ import { Text } from '../Text';
 import { CountProgressRing } from '../ProgressRing';
 import { color, radius, spacing } from '../../theme/tokens';
 import { DailyResetProgress } from '../../utils/wellnessCompute';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   progress: DailyResetProgress;
@@ -22,6 +23,7 @@ type Props = {
  * FloatingAIButton.tsx already does.
  */
 export function DailyResetHero({ progress, name }: Props) {
+  const { t } = useTranslation();
   const { completed, total, ratio } = progress;
   const [reduceMotion, setReduceMotion] = useState(false);
   const pulse = useRef(new Animated.Value(0)).current;
@@ -85,7 +87,7 @@ export function DailyResetHero({ progress, name }: Props) {
         <View style={styles.badge}>
           {state === 'done' ? <Sparkles size={12} color={color.success} strokeWidth={2} /> : null}
           <Text variant="label" tone={state === 'done' ? 'success' : 'accent'} style={{ marginLeft: state === 'done' ? 4 : 0 }}>
-            Daily reset
+            {t('ui.DailyResetHero.dailyReset')}
           </Text>
         </View>
         <Text variant="title" weight="semibold" style={{ marginTop: 4 }}>{headline}</Text>

@@ -159,18 +159,38 @@
       "journal": "المذكرات",
       "challenges": "التحديات"
     },
+    "breathingCount_zero": "لا تقنيات",
+    "breathingCount_one": "تقنية واحدة",
+    "breathingCount_two": "تقنيتان",
+    "breathingCount_few": "{{count}} تقنيات",
+    "breathingCount_many": "{{count}} تقنية",
     "breathingCount_other": "{{count}} تقنية",
+    "meditationCount_zero": "لا جلسات",
+    "meditationCount_one": "جلسة واحدة",
+    "meditationCount_two": "جلستان",
+    "meditationCount_few": "{{count}} جلسات",
+    "meditationCount_many": "{{count}} جلسة",
     "meditationCount_other": "{{count}} جلسة",
     "journalWrittenToday": "تمت الكتابة اليوم",
     "journalReflectPrivately": "تأمل بشكل خاص",
     "challengesInProgress": "قيد التقدم",
     "challengesBrowsePrograms": "تصفح البرامج",
     "thisWeekTitle": "هذا الأسبوع",
+    "checkInsThisWeek_zero": "لا تسجيلات يومية هذا الأسبوع",
+    "checkInsThisWeek_one": "تسجيل يومي واحد هذا الأسبوع",
+    "checkInsThisWeek_two": "تسجيلان يوميان هذا الأسبوع",
+    "checkInsThisWeek_few": "{{count}} تسجيلات يومية هذا الأسبوع",
+    "checkInsThisWeek_many": "{{count}} تسجيلًا يوميًا هذا الأسبوع",
     "checkInsThisWeek_other": "{{count}} تسجيل يومي هذا الأسبوع",
     "averageEnergy": "متوسط الطاقة {{value}}/5",
     "habitsDoneToday": "تم إنجاز {{done}}/{{total}} من العادات اليوم",
     "noTrendYet": "سجّل بضع مرات أخرى هذا الأسبوع وستظهر اتجاهاتك هنا.",
     "activeGoalsTitle": "الأهداف النشطة",
+    "checkInsLogged_zero": "لا تسجيلات",
+    "checkInsLogged_one": "تم تسجيل واحد",
+    "checkInsLogged_two": "تم تسجيلان",
+    "checkInsLogged_few": "تم تسجيل {{count}} تسجيلات",
+    "checkInsLogged_many": "تم تسجيل {{count}} تسجيلًا",
     "checkInsLogged_other": "تم تسجيل {{count}} تسجيل",
     "inspirationLibrary": "مكتبة الإلهام",
     "reminders": "التذكيرات",
@@ -220,6 +240,11 @@
     "noReadingsTitle": "لا توجد قراءات بعد",
     "noReadingsDesc": "ابدأ بسحب بطاقة واحدة لترى قراءتك الأولى هنا.",
     "startAReading": "ابدأ قراءة",
+    "cardCount_zero": "لا بطاقات",
+    "cardCount_one": "بطاقة واحدة",
+    "cardCount_two": "بطاقتان",
+    "cardCount_few": "{{count}} بطاقات",
+    "cardCount_many": "{{count}} بطاقة",
     "cardCount_other": "{{count}} بطاقة",
     "categories": {
       "oneCard": {
@@ -253,8 +278,15 @@
       "compatibility": {
         "title": "التوافق",
         "description": "أنت، هم، وما يربطكما"
+      },
+      "fiveCard": {
+        "title": "قراءة بخمس بطاقات",
+        "description": "مسار أعمق بخمسة مواضع"
       }
-    }
+    },
+    "personalReadingTitle": "احصل على قراءة شخصية",
+    "personalReadingSubtitle": "اكتشف ما قد تدعوك البطاقات إلى التأمل فيه اليوم.",
+    "personalReadingCta": "ابدأ قراءة"
   },
   "profile": {
     "upgradeTitle": "الترقية إلى Premium",
@@ -328,5 +360,989 @@
     "title": "اللغة",
     "notice": "يمكنك تغيير لغتك في أي وقت. تتحدث الشاشات المترجمة فورًا؛ والباقي سيأتي في تحديث قادم.",
     "searchPlaceholder": "ابحث عن اللغات"
+  },
+  "a11y": {
+    "back": "رجوع",
+    "close": "إغلاق",
+    "delete": "حذف",
+    "history": "السجل",
+    "share": "مشاركة",
+    "bookmark": "حفظ",
+    "edit": "تعديل",
+    "newConversation": "محادثة جديدة",
+    "send": "إرسال",
+    "retry": "حاول مرة أخرى",
+    "info": "مزيد من المعلومات",
+    "favorite": "المفضلة",
+    "notifications": "الإشعارات",
+    "loading": "جارٍ التحميل",
+    "button": "زر",
+    "selected": "محدد",
+    "dismiss": "تجاهل",
+    "showPassword": "إظهار كلمة المرور",
+    "search": "بحث",
+    "palmPhoto": "صورة كفّك",
+    "palmPreview": "معاينة صورة الكف",
+    "soulmatePortrait": "صورة توأم روحك",
+    "renameField": "إعادة تسمية",
+    "goalTitle": "عنوان الهدف",
+    "goalFrequency": "عدد المرات"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "إنشاء حساب",
+      "logIn": "تسجيل الدخول",
+      "emailAddress": "البريد الإلكتروني",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "backToLogIn": "العودة إلى تسجيل الدخول",
+      "continueAsGuest": "المتابعة كضيف",
+      "termsOfService": "شروط الخدمة",
+      "privacyPolicy": "سياسة الخصوصية",
+      "enterYourEmailAndPassword": "أدخل بريدك الإلكتروني وكلمة المرور.",
+      "passwordMustBeAtLeast": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+      "anAccountWithThisEmail": "يوجد حساب بهذا البريد الإلكتروني بالفعل. جرّب تسجيل الدخول بدلًا من ذلك.",
+      "incorrectEmailOrPassword": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "tooManyAttemptsPleaseWait": "محاولات كثيرة جدًا. يرجى الانتظار بضع دقائق ثم المحاولة مرة أخرى.",
+      "verificationFailedPleaseTryAgain": "فشل التحقق. يرجى المحاولة مرة أخرى.",
+      "enterTheEmailAddressOf": "أدخل عنوان البريد الإلكتروني لحسابك."
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "افتح رحلتك الكاملة لاكتشاف الذات",
+      "discoverDeeperInsightsIntoYour": "اكتشف رؤى أعمق حول كفّك وعلاقاتك وعلم الفلك ورحلتك الشخصية مع Palm Setu المميز.",
+      "everythingIncludedInPremium": "كل ما يتضمنه الاشتراك المميز",
+      "freeVsPremium": "المجاني مقابل المميز",
+      "chooseYourPlan": "اختر خطتك",
+      "loadingPlans": "جارٍ تحميل الخطط...",
+      "weCouldnTLoadThe": "تعذّر تحميل الخطط. تحقق من اتصالك وحاول مرة أخرى.",
+      "billingIsNotYetConfigured": "لم يتم إعداد الفوترة لـ Palm Setu المميز في هذا الإصدار بعد. لن تحاسبك هذه الشاشة ولن تمنحك الوصول المميز حتى يتم ذلك.",
+      "terms": "الشروط",
+      "privacy": "الخصوصية",
+      "secureBillingThroughYourApp": "فوترة آمنة عبر حسابك في App Store أو Google Play."
+    },
+    "ProfileScreen": {
+      "createAnAccount": "إنشاء حساب",
+      "signUpFirstToExport": "أنشئ حسابًا أولًا لتصدير بياناتك المحفوظة.",
+      "yourData": "بياناتك",
+      "couldNotExportData": "تعذّر تصدير البيانات",
+      "pleaseTryAgain": "يرجى المحاولة مرة أخرى.",
+      "noAccountYet": "لا يوجد حساب بعد",
+      "youAreBrowsingAsA": "أنت تتصفح كضيف - لا يوجد حساب لحذفه.",
+      "couldNotDeleteAccount": "تعذّر حذف الحساب"
+    },
+    "HabitsScreen": {
+      "habits": "العادات",
+      "couldnTRefreshYourHabits": "تعذّر تحديث عاداتك.",
+      "noHabitsYetAddOne": "لا توجد عادات بعد - أضف واحدة أدناه للبدء.",
+      "addAHabit": "إضافة عادة",
+      "customHabitName": "اسم العادة المخصصة",
+      "add": "إضافة",
+      "youVeReachedTheFree": "وصلت إلى حدّ العادات المجاني. قم بالترقية لعادات غير محدودة.",
+      "suggestions": "اقتراحات",
+      "unableToConnectThatChange": "تعذّر الاتصال. لم يتم حفظ ذلك التغيير.",
+      "couldnTUpdateThatHabit": "تعذّر تحديث تلك العادة. يرجى المحاولة مرة أخرى.",
+      "couldNotAddHabit": "تعذّرت إضافة العادة."
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "حذف المحادثة؟",
+      "thisCannotBeUndone": "لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "delete": "حذف",
+      "chatHistory": "سجل المحادثات",
+      "noConversationsYet": "لا توجد محادثات بعد",
+      "startAConversationWithYour": "ابدأ محادثة مع منجّمك الذكي لتظهر هنا.",
+      "startChatting": "ابدأ الدردشة",
+      "couldnTDeleteThatConversation": "تعذّر حذف تلك المحادثة. يرجى المحاولة مرة أخرى."
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "تفضيلات الإشعارات",
+      "pushDeliveryIsnTWired": "لم يتم ربط إرسال الإشعارات الفورية برمز جهاز/مُجدوِل حقيقي في هذا الإصدار - تُحفظ هذه التفضيلات وستسري عند توصيل البنية.",
+      "personalDailyMessage": "رسالة يومية شخصية",
+      "sharedRelationshipMessage": "رسالة العلاقة المشتركة",
+      "detailedLockScreenPreview": "معاينة مفصّلة على شاشة القفل",
+      "preferredTime": "الوقت المفضل",
+      "unableToConnectYourChange": "تعذّر الاتصال. لم يتم حفظ تغييرك.",
+      "couldnTSaveYourChange": "تعذّر حفظ تغييرك. يرجى المحاولة مرة أخرى."
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "الإشعارات",
+      "localRemindersScheduledOnThis": "تذكيرات محلية مجدولة على هذا الجهاز بحسب ما تُفعّله أدناه.",
+      "enableNotifications": "تفعيل الإشعارات",
+      "hhMm": "HH:mm",
+      "quietHours": "ساعات الهدوء",
+      "noReminderWillBeScheduled": "لن تُجدول أي تذكيرات خلال هذه الفترة. اتركها فارغة إن لم تكن تريد ساعات هدوء.",
+      "start": "البداية",
+      "end": "النهاية",
+      "couldNotLoadNotificationSettings": "تعذّر تحميل إعدادات الإشعارات.",
+      "savedAndScheduled": "تم الحفظ والجدولة.",
+      "savedEnableNotificationsAboveTo": "تم الحفظ. فعّل الإشعارات أعلاه لتصلك هذه التذكيرات فعلًا.",
+      "couldNotSaveNotificationSettings": "تعذّر حفظ إعدادات الإشعارات."
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "اختر لغتك",
+      "youCanChangeThisAnytime": "يمكنك تغييرها في أي وقت من ملفك الشخصي.",
+      "englishUi": "(واجهة بالإنجليزية)"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "الخطوة 2 من 5",
+      "whenWereYouBorn": "متى وُلدت؟",
+      "usedOnlyForTraditionalAstrology": "تُستخدم فقط لحسابات علم الفلك التقليدي - تفسير للتأمل وليس تنبؤًا علميًا."
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "الخطوة 3 من 5",
+      "whatTimeWereYouBorn": "في أي ساعة وُلدت؟",
+      "iDonTKnowMy": "لا أعرف وقت ميلادي بالضبط",
+      "someCalculationsMoonSignNakshatra": "بدون الوقت الدقيق قد تكون بعض الحسابات (برج القمر، النكشاترا، العبور اليومي) أقل دقة."
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "الخطوة 4 من 5",
+      "whereWereYouBorn": "أين وُلدت؟"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "الخطوة 1 من 5",
+      "chooseYourAstrologySystem": "اختر نظامك الفلكي",
+      "thisDecidesHowYourSign": "يحدد هذا كيفية حساب برجك وخريطتك وإرشادك اليومي. يمكنك تغييره لاحقًا من ملفك الشخصي، وستُحدَّث الخرائط والتفسيرات لتناسبه.",
+      "continue": "متابعة",
+      "unableToConnectCheckYour": "تعذّر الاتصال. تحقق من اتصالك وحاول مرة أخرى.",
+      "somethingWentWrongPleaseTry": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "الخطوة 5 من 5",
+      "confirmYourDetails": "تأكيد بياناتك",
+      "language": "اللغة",
+      "timeOfBirth": "وقت الميلاد",
+      "confirmAndContinue": "تأكيد والمتابعة"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "المعلومات الشخصية",
+      "yourNameAndHowYou": "اسمك وكيف تحب أن نناديك. يُعدَّل تاريخ الميلاد ووقته ومكانه بشكل منفصل ضمن «الإرشاد الكوني اليومي».",
+      "saveChanges": "حفظ التغييرات"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "ربما لاحقًا",
+      "createFreeAccount": "إنشاء حساب مجاني"
+    },
+    "ListSkeleton": {
+      "loading": "جارٍ التحميل"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "تحقق من بريدك الإلكتروني"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "استخدام الذكاء الاصطناعي الشهري"
+    },
+    "UpgradeButton": {
+      "upgrade": "ترقية"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "اسأل المنجّم الذكي",
+      "askAi": "اسأل الذكاء"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "قريبًا",
+      "notAvailableYet": "غير متاح بعد"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "تعذّر تحميل أداة التحقق. تحقق من اتصالك وحاول مرة أخرى."
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "التفسير التقليدي"
+    },
+    "DailyResetHero": {
+      "dailyReset": "إعادة ضبط يومية"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "تعذّر تحميل بعض المحتوى.",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "تعذّر تحميل جزء من بيانات العافية."
+    },
+    "CompanionScreen": {
+      "aiCompanion": "رفيق الذكاء الاصطناعي",
+      "shareWhatSOnYour": "شارك ما يدور في ذهنك...",
+      "yourCompanionIsAnAi": "رفيقك هو ذكاء اصطناعي وليس معالجًا مرخصًا. في حالات الأزمات اتصل بخدمات الطوارئ المحلية."
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "المنجّم الذكي",
+      "askAboutYourReading": "اسأل عن قراءتك..."
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "قبل أن تبدأ",
+      "yourReadingIsGeneratedFrom": "تُنشأ قراءتك من تفسيرات قراءة الكف التقليدية المطبّقة على الخطوط والمناطق الظاهرة في صورتك. هي مخصصة للتسلية والتأمل الذاتي - وليست تقييمًا علميًا أو طبيًا أو تنبؤيًا.",
+      "weNeverUseYourPalm": "لا نستخدم صورة كفّك أبدًا لتشخيص حالة صحية، ولا نعد بنتائج مضمونة بشأن الثروة أو العلاقات أو العمر. تُعالَج صورتك بأمان ويمكنك حذفها في أي وقت."
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "إعادة التقاط الصورة",
+      "analyzingYourPalm": "جارٍ تحليل كفّك",
+      "thisPhotoCouldNotBe": "تعذّر استخدام هذه الصورة لقراءة الكف."
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "بماذا تشعر؟ (اختياري)",
+      "energy": "الطاقة",
+      "stress": "التوتر",
+      "sleepQuality": "جودة النوم",
+      "noteOptional": "ملاحظة (اختياري)",
+      "anythingYouWantToRemember": "أي شيء تريد تذكّره عن اليوم...",
+      "couldNotSaveYourCheck": "تعذّر حفظ تسجيلك."
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "الإذن مطلوب",
+      "capture": "التقاط",
+      "analyzeYourPalm": "حلّل كفّك",
+      "useNaturalLightHoldYour": "استخدم ضوءًا طبيعيًا، وابسط يدك مع تباعد الأصابع قليلًا، واملأ معظم الإطار.",
+      "retake": "إعادة",
+      "noPhotoYet": "لا توجد صورة بعد",
+      "takePhoto": "التقاط صورة",
+      "uploadFromLibrary": "رفع من المعرض",
+      "photoGuidelines": "إرشادات الصورة",
+      "goodExample": "مثال جيد",
+      "flatOpenPalmFillingThe": "كف مفتوحة ومسطحة تملأ الإطار، بإضاءة متساوية وبدون إكسسوارات.",
+      "avoidPhotosLikeTheseThey": "تجنّب صورًا كهذه، فقد تؤثر على دقة التحليل:",
+      "yourPhotoIsUploadedSecurely": "تُرفع صورتك بأمان للتحليل. يمكنك حذفها في أي وقت من الملف الشخصي ← الخصوصية."
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "جارٍ تحميل قراءتك...",
+      "palmReading": "قراءة الكف",
+      "couldnTLoadThisReading": "تعذّر تحميل هذه القراءة. يرجى المحاولة مرة أخرى.",
+      "limitedVisibilityOnlyPartOf": "رؤية محدودة: ظهر جزء فقط من كفّك بوضوح في الإطار، لذا تغطي هذه القراءة سمات أقل من المسح الكامل.",
+      "analysisOverview": "نظرة عامة على التحليل",
+      "sectionsMatched": "الأقسام المطابقة",
+      "imageQuality": "جودة الصورة",
+      "unlocked": "مفتوح",
+      "thisAnalysisReportsQualitativeObservations": "يقدّم هذا التحليل ملاحظات نوعية مع درجة ثقة، لا إحداثيات بكسل دقيقة - لذلك لا نرسم مسارات الخطوط على صورتك لتجنّب عرض ما ليس هندسة خطوط كفّك الحقيقية.",
+      "readingSections": "أقسام القراءة",
+      "everyLineBelowIncludesOne": "يتضمن كل خط أدناه ملاحظة مجانية حقيقية من مسحك. افتح خطًا لعرض تفصيله الكامل.",
+      "noSpecificFeaturesCouldBe": "لم يمكن مطابقة أي سمات محددة بثقة من هذه الصورة.",
+      "free": "مجاني",
+      "fullStructureAdditionalDetectedCharacteristics": "البنية الكاملة والسمات الإضافية المكتشفة والتفسير التقليدي الكامل لهذا الخط.",
+      "combinedPatterns": "الأنماط المجمّعة",
+      "yourPalmHasMoreTo": "في كفّك المزيد ليُكشف",
+      "unlockYourCompletePalmReading": "افتح قراءة كفّك الكاملة لاستكشاف كل سمة مكتشفة وتفسيرها التقليدي، عبر كل خط وتلّ في هذه القراءة.",
+      "unlockCompleteReading": "فتح القراءة الكاملة",
+      "reflectiveQuestions": "أسئلة للتأمل",
+      "askAboutThisReading": "اسأل عن هذه القراءة",
+      "yourPalmReadingIsReady": "قراءة كفّك جاهزة!",
+      "createYourFreeAccountTo": "أنشئ حسابك المجاني لحفظ ملف كفّك والوصول إلى تقريرك الكامل في أي وقت وعلى أي جهاز.",
+      "yourReadingHasBeenSaved": "تم حفظ قراءتك. أصبحت تظهر الآن في الرئيسية وفي سجل الكف.",
+      "saveAndContinue": "حفظ ومتابعة",
+      "couldNotUnlockThisSection": "تعذّر فتح هذا القسم. يرجى المحاولة مرة أخرى.",
+      "couldNotUnlockYourComplete": "تعذّر فتح قراءتك الكاملة. يرجى المحاولة مرة أخرى.",
+      "upgradeToSeeMore": "(قم بالترقية لرؤية المزيد)"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "حذف القراءة",
+      "couldNotDeleteThisReading": "تعذّر حذف هذه القراءة. يرجى المحاولة مرة أخرى.",
+      "palmReadingHistory": "سجل قراءات الكف",
+      "noPalmReadingsYet": "لا توجد قراءات كف بعد",
+      "yourPastPalmScansWill": "ستظهر هنا عمليات مسح كفّك السابقة.",
+      "scanYourPalm": "امسح كفّك"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "تعذّر تحميل هذه القراءة",
+      "generationDidnTComplete": "لم يكتمل الإنشاء",
+      "weCouldnTFinishGenerating": "لم نتمكن من إكمال قراءة اليوم. يمكنك إعادة المحاولة.",
+      "retryGeneration": "إعادة المحاولة",
+      "yourDayAtAGlance": "يومك في لمحة",
+      "todaySFocus": "محور اليوم",
+      "careerProductivity": "المهنة والإنتاجية",
+      "loveRelationships": "الحب والعلاقات",
+      "moodSelfCare": "المزاج والعناية بالنفس",
+      "whatToDoToday": "ماذا تفعل اليوم",
+      "whatToBeMindfulOf": "ما يجب الانتباه إليه",
+      "aSmallDailyChallenge": "تحدٍّ يومي صغير",
+      "reflectionQuestion": "سؤال للتأمل",
+      "astrologyBehindThisReading": "علم الفلك وراء هذه القراءة",
+      "askAFollowUpQuestion": "اطرح سؤال متابعة",
+      "askAboutTodaySReading": "اسأل عن قراءة اليوم...",
+      "ask": "اسأل"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "سجل المزاج",
+      "trendsAndCheckInsOver": "الاتجاهات وتسجيلات الحالة عبر الزمن.",
+      "noMoodCheckInsYet": "لا توجد تسجيلات مزاج بعد",
+      "logHowYouAreFeeling": "سجّل شعورك لتبدأ برؤية اتجاهاتك هنا.",
+      "checkInNow": "سجّل الآن",
+      "last7Days": "آخر 7 أيام",
+      "noCheckInOnThis": "لا يوجد تسجيل في هذا التاريخ.",
+      "trends": "الاتجاهات",
+      "mostFrequentEmotions": "أكثر المشاعر تكرارًا",
+      "avgEnergy": "متوسط الطاقة",
+      "avgStress": "متوسط التوتر",
+      "avgSleep": "متوسط النوم",
+      "allCheckIns": "كل التسجيلات",
+      "newCheckIn": "تسجيل جديد",
+      "couldNotLoadYourMood": "تعذّر تحميل سجل مزاجك. يرجى المحاولة مرة أخرى."
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "حذف المدخل",
+      "type": "النوع",
+      "needAPrompt": "تحتاج إلى فكرة؟",
+      "titleOptional": "العنوان (اختياري)",
+      "writeFreely": "اكتب بحرية...",
+      "tagsCommaSeparated": "الوسوم، مفصولة بفواصل",
+      "aiInsight": "رؤية الذكاء الاصطناعي",
+      "thisEntrySTextWould": "سيُرسَل نص هذا المدخل إلى ذكاء Palm Setu لإنشاء رؤية. لا يُرسَل أبدًا دون إذنك الصريح أدناه، ويجب تحديده من جديد في كل طلب.",
+      "iConsentToShareThis": "أوافق على مشاركة نص هذا المدخل مع الذكاء الاصطناعي لهذا الطلب فقط",
+      "getAiInsight": "احصل على رؤية بالذكاء الاصطناعي",
+      "couldNotSaveThisEntry": "تعذّر حفظ هذا المدخل.",
+      "couldNotGetAnAi": "تعذّر الحصول على رؤية الذكاء الاصطناعي الآن."
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "جارٍ تحميل الفرشات...",
+      "couldnTLoadSpreads": "تعذّر تحميل الفرشات",
+      "eachPositionHasItsOwn": "لكل موضع معناه الخاص - يظهر أدناه بعد اختيار الفرشة.",
+      "secondPersonOptional": "الشخص الثاني (اختياري)",
+      "addAFirstNameOr": "أضف اسمًا أول أو لقبًا فقط إذا أردت أن تشير القراءة إليه بالاسم بدلًا من «هو/هي». لا يُحفظ أبدًا كحساب ولا يُشارك مع أي أحد ويُحذف تلقائيًا إذا حذفت هذه القراءة. لا نجمع بيانات ميلاده أو معلومات الاتصال أو أي شيء آخر عنه، ولا تدّعي هذه القراءة معرفة أفكاره أو مشاعره الخاصة الحقيقية، بل تقدّم تأملًا رمزيًا تقليديًا فقط.",
+      "eGAlexOptional": "مثال: أليكس (اختياري)"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "سجل القراءات",
+      "loading": "جارٍ التحميل...",
+      "couldnTLoadHistory": "تعذّر تحميل السجل",
+      "personalReadings": "القراءات الشخصية",
+      "yourPersonalDailyReadingsAre": "قراءاتك اليومية الشخصية متاحة لليوم من الشاشة الرئيسية للإرشاد الكوني اليومي، وهي خاصة بك.",
+      "sharedRelationshipReadings": "قراءات العلاقة المشتركة",
+      "noPartnerConnected": "لا يوجد شريك متصل",
+      "connectWithAPartnerTo": "اربط شريكًا لتبدأ في بناء سجل قراءات مشتركة.",
+      "noSharedReadingsYet": "لا توجد قراءات مشتركة بعد"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "علم الفلك",
+      "setUpYourBirthDetails": "أعدّ بيانات ميلادك",
+      "addYourBirthDateAnd": "أضف تاريخ ميلادك (ووقته إن عرفته) للحصول على قراءات يومية مخصصة.",
+      "getStarted": "ابدأ",
+      "couldnTLoadThisSection": "تعذّر تحميل هذا القسم",
+      "retry": "إعادة المحاولة",
+      "vedicAstrology": "علم الفلك الفيدي",
+      "generateYourKundliNorthIndia": "أنشئ كوندلي الخاص بك: أنماط الخريطة الهندية الشمالية أو الجنوبية أو الغربية",
+      "soulEnergyReading": "قراءة طاقة الروح",
+      "anAiGeneratedPersonalityReading": "قراءة شخصية مولّدة بالذكاء الاصطناعي مبنية على خريطتك الحقيقية"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "تغيير النظام الفلكي؟",
+      "switchingBetweenVedicAndWestern": "التبديل بين الفيدي والغربي يغيّر برجك وخريطتك وإرشادك اليومي. تبقى بيانات ميلادك كما هي لكن ستُعاد حساب التفسيرات.",
+      "changeSystem": "تغيير النظام",
+      "yourBirthDetails": "بيانات ميلادك",
+      "usedOnlyForTraditionalAstrology": "تُستخدم فقط لحسابات علم الفلك التقليدي - تفسير للتأمل وليس تنبؤًا علميًا. يغيّر وقت الميلاد ومكانه بدقة برج القمر والنكشاترا والعبور اليومي بشكل ملحوظ، لذا الثلاثة مطلوبة لقراءة دقيقة.",
+      "astrologySystem": "النظام الفلكي",
+      "vedicSiderealAndWesternTropical": "الفيدي (النجمي) والغربي (المداري) يستخدمان اصطلاحات مختلفة وسيُظهران أبراجًا وعبورًا مختلفة لنفس بيانات الميلاد.",
+      "dateOfBirth": "تاريخ الميلاد",
+      "exactTimeOfBirth": "وقت الميلاد بالضبط",
+      "checkYourBirthCertificateOr": "راجع شهادة ميلادك أو اسأل أحد والديك إن لم تكن متأكدًا - فحتى فرق 30 دقيقة قد يغيّر برج قمرك قرب حدود البرج.",
+      "birthplace": "مكان الميلاد",
+      "chooseTheClosestMajorCity": "اختر أقرب مدينة كبرى - يحدد هذا أيضًا منطقتك الزمنية عند الميلاد لحساب دقيق.",
+      "saveAndContinue": "حفظ ومتابعة",
+      "somethingWentWrongSavingYour": "حدث خطأ أثناء حفظ ملفك الشخصي."
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "الاتصال بالشريك",
+      "yourPartnerWillNeedTheir": "سيحتاج شريكك إلى حسابه الخاص. لن تتم مشاركة أي شيء إلا بعد قبوله صراحةً.",
+      "generateAnInvitation": "إنشاء دعوة",
+      "createACodeToShare": "أنشئ رمزًا لمشاركته مع شريكك",
+      "enterACode": "أدخل رمزًا",
+      "yourPartnerSharedACode": "شاركك شريكك رمزًا",
+      "yourInvitationCode": "رمز دعوتك",
+      "shareThisCodeDirectlyWith": "شارك هذا الرمز مباشرةً مع شريكك. من لديه الرمز لن يرى سوى أنه دعوة - ولا تُكشف أي بيانات ميلاد.",
+      "invitationCode": "رمز الدعوة",
+      "eGY5ppbubg": "مثال: Y5PPBUBG",
+      "whatYouLlBeSharing": "ما ستشاركه",
+      "onceConnectedYouCanEach": "بعد الاتصال، يتحكم كل منكما باستقلالية فيما يُشارك - نتائج التوافق والقراءات اليومية المشتركة وتفاصيل الخريطة والإشعارات. تبقى مدخلات المفكرة والقراءات اليومية الفردية خاصة ما لم تختر مشاركتها.",
+      "acceptInvitation": "قبول الدعوة",
+      "couldNotCreateAnInvitation": "تعذّر إنشاء الدعوة.",
+      "couldNotAcceptThisInvitation": "تعذّر قبول هذه الدعوة."
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "تعذّر تحميل هذه الخريطة",
+      "back": "رجوع",
+      "planetaryDetails": "تفاصيل الكواكب",
+      "planet": "الكوكب",
+      "degree": "الدرجة",
+      "sign": "البرج",
+      "wholeSignHousesLahiriApproximation": "بيوت البرج الكامل، أيانامشا تقريبية لاهيري. مستوى المهاداشا فقط (دون فترات أنتارداشا الفرعية)."
+    },
+    "KundliStyleScreen": {
+      "styleChart": "نمط الخريطة",
+      "completeYourBirthDetails": "أكمل بيانات ميلادك",
+      "yourNameBirthDateAnd": "يلزم اسمك وتاريخ ووقت ميلادك ومكان ميلادك لحساب الطالع والبيوت.",
+      "addBirthDetails": "إضافة بيانات الميلاد",
+      "upgrade": "ترقية",
+      "chooseAChartStyleAnd": "اختر نمط الخريطة وأكّد بيانات الميلاد لإنشائها.",
+      "theirDetails": "بياناتهم",
+      "name": "الاسم",
+      "birthDateYyyyMmDd": "تاريخ الميلاد (YYYY-MM-DD)",
+      "birthTimeHhMm24h": "وقت الميلاد (HH:MM، 24 ساعة)",
+      "generate": "إنشاء",
+      "selectBirthplace": "اختر مكان الميلاد",
+      "searchCityOrCountry": "ابحث عن مدينة أو بلد",
+      "couldNotGenerateYourChart": "تعذّر إنشاء خريطتك. يرجى المحاولة مرة أخرى."
+    },
+    "MoonSignScreen": {
+      "moonSign": "برج القمر",
+      "addYourBirthDateAnd": "أضف تاريخ ميلادك (ووقته إن عرفته) لرؤية برج قمرك ونكشاترا الحقيقيين.",
+      "siderealVedic": "النجمي (الفيدي)",
+      "nakshatra": "النكشاترا",
+      "westernTropical": "الغربي (المداري)",
+      "tropicalMoonSign": "برج القمر المداري",
+      "todaySMoon": "قمر اليوم",
+      "currentPosition": "الموضع الحالي",
+      "lunarPhase": "طور القمر",
+      "nextPhase": "الطور التالي",
+      "thisAppSEngineDoesn": "لا يحسب محرك هذا التطبيق حاليًا أحداثًا قمرية مستقبلية محددة (مثل تغيّر النكشاترا أو الكسوف) خارج تقدير الطور التالي أعلاه، لذلك لا يُختلق أي منها هنا."
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "القراءات المشتركة متوقفة",
+      "ourDayAtAGlance": "يومنا في لمحة",
+      "whatMayHelpToday": "ما قد يفيد اليوم",
+      "communicationGuidance": "إرشادات التواصل",
+      "qualityTimeSuggestion": "اقتراح لقضاء وقت ممتع",
+      "aQuestionToAskEach": "سؤال لتطرحاه على بعضكما",
+      "individualSupport": "دعم فردي",
+      "thisReadingIsForReflection": "هذه القراءة للتأمل وليست حكمًا على علاقتكما. لا تلمّح أبدًا إلى عدم صدق أو عدم توافق ولا تتنبأ بمستقبل علاقتكما."
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "تعذّر تحميل العلاقات",
+      "ourCosmicConnection": "ارتباطنا الكوني",
+      "noPartnerConnectedYet": "لا يوجد شريك متصل بعد",
+      "connectWithAPartnerTo": "اربط شريكًا لفتح قراءة يومية مشتركة، مبنية على موافقة كاملة وتحكم في الخصوصية.",
+      "connected": "متصل",
+      "viewTodaySSharedReading": "عرض قراءة اليوم المشتركة",
+      "readingHistory": "سجل القراءات",
+      "privacySharing": "الخصوصية والمشاركة",
+      "yourPersonalDailyReadingStays": "تبقى قراءتك اليومية الشخصية خاصة افتراضيًا. تستخدم القراءة المشتركة فقط ما يلزم لتأمل مشترك - وليس مفكرتك أو محادثاتك الخاصة مع الذكاء الاصطناعي أبدًا.",
+      "disconnect": "قطع الاتصال",
+      "disconnectFromYourPartner": "قطع الاتصال بشريكك",
+      "thisStopsFutureSharedReadings": "سيوقف هذا القراءات المشتركة والإشعارات المستقبلية لكليكما. يمكنك إعادة الاتصال لاحقًا بدعوة جديدة."
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "اختر الملف",
+      "myAstrology": "علمي الفلكي",
+      "free": "مجاني",
+      "otherPersonSAstrology": "علم فلك شخص آخر",
+      "premium": "مميز"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "جارٍ إنشاء قراءتك...",
+      "setUpYourBirthDetails": "أعدّ بيانات ميلادك أولًا",
+      "yourSoulEnergyReadingIs": "تستند قراءة طاقة الروح إلى نفس خريطة الميلاد المستخدمة في الإرشاد الكوني اليومي.",
+      "setUpBirthDetails": "إعداد بيانات الميلاد",
+      "couldnTGenerateThisReading": "تعذّر إنشاء هذه القراءة",
+      "aiGeneratedGroundedInYour": "مولَّدة بالذكاء الاصطناعي ومبنية على خريطتك الحقيقية للشمس/القمر.",
+      "basedOnSunAndMoon": "تعتمد على برجي الشمس والقمر فقط - طالعك غير متاح (يتطلب إحداثيات ميلاد دقيقة)."
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "علم الفلك الغربي",
+      "addYourBirthDateAnd": "أضف تاريخ ميلادك ومكانه للحصول على قراءة مدارية بالأسلوب الغربي.",
+      "tropicalSunMoonAndTransits": "الشمس والقمر والعبور المداري، تُقرأ بالطريقة الغربية",
+      "todaySReading": "قراءة اليوم",
+      "stillPreparingTodaySReading": "لا تزال قراءة اليوم قيد الإعداد...",
+      "openFullReading": "فتح القراءة الكاملة",
+      "wantTheVedicSiderealView": "تريد المنظور الفيدي (النجمي) بدلًا من ذلك؟ افتح علم الفلك أو برج القمر من الرئيسية."
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "ما الذي يشغل بالك؟",
+      "optionalSelectAsManyAs": "اختياري - اختر ما ينطبق. توصيتك مبنية على خريطتك وليس على أهدافك.",
+      "generateMyGemstoneGuide": "إنشاء دليل أحجاري الكريمة",
+      "somethingWentWrongGeneratingYour": "حدث خطأ أثناء إنشاء تقريرك."
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "تقارير الأحجار الكريمة",
+      "couldnTLoadReports": "تعذّر تحميل التقارير",
+      "noReportsYet": "لا توجد تقارير بعد",
+      "yourGemstoneReportsWillAppear": "ستظهر تقارير أحجارك الكريمة هنا."
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "دليل الأحجار الكريمة",
+      "yourGemstoneRecommendationUsesThe": "تستخدم توصية حجرك الكريم نفس خريطة الميلاد المستخدمة في الإرشاد الكوني اليومي.",
+      "traditionalVedicGemstoneGuidanceBased": "إرشاد تقليدي فيدي للأحجار الكريمة مبني على خريطة ميلادك، للتأمل وليس وصفة علمية.",
+      "yourPersonalGemstoneGuide": "دليلك الشخصي للأحجار الكريمة",
+      "discoverTheGemstoneTraditionallyAssociated": "اكتشف الحجر المرتبط تقليديًا بالكوكب الحاكم لبرج قمرك، مع إرشادات الارتداء والبدائل ودليل الشراء.",
+      "getMyGemstoneGuide": "احصل على دليل أحجاري الكريمة",
+      "recentReports": "التقارير الأخيرة",
+      "basedOnTheRashiMoon": "مبنية على عُرف تقوية حاكم الراشي (برج القمر)، وهو أحد التقاليد الفيدية الموثقة العديدة. لا تجري تحليلًا كاملًا للطالع أو لمصائب الكواكب."
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "تعذّر تحميل هذا التقرير",
+      "noRecommendationAvailable": "لا توجد توصية متاحة",
+      "saved": "محفوظ",
+      "whyThisGemstoneWasRecommended": "لماذا نُصح بهذا الحجر",
+      "wearingGuidanceCustomaryPractice": "إرشادات الارتداء (الممارسة المعتادة)",
+      "traditionalDay": "اليوم التقليدي",
+      "traditionalFinger": "الإصبع التقليدي",
+      "traditionalMetal": "المعدن التقليدي",
+      "alternativeOption": "خيار بديل",
+      "gemstoneBuyingGuide": "دليل شراء الأحجار الكريمة",
+      "thisAppDoesNotSell": "لا يبيع هذا التطبيق الأحجار الكريمة ولا يتحقق من البائعين - هذا الدليل تعليمي فقط.",
+      "askAboutThisRecommendation": "اسأل عن هذه التوصية...",
+      "deleteThisReport": "حذف هذا التقرير",
+      "thisPermanentlyDeletesTheGemstone": "سيحذف هذا تقرير الأحجار الكريمة نهائيًا."
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "أبراج موسّعة",
+      "deeperOutlooksBeyondTodayWeekly": "نظرات أعمق تتجاوز اليوم، وعروض أسبوعية وشهرية وغيرها."
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "أبراج الأبراج",
+      "browseHoroscopesByZodiacSign": "تصفّح الأبراج حسب برج المنطقة، لأي شخص وفي أي وقت."
+    },
+    "NumerologyScreen": {
+      "numerology": "علم الأعداد",
+      "yourMoolaankBirthNumberAnd": "المولانك (رقم الميلاد) والبهاغيانك (رقم المصير) الخاصان بك، مشروحان."
+    },
+    "MyReportsScreen": {
+      "myReports": "تقاريري",
+      "allYourPreviousReadingsAnd": "كل قراءاتك وتقاريرك السابقة في مكان واحد"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "حدث خطأ ما",
+      "thisUsuallyTakesUnderA": "يستغرق هذا عادةً أقل من دقيقة.",
+      "couldNotFinishYourSketch": "تعذّر إكمال رسمك. يرجى المحاولة مرة أخرى - لن يُخصم منك مبلغ مرة أخرى.",
+      "couldNotGenerateYourSketch": "تعذّر إنشاء رسمك. يمكنك إعادة المحاولة دون الدفع مرة أخرى."
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "حذف الرسم",
+      "couldNotDeleteThisSketch": "تعذّر حذف هذا الرسم. يرجى المحاولة مرة أخرى.",
+      "soulmateSketchHistory": "سجل رسومات توأم الروح",
+      "noSketchesYet": "لا توجد رسومات بعد",
+      "yourPurchasedSoulmateSketchesWill": "ستظهر هنا رسومات توأم الروح التي اشتريتها.",
+      "createASketch": "إنشاء رسم"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "رسم توأم الروح",
+      "aMysteriousArtisticPortraitOf": "صورة فنية غامضة لتوأم الروح الذي يتخيله قلبك.",
+      "soulmateSketchIsEntertainmentAnd": "رسم توأم الروح للتسلية والتأمل الإبداعي - تُختار الصورة من مجموعة توضيحية لرسومات خيالية. ليست شخصًا حقيقيًا ولا تنبؤًا علميًا أو مضمونًا بشريكك المستقبلي.",
+      "yourFirstSoulmateSketchIs": "أول رسم لتوأم روحك مجاني.",
+      "yourFreeSketchHasBeen": "تم استخدام رسمك المجاني. استكشف المزيد من الرسومات المميزة أدناه.",
+      "viewMyFreeSketch": "عرض رسمي المجاني"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "مراجعة والدفع",
+      "yourPreferences": "تفضيلاتك",
+      "gender": "الجنس",
+      "ageRange": "الفئة العمرية",
+      "countryBackground": "البلد / الخلفية",
+      "style": "النمط",
+      "yourPaymentIsProcessedSecurely": "تُعالَج دفعتك بأمان. لا يبدأ الإنشاء إلا بعد التحقق من الدفع - ولن يُخصم منك مرة أخرى إن لزمت إعادة المحاولة.",
+      "payAndGenerateMySketch": "ادفع وأنشئ رسمي",
+      "verifyingYourPayment": "جارٍ التحقق من دفعتك...",
+      "paymentsAreNotYetAvailable": "المدفوعات غير متاحة بعد على هذا الخادم. يرجى المحاولة لاحقًا.",
+      "couldNotStartCheckoutPlease": "تعذّر بدء الدفع. يرجى المحاولة مرة أخرى.",
+      "paymentVerificationFailedIfAn": "فشل التحقق من الدفع. إن خُصم أي مبلغ فسيُعاد إليك.",
+      "paymentDidNotCompletePlease": "لم يكتمل الدفع. يرجى المحاولة مرة أخرى."
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "جنس توأم الروح المفضل",
+      "preferredAgeRange": "الفئة العمرية المفضلة",
+      "preferredCountryOrCulturalBackground": "البلد أو الخلفية الثقافية المفضلة",
+      "moreCountries": "مزيد من البلدان",
+      "preferredPortraitStyle": "نمط الصورة المفضل",
+      "couldNotStartYourFree": "تعذّر بدء رسمك المجاني. يرجى المحاولة مرة أخرى."
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "جارٍ تحميل رسمك...",
+      "couldnTLoadThisSketch": "تعذّر تحميل هذا الرسم. يرجى المحاولة مرة أخرى.",
+      "yourSoulmateSketch": "رسم توأم روحك",
+      "preferences": "التفضيلات",
+      "background": "الخلفية",
+      "personalityReflection": "تأمل في الشخصية",
+      "compatibilityTraits": "سمات التوافق",
+      "thisPortraitAndReflectionAre": "هذه الصورة والتأمل ترفيه خيالي، اختيرا من مجموعة رسومات توضيحية - وليسا شخصًا حقيقيًا ولا تنبؤًا واقعيًا أو مضمونًا بشريكك المستقبلي.",
+      "share": "مشاركة",
+      "savedToMyReportsShared": "حُفظ في تقاريري - تحمل النسخ المشاركة علامة Palm Setu المائية، أما نسختك الأصلية المحفوظة فلا تحملها أبدًا.",
+      "lovedYourFreeSketch": "هل أعجبك رسمك المجاني؟",
+      "exploreMorePortraitsAndStyles": "استكشف المزيد من الصور والأنماط - تبدأ الرسومات المميزة بسعر صغير، قابل للضبط بالكامل من Palm Setu.",
+      "explorePremiumSketches": "استكشف الرسومات المميزة",
+      "done": "تم"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "ماذا تود أن تستكشف؟",
+      "tarotHereIsATraditional": "التاروت هنا ممارسة تقليدية تفسيرية للتأمل - وليس وسيلة مثبتة علميًا للتنبؤ بالأحداث المستقبلية.",
+      "whatSOnYourMind": "ما الذي يشغل بالك؟ (يبقى خاصًا ما لم تختر مشاركته)",
+      "chooseASpread": "اختر فرشة"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "المس المجموعة لفرد البطاقات",
+      "takeAMomentAndChoose": "خذ لحظة واختر بطاقاتك",
+      "seeMyReading": "عرض قراءتي",
+      "somethingWentWrongStartingYour": "حدث خطأ أثناء بدء قراءتك."
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "ابحث في الأسئلة والبطاقات والتقارير...",
+      "savedOnly": "المحفوظة فقط",
+      "previous": "السابق",
+      "next": "التالي"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "تحقق من اتصالك وحاول مرة أخرى.",
+      "context": "السياق",
+      "advice": "النصيحة",
+      "symbolism": "الرمزية",
+      "overallReflection": "التأمل العام",
+      "detailedAiReading": "قراءة مفصلة بالذكاء الاصطناعي",
+      "practicalSuggestions": "اقتراحات عملية",
+      "reflectionQuestions": "أسئلة للتأمل",
+      "yourBirthChartPerspective": "منظور خريطة ميلادك",
+      "goDeeperWithAi": "تعمّق أكثر بالذكاء الاصطناعي",
+      "exploreTheSymbolismOfYour": "استكشف رمزية بطاقاتك المختارة وكيف ترتبط والموضوعات التي قد ترغب في التأمل فيها.",
+      "followUpQuestionsAreA": "أسئلة المتابعة ميزة مميزة",
+      "askAnythingAboutThisSpecific": "اسأل أي شيء عن هذه القراءة واحصل على إجابة مبنية على بطاقاتك الفعلية.",
+      "upgradeToPremium": "الترقية إلى المميز",
+      "tryAsking": "جرّب أن تسأل:",
+      "thinking": "يفكّر",
+      "askAboutThisReading": "اسأل عن هذه القراءة...",
+      "journalThisReading": "دوّن هذه القراءة في المفكرة",
+      "privateNotesNeverSharedUnless": "ملاحظات خاصة - لا تُشارك أبدًا ما لم تختر ذلك",
+      "saveNote": "حفظ الملاحظة",
+      "saveThisReading": "احفظ هذه القراءة",
+      "createAFreeAccountTo": "أنشئ حسابًا مجانيًا لحفظ قراءة التاروت والعودة إلى رؤاها متى شئت.",
+      "deleteThisReading": "حذف هذه القراءة",
+      "thisPermanentlyDeletesTheReading": "سيحذف هذا القراءة وأي ملاحظات مفكرة مرتبطة بها نهائيًا.",
+      "couldNotGetAResponse": "تعذّر الحصول على رد. يرجى المحاولة مرة أخرى.",
+      "somethingWentWrongGeneratingYour": "حدث خطأ أثناء إنشاء قراءتك المفصلة."
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "تعذّر تحميل تفاصيل الاتجاه.",
+      "vastuCompass": "بوصلة فاستو",
+      "holdYourPhoneFlatAway": "أمسك هاتفك مسطحًا بعيدًا عن المعادن والإلكترونيات للحصول على قراءة أدق.",
+      "checkingSensorAvailability": "جارٍ التحقق من توفر المستشعر...",
+      "locationPermissionIsNeededTo": "يلزم إذن الموقع لقراءة اتجاه البوصلة (لا نقرأ أو نخزّن إحداثيات GPS أبدًا، بل الاتجاه فقط). اختر اتجاهك يدويًا أدناه، أو فعّل الإذن في إعدادات جهازك لاستخدام البوصلة المباشرة.",
+      "aCompassSensorIsnT": "مستشعر البوصلة غير متاح على هذا الجهاز أو المتصفح. اختر اتجاهك يدويًا أدناه.",
+      "lowAccuracyDetectedMoveAway": "تم رصد دقة منخفضة - ابتعد عن الأجسام المعدنية أو الإلكترونيات وحرّك هاتفك على شكل 8 للمعايرة.",
+      "approximateReadingNotACalibrated": "قراءة تقريبية وليست أداة مسح معايَرة.",
+      "selectManuallyInstead": "اختر يدويًا بدلًا من ذلك",
+      "selectYourDirection": "اختر اتجاهك",
+      "useLiveSensorInstead": "استخدم المستشعر المباشر بدلًا من ذلك",
+      "bestForHome": "الأفضل للمنزل",
+      "noStrongTraditionalAssociation": "لا يوجد ارتباط تقليدي قوي",
+      "bestForWork": "الأفضل للعمل",
+      "thisShowsADirectionNot": "يعرض هذا اتجاهًا وليس تقييمًا كاملًا للعقار. للحصول على إرشاد مخصص لكل غرفة استخدم تحليل العقار."
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "تقارير فاستو",
+      "yourVastuReportsWillAppear": "ستظهر تقارير فاستو الخاصة بك هنا."
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "نسّق مساحتك - إرشاد تقليدي للاتجاهات للتأمل وليس تقييمًا علميًا للعقار.",
+      "openTheCompass": "افتح البوصلة",
+      "findYourCurrentFacingDirection": "اعرف اتجاهك الحالي بمستشعر جهازك، أو اخترْه يدويًا.",
+      "analyzeAProperty": "حلّل عقارًا",
+      "addRoomDirectionsForA": "أضف اتجاهات الغرف للحصول على تقرير مخصص باقتراحات عملية ومنخفضة التكلفة.",
+      "analyzeAPropertyToSee": "حلّل عقارًا لترى تقريرك الأول هنا.",
+      "vastuIsATraditionalArchitectural": "فاستو نظام تقليدي معماري ومعتقدات ثقافية. ادعاءاته الروحية والمتعلقة بالازدهار غير مثبتة علميًا، ولا يُعرض أي اتجاه أبدًا كسبب للمرض أو الخسارة المالية أو مشكلات العلاقات."
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "إزالة اتجاه الغرفة؟",
+      "remove": "إزالة",
+      "alreadyAdded": "تمت الإضافة بالفعل",
+      "analyzeYourProperty": "حلّل عقارك",
+      "configureExactlyTheRoomsYour": "اضبط الغرف الموجودة في عقارك بالضبط، ثم حدّد اتجاه كل منها الفعلي - ويمكنك تخطي ما لا تعرفه.",
+      "propertyType": "نوع العقار",
+      "roomConfiguration": "تهيئة الغرف",
+      "commonRooms": "الغرف الشائعة",
+      "roomNameEGStudy": "اسم الغرفة (مثال: غرفة مكتب)",
+      "addRoom": "إضافة غرفة",
+      "addAnotherRoom": "إضافة غرفة أخرى",
+      "additionalDetailsOptional": "تفاصيل إضافية (اختياري)",
+      "tellUsAnythingElseAbout": "أخبرنا بأي شيء آخر عن تخطيط عقارك...",
+      "generateMyReport": "إنشاء تقريري"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "نظرة عامة على العقار",
+      "directionAnalysis": "تحليل الاتجاهات",
+      "suggestionsChecklist": "قائمة الاقتراحات",
+      "optionalCulturalPractice": "ممارسة ثقافية اختيارية",
+      "vastuIsATraditionalArchitectural": "فاستو نظام تقليدي معماري ومعتقدات ثقافية. ادعاءاته الروحية والمتعلقة بالازدهار غير مثبتة علميًا. لا يُعرض هنا أي اتجاه كسبب للمرض أو الخسارة المالية أو مشكلات العلاقات.",
+      "askAboutThisReport": "اسأل عن هذا التقرير...",
+      "thisPermanentlyDeletesTheVastu": "سيحذف هذا تقرير فاستو نهائيًا."
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "لحظة للتأمل",
+      "thisPieceIsFromThe": "هذا النص من القسم الاختياري ذي الطابع الفلكي في المكتبة.",
+      "couldNotLoadTodayS": "تعذّر تحميل تأكيد اليوم."
+    },
+    "BreathingSessionScreen": {
+      "saving": "جارٍ الحفظ...",
+      "stop": "إيقاف"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "التنفس",
+      "chooseAGuidedBreathingTechnique": "اختر تقنية تنفس موجّهة.",
+      "noTechniquesAvailable": "لا توجد تقنيات متاحة",
+      "pleaseTryAgainLater": "يرجى المحاولة لاحقًا.",
+      "couldNotLoadBreathingTechniques": "تعذّر تحميل تقنيات التنفس. يرجى المحاولة مرة أخرى."
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "إعادة بدء هذا التحدي؟",
+      "thisWipesAllYourProgress": "سيمحو هذا كل تقدمك في هذا التحدي ويبدأ من اليوم 1 من جديد. لا يمكن التراجع عن ذلك.",
+      "restart": "إعادة البدء",
+      "leaveThisChallenge": "مغادرة هذا التحدي؟",
+      "yourProgressIsKeptBut": "يُحتفظ بتقدمك لكنه لن يكون نشطًا بعد الآن.",
+      "leave": "مغادرة",
+      "challengeCompleted": "اكتمل التحدي",
+      "dayByDayTasks": "مهام يوم بيوم",
+      "couldNotLoadThisChallenge": "تعذّر تحميل هذا التحدي.",
+      "couldNotJoinThisChallenge": "تعذّر الانضمام إلى هذا التحدي.",
+      "couldNotMarkThisDay": "تعذّر وضع علامة الإكمال على هذا اليوم.",
+      "couldNotRestartThisChallenge": "تعذّر إعادة بدء هذا التحدي.",
+      "couldNotLeaveThisChallenge": "تعذّر مغادرة هذا التحدي."
+    },
+    "ChallengesScreen": {
+      "challenges": "التحديات",
+      "multiDayGuidedProgramsJoin": "برامج موجّهة متعددة الأيام - انضم إلى أحدها وأكمل مهمة كل يوم بالوتيرة التي تناسبك.",
+      "noChallengesAvailable": "لا توجد تحديات متاحة",
+      "couldNotLoadChallengesPlease": "تعذّر تحميل التحديات. يرجى المحاولة مرة أخرى."
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "حذف هذا الهدف؟",
+      "targetFrequency": "التكرار المستهدف",
+      "save": "حفظ",
+      "completed": "مكتمل",
+      "logTodaySProgressUser": "سجّل تقدّم اليوم (يُبلَغ عنه بنفسك)",
+      "optionalNoteAboutToday": "ملاحظة اختيارية عن اليوم",
+      "logProgress": "تسجيل التقدم",
+      "markComplete": "وضع علامة مكتمل",
+      "userReportedHistory": "السجل المُبلَغ عنه بنفسك",
+      "noCheckInsLoggedYet": "لم تُسجَّل أي تسجيلات بعد.",
+      "userReported": "مُبلَغ بنفسك",
+      "deleteGoal": "حذف الهدف",
+      "couldNotLoadThisGoal": "تعذّر تحميل هذا الهدف.",
+      "couldNotLogProgress": "تعذّر تسجيل التقدم.",
+      "couldNotMarkGoalComplete": "تعذّر وضع علامة الإكمال على الهدف.",
+      "couldNotDeleteThisGoal": "تعذّر حذف هذا الهدف.",
+      "couldNotUpdateThisGoal": "تعذّر تحديث هذا الهدف."
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "الأهداف المكتملة",
+      "noCompletedGoalsYet": "لا توجد أهداف مكتملة بعد",
+      "goalsYouCompleteWillShow": "ستظهر هنا الأهداف التي تكملها.",
+      "couldNotLoadCompletedGoals": "تعذّر تحميل الأهداف المكتملة."
+    },
+    "GoalsScreen": {
+      "goals": "الأهداف",
+      "progressHereIsAlwaysWhat": "التقدم هنا هو دائمًا ما تُبلغ عنه بنفسك - لا يُقاس أي شيء تلقائيًا.",
+      "activeGoals": "الأهداف النشطة",
+      "noActiveGoalsYetAdd": "لا توجد أهداف نشطة بعد - أضف واحدًا أدناه.",
+      "newGoal": "هدف جديد",
+      "goalTitle": "عنوان الهدف",
+      "targetFrequencyOptionalEG": "التكرار المستهدف (اختياري)، مثل 4 مرات أسبوعيًا",
+      "category": "الفئة",
+      "create": "إنشاء",
+      "couldNotLoadGoalsPlease": "تعذّر تحميل الأهداف. يرجى المحاولة مرة أخرى.",
+      "couldNotCreateGoal": "تعذّر إنشاء الهدف."
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "الإلهام",
+      "browseTheFullLibraryOrganized": "تصفّح المكتبة كاملة، مرتبة حسب النوع.",
+      "all": "الكل",
+      "favorites": "المفضلة",
+      "couldNotLoadTheInspiration": "تعذّر تحميل مكتبة الإلهام."
+    },
+    "JournalScreen": {
+      "journal": "المفكرة",
+      "newEntry": "مدخل جديد",
+      "searchEntries": "ابحث في المدخلات",
+      "noJournalEntriesYetStart": "لا توجد مدخلات في المفكرة بعد. ابدأ بفكرة أو بكتابة حرة."
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "صوت هذه الجلسة قادم قريبًا. لا تزال جلستك تُسجَّل ويمكنك وضع علامة الإكمال عليها أدناه.",
+      "sleepTimer": "مؤقت النوم",
+      "markSessionComplete": "وضع علامة اكتمال على الجلسة",
+      "couldNotLoadThisSession": "تعذّر تحميل هذه الجلسة.",
+      "thisSessionRequiresPalmSetu": "تتطلب هذه الجلسة Palm Setu المميز.",
+      "couldNotStartThisSession": "تعذّر بدء هذه الجلسة."
+    },
+    "MeditationScreen": {
+      "meditationSleep": "التأمل والنوم",
+      "guidedSessionsAndAmbientSounds": "جلسات موجّهة وأصوات محيطة، مرتبة حسب ما تحتاجه الآن.",
+      "recentlyPlayed": "شُغّل مؤخرًا",
+      "noContentAvailable": "لا يوجد محتوى متاح",
+      "couldNotLoadMeditationContent": "تعذّر تحميل محتوى التأمل. يرجى المحاولة مرة أخرى."
+    },
+    "DirectionSelectorModal": {
+      "direction": "الاتجاه",
+      "chooseTheDirectionThisRoom": "اختر الاتجاه الذي تواجهه هذه الغرفة فعليًا في عقارك - لا يُخمَّن أبدًا نيابةً عنك.",
+      "iMNotSureSkip": "لست متأكدًا، تخطَّ الآن"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "دفع آمن"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "المعنى"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "كيف يعمل التاروت"
+    }
+  },
+  "errors": {
+    "network": "تعذّر الاتصال. تحقق من اتصالك وحاول مرة أخرى.",
+    "timeout": "يستغرق هذا وقتًا طويلًا. تحقق من اتصالك وحاول مرة أخرى.",
+    "loadFailed": "تعذّر تحميل هذا. تحقق من اتصالك وحاول مرة أخرى.",
+    "partialLoad": "تعذّر تحميل بعض المحتوى.",
+    "retry": "إعادة المحاولة",
+    "tryAgain": "حاول مرة أخرى",
+    "sessionExpired": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "aiLimit": "لقد وصلت إلى حدّ استخدام الذكاء الاصطناعي لهذا الشهر. يُعاد ضبطه في بداية الشهر القادم.",
+    "rateLimited": "طلبات كثيرة جدًا. يرجى التمهّل والمحاولة بعد قليل.",
+    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  },
+  "aiMeter": {
+    "used": "{{used}} من {{limit}}",
+    "left": "المتبقي {{left}}. يُعاد الضبط في {{date}}.",
+    "low": "يوشك على النفاد: المتبقي {{left}}. يُعاد الضبط في {{date}}.",
+    "exhausted": "لقد استهلكت حصتك من الذكاء الاصطناعي لهذا الشهر. يُعاد الضبط في {{date}}."
+  },
+  "verifyEmail": {
+    "sentTo": "أرسلنا رابطًا جديدًا إلى {{email}}. افتحه ثم عد إلى هنا.",
+    "error": "تعذّر إرسال البريد الإلكتروني الآن. يرجى المحاولة مرة أخرى.",
+    "prompt": "أكّد {{email}} لتتمكن من إعادة تعيين كلمة المرور وإبقاء الاشتراك المميز آمنًا في حسابك.",
+    "send": "إرسال رسالة التحقق",
+    "sending": "جارٍ الإرسال...",
+    "again": "إعادة الإرسال"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "قراءة كف متقدمة",
+        "tagline": "تعمّق أكثر من تقريرك المجاني الأول.",
+        "p1": "تقارير كف مفصّلة غير محدودة (الخطة المجانية تتضمن 1)",
+        "p2": "أسئلة متابعة غير محدودة بالذكاء الاصطناعي لكل قراءة (الخطة المجانية تتضمن 2)",
+        "p3": "جميع الخطوط والسمات المكتشفة مفتوحة، وليس واحدًا في كل مرة",
+        "p4": "وصول كامل إلى سجل تقاريرك المحفوظة"
+      },
+      "tarot": {
+        "title": "تاروت مميز",
+        "tagline": "كل الفرشات، وليس سحب بطاقة واحدة فقط.",
+        "p1": "جميع الفرشات المميزة: ثلاث بطاقات، خمس بطاقات، الصليب السلتي وغيرها (الخطة المجانية تتضمن سحب بطاقة واحدة)",
+        "p2": "تقارير تاروت مفصّلة بالذكاء الاصطناعي لأي قراءة",
+        "p3": "حتى 20 سؤال متابعة بالذكاء الاصطناعي يوميًا",
+        "p4": "سجل كامل للقراءات المحفوظة"
+      },
+      "compatibility": {
+        "title": "الحب والتوافق",
+        "tagline": "قراءات مصممة لشخصين.",
+        "p1": "فرشات تاروت لتوافق العلاقة والحب والعلاقات",
+        "p2": "التوافق الفلكي مع خريطة شخص آخر",
+        "p3": "رؤى علاقات مخصصة مبنية على ملفك المحفوظ"
+      },
+      "astrology": {
+        "title": "مكتبة فلكية كاملة",
+        "tagline": "الفيدية والغربية، إلى مدى أبعد.",
+        "p1": "إنشاء غير محدود لخريطة الميلاد (كوندلي) (الخطة المجانية تتضمن 1)",
+        "p2": "أنشئ خريطة شخص آخر لمعرفة التوافق",
+        "p3": "وصول كامل إلى النظامين الفيدي والغربي"
+      },
+      "ai": {
+        "title": "تجربة ذكاء اصطناعي مخصصة",
+        "tagline": "محادثات أكثر، مبنية على بياناتك أنت.",
+        "p1": "حتى 200 رسالة يوميًا مع رفيق الذكاء الاصطناعي (الخطة المجانية تتضمن 15)",
+        "p2": "إجابات واعية بالسياق تستخدم قراءاتك وملفك المحفوظين",
+        "p3": "متابعات بالذكاء الاصطناعي في تقارير التاروت والكف والأحجار الكريمة"
+      },
+      "wellness": {
+        "title": "اكتشاف الذات والعافية",
+        "tagline": "مساحة لبناء ممارسة حقيقية.",
+        "p1": "عادات نشطة غير محدودة (الخطة المجانية تتضمن 3)",
+        "p2": "جميع تقنيات التنفس والتأملات الموجّهة مفتوحة",
+        "p3": "جميع تحديات العافية مفتوحة",
+        "p4": "عرض كامل لسجل المزاج (الخطة المجانية تعرض آخر 7 أيام)",
+        "p5": "المزيد من رؤى المفكرة بالذكاء الاصطناعي يوميًا (الخطة المجانية تتضمن 2)"
+      }
+    },
+    "compare": {
+      "freeHeader": "مجاني",
+      "premiumHeader": "مميز",
+      "palm": {
+        "label": "تقارير الكف المفصّلة",
+        "free": "1",
+        "premium": "غير محدود"
+      },
+      "tarotSpreads": {
+        "label": "فرشات التاروت",
+        "free": "بطاقة واحدة فقط",
+        "premium": "كل الفرشات"
+      },
+      "tarotFollowups": {
+        "label": "أسئلة متابعة التاروت",
+        "free": "غير مشمول",
+        "premium": "حتى 20 يوميًا"
+      },
+      "kundli": {
+        "label": "إنشاء خريطة الميلاد (كوندلي)",
+        "free": "1",
+        "premium": "غير محدود"
+      },
+      "otherChart": {
+        "label": "خريطة شخص آخر / التوافق",
+        "free": "غير مشمول",
+        "premium": "مشمول"
+      },
+      "companion": {
+        "label": "رسائل رفيق الذكاء الاصطناعي",
+        "free": "15 يوميًا",
+        "premium": "200 يوميًا"
+      },
+      "habits": {
+        "label": "عادات العافية النشطة",
+        "free": "3",
+        "premium": "غير محدود"
+      },
+      "moodHistory": {
+        "label": "سجل المزاج",
+        "free": "7 أيام",
+        "premium": "السجل كاملًا"
+      }
+    },
+    "period": {
+      "monthly": "/شهر",
+      "quarterly": "/3 أشهر",
+      "annual": "/سنة"
+    },
+    "cta": {
+      "unlock": "افتح Palm Setu المميز",
+      "continueWith": "المتابعة مع {{plan}}، {{price}}"
+    },
+    "badge": {
+      "bestValue": "الأفضل قيمة",
+      "popular": "الاختيار الشائع"
+    },
+    "perMonthEquivalent": "ما يعادل {{price}}/شهر",
+    "save": "وفّر {{percent}}%",
+    "processing": "جارٍ المعالجة...",
+    "restoring": "جارٍ الاستعادة...",
+    "restore": "استعادة المشتريات",
+    "legal": "تتجدد الاشتراكات تلقائيًا ما لم تُلغَ قبل 24 ساعة على الأقل من نهاية الفترة الحالية. يمكنك الإدارة أو الإلغاء في أي وقت من إعدادات حسابك في App Store أو Play Store.",
+    "error": {
+      "unavailable": "المشتريات غير متاحة الآن. لم يتم خصم أي مبلغ.",
+      "verifyEmail": "يرجى التحقق من بريدك الإلكتروني أولًا (راجع البطاقة في شاشة الملف الشخصي) ثم عد للاشتراك.",
+      "planUnavailable": "هذه الخطة غير متاحة للشراء الآن. يرجى المحاولة بعد قليل.",
+      "notActiveYet": "اكتمل الشراء لكن الاشتراك المميز لم يُفعَّل بعد - جرّب «استعادة المشتريات» بعد قليل.",
+      "purchaseFailed": "حدث خطأ أثناء الشراء. إن فشل فلن يُخصم أي مبلغ.",
+      "nothingToRestore": "لم يُعثر على أي عملية شراء سابقة لاستعادتها.",
+      "restoreFailed": "تعذّرت استعادة المشتريات الآن."
+    },
+    "intent": {
+      "createFirst": "أنشئ حسابًا مجانيًا أولًا ليعمل اشتراكك المميز على جميع أجهزتك.",
+      "logInToRestore": "سجّل الدخول لاستعادة اشتراكك المميز على هذا الجهاز."
+    }
+  },
+  "streak": {
+    "dayStreak": "أيام متتالية",
+    "longest": "الأطول: {{n}}",
+    "start": "افتح Palm Setu كل يوم لبناء سلسلتك.",
+    "checkedIn": "تم تسجيل حضورك اليوم. عد غدًا لتواصل السلسلة.",
+    "atRisk": "افتح التطبيق اليوم لتحافظ على سلسلتك.",
+    "milestone": "{{n}} أيام متتالية. أحسنت!",
+    "turnOnReminders": "إعداد التذكيرات"
+  },
+  "notifications": {
+    "dailyReminders": "تذكيرات يومية",
+    "horoscopeReminder": "برج اليوم",
+    "streakReminder": "تذكير السلسلة",
+    "timeLabel": "الوقت (HH:mm، 24 ساعة)",
+    "invalidTime": "استخدم وقتًا مثل 08:00.",
+    "unavailable": "التذكيرات غير متاحة في هذا الإصدار من التطبيق.",
+    "horoscopeTitle": "برجك اليومي",
+    "horoscopeBody": "قراءة اليوم جاهزة لك.",
+    "streakTitle": "حافظ على سلسلتك",
+    "streakBody": "أنت في سلسلة من {{count}} أيام. افتح Palm Setu اليوم لتواصلها."
   }
 }

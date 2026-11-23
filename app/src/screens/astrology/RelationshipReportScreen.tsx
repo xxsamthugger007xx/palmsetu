@@ -13,8 +13,11 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { RelationshipDailyReport } from '../../types/astrology';
 import { parseLocalDateString } from '../../utils/formatDate';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 export function RelationshipReportScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'RelationshipReport'>>();
   const { relationshipId, localDate } = route.params;
@@ -30,7 +33,8 @@ export function RelationshipReportScreen() {
       const res = await astrologyApi.getSharedDaily(relationshipId, localDate);
       setReport(res);
       setState('ready');
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setErrorMessage(err.message);
       setState(err.status === 403 ? 'blocked' : 'error');
     }
@@ -44,13 +48,13 @@ export function RelationshipReportScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
   if (state === 'blocked') {
-    return <PageContainer><EmptyState icon={Info} title="Shared readings are off" description={errorMessage ?? undefined} actionLabel="Back" onAction={() => navigation.goBack()} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.RelationshipReportScreen.sharedReadingsAreOff')} description={errorMessage ?? undefined} actionLabel={t('ui.KundliResultScreen.back')} onAction={() => navigation.goBack()} /></PageContainer>;
   }
   if (state === 'error' || !report) {
-    return <PageContainer><EmptyState icon={Info} title="Couldn't load this reading" description={errorMessage ?? undefined} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.DailyHoroscopeScreen.couldnTLoadThisReading')} description={errorMessage ?? undefined} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
@@ -65,28 +69,28 @@ export function RelationshipReportScreen() {
         {parseLocalDateString(report.localDate).toLocaleDateString()} · {report.sharedAstrologyMode === 'cross-system' ? 'Cross-system reflection' : report.sharedAstrologyMode}
       </Text>
 
-      <Section title="Our day at a glance"><Text variant="bodySm" tone="secondary">{report.summary}</Text></Section>
+      <Section title={t('ui.RelationshipReportScreen.ourDayAtAGlance')}><Text variant="bodySm" tone="secondary">{report.summary}</Text></Section>
 
-      <Section title="What may help today">
+      <Section title={t('ui.RelationshipReportScreen.whatMayHelpToday')}>
         {report.helpfulActions.map((a) => <Text key={a} variant="bodySm" tone="secondary" style={{ marginBottom: 4 }}>• {a}</Text>)}
       </Section>
 
-      <Section title="What to be mindful of">
+      <Section title={t('ui.DailyHoroscopeScreen.whatToBeMindfulOf')}>
         {report.potentialFrictionAreas.map((a) => <Text key={a} variant="bodySm" tone="secondary" style={{ marginBottom: 4 }}>• {a}</Text>)}
       </Section>
 
-      <Section title="Communication guidance"><Text variant="bodySm" tone="secondary">{report.communicationPrompt}</Text></Section>
-      <Section title="Quality-time suggestion"><Text variant="bodySm" tone="secondary">{report.sharedActivity}</Text></Section>
-      <Section title="A question to ask each other"><Text variant="bodySm" tone="accent">{report.sharedQuestion}</Text></Section>
+      <Section title={t('ui.RelationshipReportScreen.communicationGuidance')}><Text variant="bodySm" tone="secondary">{report.communicationPrompt}</Text></Section>
+      <Section title={t('ui.RelationshipReportScreen.qualityTimeSuggestion')}><Text variant="bodySm" tone="secondary">{report.sharedActivity}</Text></Section>
+      <Section title={t('ui.RelationshipReportScreen.aQuestionToAskEach')}><Text variant="bodySm" tone="accent">{report.sharedQuestion}</Text></Section>
 
-      <Section title="Individual support">
+      <Section title={t('ui.RelationshipReportScreen.individualSupport')}>
         <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.xs }}>{report.individualSupportA}</Text>
         <Text variant="bodySm" tone="secondary">{report.individualSupportB}</Text>
       </Section>
 
       <Card style={{ marginBottom: spacing.sm }} onPress={() => setExplanationOpen((o) => !o)}>
         <View style={styles.sectionHeader}>
-          <Text variant="bodySm" weight="semibold">Astrology behind this reading</Text>
+          <Text variant="bodySm" weight="semibold">{t('ui.DailyHoroscopeScreen.astrologyBehindThisReading')}</Text>
           {explanationOpen ? <ChevronUp size={16} color={color.textMuted} /> : <ChevronDown size={16} color={color.textMuted} />}
         </View>
         {explanationOpen && (
@@ -96,8 +100,7 @@ export function RelationshipReportScreen() {
 
       <Card>
         <Text variant="caption" tone="muted">
-          This reading is for reflection, not a verdict on your relationship. It never implies dishonesty,
-          incompatibility, or predicts the future of your relationship.
+          {t('ui.RelationshipReportScreen.thisReadingIsForReflection')}
         </Text>
       </Card>
     </PageContainer>

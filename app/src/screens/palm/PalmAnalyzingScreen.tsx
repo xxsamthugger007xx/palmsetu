@@ -1,3 +1,4 @@
+import { tr } from '../../utils/tr';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -11,13 +12,16 @@ import { CornerBrackets } from '../../components/CornerBrackets';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const STAGES = ['Uploading image', 'Detecting palm features', 'Preparing interpretation'];
 
 type Stage = 'uploading' | 'detecting' | 'interpreting' | 'done';
 type Phase = 'running' | 'rejected' | 'error';
 
 export function PalmAnalyzingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PalmAnalyzing'>>();
   const [stage, setStage] = useState<Stage>('uploading');
@@ -54,10 +58,11 @@ export function PalmAnalyzingScreen() {
         setStage('interpreting');
         setStage('done');
         navigation.replace('PalmReport', { readingId: reading.id, justCompleted: true, selectedHand: route.params.hand });
-      } catch (err: any) {
+      } catch (__err) {
+        const err = asApiError(__err);
         if (cancelled) return;
         if (err?.code === 'IMAGE_REJECTED') {
-          setRejectionMessage(err.message ?? 'This photo could not be used for a palm reading.');
+          setRejectionMessage(err.message ?? t('ui.PalmAnalyzingScreen.thisPhotoCouldNotBe'));
           setPhase('rejected');
         } else if (err?.code === 'PROFILE_EXISTS' && err.existingReadingId) {
           // Race with an already-existing profile (e.g. a second device, or
@@ -86,7 +91,7 @@ export function PalmAnalyzingScreen() {
         <View style={styles.center}>
           <View style={styles.frame}>
             {route.params?.imageUri ? (
-              <Image source={{ uri: route.params.imageUri }} style={[styles.image, styles.dimmed]} />
+              <Image source={{ uri: route.params.imageUri }} accessibilityLabel={tr('a11y.palmPhoto')} style={[styles.image, styles.dimmed]} />
             ) : (
               <View style={[styles.image, styles.imageFallback]} />
             )}
@@ -103,7 +108,7 @@ export function PalmAnalyzingScreen() {
           </Text>
 
           <Button
-            label="Retake photo"
+            label={t('ui.PalmAnalyzingScreen.retakePhoto')}
             fullWidth
             style={{ marginTop: spacing.xl, width: '100%' }}
             onPress={() => navigation.replace('PalmCapture')}
@@ -118,7 +123,7 @@ export function PalmAnalyzingScreen() {
       <View style={styles.center}>
         <View style={styles.frame}>
           {route.params?.imageUri ? (
-            <Image source={{ uri: route.params.imageUri }} style={styles.image} />
+            <Image source={{ uri: route.params.imageUri }} accessibilityLabel={tr('a11y.palmPhoto')} style={styles.image} />
           ) : (
             <View style={[styles.image, styles.imageFallback]} />
           )}
@@ -127,7 +132,7 @@ export function PalmAnalyzingScreen() {
         </View>
 
         <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xl }}>
-          Analyzing your palm
+          {t('ui.PalmAnalyzingScreen.analyzingYourPalm')}
         </Text>
         <Text variant="caption" tone="muted" style={{ marginTop: 2, fontVariant: ['tabular-nums'] }}>
           Step {stageIndex + 1} of {STAGES.length}

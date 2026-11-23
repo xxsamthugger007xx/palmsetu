@@ -13,6 +13,7 @@ import { assistantApi, AssistantMessage, PremiumCard } from '../../services/assi
 import { streamAssistantMessage, StreamHandle } from '../../services/assistantStream';
 import { AIThinkingOverlay } from '../../components/AIThinkingOverlay';
 import { formatChatTimestamp } from '../../utils/formatChatTimestamp';
+import { useTranslation } from 'react-i18next';
 
 type ChatItem = AssistantMessage & {
   pending?: boolean;
@@ -32,7 +33,7 @@ function PremiumCardView({ card }: { card: PremiumCard }) {
         <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{card.title}</Text>
       </View>
       <Text variant="caption" tone="secondary" style={{ marginTop: 4 }}>{card.description}</Text>
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={() => navigation.navigate('Paywall')}
         style={{ marginTop: spacing.sm, alignSelf: 'flex-start', backgroundColor: color.accent, borderRadius: radius.md, paddingVertical: 8, paddingHorizontal: 14 }}
       >
@@ -66,11 +67,11 @@ function Bubble({ item, onCopy, onRetry }: { item: ChatItem; onCopy: (t: string)
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
           {!isUser && (
             <>
-              <Pressable onPress={() => onCopy(item.content)} style={{ marginRight: spacing.sm }}>
+              <Pressable accessibilityRole="button" onPress={() => onCopy(item.content)} style={{ marginRight: spacing.sm }}>
                 <Copy size={14} color={color.textMuted} />
               </Pressable>
               {item.failed && onRetry && (
-                <Pressable onPress={onRetry} style={{ marginRight: spacing.sm }}>
+                <Pressable accessibilityRole="button" onPress={onRetry} style={{ marginRight: spacing.sm }}>
                   <RotateCcw size={14} color={color.textMuted} />
                 </Pressable>
               )}
@@ -175,6 +176,7 @@ const CONTEXT_LABELS: Record<string, string> = {
 };
 
 export function AssistantChatScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AssistantChat'>>();
   const screenContext = route.params?.screenContext ?? null;
@@ -278,12 +280,14 @@ export function AssistantChatScreen() {
           stageLabel: undefined,
         });
       },
-      onError: () => {
+      onError: (message, code) => {
         activeStreamRef.current = null;
+        // Premium monthly AI allowance used up: show the server's explanation, no retry (retrying can't help).
+        const limitReached = code === 'AI_BUDGET_EXCEEDED';
         updateLast({
-          content: 'Something went wrong. Tap to retry.',
+          content: limitReached ? message : 'Something went wrong. Tap to retry.',
           pending: false,
-          failed: true,
+          failed: !limitReached,
           stageLabel: undefined,
         });
       },
@@ -305,7 +309,7 @@ export function AssistantChatScreen() {
             <IconButton icon={History} onPress={() => navigation.navigate('AssistantHistory')} />
           </View>
         </View>
-        <Text variant="display" weight="semibold" style={{ marginBottom: 4 }}>AI Astrologer</Text>
+        <Text variant="display" weight="semibold" style={{ marginBottom: 4 }}>{t('ui.AssistantChatScreen.aiAstrologer')}</Text>
         {screenContext && CONTEXT_LABELS[screenContext] && (
           <Text variant="caption" tone="accent" style={{ marginBottom: spacing.sm }}>
             Asking about: {CONTEXT_LABELS[screenContext]}
@@ -332,7 +336,7 @@ export function AssistantChatScreen() {
         {suggested.length > 0 && (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: spacing.sm }}>
             {suggested.map((q) => (
-              <Pressable
+              <Pressable accessibilityRole="button"
                 key={q}
                 onPress={() => send(q)}
                 style={{ borderWidth: 1, borderColor: color.border, borderRadius: radius.pill, paddingVertical: 6, paddingHorizontal: 12, marginRight: spacing.sm, marginBottom: spacing.sm }}
@@ -347,7 +351,7 @@ export function AssistantChatScreen() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder="Ask about your reading..."
+            placeholder={t('ui.AssistantChatScreen.askAboutYourReading')} accessibilityLabel={t('ui.AssistantChatScreen.askAboutYourReading')}
             placeholderTextColor={color.textMuted}
             style={{
               flex: 1, backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: spacing.md,
@@ -355,7 +359,7 @@ export function AssistantChatScreen() {
             }}
             onSubmitEditing={() => send(input)}
           />
-          <Pressable onPress={() => send(input)} style={{ marginLeft: spacing.sm, padding: 10 }}>
+          <Pressable accessibilityRole="button" onPress={() => send(input)} style={{ marginLeft: spacing.sm, padding: 10 }}>
             <Send size={20} color={color.accent} />
           </Pressable>
         </View>

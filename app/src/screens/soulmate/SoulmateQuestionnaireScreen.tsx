@@ -13,7 +13,9 @@ import { soulmateApi } from '../../services/soulmateApi';
 import {
   SoulmateAgeRange, SoulmateGender, SoulmateStyle,
 } from '../../types/soulmate';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const SHORTLIST_COUNTRIES = [
   { id: 'india', label: 'India' },
   { id: 'united-states', label: 'United States' },
@@ -61,6 +63,7 @@ const STYLE_OPTIONS: { id: SoulmateStyle; label: string; description: string; ic
 const STEP_COUNT = 4;
 
 export function SoulmateQuestionnaireScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'SoulmateQuestionnaire'>>();
   const isFreeTrial = route.params.intent === 'free';
@@ -106,11 +109,12 @@ export function SoulmateQuestionnaireScreen() {
     try {
       const res = await soulmateApi.createSketch(answers, true);
       navigation.replace('SoulmateGenerating', { sketchId: res.sketch.id });
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'TRIAL_ALREADY_USED' && err.sketch) {
         navigation.replace('SoulmateGenerating', { sketchId: err.sketch.id });
       } else {
-        setError(err.message ?? 'Could not start your free sketch. Please try again.');
+        setError(err.message ?? t('ui.SoulmateQuestionnaireScreen.couldNotStartYourFree'));
       }
     } finally {
       setSubmitting(false);
@@ -134,7 +138,7 @@ export function SoulmateQuestionnaireScreen() {
       {step === 0 && (
         <>
           <Text variant="title" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-            Preferred soulmate gender
+            {t('ui.SoulmateQuestionnaireScreen.preferredSoulmateGender')}
           </Text>
           {GENDER_OPTIONS.map((opt) => (
             <OptionCard key={opt.id} label={opt.label} selected={gender === opt.id} onPress={() => setGender(opt.id)} />
@@ -145,7 +149,7 @@ export function SoulmateQuestionnaireScreen() {
       {step === 1 && (
         <>
           <Text variant="title" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-            Preferred age range
+            {t('ui.SoulmateQuestionnaireScreen.preferredAgeRange')}
           </Text>
           {AGE_OPTIONS.map((opt) => (
             <OptionCard key={opt.id} label={opt.label} selected={ageRange === opt.id} onPress={() => setAgeRange(opt.id)} />
@@ -156,7 +160,7 @@ export function SoulmateQuestionnaireScreen() {
       {step === 2 && (
         <>
           <Text variant="title" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-            Preferred country or cultural background
+            {t('ui.SoulmateQuestionnaireScreen.preferredCountryOrCulturalBackground')}
           </Text>
           {SHORTLIST_COUNTRIES.map((opt) => (
             <OptionCard key={opt.id} label={opt.label} selected={country === opt.id} onPress={() => setCountry(opt.id)} />
@@ -169,7 +173,7 @@ export function SoulmateQuestionnaireScreen() {
             <Card onPress={() => setShowMoreCountries(true)} style={styles.moreCountriesCard}>
               <Globe2 size={16} color={color.accent} strokeWidth={1.75} />
               <Text variant="bodySm" tone="accent" weight="semibold" style={{ marginLeft: spacing.sm }}>
-                More countries
+                {t('ui.SoulmateQuestionnaireScreen.moreCountries')}
               </Text>
             </Card>
           )}
@@ -179,7 +183,7 @@ export function SoulmateQuestionnaireScreen() {
       {step === 3 && (
         <>
           <Text variant="title" weight="semibold" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-            Preferred portrait style
+            {t('ui.SoulmateQuestionnaireScreen.preferredPortraitStyle')}
           </Text>
           {STYLE_OPTIONS.map((opt) => {
             const isSelected = style === opt.id;

@@ -10,7 +10,9 @@ import { Button, IconButton } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { gemstoneApi } from '../../services/gemstoneApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const goalOptions = [
   { id: 'career', label: 'Career', icon: Briefcase },
   { id: 'relationships', label: 'Relationships', icon: Heart },
@@ -21,6 +23,7 @@ const goalOptions = [
 ];
 
 export function GemstoneGoalScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [goals, setGoals] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,11 +39,12 @@ export function GemstoneGoalScreen() {
     try {
       const report = await gemstoneApi.createReport(goals, null);
       navigation.replace('GemstoneReport', { reportId: report.id });
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'LIMIT_REACHED') {
         navigation.navigate('Paywall');
       } else {
-        setError(err.message ?? 'Something went wrong generating your report.');
+        setError(err.message ?? t('ui.GemstoneGoalScreen.somethingWentWrongGeneratingYour'));
       }
     } finally {
       setLoading(false);
@@ -53,9 +57,9 @@ export function GemstoneGoalScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>What's on your mind?</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.GemstoneGoalScreen.whatSOnYourMind')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Optional - select as many as apply. Your recommendation itself is based on your chart, not your goals.
+        {t('ui.GemstoneGoalScreen.optionalSelectAsManyAs')}
       </Text>
 
       <View style={styles.grid}>
@@ -82,7 +86,7 @@ export function GemstoneGoalScreen() {
       )}
 
       <Button
-        label="Generate my gemstone guide"
+        label={t('ui.GemstoneGoalScreen.generateMyGemstoneGuide')}
         fullWidth
         loading={loading}
         style={{ marginTop: spacing.xl }}

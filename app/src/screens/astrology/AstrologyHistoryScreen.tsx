@@ -14,8 +14,10 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { RelationshipDailyReport } from '../../types/astrology';
 import { parseLocalDateString } from '../../utils/formatDate';
+import { useTranslation } from 'react-i18next';
 
 export function AstrologyHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [sharedHistory, setSharedHistory] = useState<RelationshipDailyReport[]>([]);
@@ -44,29 +46,28 @@ export function AstrologyHistoryScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Reading History</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.AstrologyHistoryScreen.readingHistory')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
-      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>}
-      {state === 'error' && <EmptyState icon={Info} title="Couldn't load history" />}
+      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      {state === 'error' && <EmptyState icon={Info} title={t('ui.AstrologyHistoryScreen.couldnTLoadHistory')} />}
 
       {state === 'ready' && (
         <>
-          <SectionHeader title="Personal readings" />
+          <SectionHeader title={t('ui.AstrologyHistoryScreen.personalReadings')} />
           <Card>
             <Text variant="caption" tone="muted">
-              Your personal daily readings are available from the Daily Cosmic Guidance home screen for
-              today, and are private to you.
+              {t('ui.AstrologyHistoryScreen.yourPersonalDailyReadingsAre')}
             </Text>
           </Card>
 
           <View style={{ marginTop: spacing.xl }}>
-            <SectionHeader title="Shared relationship readings" />
+            <SectionHeader title={t('ui.AstrologyHistoryScreen.sharedRelationshipReadings')} />
             {!relationshipId ? (
-              <EmptyState icon={Layers} title="No partner connected" description="Connect with a partner to start building shared reading history." />
+              <EmptyState icon={Layers} title={t('ui.AstrologyHistoryScreen.noPartnerConnected')} description={t('ui.AstrologyHistoryScreen.connectWithAPartnerTo')} />
             ) : sharedHistory.length === 0 ? (
-              <EmptyState icon={Layers} title="No shared readings yet" />
+              <EmptyState icon={Layers} title={t('ui.AstrologyHistoryScreen.noSharedReadingsYet')} />
             ) : (
               sharedHistory.map((r) => (
                 <Card

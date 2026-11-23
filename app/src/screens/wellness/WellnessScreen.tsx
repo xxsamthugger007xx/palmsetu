@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import {
   NotebookPen, Wind, Target, Info, Sparkles, Trophy, Moon, Check, ChevronRight, TrendingUp,
 } from 'lucide-react-native';
+import { ErrorBanner } from '../../components/ErrorState';
+import { isLoadFailure } from '../../utils/loadFailure';
 import { PageContainer } from '../../components/PageContainer';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Card } from '../../components/Card';
@@ -86,21 +88,27 @@ export function WellnessScreen() {
     : null;
   const challengeCompletedToday = !!activeChallengeProgress?.completedDays.includes(activeChallengeProgress.currentDay);
 
+  const [loadFailed, setLoadFailed] = React.useState(false);
+
   const loadWellnessData = React.useCallback(async () => {
       const today = wellnessApi.todayLocalDate();
+      setLoadFailed(false);
+      const noteFailure = (err: unknown) => { if (isLoadFailure(err)) setLoadFailed(true); };
 
       wellnessApi.getMoodForDate(today)
         .then((res) => { setTodayMood(res.entry); setMoodChecked(true); })
-        .catch(() => { setTodayMood(null); setMoodChecked(true); });
+        .catch((err) => { setTodayMood(null); setMoodChecked(true); noteFailure(err); });
 
-      wellnessApi.getHabits().then((res) => {
+      wellnessApi.getHabits(today).then((res) => {
         setHabits(res.habits);
+        // Real "done today" state from the server, so checked habits stay checked after leaving/reopening.
+        setCompletedToday(new Set(res.completedHabitIds ?? []));
         res.habits.forEach((h) => {
           wellnessApi.getHabitStreak(h.id)
             .then((s) => setHabitStreaks((prev) => ({ ...prev, [h.id]: { currentStreak: s.currentStreak } })))
             .catch(() => {});
         });
-      }).catch(() => setHabits([]));
+      }).catch((err) => { setHabits([]); noteFailure(err); });
 
       wellnessApi.getTodayInspiration().then((res) => setInspiration(res.content)).catch(() => setInspiration(null));
 
@@ -108,7 +116,7 @@ export function WellnessScreen() {
         .then((res) => setJournalToday(res.entries.length > 0))
         .catch(() => setJournalToday(false));
 
-      wellnessApi.getGoals('active').then((res) => setGoals(res.goals)).catch(() => setGoals([]));
+      wellnessApi.getGoals('active').then((res) => setGoals(res.goals)).catch((err) => { setGoals([]); noteFailure(err); });
 
       Promise.all([wellnessApi.getChallenges(), wellnessApi.getMyChallengeProgress()])
         .then(([c, p]) => {
@@ -121,7 +129,7 @@ export function WellnessScreen() {
             setActiveChallengeDef(null);
           }
         })
-        .catch(() => { setChallengeSummaries([]); setChallengeProgressList([]); });
+        .catch((err) => { setChallengeSummaries([]); setChallengeProgressList([]); noteFailure(err); });
 
       wellnessApi.getBreathingTechniques().then((res) => setBreathingCount(res.techniques.length)).catch(() => setBreathingCount(null));
       wellnessApi.getMeditationCatalogue().then((res) => setMeditationCount(res.items.length)).catch(() => setMeditationCount(null));
@@ -225,6 +233,7 @@ export function WellnessScreen() {
 
   return (
     <PageContainer style={{ paddingBottom: spacing.xxl + 96 }} onRefresh={loadWellnessData}>
+      {loadFailed && <ErrorBanner message={t('ui.WellnessScreen.someOfYourWellnessData')} onRetry={loadWellnessData} />}
       {/* A. Header */}
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: 2 }}>
         {t(timeOfDayGreetingKey())}{profile?.name ? `, ${profile.name}` : ''}
@@ -244,7 +253,7 @@ export function WellnessScreen() {
         <SectionHeader title={t('wellness.moodSectionTitle')} action={t('wellness.historyAction')} onActionPress={() => navigation.navigate('MoodHistory')} />
         <Card elevated>
           {todayMood ? (
-            <Pressable onPress={() => navigation.navigate('MoodCheckIn')} style={styles.moodDoneRow}>
+            <Pressable accessibilityRole="button" onPress={() => navigation.navigate('MoodCheckIn')} style={styles.moodDoneRow}>
               <MoodMarkBadge mood={todayMood.mood} />
               <View style={{ flex: 1, marginLeft: spacing.sm }}>
                 <Text variant="bodySm" weight="semibold">{t('common.feelingToday', { mood: moodLabel(todayMood.mood).toLowerCase() })}</Text>
@@ -266,7 +275,7 @@ export function WellnessScreen() {
       {inspiration && (
         <View style={{ marginTop: spacing.lg }}>
           <SectionHeader title={t('wellness.affirmationSectionTitle')} />
-          <Pressable onPress={() => navigation.navigate('AffirmationDetail', { content: inspiration })}>
+          <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AffirmationDetail', { content: inspiration })}>
             <LinearGradient
               colors={[color.accentMuted, color.surface]}
               start={{ x: 0, y: 0 }}
@@ -301,7 +310,7 @@ export function WellnessScreen() {
                 </Text>
               </View>
             </View>
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={completeChallengeToday}
               disabled={challengeCompletedToday || completingChallenge}
               style={[styles.challengeButton, challengeCompletedToday && styles.challengeButtonDone]}
@@ -340,7 +349,7 @@ export function WellnessScreen() {
         <SectionHeader title={t('wellness.quickResetsTitle')} />
         <View style={styles.tileGrid}>
           {RESET_TILES.map((tile) => (
-            <Pressable key={tile.id} onPress={() => tile.navigate(navigation)} style={styles.tile}>
+            <Pressable accessibilityRole="button" key={tile.id} onPress={() => tile.navigate(navigation)} style={styles.tile}>
               <tile.icon size={20} color={color.accent} strokeWidth={1.75} />
               <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>{t(`wellness.tiles.${tile.id}`)}</Text>
               <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>
@@ -410,7 +419,7 @@ export function WellnessScreen() {
           <SectionHeader title={t('wellness.activeGoalsTitle')} action={t('common.viewAll')} onActionPress={() => navigation.navigate('Goals')} />
           <Card>
             {goals.slice(0, 3).map((g, i) => (
-              <Pressable
+              <Pressable accessibilityRole="button"
                 key={g.id}
                 onPress={() => navigation.navigate('GoalDetail', { id: g.id })}
                 style={[styles.goalRow, i > 0 && styles.habitDivider]}

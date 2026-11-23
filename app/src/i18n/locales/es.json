@@ -258,8 +258,15 @@
       "compatibility": {
         "title": "Compatibilidad",
         "description": "Tú, ellos, y lo que los conecta"
+      },
+      "fiveCard": {
+        "title": "Lectura de cinco cartas",
+        "description": "Un camino más profundo con cinco posiciones"
       }
-    }
+    },
+    "personalReadingTitle": "Obtén una lectura personal",
+    "personalReadingSubtitle": "Explora sobre qué podrían invitarte a reflexionar las cartas hoy.",
+    "personalReadingCta": "Comenzar una lectura"
   },
   "profile": {
     "upgradeTitle": "Mejorar a Premium",
@@ -333,5 +340,989 @@
     "title": "Idioma",
     "notice": "Puedes cambiar tu idioma en cualquier momento. Las pantallas traducidas se actualizan de inmediato; el resto llegará en una próxima actualización.",
     "searchPlaceholder": "Buscar idiomas"
+  },
+  "a11y": {
+    "back": "Volver",
+    "close": "Cerrar",
+    "delete": "Eliminar",
+    "history": "Historial",
+    "share": "Compartir",
+    "bookmark": "Guardar",
+    "edit": "Editar",
+    "newConversation": "Nueva conversación",
+    "send": "Enviar",
+    "retry": "Intentar de nuevo",
+    "info": "Más información",
+    "favorite": "Favorito",
+    "notifications": "Notificaciones",
+    "loading": "Cargando",
+    "button": "Botón",
+    "selected": "Seleccionado",
+    "dismiss": "Descartar",
+    "showPassword": "Mostrar contraseña",
+    "search": "Buscar",
+    "palmPhoto": "Foto de tu palma",
+    "palmPreview": "Vista previa de la foto de la palma",
+    "soulmatePortrait": "Retrato de tu alma gemela",
+    "renameField": "Renombrar",
+    "goalTitle": "Título de la meta",
+    "goalFrequency": "Con qué frecuencia"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "Registrarse",
+      "logIn": "Iniciar sesión",
+      "emailAddress": "Correo electrónico",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "backToLogIn": "Volver a iniciar sesión",
+      "continueAsGuest": "Continuar como invitado",
+      "termsOfService": "Términos de servicio",
+      "privacyPolicy": "Política de privacidad",
+      "enterYourEmailAndPassword": "Introduce tu correo y contraseña.",
+      "passwordMustBeAtLeast": "La contraseña debe tener al menos 8 caracteres.",
+      "anAccountWithThisEmail": "Ya existe una cuenta con este correo. Prueba a iniciar sesión.",
+      "incorrectEmailOrPassword": "Correo o contraseña incorrectos.",
+      "tooManyAttemptsPleaseWait": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+      "verificationFailedPleaseTryAgain": "La verificación falló. Inténtalo de nuevo.",
+      "enterTheEmailAddressOf": "Introduce el correo electrónico de tu cuenta."
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "Desbloquea todo tu camino de autodescubrimiento",
+      "discoverDeeperInsightsIntoYour": "Descubre ideas más profundas sobre tu palma, tus relaciones, la astrología y tu camino personal con Palm Setu Premium.",
+      "everythingIncludedInPremium": "Todo lo que incluye Premium",
+      "freeVsPremium": "Gratis vs. Premium",
+      "chooseYourPlan": "Elige tu plan",
+      "loadingPlans": "Cargando planes...",
+      "weCouldnTLoadThe": "No pudimos cargar los planes. Revisa tu conexión e inténtalo de nuevo.",
+      "billingIsNotYetConfigured": "La facturación de Palm Setu Premium aún no está configurada en esta versión. Esta pantalla no te cobrará ni dará acceso Premium hasta que lo esté.",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "secureBillingThroughYourApp": "Facturación segura a través de tu cuenta de App Store o Google Play."
+    },
+    "ProfileScreen": {
+      "createAnAccount": "Crear una cuenta",
+      "signUpFirstToExport": "Regístrate primero para exportar tus datos guardados.",
+      "yourData": "Tus datos",
+      "couldNotExportData": "No se pudieron exportar los datos",
+      "pleaseTryAgain": "Inténtalo de nuevo.",
+      "noAccountYet": "Aún no tienes cuenta",
+      "youAreBrowsingAsA": "Estás navegando como invitado: no hay ninguna cuenta que eliminar.",
+      "couldNotDeleteAccount": "No se pudo eliminar la cuenta"
+    },
+    "HabitsScreen": {
+      "habits": "Hábitos",
+      "couldnTRefreshYourHabits": "No se pudieron actualizar tus hábitos.",
+      "noHabitsYetAddOne": "Aún no hay hábitos: añade uno abajo para empezar.",
+      "addAHabit": "Añadir un hábito",
+      "customHabitName": "Nombre del hábito personalizado",
+      "add": "Añadir",
+      "youVeReachedTheFree": "Has alcanzado el límite gratuito de hábitos. Mejora tu plan para hábitos ilimitados.",
+      "suggestions": "Sugerencias",
+      "unableToConnectThatChange": "No se pudo conectar. Ese cambio no se guardó.",
+      "couldnTUpdateThatHabit": "No se pudo actualizar ese hábito. Inténtalo de nuevo.",
+      "couldNotAddHabit": "No se pudo añadir el hábito."
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "¿Eliminar conversación?",
+      "thisCannotBeUndone": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "chatHistory": "Historial de chat",
+      "noConversationsYet": "Aún no hay conversaciones",
+      "startAConversationWithYour": "Inicia una conversación con tu Astrólogo IA para verla aquí.",
+      "startChatting": "Empezar a chatear",
+      "couldnTDeleteThatConversation": "No se pudo eliminar esa conversación. Inténtalo de nuevo."
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "Preferencias de notificaciones",
+      "pushDeliveryIsnTWired": "El envío de notificaciones push aún no está conectado a un token de dispositivo/programador real en esta versión: estas preferencias se guardan y se aplicarán cuando se conecte esa infraestructura.",
+      "personalDailyMessage": "Mensaje diario personal",
+      "sharedRelationshipMessage": "Mensaje de relación compartido",
+      "detailedLockScreenPreview": "Vista previa detallada en pantalla de bloqueo",
+      "preferredTime": "HORA PREFERIDA",
+      "unableToConnectYourChange": "No se pudo conectar. Tu cambio no se guardó.",
+      "couldnTSaveYourChange": "No se pudo guardar tu cambio. Inténtalo de nuevo."
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "Notificaciones",
+      "localRemindersScheduledOnThis": "Recordatorios locales programados en este dispositivo, según lo que actives abajo.",
+      "enableNotifications": "Activar notificaciones",
+      "hhMm": "HH:mm",
+      "quietHours": "Horas de silencio",
+      "noReminderWillBeScheduled": "No se programará ningún recordatorio dentro de este intervalo. Déjalo en blanco si no quieres horas de silencio.",
+      "start": "Inicio",
+      "end": "Fin",
+      "couldNotLoadNotificationSettings": "No se pudieron cargar los ajustes de notificaciones.",
+      "savedAndScheduled": "Guardado y programado.",
+      "savedEnableNotificationsAboveTo": "Guardado. Activa las notificaciones arriba para recibir realmente estos recordatorios.",
+      "couldNotSaveNotificationSettings": "No se pudieron guardar los ajustes de notificaciones."
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "Elige tu idioma",
+      "youCanChangeThisAnytime": "Puedes cambiarlo en cualquier momento desde tu perfil.",
+      "englishUi": "(interfaz en inglés)"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "PASO 2 DE 5",
+      "whenWereYouBorn": "¿Cuándo naciste?",
+      "usedOnlyForTraditionalAstrology": "Se usa solo para los cálculos de la astrología tradicional: es interpretación para reflexionar, no una predicción científica."
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "PASO 3 DE 5",
+      "whatTimeWereYouBorn": "¿A qué hora naciste?",
+      "iDonTKnowMy": "No sé mi hora exacta de nacimiento",
+      "someCalculationsMoonSignNakshatra": "Sin la hora exacta, algunos cálculos (signo lunar, nakshatra, tránsitos diarios) pueden ser menos precisos."
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "PASO 4 DE 5",
+      "whereWereYouBorn": "¿Dónde naciste?"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "PASO 1 DE 5",
+      "chooseYourAstrologySystem": "Elige tu sistema astrológico",
+      "thisDecidesHowYourSign": "Esto decide cómo se calculan tu signo, tu carta y tu guía diaria. Puedes cambiarlo más tarde desde tu perfil; las cartas e interpretaciones se actualizarán para coincidir.",
+      "continue": "Continuar",
+      "unableToConnectCheckYour": "No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.",
+      "somethingWentWrongPleaseTry": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "PASO 5 DE 5",
+      "confirmYourDetails": "Confirma tus datos",
+      "language": "IDIOMA",
+      "timeOfBirth": "HORA DE NACIMIENTO",
+      "confirmAndContinue": "Confirmar y continuar"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "Información personal",
+      "yourNameAndHowYou": "Tu nombre y cómo quieres que te llamemos. La fecha, hora y lugar de nacimiento se editan por separado en Guía cósmica diaria.",
+      "saveChanges": "Guardar cambios"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "Quizás más tarde",
+      "createFreeAccount": "Crear cuenta gratis"
+    },
+    "ListSkeleton": {
+      "loading": "Cargando"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "Verifica tu correo electrónico"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "Uso mensual de IA"
+    },
+    "UpgradeButton": {
+      "upgrade": "MEJORAR"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "Pregunta al Astrólogo IA",
+      "askAi": "Preguntar a la IA"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "Próximamente",
+      "notAvailableYet": "Aún no disponible"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "No se pudo cargar el widget de verificación. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "INTERPRETACIÓN TRADICIONAL"
+    },
+    "DailyResetHero": {
+      "dailyReset": "Reinicio diario"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "No se pudo cargar parte del contenido.",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "No se pudo cargar parte de tus datos de bienestar."
+    },
+    "CompanionScreen": {
+      "aiCompanion": "Compañero IA",
+      "shareWhatSOnYour": "Comparte lo que tienes en mente...",
+      "yourCompanionIsAnAi": "Tu compañero es una IA, no un terapeuta con licencia. En una crisis, contacta con los servicios de emergencia locales."
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "Astrólogo IA",
+      "askAboutYourReading": "Pregunta sobre tu lectura..."
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "Antes de empezar",
+      "yourReadingIsGeneratedFrom": "Tu lectura se genera a partir de interpretaciones tradicionales de la quiromancia aplicadas a las líneas y zonas visibles en tu foto. Está pensada para el entretenimiento y la autorreflexión, no como evaluación científica, médica ni predictiva.",
+      "weNeverUseYourPalm": "Nunca usamos la foto de tu palma para diagnosticar una afección de salud, ni prometemos resultados garantizados sobre riqueza, relaciones o esperanza de vida. Tu foto se procesa de forma segura y puedes eliminarla cuando quieras."
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "Repetir foto",
+      "analyzingYourPalm": "Analizando tu palma",
+      "thisPhotoCouldNotBe": "No se pudo usar esta foto para una lectura de palma."
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "¿Qué sientes? (opcional)",
+      "energy": "Energía",
+      "stress": "Estrés",
+      "sleepQuality": "Calidad del sueño",
+      "noteOptional": "Nota (opcional)",
+      "anythingYouWantToRemember": "Cualquier cosa que quieras recordar de hoy...",
+      "couldNotSaveYourCheck": "No se pudo guardar tu registro."
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "Se necesita permiso",
+      "capture": "Capturar",
+      "analyzeYourPalm": "Analiza tu palma",
+      "useNaturalLightHoldYour": "Usa luz natural, mantén la mano plana con los dedos ligeramente separados y llena la mayor parte del encuadre.",
+      "retake": "Repetir",
+      "noPhotoYet": "Aún no hay foto",
+      "takePhoto": "Tomar foto",
+      "uploadFromLibrary": "Subir desde la galería",
+      "photoGuidelines": "PAUTAS PARA LA FOTO",
+      "goodExample": "BUEN EJEMPLO",
+      "flatOpenPalmFillingThe": "Palma plana y abierta que llene el encuadre, con luz uniforme y sin accesorios.",
+      "avoidPhotosLikeTheseThey": "Evita fotos como estas, pueden afectar la precisión del análisis:",
+      "yourPhotoIsUploadedSecurely": "Tu foto se sube de forma segura para su análisis. Puedes eliminarla desde Perfil → Privacidad en cualquier momento."
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "Cargando tu lectura...",
+      "palmReading": "Lectura de palma",
+      "couldnTLoadThisReading": "No se pudo cargar esta lectura. Inténtalo de nuevo.",
+      "limitedVisibilityOnlyPartOf": "Visibilidad limitada: solo parte de tu palma estaba claramente en el encuadre, por lo que esta lectura cubre menos rasgos que un escaneo completo.",
+      "analysisOverview": "RESUMEN DEL ANÁLISIS",
+      "sectionsMatched": "Secciones identificadas",
+      "imageQuality": "Calidad de imagen",
+      "unlocked": "Desbloqueado",
+      "thisAnalysisReportsQualitativeObservations": "Este análisis ofrece observaciones cualitativas con una puntuación de confianza, no coordenadas de píxeles exactas, por eso no dibujamos trazados de líneas sobre tu foto: así evitamos mostrar algo que no sea la geometría real de las líneas de tu palma.",
+      "readingSections": "Secciones de la lectura",
+      "everyLineBelowIncludesOne": "Cada línea de abajo incluye una observación gratuita y real de tu escaneo. Desbloquea una línea para ver su desglose completo.",
+      "noSpecificFeaturesCouldBe": "No se pudo identificar con confianza ningún rasgo concreto en esta foto.",
+      "free": "GRATIS",
+      "fullStructureAdditionalDetectedCharacteristics": "Estructura completa, rasgos adicionales detectados y la interpretación tradicional completa de esta línea.",
+      "combinedPatterns": "Patrones combinados",
+      "yourPalmHasMoreTo": "Tu palma tiene más que revelar",
+      "unlockYourCompletePalmReading": "Desbloquea tu lectura de palma completa para explorar cada rasgo detectado y su interpretación tradicional, en todas las líneas y monturas de esta lectura.",
+      "unlockCompleteReading": "Desbloquear lectura completa",
+      "reflectiveQuestions": "Preguntas para reflexionar",
+      "askAboutThisReading": "Pregunta sobre esta lectura",
+      "yourPalmReadingIsReady": "¡Tu lectura de palma está lista!",
+      "createYourFreeAccountTo": "Crea tu cuenta gratis para guardar tu perfil de palma y acceder a tu informe completo en cualquier momento y dispositivo.",
+      "yourReadingHasBeenSaved": "Tu lectura se ha guardado. Ya aparece en Inicio y en tu Historial de palma.",
+      "saveAndContinue": "Guardar y continuar",
+      "couldNotUnlockThisSection": "No se pudo desbloquear esta sección. Inténtalo de nuevo.",
+      "couldNotUnlockYourComplete": "No se pudo desbloquear tu lectura completa. Inténtalo de nuevo.",
+      "upgradeToSeeMore": "(mejora tu plan para ver más)"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "Eliminar lectura",
+      "couldNotDeleteThisReading": "No se pudo eliminar esta lectura. Inténtalo de nuevo.",
+      "palmReadingHistory": "Historial de lecturas de palma",
+      "noPalmReadingsYet": "Aún no hay lecturas de palma",
+      "yourPastPalmScansWill": "Tus escaneos de palma anteriores aparecerán aquí.",
+      "scanYourPalm": "Escanea tu palma"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "No se pudo cargar esta lectura",
+      "generationDidnTComplete": "La generación no se completó",
+      "weCouldnTFinishGenerating": "No pudimos terminar de generar la lectura de hoy. Puedes reintentarlo.",
+      "retryGeneration": "Reintentar generación",
+      "yourDayAtAGlance": "Tu día de un vistazo",
+      "todaySFocus": "El enfoque de hoy",
+      "careerProductivity": "Carrera y productividad",
+      "loveRelationships": "Amor y relaciones",
+      "moodSelfCare": "Ánimo y autocuidado",
+      "whatToDoToday": "Qué hacer hoy",
+      "whatToBeMindfulOf": "Qué tener en cuenta",
+      "aSmallDailyChallenge": "Un pequeño reto diario",
+      "reflectionQuestion": "Pregunta de reflexión",
+      "astrologyBehindThisReading": "La astrología detrás de esta lectura",
+      "askAFollowUpQuestion": "Haz una pregunta de seguimiento",
+      "askAboutTodaySReading": "Pregunta sobre la lectura de hoy...",
+      "ask": "Preguntar"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "Historial de ánimo",
+      "trendsAndCheckInsOver": "Tendencias y registros a lo largo del tiempo.",
+      "noMoodCheckInsYet": "Aún no hay registros de ánimo",
+      "logHowYouAreFeeling": "Registra cómo te sientes para empezar a ver tus tendencias aquí.",
+      "checkInNow": "Registrar ahora",
+      "last7Days": "Últimos 7 días",
+      "noCheckInOnThis": "No hay registro en esta fecha.",
+      "trends": "Tendencias",
+      "mostFrequentEmotions": "Emociones más frecuentes",
+      "avgEnergy": "Energía media",
+      "avgStress": "Estrés medio",
+      "avgSleep": "Sueño medio",
+      "allCheckIns": "Todos los registros",
+      "newCheckIn": "Nuevo registro",
+      "couldNotLoadYourMood": "No se pudo cargar tu historial de ánimo. Inténtalo de nuevo."
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "Eliminar entrada",
+      "type": "Tipo",
+      "needAPrompt": "¿Necesitas una idea?",
+      "titleOptional": "Título (opcional)",
+      "writeFreely": "Escribe con libertad...",
+      "tagsCommaSeparated": "Etiquetas, separadas por comas",
+      "aiInsight": "Perspectiva de IA",
+      "thisEntrySTextWould": "El texto de esta entrada se enviaría a la IA de Palm Setu para generar una perspectiva. Nunca se envía sin tu permiso explícito abajo, y cada solicitud exige marcarlo de nuevo.",
+      "iConsentToShareThis": "Acepto compartir el texto de esta entrada con la IA solo para esta solicitud",
+      "getAiInsight": "Obtener perspectiva de IA",
+      "couldNotSaveThisEntry": "No se pudo guardar esta entrada.",
+      "couldNotGetAnAi": "No se pudo obtener una perspectiva de IA ahora."
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "Cargando tiradas...",
+      "couldnTLoadSpreads": "No se pudieron cargar las tiradas",
+      "eachPositionHasItsOwn": "Cada posición tiene su propio significado: se muestra abajo cuando eliges una tirada.",
+      "secondPersonOptional": "SEGUNDA PERSONA (OPCIONAL)",
+      "addAFirstNameOr": "Añade un nombre de pila o apodo solo si quieres que la lectura se refiera a esa persona por su nombre en lugar de «Ella/Él». Nunca se guarda como cuenta, nunca se comparte con nadie y se elimina automáticamente si borras esta lectura. No recopilamos sus datos de nacimiento, contacto ni nada más sobre esa persona, y esta lectura nunca afirma conocer sus pensamientos o sentimientos privados reales, solo ofrece una reflexión simbólica tradicional.",
+      "eGAlexOptional": "p. ej. Alex (opcional)"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "Historial de lecturas",
+      "loading": "Cargando...",
+      "couldnTLoadHistory": "No se pudo cargar el historial",
+      "personalReadings": "Lecturas personales",
+      "yourPersonalDailyReadingsAre": "Tus lecturas diarias personales están disponibles hoy en la pantalla de inicio de Guía cósmica diaria y son privadas.",
+      "sharedRelationshipReadings": "Lecturas de relación compartidas",
+      "noPartnerConnected": "Ninguna pareja conectada",
+      "connectWithAPartnerTo": "Conecta con tu pareja para empezar a construir un historial de lecturas compartidas.",
+      "noSharedReadingsYet": "Aún no hay lecturas compartidas"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "Astrología",
+      "setUpYourBirthDetails": "Configura tus datos de nacimiento",
+      "addYourBirthDateAnd": "Añade tu fecha de nacimiento (y la hora, si la conoces) para recibir lecturas diarias personalizadas.",
+      "getStarted": "Empezar",
+      "couldnTLoadThisSection": "No se pudo cargar esta sección",
+      "retry": "Reintentar",
+      "vedicAstrology": "Astrología védica",
+      "generateYourKundliNorthIndia": "Genera tu kundli: estilos de carta del norte de la India, del sur de la India u occidental",
+      "soulEnergyReading": "Lectura de energía del alma",
+      "anAiGeneratedPersonalityReading": "Una lectura de personalidad generada por IA basada en tu carta real"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "¿Cambiar el sistema astrológico?",
+      "switchingBetweenVedicAndWestern": "Cambiar entre védico y occidental modifica tu signo, tu carta y tu guía diaria. Tus datos de nacimiento siguen igual, pero las interpretaciones se recalcularán.",
+      "changeSystem": "Cambiar sistema",
+      "yourBirthDetails": "Tus datos de nacimiento",
+      "usedOnlyForTraditionalAstrology": "Se usa solo para cálculos de astrología tradicional: interpretación reflexiva, no predicción científica. La hora y el lugar exactos de nacimiento cambian de forma notable tu signo lunar, nakshatra y tránsitos diarios, por eso los tres son necesarios para una lectura precisa.",
+      "astrologySystem": "SISTEMA ASTROLÓGICO",
+      "vedicSiderealAndWesternTropical": "Védica (sideral) y occidental (tropical) usan convenciones distintas y mostrarán signos y tránsitos diferentes para los mismos datos de nacimiento.",
+      "dateOfBirth": "FECHA DE NACIMIENTO",
+      "exactTimeOfBirth": "HORA EXACTA DE NACIMIENTO",
+      "checkYourBirthCertificateOr": "Revisa tu certificado de nacimiento o pregunta a tus padres si no estás seguro: incluso 30 minutos de diferencia pueden cambiar tu signo lunar cerca de un límite de signo.",
+      "birthplace": "LUGAR DE NACIMIENTO",
+      "chooseTheClosestMajorCity": "Elige la ciudad importante más cercana: así también se fija tu zona horaria de nacimiento para un cálculo preciso.",
+      "saveAndContinue": "Guardar y continuar",
+      "somethingWentWrongSavingYour": "Algo salió mal al guardar tu perfil."
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "Conectar con tu pareja",
+      "yourPartnerWillNeedTheir": "Tu pareja necesitará su propia cuenta. No se compartirá nada hasta que acepte explícitamente.",
+      "generateAnInvitation": "Generar una invitación",
+      "createACodeToShare": "Crea un código para compartir con tu pareja",
+      "enterACode": "Introducir un código",
+      "yourPartnerSharedACode": "Tu pareja compartió un código contigo",
+      "yourInvitationCode": "TU CÓDIGO DE INVITACIÓN",
+      "shareThisCodeDirectlyWith": "Comparte este código directamente con tu pareja. Quien lo tenga solo verá que es una invitación; no se expone ningún dato de nacimiento.",
+      "invitationCode": "CÓDIGO DE INVITACIÓN",
+      "eGY5ppbubg": "p. ej. Y5PPBUBG",
+      "whatYouLlBeSharing": "Qué compartirás",
+      "onceConnectedYouCanEach": "Una vez conectados, cada uno controla por separado qué se comparte: resultados de compatibilidad, lecturas diarias compartidas, detalles de la carta y notificaciones. Las entradas del diario y las lecturas diarias individuales siguen siendo privadas salvo que elijas compartirlas.",
+      "acceptInvitation": "Aceptar invitación",
+      "couldNotCreateAnInvitation": "No se pudo crear la invitación.",
+      "couldNotAcceptThisInvitation": "No se pudo aceptar esta invitación."
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "No se pudo cargar esta carta",
+      "back": "Atrás",
+      "planetaryDetails": "Detalles planetarios",
+      "planet": "PLANETA",
+      "degree": "GRADO",
+      "sign": "SIGNO",
+      "wholeSignHousesLahiriApproximation": "Casas de signo completo, ayanamsa aproximada de Lahiri. Solo nivel de mahadasha (sin subperiodos de antardasha)."
+    },
+    "KundliStyleScreen": {
+      "styleChart": "Estilo de carta",
+      "completeYourBirthDetails": "Completa tus datos de nacimiento",
+      "yourNameBirthDateAnd": "Se necesitan tu nombre, fecha y hora de nacimiento y lugar de nacimiento para calcular tu ascendente y casas.",
+      "addBirthDetails": "Añadir datos de nacimiento",
+      "upgrade": "Mejorar",
+      "chooseAChartStyleAnd": "Elige un estilo de carta y confirma los datos de nacimiento para generarla.",
+      "theirDetails": "SUS DATOS",
+      "name": "Nombre",
+      "birthDateYyyyMmDd": "Fecha de nacimiento (AAAA-MM-DD)",
+      "birthTimeHhMm24h": "Hora de nacimiento (HH:MM, 24 h)",
+      "generate": "Generar",
+      "selectBirthplace": "Seleccionar lugar de nacimiento",
+      "searchCityOrCountry": "Buscar ciudad o país",
+      "couldNotGenerateYourChart": "No se pudo generar tu carta. Inténtalo de nuevo."
+    },
+    "MoonSignScreen": {
+      "moonSign": "Signo lunar",
+      "addYourBirthDateAnd": "Añade tu fecha de nacimiento (y la hora, si la conoces) para ver tu signo lunar y nakshatra reales.",
+      "siderealVedic": "SIDERAL (VÉDICO)",
+      "nakshatra": "Nakshatra",
+      "westernTropical": "Occidental (tropical)",
+      "tropicalMoonSign": "Signo lunar tropical",
+      "todaySMoon": "La Luna de hoy",
+      "currentPosition": "Posición actual",
+      "lunarPhase": "Fase lunar",
+      "nextPhase": "Próxima fase",
+      "thisAppSEngineDoesn": "El motor de esta app no calcula actualmente eventos lunares futuros concretos (p. ej., cambios de nakshatra o eclipses) más allá de la estimación de la próxima fase de arriba, así que aquí no se inventa ninguno."
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "Las lecturas compartidas están desactivadas",
+      "ourDayAtAGlance": "Nuestro día de un vistazo",
+      "whatMayHelpToday": "Qué puede ayudar hoy",
+      "communicationGuidance": "Guía de comunicación",
+      "qualityTimeSuggestion": "Sugerencia de tiempo de calidad",
+      "aQuestionToAskEach": "Una pregunta para hacerse mutuamente",
+      "individualSupport": "Apoyo individual",
+      "thisReadingIsForReflection": "Esta lectura es para reflexionar, no un veredicto sobre tu relación. Nunca insinúa deshonestidad ni incompatibilidad, ni predice el futuro de tu relación."
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "No se pudieron cargar las relaciones",
+      "ourCosmicConnection": "Nuestra conexión cósmica",
+      "noPartnerConnectedYet": "Aún no hay pareja conectada",
+      "connectWithAPartnerTo": "Conecta con tu pareja para desbloquear una lectura diaria compartida, creada con pleno consentimiento y control de privacidad.",
+      "connected": "Conectado",
+      "viewTodaySSharedReading": "Ver la lectura compartida de hoy",
+      "readingHistory": "Historial de lecturas",
+      "privacySharing": "Privacidad y uso compartido",
+      "yourPersonalDailyReadingStays": "Tu lectura diaria personal es privada por defecto. La lectura compartida solo usa lo necesario para una reflexión conjunta: nunca tu diario ni tus conversaciones privadas con la IA.",
+      "disconnect": "Desconectar",
+      "disconnectFromYourPartner": "Desconectar de tu pareja",
+      "thisStopsFutureSharedReadings": "Esto detiene las futuras lecturas compartidas y notificaciones para ambos. Podrás volver a conectar más tarde con una nueva invitación."
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "Seleccionar perfil",
+      "myAstrology": "Mi astrología",
+      "free": "Gratis",
+      "otherPersonSAstrology": "Astrología de otra persona",
+      "premium": "Premium"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "Generando tu lectura...",
+      "setUpYourBirthDetails": "Configura primero tus datos de nacimiento",
+      "yourSoulEnergyReadingIs": "Tu lectura de energía del alma se basa en la misma carta natal que la Guía cósmica diaria.",
+      "setUpBirthDetails": "Configurar datos de nacimiento",
+      "couldnTGenerateThisReading": "No se pudo generar esta lectura",
+      "aiGeneratedGroundedInYour": "Generada por IA, basada en tu carta real de Sol/Luna.",
+      "basedOnSunAndMoon": "Basada solo en los signos del Sol y la Luna: tu ascendente no está disponible (requiere coordenadas de nacimiento exactas)."
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "Astrología occidental",
+      "addYourBirthDateAnd": "Añade tu fecha y lugar de nacimiento para obtener una lectura tropical de estilo occidental.",
+      "tropicalSunMoonAndTransits": "Sol, Luna y tránsitos tropicales, leídos a la manera occidental",
+      "todaySReading": "LECTURA DE HOY",
+      "stillPreparingTodaySReading": "Aún preparando la lectura de hoy...",
+      "openFullReading": "Abrir lectura completa",
+      "wantTheVedicSiderealView": "¿Prefieres la vista védica (sideral)? Abre Astrología o Signo lunar desde Inicio."
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "¿Qué tienes en mente?",
+      "optionalSelectAsManyAs": "Opcional: selecciona todas las que apliquen. Tu recomendación se basa en tu carta, no en tus metas.",
+      "generateMyGemstoneGuide": "Generar mi guía de piedras preciosas",
+      "somethingWentWrongGeneratingYour": "Algo salió mal al generar tu informe."
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "Informes de piedras preciosas",
+      "couldnTLoadReports": "No se pudieron cargar los informes",
+      "noReportsYet": "Aún no hay informes",
+      "yourGemstoneReportsWillAppear": "Tus informes de piedras preciosas aparecerán aquí."
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "Guía de piedras preciosas",
+      "yourGemstoneRecommendationUsesThe": "Tu recomendación de piedra usa la misma carta natal que la Guía cósmica diaria.",
+      "traditionalVedicGemstoneGuidanceBased": "Orientación tradicional védica sobre piedras preciosas basada en tu carta natal, para reflexionar; no es una prescripción científica.",
+      "yourPersonalGemstoneGuide": "Tu guía personal de piedras preciosas",
+      "discoverTheGemstoneTraditionallyAssociated": "Descubre la piedra tradicionalmente asociada al planeta regente de tu signo lunar, con pautas de uso, alternativas y una guía de compra.",
+      "getMyGemstoneGuide": "Obtener mi guía de piedras preciosas",
+      "recentReports": "Informes recientes",
+      "basedOnTheRashiMoon": "Basada en la convención de fortalecer al regente de la Rashi (signo lunar), una de varias tradiciones védicas documentadas. No realiza un análisis completo del ascendente ni de aflicciones planetarias."
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "No se pudo cargar este informe",
+      "noRecommendationAvailable": "No hay recomendación disponible",
+      "saved": "Guardado",
+      "whyThisGemstoneWasRecommended": "Por qué se recomendó esta piedra",
+      "wearingGuidanceCustomaryPractice": "Guía de uso (práctica habitual)",
+      "traditionalDay": "Día tradicional",
+      "traditionalFinger": "Dedo tradicional",
+      "traditionalMetal": "Metal tradicional",
+      "alternativeOption": "Opción alternativa",
+      "gemstoneBuyingGuide": "Guía de compra de piedras preciosas",
+      "thisAppDoesNotSell": "Esta app no vende piedras preciosas ni verifica vendedores: esta guía es solo educativa.",
+      "askAboutThisRecommendation": "Pregunta sobre esta recomendación...",
+      "deleteThisReport": "Eliminar este informe",
+      "thisPermanentlyDeletesTheGemstone": "Esto elimina el informe de piedras preciosas de forma permanente."
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "Horóscopos extendidos",
+      "deeperOutlooksBeyondTodayWeekly": "Perspectivas más profundas más allá de hoy, vistas semanales y mensuales, y más."
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "Horóscopos zodiacales",
+      "browseHoroscopesByZodiacSign": "Explora horóscopos por signo zodiacal, para cualquiera y en cualquier momento."
+    },
+    "NumerologyScreen": {
+      "numerology": "Numerología",
+      "yourMoolaankBirthNumberAnd": "Tu Moolaank (número de nacimiento) y Bhagyank (número del destino), explicados."
+    },
+    "MyReportsScreen": {
+      "myReports": "Mis informes",
+      "allYourPreviousReadingsAnd": "Todas tus lecturas e informes anteriores, en un solo lugar"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "Algo salió mal",
+      "thisUsuallyTakesUnderA": "Esto suele tardar menos de un minuto.",
+      "couldNotFinishYourSketch": "No se pudo terminar tu boceto. Inténtalo de nuevo: no se te cobrará otra vez.",
+      "couldNotGenerateYourSketch": "No se pudo generar tu boceto. Puedes reintentarlo sin pagar de nuevo."
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "Eliminar boceto",
+      "couldNotDeleteThisSketch": "No se pudo eliminar este boceto. Inténtalo de nuevo.",
+      "soulmateSketchHistory": "Historial de bocetos de alma gemela",
+      "noSketchesYet": "Aún no hay bocetos",
+      "yourPurchasedSoulmateSketchesWill": "Tus bocetos de alma gemela comprados aparecerán aquí.",
+      "createASketch": "Crear un boceto"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "Boceto de alma gemela",
+      "aMysteriousArtisticPortraitOf": "Un retrato misterioso y artístico del alma gemela que imagina tu corazón.",
+      "soulmateSketchIsEntertainmentAnd": "Boceto de alma gemela es entretenimiento y autorreflexión creativa: el retrato se elige de una colección ilustrativa de bocetos ficticios. Nunca es una persona real ni una predicción científica o garantizada de tu futura pareja.",
+      "yourFirstSoulmateSketchIs": "Tu primer boceto de alma gemela es gratis.",
+      "yourFreeSketchHasBeen": "Tu boceto gratuito ya se usó. Explora más bocetos premium abajo.",
+      "viewMyFreeSketch": "Ver mi boceto gratuito"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "Revisar y pagar",
+      "yourPreferences": "Tus preferencias",
+      "gender": "Género",
+      "ageRange": "Rango de edad",
+      "countryBackground": "País / origen",
+      "style": "Estilo",
+      "yourPaymentIsProcessedSecurely": "Tu pago se procesa de forma segura. La generación solo empieza tras verificar el pago: nunca se te cobra de nuevo si hay que reintentar la generación.",
+      "payAndGenerateMySketch": "Pagar y generar mi boceto",
+      "verifyingYourPayment": "Verificando tu pago...",
+      "paymentsAreNotYetAvailable": "Los pagos aún no están disponibles en este servidor. Inténtalo más tarde.",
+      "couldNotStartCheckoutPlease": "No se pudo iniciar el pago. Inténtalo de nuevo.",
+      "paymentVerificationFailedIfAn": "La verificación del pago falló. Si se descontó algún importe, se reembolsará.",
+      "paymentDidNotCompletePlease": "El pago no se completó. Inténtalo de nuevo."
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "Género preferido del alma gemela",
+      "preferredAgeRange": "Rango de edad preferido",
+      "preferredCountryOrCulturalBackground": "País o trasfondo cultural preferido",
+      "moreCountries": "Más países",
+      "preferredPortraitStyle": "Estilo de retrato preferido",
+      "couldNotStartYourFree": "No se pudo iniciar tu boceto gratuito. Inténtalo de nuevo."
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "Cargando tu boceto...",
+      "couldnTLoadThisSketch": "No se pudo cargar este boceto. Inténtalo de nuevo.",
+      "yourSoulmateSketch": "Tu boceto de alma gemela",
+      "preferences": "PREFERENCIAS",
+      "background": "Origen",
+      "personalityReflection": "REFLEXIÓN DE PERSONALIDAD",
+      "compatibilityTraits": "RASGOS DE COMPATIBILIDAD",
+      "thisPortraitAndReflectionAre": "Este retrato y esta reflexión son entretenimiento ficticio, elegidos de una colección ilustrativa de bocetos: no es una persona real ni una predicción factual o garantizada de tu futura pareja.",
+      "share": "Compartir",
+      "savedToMyReportsShared": "Guardado en Mis informes: las copias compartidas llevan una marca de agua de Palm Setu; tu original guardado nunca la lleva.",
+      "lovedYourFreeSketch": "¿Te encantó tu boceto gratuito?",
+      "exploreMorePortraitsAndStyles": "Explora más retratos y estilos: los bocetos premium empiezan a un precio pequeño, totalmente configurable por Palm Setu.",
+      "explorePremiumSketches": "Explorar bocetos premium",
+      "done": "Listo"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "¿Qué te gustaría explorar?",
+      "tarotHereIsATraditional": "Aquí el tarot es una práctica tradicional e interpretativa para reflexionar, no un método científicamente validado para predecir eventos futuros.",
+      "whatSOnYourMind": "¿Qué tienes en mente? (se mantiene privado salvo que elijas compartirlo)",
+      "chooseASpread": "Elige una tirada"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "Toca el mazo para extender las cartas",
+      "takeAMomentAndChoose": "Tómate un momento y elige tus cartas",
+      "seeMyReading": "Ver mi lectura",
+      "somethingWentWrongStartingYour": "Algo salió mal al iniciar tu lectura."
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "Buscar preguntas, cartas, informes...",
+      "savedOnly": "Solo guardadas",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "Revisa tu conexión e inténtalo de nuevo.",
+      "context": "CONTEXTO",
+      "advice": "CONSEJO",
+      "symbolism": "SIMBOLISMO",
+      "overallReflection": "REFLEXIÓN GENERAL",
+      "detailedAiReading": "LECTURA DETALLADA CON IA",
+      "practicalSuggestions": "SUGERENCIAS PRÁCTICAS",
+      "reflectionQuestions": "PREGUNTAS DE REFLEXIÓN",
+      "yourBirthChartPerspective": "TU PERSPECTIVA DE LA CARTA NATAL",
+      "goDeeperWithAi": "Profundiza con IA",
+      "exploreTheSymbolismOfYour": "Explora el simbolismo de las cartas elegidas, cómo se conectan y los temas sobre los que quizá quieras reflexionar.",
+      "followUpQuestionsAreA": "Las preguntas de seguimiento son una función Premium",
+      "askAnythingAboutThisSpecific": "Pregunta lo que quieras sobre esta lectura y recibe una respuesta basada en tus cartas reales.",
+      "upgradeToPremium": "Mejorar a Premium",
+      "tryAsking": "Prueba a preguntar:",
+      "thinking": "Pensando",
+      "askAboutThisReading": "Pregunta sobre esta lectura...",
+      "journalThisReading": "Anotar esta lectura en el diario",
+      "privateNotesNeverSharedUnless": "Notas privadas: nunca se comparten salvo que tú lo decidas",
+      "saveNote": "Guardar nota",
+      "saveThisReading": "Guardar esta lectura",
+      "createAFreeAccountTo": "Crea una cuenta gratis para guardar tu lectura de tarot y volver a sus ideas cuando quieras.",
+      "deleteThisReading": "Eliminar esta lectura",
+      "thisPermanentlyDeletesTheReading": "Esto elimina de forma permanente la lectura y las notas de diario asociadas.",
+      "couldNotGetAResponse": "No se pudo obtener una respuesta. Inténtalo de nuevo.",
+      "somethingWentWrongGeneratingYour": "Algo salió mal al generar tu lectura detallada."
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "No se pudieron cargar los detalles de la dirección.",
+      "vastuCompass": "Brújula Vastu",
+      "holdYourPhoneFlatAway": "Sostén el teléfono plano, lejos de metal y aparatos electrónicos, para una lectura más fiable.",
+      "checkingSensorAvailability": "Comprobando la disponibilidad del sensor...",
+      "locationPermissionIsNeededTo": "Se necesita permiso de ubicación para leer el rumbo de la brújula (nunca leemos ni guardamos tus coordenadas GPS, solo el rumbo). Selecciona manualmente tu dirección abajo o activa el permiso en los ajustes del dispositivo para usar la brújula en vivo.",
+      "aCompassSensorIsnT": "No hay sensor de brújula en este dispositivo o navegador. Selecciona manualmente tu dirección abajo.",
+      "lowAccuracyDetectedMoveAway": "Precisión baja detectada: aléjate de objetos metálicos o electrónicos y mueve el teléfono en forma de 8 para calibrar.",
+      "approximateReadingNotACalibrated": "Lectura aproximada, no un instrumento de topografía calibrado.",
+      "selectManuallyInstead": "Seleccionar manualmente",
+      "selectYourDirection": "SELECCIONA TU DIRECCIÓN",
+      "useLiveSensorInstead": "Usar el sensor en vivo",
+      "bestForHome": "MEJOR PARA EL HOGAR",
+      "noStrongTraditionalAssociation": "Sin una asociación tradicional fuerte",
+      "bestForWork": "MEJOR PARA EL TRABAJO",
+      "thisShowsADirectionNot": "Esto muestra una dirección, no una evaluación completa de la propiedad. Para una guía personalizada habitación por habitación, usa el análisis de propiedad."
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "Informes de Vastu",
+      "yourVastuReportsWillAppear": "Tus informes de Vastu aparecerán aquí."
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "Alinea tu espacio: orientación tradicional de direcciones para reflexionar, no una evaluación de propiedades validada científicamente.",
+      "openTheCompass": "Abrir la brújula",
+      "findYourCurrentFacingDirection": "Encuentra tu dirección actual con el sensor del dispositivo o selecciónala manualmente.",
+      "analyzeAProperty": "Analizar una propiedad",
+      "addRoomDirectionsForA": "Añade las direcciones de las habitaciones para un informe personalizado con sugerencias prácticas y de bajo costo.",
+      "analyzeAPropertyToSee": "Analiza una propiedad para ver aquí tu primer informe.",
+      "vastuIsATraditionalArchitectural": "Vastu es un sistema arquitectónico y de creencias culturales tradicional. Sus afirmaciones espirituales y de prosperidad no están científicamente establecidas, y ninguna dirección se presenta como causa de enfermedad, pérdida económica o problemas de pareja."
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "¿Quitar la dirección de la habitación?",
+      "remove": "Quitar",
+      "alreadyAdded": "Ya añadida",
+      "analyzeYourProperty": "Analiza tu propiedad",
+      "configureExactlyTheRoomsYour": "Configura exactamente las habitaciones de tu propiedad y luego indica la dirección real de cada una; puedes omitir las que no sepas.",
+      "propertyType": "TIPO DE PROPIEDAD",
+      "roomConfiguration": "CONFIGURACIÓN DE HABITACIONES",
+      "commonRooms": "HABITACIONES COMUNES",
+      "roomNameEGStudy": "Nombre de la habitación (p. ej. Estudio)",
+      "addRoom": "Añadir habitación",
+      "addAnotherRoom": "Añadir otra habitación",
+      "additionalDetailsOptional": "DETALLES ADICIONALES (OPCIONAL)",
+      "tellUsAnythingElseAbout": "Cuéntanos cualquier otra cosa sobre la distribución de tu propiedad...",
+      "generateMyReport": "Generar mi informe"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "RESUMEN DE LA PROPIEDAD",
+      "directionAnalysis": "Análisis de direcciones",
+      "suggestionsChecklist": "Lista de sugerencias",
+      "optionalCulturalPractice": "Práctica cultural opcional",
+      "vastuIsATraditionalArchitectural": "Vastu es un sistema arquitectónico y de creencias culturales tradicional. Sus afirmaciones espirituales y de prosperidad no están científicamente establecidas. Aquí ninguna dirección se presenta como causa de enfermedad, pérdida económica o problemas de pareja.",
+      "askAboutThisReport": "Pregunta sobre este informe...",
+      "thisPermanentlyDeletesTheVastu": "Esto elimina el informe de Vastu de forma permanente."
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "Un momento para reflexionar",
+      "thisPieceIsFromThe": "Este texto es del subconjunto opcional de la biblioteca con sabor astrológico.",
+      "couldNotLoadTodayS": "No se pudo cargar la afirmación de hoy."
+    },
+    "BreathingSessionScreen": {
+      "saving": "Guardando...",
+      "stop": "Detener"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "Respiración",
+      "chooseAGuidedBreathingTechnique": "Elige una técnica de respiración guiada.",
+      "noTechniquesAvailable": "No hay técnicas disponibles",
+      "pleaseTryAgainLater": "Inténtalo de nuevo más tarde.",
+      "couldNotLoadBreathingTechniques": "No se pudieron cargar las técnicas de respiración. Inténtalo de nuevo."
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "¿Reiniciar este reto?",
+      "thisWipesAllYourProgress": "Esto borra todo tu progreso en este reto y empieza de nuevo desde el día 1. No se puede deshacer.",
+      "restart": "Reiniciar",
+      "leaveThisChallenge": "¿Salir de este reto?",
+      "yourProgressIsKeptBut": "Tu progreso se conserva, pero ya no estará activo.",
+      "leave": "Salir",
+      "challengeCompleted": "Reto completado",
+      "dayByDayTasks": "Tareas día a día",
+      "couldNotLoadThisChallenge": "No se pudo cargar este reto.",
+      "couldNotJoinThisChallenge": "No se pudo unir a este reto.",
+      "couldNotMarkThisDay": "No se pudo marcar este día como completado.",
+      "couldNotRestartThisChallenge": "No se pudo reiniciar este reto.",
+      "couldNotLeaveThisChallenge": "No se pudo salir de este reto."
+    },
+    "ChallengesScreen": {
+      "challenges": "Retos",
+      "multiDayGuidedProgramsJoin": "Programas guiados de varios días: únete a uno y completa una tarea cada día a tu ritmo.",
+      "noChallengesAvailable": "No hay retos disponibles",
+      "couldNotLoadChallengesPlease": "No se pudieron cargar los retos. Inténtalo de nuevo."
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "¿Eliminar esta meta?",
+      "targetFrequency": "Frecuencia objetivo",
+      "save": "Guardar",
+      "completed": "Completada",
+      "logTodaySProgressUser": "Registrar el progreso de hoy (informado por ti)",
+      "optionalNoteAboutToday": "Nota opcional sobre hoy",
+      "logProgress": "Registrar progreso",
+      "markComplete": "Marcar como completada",
+      "userReportedHistory": "Historial informado por ti",
+      "noCheckInsLoggedYet": "Aún no hay registros.",
+      "userReported": "Informado por ti",
+      "deleteGoal": "Eliminar meta",
+      "couldNotLoadThisGoal": "No se pudo cargar esta meta.",
+      "couldNotLogProgress": "No se pudo registrar el progreso.",
+      "couldNotMarkGoalComplete": "No se pudo marcar la meta como completada.",
+      "couldNotDeleteThisGoal": "No se pudo eliminar esta meta.",
+      "couldNotUpdateThisGoal": "No se pudo actualizar esta meta."
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "Metas completadas",
+      "noCompletedGoalsYet": "Aún no hay metas completadas",
+      "goalsYouCompleteWillShow": "Las metas que completes aparecerán aquí.",
+      "couldNotLoadCompletedGoals": "No se pudieron cargar las metas completadas."
+    },
+    "GoalsScreen": {
+      "goals": "Metas",
+      "progressHereIsAlwaysWhat": "Aquí el progreso es siempre lo que tú informas: nada se mide automáticamente.",
+      "activeGoals": "Metas activas",
+      "noActiveGoalsYetAdd": "Aún no hay metas activas: añade una abajo.",
+      "newGoal": "Nueva meta",
+      "goalTitle": "Título de la meta",
+      "targetFrequencyOptionalEG": "Frecuencia objetivo (opcional), p. ej. 4 veces por semana",
+      "category": "Categoría",
+      "create": "Crear",
+      "couldNotLoadGoalsPlease": "No se pudieron cargar las metas. Inténtalo de nuevo.",
+      "couldNotCreateGoal": "No se pudo crear la meta."
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "Inspiración",
+      "browseTheFullLibraryOrganized": "Explora toda la biblioteca, organizada por tipo.",
+      "all": "Todo",
+      "favorites": "Favoritos",
+      "couldNotLoadTheInspiration": "No se pudo cargar la biblioteca de inspiración."
+    },
+    "JournalScreen": {
+      "journal": "Diario",
+      "newEntry": "Nueva entrada",
+      "searchEntries": "Buscar entradas",
+      "noJournalEntriesYetStart": "Aún no hay entradas en el diario. Empieza con una idea o escritura libre."
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "El audio de esta sesión llegará pronto. Tu sesión se sigue registrando y puedes marcarla como completada abajo.",
+      "sleepTimer": "Temporizador de sueño",
+      "markSessionComplete": "Marcar sesión como completada",
+      "couldNotLoadThisSession": "No se pudo cargar esta sesión.",
+      "thisSessionRequiresPalmSetu": "Esta sesión requiere Palm Setu Premium.",
+      "couldNotStartThisSession": "No se pudo iniciar esta sesión."
+    },
+    "MeditationScreen": {
+      "meditationSleep": "Meditación y sueño",
+      "guidedSessionsAndAmbientSounds": "Sesiones guiadas y sonidos ambientales, organizados según lo que necesitas ahora.",
+      "recentlyPlayed": "Reproducido recientemente",
+      "noContentAvailable": "No hay contenido disponible",
+      "couldNotLoadMeditationContent": "No se pudo cargar el contenido de meditación. Inténtalo de nuevo."
+    },
+    "DirectionSelectorModal": {
+      "direction": "DIRECCIÓN",
+      "chooseTheDirectionThisRoom": "Elige la dirección a la que realmente mira esta habitación en tu propiedad: nunca se adivina por ti.",
+      "iMNotSureSkip": "No estoy seguro, omitir por ahora"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "Pago seguro"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "SIGNIFICADO"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "Cómo funciona el tarot"
+    }
+  },
+  "errors": {
+    "network": "No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.",
+    "timeout": "Esto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo.",
+    "loadFailed": "No pudimos cargar esto. Revisa tu conexión e inténtalo de nuevo.",
+    "partialLoad": "No se pudo cargar parte del contenido.",
+    "retry": "Reintentar",
+    "tryAgain": "Intentar de nuevo",
+    "sessionExpired": "Tu sesión ha caducado. Inicia sesión de nuevo.",
+    "aiLimit": "Has alcanzado el límite de uso de IA de este mes. Se restablece al comenzar el próximo mes.",
+    "rateLimited": "Demasiadas solicitudes. Ve más despacio e inténtalo de nuevo en un momento.",
+    "generic": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "aiMeter": {
+    "used": "{{used}} de {{limit}}",
+    "left": "Quedan {{left}}. Se restablece el {{date}}.",
+    "low": "Queda poco: {{left}}. Se restablece el {{date}}.",
+    "exhausted": "Has usado tu cuota de IA de este mes. Se restablece el {{date}}."
+  },
+  "verifyEmail": {
+    "sentTo": "Enviamos un nuevo enlace a {{email}}. Ábrelo y vuelve aquí.",
+    "error": "No se pudo enviar el correo ahora. Inténtalo de nuevo.",
+    "prompt": "Confirma {{email}} para poder restablecer tu contraseña y mantener Premium seguro en tu cuenta.",
+    "send": "Enviar correo de verificación",
+    "sending": "Enviando...",
+    "again": "Enviar de nuevo"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "Lectura de palma avanzada",
+        "tagline": "Ve más allá de tu primer informe gratuito.",
+        "p1": "Informes de palma detallados ilimitados (el plan gratis incluye 1)",
+        "p2": "Preguntas de seguimiento con IA ilimitadas por lectura (el plan gratis incluye 2)",
+        "p3": "Todas las líneas y rasgos detectados desbloqueados, no uno a uno",
+        "p4": "Acceso completo a tu historial de informes guardados"
+      },
+      "tarot": {
+        "title": "Tarot Premium",
+        "tagline": "Todas las tiradas, no solo la de una carta.",
+        "p1": "Todas las tiradas premium: tres cartas, cinco cartas, cruz celta y más (el plan gratis incluye la de una carta)",
+        "p2": "Informes de tarot detallados con IA para cualquier lectura",
+        "p3": "Hasta 20 preguntas de seguimiento con IA al día",
+        "p4": "Historial completo de lecturas guardadas"
+      },
+      "compatibility": {
+        "title": "Amor y compatibilidad",
+        "tagline": "Lecturas pensadas para dos.",
+        "p1": "Tiradas de tarot de compatibilidad de pareja y de amor y relaciones",
+        "p2": "Compatibilidad astrológica con la carta de otra persona",
+        "p3": "Ideas personalizadas sobre relaciones basadas en tu perfil guardado"
+      },
+      "astrology": {
+        "title": "Biblioteca astrológica completa",
+        "tagline": "Védica y occidental, llevadas más lejos.",
+        "p1": "Generaciones ilimitadas de carta natal (Kundli) (el plan gratis incluye 1)",
+        "p2": "Genera la carta de otra persona para ver la compatibilidad",
+        "p3": "Acceso completo a los sistemas védico y occidental"
+      },
+      "ai": {
+        "title": "Experiencia de IA personalizada",
+        "tagline": "Más conversación, basada en tus propios datos.",
+        "p1": "Hasta 200 mensajes diarios con el Compañero IA (el plan gratis incluye 15)",
+        "p2": "Respuestas con contexto que usan tus lecturas y perfil guardados",
+        "p3": "Seguimientos con IA en los informes de tarot, palma y piedras preciosas"
+      },
+      "wellness": {
+        "title": "Autodescubrimiento y bienestar",
+        "tagline": "Espacio para construir de verdad una práctica.",
+        "p1": "Hábitos activos ilimitados (el plan gratis incluye 3)",
+        "p2": "Todas las técnicas de respiración y meditaciones guiadas desbloqueadas",
+        "p3": "Todos los retos de bienestar desbloqueados",
+        "p4": "Vista completa del historial de ánimo (el plan gratis muestra los últimos 7 días)",
+        "p5": "Más ideas de IA para el diario cada día (el plan gratis incluye 2)"
+      }
+    },
+    "compare": {
+      "freeHeader": "Gratis",
+      "premiumHeader": "Premium",
+      "palm": {
+        "label": "Informes de palma detallados",
+        "free": "1",
+        "premium": "Ilimitados"
+      },
+      "tarotSpreads": {
+        "label": "Tiradas de tarot",
+        "free": "Solo una carta",
+        "premium": "Todas las tiradas"
+      },
+      "tarotFollowups": {
+        "label": "Preguntas de seguimiento de tarot",
+        "free": "No incluido",
+        "premium": "Hasta 20/día"
+      },
+      "kundli": {
+        "label": "Generaciones de carta natal (Kundli)",
+        "free": "1",
+        "premium": "Ilimitadas"
+      },
+      "otherChart": {
+        "label": "Carta de otra persona / compatibilidad",
+        "free": "No incluido",
+        "premium": "Incluido"
+      },
+      "companion": {
+        "label": "Mensajes del Compañero IA",
+        "free": "15/día",
+        "premium": "200/día"
+      },
+      "habits": {
+        "label": "Hábitos de bienestar activos",
+        "free": "3",
+        "premium": "Ilimitados"
+      },
+      "moodHistory": {
+        "label": "Historial de ánimo",
+        "free": "7 días",
+        "premium": "Historial completo"
+      }
+    },
+    "period": {
+      "monthly": "/mes",
+      "quarterly": "/3 meses",
+      "annual": "/año"
+    },
+    "cta": {
+      "unlock": "Desbloquea Palm Setu Premium",
+      "continueWith": "Continuar con {{plan}}, {{price}}"
+    },
+    "badge": {
+      "bestValue": "MEJOR VALOR",
+      "popular": "ELECCIÓN POPULAR"
+    },
+    "perMonthEquivalent": "Equivale a {{price}}/mes",
+    "save": "Ahorra {{percent}}%",
+    "processing": "Procesando...",
+    "restoring": "Restaurando...",
+    "restore": "Restaurar compras",
+    "legal": "Las suscripciones se renuevan automáticamente salvo que se cancelen al menos 24 horas antes de que termine el periodo actual. Gestiona o cancela cuando quieras en los ajustes de tu cuenta de App Store o Play Store.",
+    "error": {
+      "unavailable": "Las compras no están disponibles ahora. No se cobró nada.",
+      "verifyEmail": "Primero verifica tu correo (mira la tarjeta en tu pantalla de Perfil) y vuelve para suscribirte.",
+      "planUnavailable": "Este plan no está disponible para comprar ahora. Inténtalo de nuevo en breve.",
+      "notActiveYet": "La compra se completó, pero Premium aún no está activo; prueba «Restaurar compras» en un momento.",
+      "purchaseFailed": "Algo salió mal con la compra. Si falló, no se cobró nada.",
+      "nothingToRestore": "No se encontró ninguna compra anterior para restaurar.",
+      "restoreFailed": "No se pudieron restaurar las compras ahora."
+    },
+    "intent": {
+      "createFirst": "Crea primero una cuenta gratis para que tu Premium funcione en todos tus dispositivos.",
+      "logInToRestore": "Inicia sesión para restaurar tu Premium en este dispositivo."
+    }
+  },
+  "streak": {
+    "dayStreak": "días seguidos",
+    "longest": "Récord: {{n}}",
+    "start": "Abre Palm Setu cada día para construir tu racha.",
+    "checkedIn": "Ya registraste hoy. Vuelve mañana para mantener la racha.",
+    "atRisk": "Abre la app hoy para mantener viva tu racha.",
+    "milestone": "{{n}} días seguidos. ¡Muy bien!",
+    "turnOnReminders": "Configurar recordatorios"
+  },
+  "notifications": {
+    "dailyReminders": "Recordatorios diarios",
+    "horoscopeReminder": "Horóscopo diario",
+    "streakReminder": "Recordatorio de racha",
+    "timeLabel": "Hora (HH:mm, 24 h)",
+    "invalidTime": "Usa una hora como 08:00.",
+    "unavailable": "Los recordatorios no están disponibles en esta versión de la app.",
+    "horoscopeTitle": "Tu horóscopo diario",
+    "horoscopeBody": "Tu lectura de hoy está lista.",
+    "streakTitle": "Mantén tu racha",
+    "streakBody": "Llevas una racha de {{count}} días. Abre Palm Setu hoy para mantenerla."
   }
 }

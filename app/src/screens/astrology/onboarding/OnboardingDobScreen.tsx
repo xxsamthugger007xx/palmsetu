@@ -1,3 +1,4 @@
+import { devWarn } from '../../../utils/log';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +12,9 @@ import { Button, IconButton } from '../../../components/Button';
 import { color, spacing } from '../../../theme/tokens';
 import { AstrologyOnboardingStackParamList } from '../../../navigation/AstrologyOnboardingStack';
 import { astrologyApi } from '../../../services/astrologyApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../../services/apiRequest';
 function formatDate(d: Date): string {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -23,6 +26,7 @@ function toDateString(d: Date): string {
 }
 
 export function OnboardingDobScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<AstrologyOnboardingStackParamList>>();
   const [date, setDate] = useState<Date | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -48,9 +52,10 @@ export function OnboardingDobScreen() {
     try {
       await astrologyApi.saveOnboardingDraft({ birthDate: toDateString(date) });
       navigation.navigate('OnboardingTob');
-    } catch (err: any) {
-      console.warn('[onboarding] failed to save birth date:', err);
-      setError(err?.isNetworkError ? 'Unable to connect. Check your connection and try again.' : (err?.message ?? 'Something went wrong. Please try again.'));
+    } catch (__err) {
+      const err = asApiError(__err);
+      devWarn('[onboarding] failed to save birth date:', err);
+      setError(err?.isNetworkError ? t('ui.OnboardingAstrologySystemScreen.unableToConnectCheckYour') : (err?.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry')));
     } finally {
       setSaving(false);
     }
@@ -63,10 +68,10 @@ export function OnboardingDobScreen() {
           <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         )}
       </View>
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 2 OF 5</Text>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>When were you born?</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.OnboardingDobScreen.step2Of5')}</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>{t('ui.OnboardingDobScreen.whenWereYouBorn')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Used only for traditional astrology calculations - reflective interpretation, not scientific prediction.
+        {t('ui.OnboardingDobScreen.usedOnlyForTraditionalAstrology')}
       </Text>
 
       <Card onPress={() => setShowPicker(true)} style={styles.selectorCard}>
@@ -91,7 +96,7 @@ export function OnboardingDobScreen() {
       )}
 
       <Button
-        label="Continue"
+        label={t('ui.OnboardingAstrologySystemScreen.continue')}
         fullWidth
         disabled={!date}
         loading={saving}

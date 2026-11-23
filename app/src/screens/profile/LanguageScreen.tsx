@@ -47,7 +47,7 @@ export function LanguageScreen() {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder={t('language.searchPlaceholder')}
+          placeholder={t('language.searchPlaceholder')} accessibilityLabel={t('language.searchPlaceholder')}
           placeholderTextColor={color.textMuted}
           style={styles.searchInput}
         />
@@ -69,7 +69,7 @@ export function LanguageScreen() {
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text variant="bodySm" weight="medium">{item.name}</Text>
                     {!translated && (
-                      <Text variant="caption" tone="muted" style={{ marginLeft: spacing.xs }}>(English UI)</Text>
+                      <Text variant="caption" tone="muted" style={{ marginLeft: spacing.xs }}>{t('ui.LanguageSelectScreen.englishUi')}</Text>
                     )}
                   </View>
                   <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{item.nativeName}</Text>

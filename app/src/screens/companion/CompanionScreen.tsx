@@ -3,16 +3,19 @@ import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View }
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft, Send, RotateCcw, Info } from 'lucide-react-native';
+import { ChevronLeft, Send, RotateCcw } from 'lucide-react-native';
 import { Text } from '../../components/Text';
 import { IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
+import { request } from '../../services/apiRequest';
+import { useTranslation } from 'react-i18next';
+
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 type Message = { id: string; role: 'user' | 'assistant'; text: string; failed?: boolean };
 
 const CRISIS_KEYWORDS = ['suicide', 'kill myself', 'end my life', 'hurt myself', 'self-harm'];
-const DEV_MODE = true; // TODO: flip once companion is wired to the real backend
 
 const initialMessages: Message[] = [
   { id: '1', role: 'assistant', text: "Hi, I'm here to help you reflect on your reading or anything on your mind. What would you like to talk about?" },
@@ -31,14 +34,16 @@ function containsCrisisLanguage(text: string) {
 }
 
 export function CompanionScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
 
   const send = (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim() || sending) return;
     const userMsg: Message = { id: Date.now().toString(), role: 'user', text };
 
     if (containsCrisisLanguage(text)) {
@@ -62,32 +67,30 @@ export function CompanionScreen() {
     setInput('');
     setSending(true);
 
-    // TODO: replace with api.sendCompanionMessage(conversationId, text, 'wellness')
-    setTimeout(() => {
-      setSending(false);
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString() + '-r', role: 'assistant', text: "Thanks for sharing that. What's one part of this that feels most present for you right now?" },
-      ]);
-    }, 700);
+    request<{ conversationId: string; reply: string }>(BASE_URL, '/companion/message', {
+      method: 'POST',
+      body: JSON.stringify({ conversationId, message: text, mode: 'palmistry' }),
+    })
+      .then((res) => {
+        setConversationId(res.conversationId);
+        setMessages((prev) => [...prev, { id: Date.now().toString() + '-r', role: 'assistant', text: res.reply }]);
+      })
+      .catch((err: Error) => {
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now().toString() + '-e', role: 'assistant', failed: true, text: err.message || 'Something went wrong. Please try again.' },
+        ]);
+      })
+      .finally(() => setSending(false));
   };
 
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">AI Companion</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.CompanionScreen.aiCompanion')}</Text>
         <View style={{ width: 36 }} />
       </View>
-
-      {DEV_MODE && (
-        <View style={styles.devBanner}>
-          <Info size={13} color={color.warning} strokeWidth={1.75} />
-          <Text variant="caption" style={{ color: color.warning, marginLeft: spacing.xs }}>
-            Development mode - responses are simulated, not from the live backend
-          </Text>
-        </View>
-      )}
 
       <FlatList
         data={messages}
@@ -114,7 +117,7 @@ export function CompanionScreen() {
         <TextInput
           value={input}
           onChangeText={setInput}
-          placeholder="Share what's on your mind..."
+          placeholder={t('ui.CompanionScreen.shareWhatSOnYour')} accessibilityLabel={t('ui.CompanionScreen.shareWhatSOnYour')}
           placeholderTextColor={color.textMuted}
           style={styles.input}
           multiline
@@ -122,7 +125,7 @@ export function CompanionScreen() {
         <IconButton icon={sending ? RotateCcw : Send} onPress={() => send(input)} tone={color.accent} />
       </View>
       <Text variant="caption" tone="muted" style={[styles.disclaimer, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
-        Your companion is an AI, not a licensed therapist. In a crisis, contact local emergency services.
+        {t('ui.CompanionScreen.yourCompanionIsAnAi')}
       </Text>
     </KeyboardAvoidingView>
   );
@@ -135,16 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
-  },
-  devBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.sm,
-    paddingVertical: 6,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radius.sm,
-    backgroundColor: color.warningMuted,
   },
   list: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, gap: spacing.sm },
   bubble: {

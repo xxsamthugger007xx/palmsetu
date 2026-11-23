@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { authApi, AccountPublic } from '../services/authApi';
-import { setAuthToken } from '../services/apiRequest';
+import { setAuthToken, setSessionInvalidHandler } from '../services/apiRequest';
 import { configurePurchases } from '../services/purchases';
 import { color } from '../theme/tokens';
 
@@ -75,6 +75,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // When the server rejects our token (expired, signed out from another place, account deleted, password reset),
+  // fall back to a fresh guest session instead of leaving every screen failing with 401s.
+  const recovering = useRef(false);
+  useEffect(() => {
+    setSessionInvalidHandler(async () => {
+      if (recovering.current) return;
+      recovering.current = true;
+      try {
+        const guest = await authApi.createGuestSession();
+        await SecureStore.setItemAsync(TOKEN_KEY, guest.token);
+        setAuthToken(guest.token);
+        setIsGuest(true);
+        setAccount(null);
+        configurePurchases(guest.guestId);
+      } catch {
+        // offline: the next request that hits 401 will retry
+      } finally {
+        recovering.current = false;
+      }
+    });
+    return () => setSessionInvalidHandler(null);
+  }, []);
+
   useEffect(() => {
     bootstrap();
   }, []);
@@ -84,6 +107,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthToken(result.token);
     setIsGuest(false);
     setAccount(result.account);
+    // Premium is attached to the account, so RevenueCat must now act as this account on this device.
+    configurePurchases(result.account.id);
   };
 
   const signUp = async (email: string, password: string, turnstileToken: string | undefined) => {
@@ -96,21 +121,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await applyAuthResult(result);
   };
 
-  const logOut = async () => {
-    await authApi.logOut().catch(() => {});
-    // Signing out returns to a fresh guest session, not a logged-out dead
-    // end - consistent with "guest first": there is always something
-    // usable behind every screen, logged in or not.
+  // Signing out returns to a fresh guest session, not a logged-out dead end - consistent with "guest first":
+  // there is always something usable behind every screen, logged in or not.
+  const resetToGuest = async () => {
     const guest = await authApi.createGuestSession();
     await SecureStore.setItemAsync(TOKEN_KEY, guest.token);
     setAuthToken(guest.token);
     setIsGuest(true);
     setAccount(null);
+    configurePurchases(guest.guestId);
+  };
+
+  const logOut = async () => {
+    await authApi.logOut().catch(() => {}); // revokes this device's token server-side; other devices stay signed in
+    await resetToGuest();
   };
 
   const deleteAccount = async () => {
-    await authApi.deleteAccount();
-    await logOut();
+    await authApi.deleteAccount(); // also revokes this session server-side, so there is nothing left to log out of
+    await resetToGuest();
   };
 
   return (

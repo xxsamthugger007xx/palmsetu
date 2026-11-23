@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
 import { ASTROLOGY_SYSTEM_PROMPT } from '../ai/astrologySystemPrompt';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
-import { computeNatalSummary, computeKundli, ENGINE_VERSION } from '../astrology/engine';
+import { computeNatalSummary, computeKundli, birthInstantUtc, ENGINE_VERSION } from '../astrology/engine';
 import { generateDailyHoroscope } from '../astrology/horoscopeService';
 import { generateSoulEnergyReading } from '../astrology/soulEnergyService';
 import { generateSharedReport } from '../relationships/relationshipReportService';
@@ -34,7 +34,7 @@ function summarizeHoroscope(h: DailyHoroscope): string {
  * and replaced with real session-derived identity before this ever ships - a client
  * must never be trusted to assert its own user ID in production.
  */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -115,7 +115,7 @@ function emptyDraft(userId: string): OnboardingDraft {
   };
 }
 
-function requireProfile(res: any, userId: string): BirthProfile | undefined {
+function requireProfile(res: Response, userId: string): BirthProfile | undefined {
   const profile = birthProfiles.get(userId);
   if (!profile) {
     res.status(400).json({ error: 'Birth profile not set up yet.', code: 'NO_PROFILE' });
@@ -134,7 +134,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
     const { birthDate, birthTime, birthPlace, latitude, longitude, preferredSystem, timezone } = parsed.data;
-    const natal = computeNatalSummary(birthDate, birthTime ?? null);
+    const natal = computeNatalSummary(birthDate, birthTime ?? null, timezone);
 
     const profile: BirthProfile = {
       userId,
@@ -510,12 +510,14 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     // re-asked from the user.
     latitude: z.number().min(-90).max(90).optional(),
     longitude: z.number().min(-180).max(180).optional(),
+    // IANA zone of the birthplace (for 'other'); 'self' uses the saved profile's timezone.
+    timezone: z.string().min(1).optional(),
   });
 
   router.get('/kundli/limits', (req, res) => {
     const userId = currentUserId(req);
     const tier = getUserTier(userId);
-    const count = [...kundliChartsById.values()].filter((c) => c.userId === userId).length;
+    const count = kundliChartsById.valuesForUser(userId).length;
     res.json({
       tier,
       canGenerateSelf: tier === 'premium' || count < MAX_KUNDLI_FREE,
@@ -535,6 +537,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     let birthTime: string;
     let latitude: number;
     let longitude: number;
+    let timezone: string | null = null;
     if (subject === 'self') {
       const profile = requireProfile(res, userId);
       if (!profile) return;
@@ -554,6 +557,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
       birthTime = profile.birthTime;
       latitude = profile.birthLatitude;
       longitude = profile.birthLongitude;
+      timezone = profile.timezone ?? null;
     } else {
       if (
         !parsed.data.birthDate || !parsed.data.birthTime || !parsed.data.subjectName
@@ -567,10 +571,11 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
       birthTime = parsed.data.birthTime;
       latitude = parsed.data.latitude;
       longitude = parsed.data.longitude;
+      timezone = parsed.data.timezone ?? null;
     }
 
     const tier = getUserTier(userId);
-    const existingCount = [...kundliChartsById.values()].filter((c) => c.userId === userId).length;
+    const existingCount = kundliChartsById.valuesForUser(userId).length;
 
     if (subject === 'other' && tier !== 'premium') {
       return res.status(403).json({
@@ -585,8 +590,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
       });
     }
 
-    const birthInstantUtc = new Date(`${birthDate}T${birthTime.length === 5 ? `${birthTime}:00` : birthTime}Z`);
-    const chartData = computeKundli({ date: birthInstantUtc, latitude, longitude });
+    const chartData = computeKundli({ date: birthInstantUtc(birthDate, birthTime, timezone), latitude, longitude });
 
     const chart: KundliChart = {
       id: uuid(),
@@ -619,8 +623,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
 
   router.get('/kundli', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...kundliChartsById.values()]
-      .filter((c) => c.userId === userId)
+    const items = kundliChartsById.valuesForUser(userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ items });
   });

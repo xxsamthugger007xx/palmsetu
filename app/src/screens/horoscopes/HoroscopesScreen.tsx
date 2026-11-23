@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sun } from 'lucide-react-native';
 import { ComingSoonScreen } from '../../components/ComingSoonScreen';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Browse-by-sign zodiac horoscopes (generic, not tied to the user's own
@@ -10,11 +11,12 @@ import { ComingSoonScreen } from '../../components/ComingSoonScreen';
  * placeholder never passes off personalized content as generic browsing.
  */
 export function HoroscopesScreen() {
+  const { t } = useTranslation();
   return (
     <ComingSoonScreen
       icon={Sun}
-      title="Zodiac Horoscopes"
-      description="Browse horoscopes by zodiac sign, for anyone, anytime."
+      title={t('ui.HoroscopesScreen.zodiacHoroscopes')}
+      description={t('ui.HoroscopesScreen.browseHoroscopesByZodiacSign')}
       note="General sign-by-sign horoscopes are planned but not built yet. In the meantime, your Daily Report gives you a personalized reading based on your own birth details."
     />
   );

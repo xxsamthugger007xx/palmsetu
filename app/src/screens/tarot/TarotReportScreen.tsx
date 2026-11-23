@@ -20,10 +20,13 @@ import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { TarotCard, TarotReading, formatSpreadLabel } from '../../types/tarot';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type LoadState = 'loading' | 'interpreting' | 'ready' | 'error';
 
 export function TarotReportScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TarotReport'>>();
   const { readingId } = route.params;
@@ -94,12 +97,13 @@ export function TarotReportScreen() {
         followupMessages: [...prev.followupMessages.slice(0, -1), { question, answer: res.answer, createdAt: new Date().toISOString() }],
       } : prev);
       if (typeof res.remainingToday === 'number') setRemainingToday(res.remainingToday);
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setReading((prev) => prev ? { ...prev, followupMessages: prev.followupMessages.slice(0, -1) } : prev);
       if (err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setFollowupError(err.message ?? 'Could not get a response. Please try again.');
+        setFollowupError(err.message ?? t('ui.TarotReportScreen.couldNotGetAResponse'));
       }
     } finally {
       setAskingFollowup(false);
@@ -138,11 +142,12 @@ export function TarotReportScreen() {
     try {
       const updated = await tarotApi.getDetailedReport(reading.id);
       setReading(updated);
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'PREMIUM_REQUIRED') {
         navigation.navigate('Paywall');
       } else {
-        setUnlockError(err.message ?? 'Something went wrong generating your detailed reading.');
+        setUnlockError(err.message ?? t('ui.TarotReportScreen.somethingWentWrongGeneratingYour'));
       }
     } finally {
       setUnlocking(false);
@@ -168,7 +173,7 @@ export function TarotReportScreen() {
   if (state === 'error' || !reading) {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this reading" description="Check your connection and try again." actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.DailyHoroscopeScreen.couldnTLoadThisReading')} description={t('ui.TarotReportScreen.checkYourConnectionAndTry')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
@@ -214,11 +219,11 @@ export function TarotReportScreen() {
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, textAlign: 'center' }}>
             {reading.interpretation.yesNo.traditionalBasis}
           </Text>
-          <Text variant="label" tone="muted" style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}>CONTEXT</Text>
+          <Text variant="label" tone="muted" style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}>{t('ui.TarotReportScreen.context')}</Text>
           <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, textAlign: 'left', alignSelf: 'stretch' }}>
             {reading.interpretation.yesNo.context}
           </Text>
-          <Text variant="label" tone="muted" style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}>ADVICE</Text>
+          <Text variant="label" tone="muted" style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}>{t('ui.TarotReportScreen.advice')}</Text>
           <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, textAlign: 'left', alignSelf: 'stretch' }}>
             {reading.interpretation.yesNo.advice}
           </Text>
@@ -252,7 +257,7 @@ export function TarotReportScreen() {
                   <Text variant="bodySm" tone="secondary">{interp?.text}</Text>
                   {card && (
                     <>
-                      <Text variant="label" tone="muted" style={{ marginTop: spacing.sm }}>SYMBOLISM</Text>
+                      <Text variant="label" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.TarotReportScreen.symbolism')}</Text>
                       <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{card.symbolism}</Text>
                     </>
                   )}
@@ -265,7 +270,7 @@ export function TarotReportScreen() {
 
       {!reading.interpretation?.yesNo && (
         <Card elevated style={{ marginTop: spacing.sm }}>
-          <Text variant="label" tone="accent">OVERALL REFLECTION</Text>
+          <Text variant="label" tone="accent">{t('ui.TarotReportScreen.overallReflection')}</Text>
           <Text variant="bodySm" style={{ marginTop: spacing.sm }}>{reading.interpretation?.overallInterpretation}</Text>
           {reading.interpretation?.reflectionPrompts.map((q) => (
             <Text key={q} variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>• {q}</Text>
@@ -277,7 +282,7 @@ export function TarotReportScreen() {
         <Card elevated style={{ marginTop: spacing.lg, borderColor: tarotColor.goldMuted }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Sparkles size={16} color={tarotColor.gold} strokeWidth={1.75} />
-            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>DETAILED AI READING</Text>
+            <Text variant="label" style={{ color: tarotColor.gold, marginLeft: spacing.xs }}>{t('ui.TarotReportScreen.detailedAiReading')}</Text>
           </View>
           <Text variant="bodySm" style={{ marginTop: spacing.sm }}>{reading.detailedReport.overallInterpretation}</Text>
 
@@ -293,14 +298,14 @@ export function TarotReportScreen() {
 
           {reading.detailedReport.practicalSuggestions && reading.detailedReport.practicalSuggestions.length > 0 && (
             <>
-              <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>PRACTICAL SUGGESTIONS</Text>
+              <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.TarotReportScreen.practicalSuggestions')}</Text>
               {reading.detailedReport.practicalSuggestions.map((s) => (
                 <Text key={s} variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>• {s}</Text>
               ))}
             </>
           )}
 
-          <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>REFLECTION QUESTIONS</Text>
+          <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.TarotReportScreen.reflectionQuestions')}</Text>
           {reading.detailedReport.reflectionPrompts.map((q) => (
             <Text key={q} variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>• {q}</Text>
           ))}
@@ -309,7 +314,7 @@ export function TarotReportScreen() {
             <View style={{ marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: color.borderSubtle }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Moon size={14} color={color.accent} strokeWidth={1.75} />
-                <Text variant="label" tone="accent" style={{ marginLeft: spacing.xs }}>YOUR BIRTH CHART PERSPECTIVE</Text>
+                <Text variant="label" tone="accent" style={{ marginLeft: spacing.xs }}>{t('ui.TarotReportScreen.yourBirthChartPerspective')}</Text>
               </View>
               <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>
                 {reading.detailedReport.birthChartPerspective}
@@ -320,10 +325,9 @@ export function TarotReportScreen() {
       ) : (
         <Card elevated style={{ marginTop: spacing.lg, alignItems: 'center', borderColor: tarotColor.goldMuted }}>
           <Lock size={20} color={tarotColor.gold} strokeWidth={1.75} />
-          <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.sm }}>Go Deeper With AI</Text>
+          <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.TarotReportScreen.goDeeperWithAi')}</Text>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' }}>
-            Explore the symbolism of your selected cards, how they connect, and the themes you may want to
-            reflect on.
+            {t('ui.TarotReportScreen.exploreTheSymbolismOfYour')}
           </Text>
           {unlockError && (
             <Text variant="caption" tone="danger" style={{ marginBottom: spacing.sm, textAlign: 'center' }}>{unlockError}</Text>
@@ -341,7 +345,7 @@ export function TarotReportScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MessageCircle size={16} color={tarotColor.gold} strokeWidth={1.75} />
-            <Text variant="subtitle" weight="semibold" style={{ marginLeft: spacing.xs }}>Ask about this reading</Text>
+            <Text variant="subtitle" weight="semibold" style={{ marginLeft: spacing.xs }}>{t('ui.PalmReportScreen.askAboutThisReading')}</Text>
           </View>
           {tier === 'premium' && remainingToday !== null && (
             <Text variant="caption" tone="muted">{remainingToday} left today</Text>
@@ -351,17 +355,17 @@ export function TarotReportScreen() {
         {tier !== 'premium' ? (
           <Card elevated style={{ marginTop: spacing.sm, alignItems: 'center', borderColor: tarotColor.goldMuted }}>
             <Lock size={18} color={tarotColor.gold} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>Follow-up questions are a Premium feature</Text>
+            <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.TarotReportScreen.followUpQuestionsAreA')}</Text>
             <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, marginBottom: spacing.md, textAlign: 'center' }}>
-              Ask anything about this specific reading and get an answer grounded in your actual cards.
+              {t('ui.TarotReportScreen.askAnythingAboutThisSpecific')}
             </Text>
-            <Button label="Upgrade to Premium" icon={Sparkles} onPress={() => navigation.navigate('Paywall')} />
+            <Button label={t('ui.TarotReportScreen.upgradeToPremium')} icon={Sparkles} onPress={() => navigation.navigate('Paywall')} />
           </Card>
         ) : (
           <>
             {reading.followupMessages.length === 0 && !askingFollowup ? (
               <View style={{ marginTop: spacing.sm }}>
-                <Text variant="caption" tone="muted">Try asking:</Text>
+                <Text variant="caption" tone="muted">{t('ui.TarotReportScreen.tryAsking')}</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
                   {SUGGESTED_FOLLOWUPS.map((q) => (
                     <Card key={q} style={styles.suggestionChip} onPress={() => setFollowupQuestion(q)}>
@@ -386,7 +390,7 @@ export function TarotReportScreen() {
                       </View>
                     ) : (
                       <View style={[styles.bubble, styles.bubbleAnswer, { flexDirection: 'row', alignItems: 'center' }]}>
-                        <Text variant="bodySm" tone="muted">Thinking</Text>
+                        <Text variant="bodySm" tone="muted">{t('ui.TarotReportScreen.thinking')}</Text>
                       </View>
                     )}
                   </View>
@@ -402,7 +406,7 @@ export function TarotReportScreen() {
               <TextInput
                 value={followupQuestion}
                 onChangeText={setFollowupQuestion}
-                placeholder="Ask about this reading..."
+                placeholder={t('ui.TarotReportScreen.askAboutThisReading')} accessibilityLabel={t('ui.TarotReportScreen.askAboutThisReading')}
                 placeholderTextColor={color.textMuted}
                 style={[styles.input, { flex: 1, marginTop: 0 }]}
                 editable={!askingFollowup}
@@ -416,32 +420,32 @@ export function TarotReportScreen() {
       <View style={{ marginTop: spacing.lg }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
           <NotebookPen size={16} color={color.textPrimary} strokeWidth={1.75} />
-          <Text variant="subtitle" weight="semibold" style={{ marginLeft: spacing.xs }}>Journal this reading</Text>
+          <Text variant="subtitle" weight="semibold" style={{ marginLeft: spacing.xs }}>{t('ui.TarotReportScreen.journalThisReading')}</Text>
         </View>
         <TextInput
           value={journalText}
           onChangeText={setJournalText}
-          placeholder="Private notes - never shared unless you choose to"
+          placeholder={t('ui.TarotReportScreen.privateNotesNeverSharedUnless')} accessibilityLabel={t('ui.TarotReportScreen.privateNotesNeverSharedUnless')}
           placeholderTextColor={color.textMuted}
           style={styles.input}
           multiline
         />
-        <Button label="Save note" variant="secondary" loading={savingJournal} style={{ marginTop: spacing.sm }} onPress={handleSaveJournal} />
+        <Button label={t('ui.TarotReportScreen.saveNote')} variant="secondary" loading={savingJournal} style={{ marginTop: spacing.sm }} onPress={handleSaveJournal} />
       </View>
 
       <View style={{ marginTop: spacing.lg }}>
         <SignUpPromptCard
           storageKey="tarot-report"
-          title="Save this reading"
-          description="Create a free account to save your tarot reading and revisit its insights whenever you need them."
+          title={t('ui.TarotReportScreen.saveThisReading')}
+          description={t('ui.TarotReportScreen.createAFreeAccountTo')}
         />
       </View>
 
       <ConfirmationModal
         visible={confirmDelete}
-        title="Delete this reading"
-        description="This permanently deletes the reading and any journal notes tied to it."
-        confirmLabel="Delete"
+        title={t('ui.TarotReportScreen.deleteThisReading')}
+        description={t('ui.TarotReportScreen.thisPermanentlyDeletesTheReading')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}

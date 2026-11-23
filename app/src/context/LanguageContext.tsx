@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DevSettings, I18nManager } from 'react-native';
+import * as Updates from 'expo-updates';
 import i18n from '../i18n';
+import { isRtlLanguage } from '../utils/rtl';
 import { LANGUAGES, SUPPORTED_TRANSLATION_CODES } from '../data/languages';
 
 const STORAGE_KEY = 'solune.languageCode';
@@ -16,6 +19,22 @@ interface LanguageContextValue {
 }
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
+
+/** Makes the app's layout direction match the language (Arabic = right-to-left). React Native only applies a changed
+ * direction after a full reload, so this reloads once when it differs; afterwards isRTL already matches and nothing
+ * happens. Returns true if a reload was triggered. */
+async function syncLayoutDirection(code: string): Promise<boolean> {
+  const rtl = isRtlLanguage(code);
+  if (I18nManager.isRTL === rtl) return false;
+  I18nManager.allowRTL(rtl);
+  I18nManager.forceRTL(rtl);
+  try {
+    await Updates.reloadAsync();
+  } catch {
+    try { DevSettings.reload(); } catch { /* the new direction applies the next time the app is opened */ }
+  }
+  return true;
+}
 
 function applyToI18n(code: string) {
   const effective = (SUPPORTED_TRANSLATION_CODES as readonly string[]).includes(code) ? code : DEFAULT_LANGUAGE;
@@ -33,6 +52,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         if (savedCode && LANGUAGES.some((l) => l.code === savedCode)) {
           setLanguageCodeState(savedCode);
           applyToI18n(savedCode);
+          syncLayoutDirection(savedCode).catch(() => {});
         }
         if (savedHasSelected === 'true') setHasSelectedLanguage(true);
       })
@@ -45,6 +65,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setHasSelectedLanguage(true);
     await AsyncStorage.setItem(STORAGE_KEY, code);
     await AsyncStorage.setItem(HAS_SELECTED_KEY, 'true');
+    await syncLayoutDirection(code); // e.g. switching to/from Arabic flips the whole layout (reloads once)
   };
 
   const isTranslated = (SUPPORTED_TRANSLATION_CODES as readonly string[]).includes(languageCode);

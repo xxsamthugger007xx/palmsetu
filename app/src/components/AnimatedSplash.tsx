@@ -100,7 +100,7 @@ export function AnimatedSplash({ ready, onFinished, children }: Props) {
               { opacity: iconOpacity, transform: [{ scale: iconScale }] },
             ]}
           >
-            <Image source={ICON} style={styles.icon} resizeMode="contain" />
+            <Image source={ICON} accessible={false} style={styles.icon} resizeMode="contain" />
             <Animated.View
               style={[styles.scanLine, { transform: [{ translateY: scanTranslate }] }]}
             />

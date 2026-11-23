@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { startSession, recordSessionEvent, endSession } from '../events/sessionTracker';
 
@@ -9,7 +9,7 @@ import { startSession, recordSessionEvent, endSession } from '../events/sessionT
  * guest id (req.auth.userId is always set, see auth/context.ts).
  */
 
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   return req.auth?.userId ?? 'demo-user';
 }
 

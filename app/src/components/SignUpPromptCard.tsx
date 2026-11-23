@@ -10,6 +10,7 @@ import { Button, IconButton } from './Button';
 import { color, radius, spacing } from '../theme/tokens';
 import { RootStackParamList } from '../navigation/types';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const DISMISS_PREFIX = 'solune.signupPromptDismissed.';
 
@@ -26,6 +27,7 @@ const DISMISS_PREFIX = 'solune.signupPromptDismissed.';
  * concrete examples this was designed around.
  */
 export function SignUpPromptCard({ storageKey, title, description }: { storageKey: string; title: string; description: string }) {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isGuest } = useAuth();
   const [dismissed, setDismissed] = useState(true); // default hidden until the async check resolves, to avoid a flash
@@ -62,14 +64,14 @@ export function SignUpPromptCard({ storageKey, title, description }: { storageKe
       <Text variant="caption" tone="secondary" style={{ marginTop: spacing.xs }}>{description}</Text>
       <View style={styles.actionRow}>
         <Button
-          label="Maybe later"
+          label={t('ui.SignUpPromptCard.maybeLater')}
           variant="ghost"
           size="sm"
           style={{ flex: 1 }}
           onPress={dismiss}
         />
         <Button
-          label="Create free account"
+          label={t('ui.SignUpPromptCard.createFreeAccount')}
           size="sm"
           style={{ flex: 1 }}
           onPress={() => navigation.navigate('Auth', { mode: 'signup', intent: description })}

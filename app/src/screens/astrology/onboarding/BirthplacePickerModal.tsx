@@ -7,6 +7,7 @@ import { Text } from '../../../components/Text';
 import { IconButton } from '../../../components/Button';
 import { color, radius, spacing } from '../../../theme/tokens';
 import { BIRTHPLACES, BirthplaceOption } from '../../../data/birthplaces';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Shared birthplace search/pick UI, extracted out of
@@ -25,6 +26,7 @@ export function BirthplacePickerModal({
   onClose: () => void;
   onSelect: (place: BirthplaceOption) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -37,7 +39,7 @@ export function BirthplacePickerModal({
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <PageContainer scroll={false}>
         <View style={styles.header}>
-          <Text variant="bodySm" weight="semibold">Select birthplace</Text>
+          <Text variant="bodySm" weight="semibold">{t('ui.KundliStyleScreen.selectBirthplace')}</Text>
           <IconButton icon={X} onPress={onClose} />
         </View>
 
@@ -46,7 +48,7 @@ export function BirthplacePickerModal({
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Search city or country"
+            placeholder={t('ui.KundliStyleScreen.searchCityOrCountry')} accessibilityLabel={t('ui.KundliStyleScreen.searchCityOrCountry')}
             placeholderTextColor={color.textMuted}
             style={styles.searchInput}
             autoFocus

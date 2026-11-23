@@ -12,8 +12,10 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { vastuApi } from '../../services/vastuApi';
 import { VastuReport } from '../../types/vastu';
+import { useTranslation } from 'react-i18next';
 
 export function VastuHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [items, setItems] = useState<VastuReport[]>([]);
@@ -35,14 +37,14 @@ export function VastuHistoryScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Vastu Reports</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.VastuHistoryScreen.vastuReports')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
-      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>}
-      {state === 'error' && <EmptyState icon={Info} title="Couldn't load reports" actionLabel="Retry" onAction={load} />}
+      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      {state === 'error' && <EmptyState icon={Info} title={t('ui.GemstoneHistoryScreen.couldnTLoadReports')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />}
       {state === 'ready' && items.length === 0 && (
-        <EmptyState icon={Home} title="No reports yet" description="Your Vastu reports will appear here." />
+        <EmptyState icon={Home} title={t('ui.GemstoneHistoryScreen.noReportsYet')} description={t('ui.VastuHistoryScreen.yourVastuReportsWillAppear')} />
       )}
 
       {state === 'ready' && items.map((r) => (

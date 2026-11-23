@@ -1,11 +1,10 @@
+import { tr } from '../../utils/tr';
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import {
-  ChevronLeft, Building2, Home, Store, Briefcase, HelpCircle, Plus, Minus, Pencil, X, Check,
-} from 'lucide-react-native';
+import { ChevronLeft, Plus, Pencil, X, Check } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -15,63 +14,15 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { roomCategoryColor, roomCategoryMutedBg, roomCategoryBorder } from '../../theme/vastuTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { vastuApi } from '../../services/vastuApi';
-import { PropertyRoom, PropertyType, RoomCategory } from '../../types/vastu';
+import { PropertyRoom, PropertyType } from '../../types/vastu';
+import { useTranslation } from 'react-i18next';
 
-const propertyTypes: { id: PropertyType; label: string; icon: typeof Home }[] = [
-  { id: 'apartment', label: 'Apartment', icon: Building2 },
-  { id: 'independent-house', label: 'House', icon: Home },
-  { id: 'office', label: 'Office', icon: Briefcase },
-  { id: 'shop', label: 'Shop', icon: Store },
-  { id: 'other', label: 'Other', icon: HelpCircle },
-];
-
-const COUNT_OPTIONS = [0, 1, 2, 3, 4, 5, 6];
-
-const COMMON_ROOMS: { category: RoomCategory; roomId: string; defaultName: string }[] = [
-  { category: 'entrance', roomId: 'entrance-1', defaultName: 'Main Entrance' },
-  { category: 'livingRoom', roomId: 'livingRoom-1', defaultName: 'Living Room' },
-  { category: 'kitchen', roomId: 'kitchen-1', defaultName: 'Kitchen' },
-  { category: 'prayerRoom', roomId: 'prayerRoom-1', defaultName: 'Prayer / Meditation Room' },
-];
-
-const CUSTOM_ROOM_SUGGESTIONS = [
-  'Study Room', 'Balcony', 'Dining Room', 'Store Room', 'Pooja Room', 'Garage', 'Staircase', 'Garden', 'Office Room', 'Utility Room',
-];
-
-function defaultBedroomName(index: number): string {
-  return index === 1 ? 'Master Bedroom' : `Bedroom ${index}`;
-}
-function defaultBathroomName(index: number): string {
-  return `Bathroom ${index}`;
-}
-
-/** Rebuilds the bedroom/bathroom slice of `rooms` for a new count, keeping
- * every room that still fits (same roomId -> same direction/name preserved)
- * and only ever adding/removing from the end - never reassigning an
- * existing room's direction to a different index. */
-function resizeCountedRooms(
-  rooms: PropertyRoom[],
-  category: 'bedroom' | 'bathroom',
-  newCount: number,
-  defaultName: (i: number) => string,
-): PropertyRoom[] {
-  const prefix = category;
-  const others = rooms.filter((r) => r.category !== category);
-  const existing = rooms.filter((r) => r.category === category);
-  const next: PropertyRoom[] = [];
-  for (let i = 1; i <= newCount; i++) {
-    const roomId = `${prefix}-${i}`;
-    const found = existing.find((r) => r.roomId === roomId);
-    next.push(found ?? { roomId, category, name: defaultName(i), direction: null });
-  }
-  return [...others, ...next];
-}
-
-function countedRoomsLoseData(rooms: PropertyRoom[], category: 'bedroom' | 'bathroom', newCount: number): boolean {
-  return rooms.some((r) => r.category === category && Number(r.roomId.split('-')[1]) > newCount && r.direction);
-}
-
+import { asApiError } from '../../services/apiRequest';
+import { PropertyTypePicker } from './PropertyTypePicker';
+import { CommonRoomsCard } from './CommonRoomsCard';
+import { COUNT_OPTIONS, COMMON_ROOMS, CUSTOM_ROOM_SUGGESTIONS, defaultBedroomName, defaultBathroomName, resizeCountedRooms, countedRoomsLoseData } from './vastuRooms';
 export function VastuPropertyFormScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [propertyType, setPropertyType] = useState<PropertyType>('apartment');
   const [bedroomCount, setBedroomCount] = useState(1);
@@ -103,11 +54,11 @@ export function VastuPropertyFormScreen() {
 
     if (countedRoomsLoseData(rooms, category, newCount)) {
       Alert.alert(
-        'Remove room direction?',
+        t('ui.VastuPropertyFormScreen.removeRoomDirection'),
         `Reducing the number of ${category}s will remove the direction you already set for one of them. Continue?`,
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Remove', style: 'destructive', onPress: doResize },
+          { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
+          { text: t('ui.VastuPropertyFormScreen.remove'), style: 'destructive', onPress: doResize },
         ],
       );
     } else {
@@ -129,7 +80,7 @@ export function VastuPropertyFormScreen() {
     if (!name) return;
     const alreadyExists = rooms.some((r) => r.category === 'custom' && r.name.toLowerCase() === name.toLowerCase());
     if (alreadyExists) {
-      Alert.alert('Already added', `You already have a room named "${name}".`);
+      Alert.alert(t('ui.VastuPropertyFormScreen.alreadyAdded'), `You already have a room named "${name}".`);
       return;
     }
     const roomId = `custom-${Date.now()}-${Math.round(Math.random() * 1000)}`;
@@ -151,8 +102,9 @@ export function VastuPropertyFormScreen() {
       const property = await vastuApi.createProperty(propertyType, bedroomCount, bathroomCount, rooms, notes.trim() || null);
       const report = await vastuApi.generateReport(property.id);
       navigation.replace('VastuReport', { reportId: report.id });
-    } catch (err: any) {
-      setError(err.message ?? 'Something went wrong generating your report.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err.message ?? t('ui.GemstoneGoalScreen.somethingWentWrongGeneratingYour'));
     } finally {
       setLoading(false);
     }
@@ -166,7 +118,7 @@ export function VastuPropertyFormScreen() {
           const selected = count === n;
           const accent = roomCategoryColor[category];
           return (
-            <Pressable
+            <Pressable accessibilityRole="button"
               key={n}
               onPress={() => applyCountChange(category, n)}
               style={[
@@ -197,12 +149,13 @@ export function VastuPropertyFormScreen() {
             <View style={styles.renameRow}>
               <TextInput
                 value={renameDraft}
+                accessibilityLabel={tr('a11y.renameField')}
                 onChangeText={setRenameDraft}
                 autoFocus
                 style={[styles.renameInput, { color: color.textPrimary }]}
                 placeholderTextColor={color.textMuted}
               />
-              <Pressable
+              <Pressable accessibilityRole="button"
                 onPress={() => {
                   const name = renameDraft.trim();
                   if (name) setRooms((prev) => prev.map((r) => (r.roomId === room.roomId ? { ...r, name } : r)));
@@ -214,7 +167,7 @@ export function VastuPropertyFormScreen() {
               </Pressable>
             </View>
           ) : (
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={() => {
                 setRenamingRoomId(room.roomId);
                 setRenameDraft(room.name);
@@ -227,14 +180,14 @@ export function VastuPropertyFormScreen() {
           )}
         </View>
 
-        <Pressable onPress={() => setActiveDirectionRoomId(room.roomId)} style={[styles.directionChip, { borderColor: accent }]}>
+        <Pressable accessibilityRole="button" onPress={() => setActiveDirectionRoomId(room.roomId)} style={[styles.directionChip, { borderColor: accent }]}>
           <Text variant="caption" weight="semibold" style={{ color: room.direction ? accent : color.textMuted }}>
             {room.direction ? DIRECTION_LABELS[room.direction] : 'Set direction'}
           </Text>
         </Pressable>
 
         {onRemove && (
-          <Pressable onPress={onRemove} hitSlop={8} style={{ marginLeft: spacing.xs }}>
+          <Pressable accessibilityRole="button" onPress={onRemove} hitSlop={8} style={{ marginLeft: spacing.xs }}>
             <X size={14} color={color.textMuted} strokeWidth={1.75} />
           </Pressable>
         )}
@@ -252,36 +205,16 @@ export function VastuPropertyFormScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Analyze your property</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.VastuPropertyFormScreen.analyzeYourProperty')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Configure exactly the rooms your property has, then set each one's real direction - you can skip any
-        you're unsure of.
+        {t('ui.VastuPropertyFormScreen.configureExactlyTheRoomsYour')}
       </Text>
 
       {/* A. Property type */}
-      <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>PROPERTY TYPE</Text>
-      <View style={styles.typeGrid}>
-        {propertyTypes.map((t) => {
-          const isSelected = propertyType === t.id;
-          return (
-            <Card
-              key={t.id}
-              elevated={isSelected}
-              style={[styles.typeCard, isSelected && styles.typeCardSelected]}
-              onPress={() => {
-                Haptics.selectionAsync().catch(() => {});
-                setPropertyType(t.id);
-              }}
-            >
-              <t.icon size={16} color={color.accent} strokeWidth={1.75} />
-              <Text variant="caption" weight={isSelected ? 'semibold' : 'regular'} style={{ marginTop: 4 }}>{t.label}</Text>
-            </Card>
-          );
-        })}
-      </View>
+      <PropertyTypePicker value={propertyType} onSelect={setPropertyType} />
 
       {/* B. Room configuration */}
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>ROOM CONFIGURATION</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.VastuPropertyFormScreen.roomConfiguration')}</Text>
       <Card>
         {renderCountStepper('How many bedrooms does your property have?', bedroomCount, 'bedroom')}
         {renderCountStepper('How many bathrooms does your property have?', bathroomCount, 'bathroom')}
@@ -299,25 +232,8 @@ export function VastuPropertyFormScreen() {
       )}
 
       {/* C. Common rooms */}
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>COMMON ROOMS</Text>
-      <Card padded={false}>
-        {COMMON_ROOMS.map((def, i) => {
-          const included = rooms.some((r) => r.roomId === def.roomId);
-          return (
-            <Pressable
-              key={def.roomId}
-              onPress={() => toggleCommonRoom(def)}
-              style={[styles.commonRoomRow, i < COMMON_ROOMS.length - 1 && styles.commonRoomDivider]}
-            >
-              <View style={[styles.categoryDot, { backgroundColor: roomCategoryColor[def.category] }]} />
-              <Text variant="bodySm" style={{ flex: 1, marginLeft: spacing.sm }}>{def.defaultName}</Text>
-              <View style={[styles.toggle, included && { backgroundColor: roomCategoryColor[def.category] }]}>
-                {included && <Check size={11} color={color.bg} strokeWidth={3} />}
-              </View>
-            </Pressable>
-          );
-        })}
-      </Card>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.VastuPropertyFormScreen.commonRooms')}</Text>
+      <CommonRoomsCard rooms={rooms} onToggle={toggleCommonRoom} />
 
       {rooms.filter((r) => COMMON_ROOMS.some((d) => d.roomId === r.roomId)).length > 0 && (
         <View style={{ marginTop: spacing.sm }}>
@@ -337,27 +253,27 @@ export function VastuPropertyFormScreen() {
           <TextInput
             value={customRoomName}
             onChangeText={setCustomRoomName}
-            placeholder="Room name (e.g. Study Room)"
+            placeholder={t('ui.VastuPropertyFormScreen.roomNameEGStudy')} accessibilityLabel={t('ui.VastuPropertyFormScreen.roomNameEGStudy')}
             placeholderTextColor={color.textMuted}
             style={styles.customInput}
             autoFocus
           />
           <View style={styles.suggestionWrap}>
             {CUSTOM_ROOM_SUGGESTIONS.map((s) => (
-              <Pressable key={s} onPress={() => setCustomRoomName(s)} style={styles.suggestionChip}>
+              <Pressable accessibilityRole="button" key={s} onPress={() => setCustomRoomName(s)} style={styles.suggestionChip}>
                 <Text variant="caption" tone="secondary">{s}</Text>
               </Pressable>
             ))}
           </View>
           <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
-            <Button label="Cancel" variant="ghost" onPress={() => { setAddingCustomRoom(false); setCustomRoomName(''); }} style={{ flex: 1 }} />
-            <Button label="Add room" onPress={addCustomRoom} style={{ flex: 1 }} />
+            <Button label={t('ui.AssistantHistoryScreen.cancel')} variant="ghost" onPress={() => { setAddingCustomRoom(false); setCustomRoomName(''); }} style={{ flex: 1 }} />
+            <Button label={t('ui.VastuPropertyFormScreen.addRoom')} onPress={addCustomRoom} style={{ flex: 1 }} />
           </View>
         </Card>
       ) : (
-        <Pressable onPress={() => setAddingCustomRoom(true)} style={styles.addRoomRow}>
+        <Pressable accessibilityRole="button" onPress={() => setAddingCustomRoom(true)} style={styles.addRoomRow}>
           <Plus size={15} color={color.accent} strokeWidth={2} />
-          <Text variant="bodySm" tone="accent" style={{ marginLeft: spacing.xs }}>Add Another Room</Text>
+          <Text variant="bodySm" tone="accent" style={{ marginLeft: spacing.xs }}>{t('ui.VastuPropertyFormScreen.addAnotherRoom')}</Text>
         </Pressable>
       )}
 
@@ -370,11 +286,11 @@ export function VastuPropertyFormScreen() {
       </Card>
 
       {/* E. Notes */}
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>ADDITIONAL DETAILS (OPTIONAL)</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.VastuPropertyFormScreen.additionalDetailsOptional')}</Text>
       <TextInput
         value={notes}
         onChangeText={setNotes}
-        placeholder="Tell us anything else about your property layout..."
+        placeholder={t('ui.VastuPropertyFormScreen.tellUsAnythingElseAbout')} accessibilityLabel={t('ui.VastuPropertyFormScreen.tellUsAnythingElseAbout')}
         placeholderTextColor={color.textMuted}
         style={styles.input}
         multiline
@@ -387,7 +303,7 @@ export function VastuPropertyFormScreen() {
       )}
 
       <Button
-        label="Generate my report"
+        label={t('ui.VastuPropertyFormScreen.generateMyReport')}
         fullWidth
         loading={loading}
         disabled={completedCount === 0}
@@ -418,9 +334,6 @@ export function VastuPropertyFormScreen() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row' },
-  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  typeCard: { width: '30%', alignItems: 'center', paddingVertical: spacing.sm },
-  typeCardSelected: { borderColor: color.accentBorder },
   stepperRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   stepperPill: {
     width: 38,
@@ -452,26 +365,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 6,
-  },
-  commonRoomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  commonRoomDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: color.borderSubtle,
-  },
-  categoryDot: { width: 8, height: 8, borderRadius: 4 },
-  toggle: {
-    width: 22,
-    height: 22,
-    borderRadius: radius.pill,
-    borderWidth: 1.5,
-    borderColor: color.border,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   addRoomRow: {
     flexDirection: 'row',

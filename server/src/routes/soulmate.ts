@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { SoulmateSketch } from '../types/soulmate';
@@ -23,7 +23,7 @@ import { recordEvent } from '../events/eventTracker';
 /** Same TEMPORARY testing shim as every other route in this app - prefers
  * the real resolved auth context, falls back to the legacy header only for
  * a bare test harness. See auth/middleware.ts's attachAuthContext. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   if (req.auth?.userId) return req.auth.userId;
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
@@ -46,7 +46,7 @@ const verifyPaymentSchema = z.object({
   razorpaySignature: z.string().min(1),
 });
 
-function ownedSketch(req: any, id: string): SoulmateSketch | null {
+function ownedSketch(req: Request, id: string): SoulmateSketch | null {
   const sketch = soulmateSketchesById.get(id);
   if (!sketch || sketch.userId !== currentUserId(req)) return null;
   return sketch;
@@ -220,7 +220,7 @@ export function buildSoulmateRouter() {
 
   router.post('/webhook', (req, res) => {
     const signature = req.headers['x-razorpay-signature'] as string | undefined;
-    const rawBody: Buffer | undefined = (req as any).rawBody;
+    const rawBody: Buffer | undefined = req.rawBody;
     if (!signature || !rawBody || !verifyWebhookSignature(rawBody.toString('utf8'), signature)) {
       return res.status(400).json({ error: 'Invalid webhook signature' });
     }
@@ -308,8 +308,7 @@ export function buildSoulmateRouter() {
 
   router.get('/sketches', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...soulmateSketchesById.values()]
-      .filter((s) => s.userId === userId)
+    const items = soulmateSketchesById.valuesForUser(userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ items });
   });

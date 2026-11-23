@@ -1,3 +1,4 @@
+import { journalDay } from '../types/wellness';
 import {
   moodEntriesByUserDate, journalEntriesById, discoveryAnswersByKey, habitCompletionsByKey,
   breathingSessionsById, meditationSessionsById, wellnessGoalsById,
@@ -34,8 +35,8 @@ function weekDates(weekStart: string): string[] {
 }
 
 function userMoodEntriesInRange(userId: string, from: string, to: string): MoodEntry[] {
-  return [...moodEntriesByUserDate.values()]
-    .filter((e) => e.userId === userId && e.localDate >= from && e.localDate <= to)
+  return moodEntriesByUserDate.valuesForUser(userId)
+    .filter((e) => e.localDate >= from && e.localDate <= to)
     .sort((a, b) => a.localDate.localeCompare(b.localDate));
 }
 
@@ -95,8 +96,8 @@ export function computeWeeklyReport(userId: string, weekStart: string): WeeklyRe
   const gratitudeExcerpts = answers
     .filter((a) => findDiscoveryQuestion(a.questionId)?.category === 'gratitude' && typeof a.value === 'string' && (a.value as string).trim().length > 0)
     .map((a) => (a.value as string).trim());
-  const favoritedJournal = [...journalEntriesById.values()]
-    .filter((j) => j.userId === userId && j.favorite && !j.deletedAt && j.createdAt.slice(0, 10) >= weekStart && j.createdAt.slice(0, 10) <= weekEnd)
+  const favoritedJournal = journalEntriesById.valuesForUser(userId)
+    .filter((j) => j.favorite && !j.deletedAt && journalDay(j) >= weekStart && journalDay(j) <= weekEnd)
     .map((j) => j.content.slice(0, 280));
   const positiveMoments = [...gratitudeExcerpts, ...favoritedJournal];
 
@@ -188,12 +189,12 @@ export function computeMonthlyReport(userId: string, month: string): MonthlyRepo
     moodTrend = diff > 0.3 ? 'improving' : diff < -0.3 ? 'declining' : 'steady';
   }
 
-  const breathing = [...breathingSessionsById.values()].filter((s) => s.userId === userId && s.completed && s.createdAt.slice(0, 10) >= from && s.createdAt.slice(0, 10) <= to).length;
-  const meditation = [...meditationSessionsById.values()].filter((s) => s.userId === userId && s.completed && s.startedAt.slice(0, 10) >= from && s.startedAt.slice(0, 10) <= to).length;
-  const habitCompletions = [...habitCompletionsByKey.values()].filter((c) => c.userId === userId && c.localDate >= from && c.localDate <= to).length;
+  const breathing = breathingSessionsById.valuesForUser(userId).filter((s) => s.completed && s.createdAt.slice(0, 10) >= from && s.createdAt.slice(0, 10) <= to).length;
+  const meditation = meditationSessionsById.valuesForUser(userId).filter((s) => s.completed && s.startedAt.slice(0, 10) >= from && s.startedAt.slice(0, 10) <= to).length;
+  const habitCompletions = habitCompletionsByKey.valuesForUser(userId).filter((c) => c.localDate >= from && c.localDate <= to).length;
   const activitiesCompleted = breathing + meditation + habitCompletions;
 
-  const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId && a.localDate >= from && a.localDate <= to && !a.skipped);
+  const answers = discoveryAnswersByKey.valuesForUser(userId).filter((a) => a.localDate >= from && a.localDate <= to && !a.skipped);
   const influenceCounts = new Map<string, number>();
   for (const a of answers) {
     const q = findDiscoveryQuestion(a.questionId);
@@ -202,8 +203,8 @@ export function computeMonthlyReport(userId: string, month: string): MonthlyRepo
   }
   const topMoodInfluenceThemes = [...influenceCounts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count).slice(0, 5);
 
-  const journalEntryCount = [...journalEntriesById.values()].filter((j) => j.userId === userId && !j.deletedAt && !j.isDraft && j.createdAt.slice(0, 10) >= from && j.createdAt.slice(0, 10) <= to).length;
-  const goalsCompleted = [...wellnessGoalsById.values()].filter((g) => g.userId === userId && g.status === 'completed' && g.completedAt && g.completedAt.slice(0, 10) >= from && g.completedAt.slice(0, 10) <= to).length;
+  const journalEntryCount = journalEntriesById.valuesForUser(userId).filter((j) => !j.deletedAt && !j.isDraft && journalDay(j) >= from && journalDay(j) <= to).length;
+  const goalsCompleted = wellnessGoalsById.valuesForUser(userId).filter((g) => g.status === 'completed' && g.completedAt && g.completedAt.slice(0, 10) >= from && g.completedAt.slice(0, 10) <= to).length;
 
   return {
     userId,

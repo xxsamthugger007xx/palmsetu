@@ -9,6 +9,7 @@ import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 const steps = [
   { icon: ScanEye, title: 'Capture', description: 'Photograph your palm in good lighting' },
@@ -17,6 +18,7 @@ const steps = [
 ];
 
 export function PalmIntroScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PalmIntro'>>();
   const allowRescan = route.params?.allowRescan;
@@ -27,11 +29,9 @@ export function PalmIntroScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.md }}>Before you begin</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.PalmIntroScreen.beforeYouBegin')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>
-        Your reading is generated from traditional palmistry interpretations applied to the lines and
-        regions visible in your photo. It's designed for entertainment and self-reflection - not as a
-        scientific, medical, or predictive assessment.
+        {t('ui.PalmIntroScreen.yourReadingIsGeneratedFrom')}
       </Text>
 
       {steps.map((step, i) => (
@@ -50,14 +50,12 @@ export function PalmIntroScreen() {
         <View style={styles.row}>
           <ShieldCheck size={16} color={color.secondary} strokeWidth={1.75} />
           <Text variant="caption" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-            We never use your palm photo to diagnose a health condition, and never promise guaranteed
-            outcomes about wealth, relationships, or lifespan. Your photo is processed securely and you
-            can delete it at any time.
+            {t('ui.PalmIntroScreen.weNeverUseYourPalm')}
           </Text>
         </View>
       </Card>
 
-      <Button label="Continue" fullWidth onPress={() => navigation.navigate('PalmCapture', { allowRescan })} />
+      <Button label={t('ui.OnboardingAstrologySystemScreen.continue')} fullWidth onPress={() => navigation.navigate('PalmCapture', { allowRescan })} />
     </PageContainer>
   );
 }

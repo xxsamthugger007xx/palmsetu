@@ -13,6 +13,7 @@ import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { ReadingCategory, TarotReading, formatSpreadLabel } from '../../types/tarot';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 10;
 
@@ -25,6 +26,7 @@ const CATEGORY_FILTERS: { id: ReadingCategory | 'all'; label: string }[] = [
 ];
 
 export function TarotHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<TarotReading[]>([]);
   const [page, setPage] = useState(1);
@@ -72,7 +74,7 @@ export function TarotHistoryScreen() {
     <PageContainer onRefresh={() => load(page, savedOnly, category, search)}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Reading History</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.AstrologyHistoryScreen.readingHistory')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
@@ -81,7 +83,7 @@ export function TarotHistoryScreen() {
         <TextInput
           value={searchInput}
           onChangeText={handleSearchChange}
-          placeholder="Search questions, cards, reports..."
+          placeholder={t('ui.TarotHistoryScreen.searchQuestionsCardsReports')} accessibilityLabel={t('ui.TarotHistoryScreen.searchQuestionsCardsReports')}
           placeholderTextColor={color.textMuted}
           style={styles.searchInput}
         />
@@ -98,7 +100,7 @@ export function TarotHistoryScreen() {
         >
           <Bookmark size={13} color={savedOnly ? tarotColor.gold : color.textMuted} strokeWidth={2} />
           <Text variant="caption" weight="semibold" style={{ marginLeft: spacing.xs, color: savedOnly ? tarotColor.gold : color.textSecondary }}>
-            Saved only
+            {t('ui.TarotHistoryScreen.savedOnly')}
           </Text>
         </Card>
       </View>
@@ -120,11 +122,11 @@ export function TarotHistoryScreen() {
       </ScrollView>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       )}
 
       {state === 'error' && (
-        <EmptyState icon={Info} title="Couldn't load history" actionLabel="Retry" onAction={() => load(page, savedOnly, category, search)} />
+        <EmptyState icon={Info} title={t('ui.AstrologyHistoryScreen.couldnTLoadHistory')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={() => load(page, savedOnly, category, search)} />
       )}
 
       {state === 'ready' && items.length === 0 && (
@@ -158,9 +160,9 @@ export function TarotHistoryScreen() {
 
       {state === 'ready' && items.length > 0 && (
         <View style={styles.pagination}>
-          <Button label="Previous" variant="secondary" size="sm" disabled={!hasPrev} onPress={() => load(page - 1, savedOnly, category, search)} />
+          <Button label={t('ui.TarotHistoryScreen.previous')} variant="secondary" size="sm" disabled={!hasPrev} onPress={() => load(page - 1, savedOnly, category, search)} />
           <Text variant="caption" tone="muted">Page {page}</Text>
-          <Button label="Next" variant="secondary" size="sm" disabled={!hasNext} onPress={() => load(page + 1, savedOnly, category, search)} />
+          <Button label={t('ui.TarotHistoryScreen.next')} variant="secondary" size="sm" disabled={!hasNext} onPress={() => load(page + 1, savedOnly, category, search)} />
         </View>
       )}
     </PageContainer>

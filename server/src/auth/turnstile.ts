@@ -20,6 +20,9 @@ export async function verifyTurnstileToken(token: string | undefined, remoteIp?:
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
   if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      return { ok: false, reason: 'Bot verification is not configured' };
+    }
     if (!warnedMissingSecret) {
       console.warn('[auth/turnstile] TURNSTILE_SECRET_KEY is not set - skipping bot-check verification. This is only acceptable in local development.');
       warnedMissingSecret = true;

@@ -7,3 +7,4 @@ dist/
 # excluded the entire src/data module from every commit, which is why it
 # was missing from GitHub entirely.
 /data/
+compare-ai-report.md

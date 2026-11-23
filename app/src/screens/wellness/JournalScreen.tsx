@@ -11,8 +11,10 @@ import { Button } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, JournalEntry } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
 export function JournalScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [entries, setEntries] = React.useState<JournalEntry[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -40,8 +42,8 @@ export function JournalScreen() {
   return (
     <PageContainer onRefresh={loadJournalData}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm, marginBottom: spacing.lg }}>
-        <Text variant="display" weight="semibold">Journal</Text>
-        <Button label="New entry" icon={Plus} size="sm" onPress={() => navigation.navigate('JournalEditor', {})} />
+        <Text variant="display" weight="semibold">{t('ui.JournalScreen.journal')}</Text>
+        <Button label={t('ui.JournalScreen.newEntry')} icon={Plus} size="sm" onPress={() => navigation.navigate('JournalEditor', {})} />
       </View>
 
       {streak && (
@@ -63,18 +65,18 @@ export function JournalScreen() {
           value={query}
           onChangeText={setQuery}
           onSubmitEditing={load}
-          placeholder="Search entries"
+          placeholder={t('ui.JournalScreen.searchEntries')} accessibilityLabel={t('ui.JournalScreen.searchEntries')}
           placeholderTextColor={color.textMuted}
           style={{ flex: 1, marginLeft: spacing.sm, color: color.textPrimary }}
         />
-        <Pressable onPress={() => setFavoriteOnly((v) => !v)} hitSlop={8}>
+        <Pressable accessibilityRole="button" onPress={() => setFavoriteOnly((v) => !v)} hitSlop={8}>
           <Star size={16} color={favoriteOnly ? color.accent : color.textMuted} strokeWidth={1.75} fill={favoriteOnly ? color.accent : 'transparent'} />
         </Pressable>
       </Card>
 
       {!loading && entries.length === 0 && (
         <Card>
-          <Text variant="bodySm" tone="secondary">No journal entries yet. Start with a prompt or free write.</Text>
+          <Text variant="bodySm" tone="secondary">{t('ui.JournalScreen.noJournalEntriesYetStart')}</Text>
         </Card>
       )}
 

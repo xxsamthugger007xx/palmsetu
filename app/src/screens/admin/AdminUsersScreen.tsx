@@ -46,7 +46,7 @@ export function AdminUsersScreen() {
       <TextInput
         value={search}
         onChangeText={(v) => { setSearch(v); setPage(1); }}
-        placeholder="Search by userId..."
+        placeholder="Search by userId..." accessibilityLabel="Search by userId..."
         placeholderTextColor={color.textMuted}
         autoCapitalize="none"
         style={styles.input}

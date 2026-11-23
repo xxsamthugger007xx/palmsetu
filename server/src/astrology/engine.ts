@@ -218,6 +218,34 @@ export interface NatalSummary {
   confidenceNote: string;
 }
 
+
+/**
+ * Converts a local wall-clock birth date/time in an IANA timezone to the real UTC
+ * instant. Without a timezone it falls back to treating the wall-clock time as UTC
+ * (the legacy behavior), which shifts the Moon/ascendant by the zone's UTC offset.
+ */
+export function birthInstantUtc(birthDate: string, birthTime: string | null, timeZone?: string | null): Date {
+  const time = birthTime ? (birthTime.length === 5 ? `${birthTime}:00` : birthTime) : '12:00:00';
+  const asUtc = new Date(`${birthDate}T${time}Z`);
+  if (!birthTime || !timeZone) return asUtc;
+  try {
+    const offsetAt = (instant: Date): number => {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      }).formatToParts(instant);
+      const g = (t: string) => Number(parts.find((p) => p.type === t)!.value);
+      return Date.UTC(g('year'), g('month') - 1, g('day'), g('hour'), g('minute'), g('second')) - instant.getTime();
+    };
+    // Two passes handle zones whose offset differs between the guess and the real instant (DST).
+    let utc = new Date(asUtc.getTime() - offsetAt(asUtc));
+    utc = new Date(asUtc.getTime() - offsetAt(utc));
+    return utc;
+  } catch {
+    return asUtc; // unknown timezone id
+  }
+}
+
 /**
  * Computes a natal summary from a birth date (+ optional time). Without a known
  * birth time, the Moon's position (which moves ~13°/day) is evaluated at UTC noon
@@ -225,9 +253,8 @@ export interface NatalSummary {
  * exact. Rising sign/houses are not computed here (would require birth location +
  * a house system, out of scope for this pass) and are explicitly reported absent.
  */
-export function computeNatalSummary(birthDate: string, birthTime: string | null): NatalSummary {
-  const iso = birthTime ? `${birthDate}T${birthTime}Z` : `${birthDate}T12:00:00Z`;
-  const date = new Date(iso);
+export function computeNatalSummary(birthDate: string, birthTime: string | null, timeZone?: string | null): NatalSummary {
+  const date = birthInstantUtc(birthDate, birthTime, timeZone);
 
   const sunElon = sunLongitude(date);
   const moonElon = moonLongitude(date);
@@ -301,8 +328,10 @@ export function ascendantLongitudeTropical(date: Date, latitudeDeg: number, long
   const ramc = (lst * Math.PI) / 180;
   const eps = (obliquityDegrees(date) * Math.PI) / 180;
   const lat = (latitudeDeg * Math.PI) / 180;
-  const y = -Math.cos(ramc);
-  const x = Math.sin(ramc) * Math.cos(eps) + Math.tan(lat) * Math.sin(eps);
+  // Standard formula: ASC = atan2(cos RAMC, -(sin RAMC * cos eps + tan lat * sin eps)).
+  // (The previous sign convention returned the Descendant, i.e. exactly 180 degrees off.)
+  const y = Math.cos(ramc);
+  const x = -(Math.sin(ramc) * Math.cos(eps) + Math.tan(lat) * Math.sin(eps));
   const asc = (Math.atan2(y, x) * 180) / Math.PI;
   return normalizeDegrees(asc);
 }

@@ -14,7 +14,9 @@ import { astrologyApi } from '../../services/astrologyApi';
 import { AstrologySystem } from '../../types/astrology';
 import { BirthplaceOption } from '../../data/birthplaces';
 import { BirthplacePickerModal } from './onboarding/BirthplacePickerModal';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 function formatDate(d: Date): string {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -34,6 +36,7 @@ function toTimeString(d: Date): string {
 }
 
 export function AstrologyProfileSetupScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AstrologyProfileSetup'>>();
   const returnTo = route.params?.returnTo;
@@ -106,11 +109,11 @@ export function AstrologyProfileSetupScreen() {
     // PalmHistoryScreen's delete confirmation).
     if (returnTo === 'profile' && originalSystem && originalSystem !== system) {
       Alert.alert(
-        'Change astrology system?',
-        'Switching between Vedic and Western changes your sign, chart and daily guidance. Your birth details stay the same, but interpretations will be recalculated.',
+        t('ui.AstrologyProfileSetupScreen.changeAstrologySystem'),
+        t('ui.AstrologyProfileSetupScreen.switchingBetweenVedicAndWestern'),
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Change system', style: 'destructive', onPress: () => void doSave() },
+          { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
+          { text: t('ui.AstrologyProfileSetupScreen.changeSystem'), style: 'destructive', onPress: () => void doSave() },
         ],
       );
       return;
@@ -142,7 +145,8 @@ export function AstrologyProfileSetupScreen() {
       } else {
         navigation.replace('AstrologyLanding');
       }
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       // err.isNetworkError (set by services/apiRequest.ts) distinguishes a
       // request that never reached the server (wrong/stale IP, server
       // down, no connectivity) from a reached-but-rejecting server (e.g.
@@ -151,7 +155,7 @@ export function AstrologyProfileSetupScreen() {
       // reach the user verbatim. Either way, the form fields entered
       // above are untouched: this catch never resets birthDate/birthTime/
       // birthplace/system state, so retrying does not require re-entry.
-      setError(err?.isNetworkError ? err.message : (err.message ?? 'Something went wrong saving your profile.'));
+      setError(err?.isNetworkError ? err.message : (err.message ?? t('ui.AstrologyProfileSetupScreen.somethingWentWrongSavingYour')));
     } finally {
       setSaving(false);
     }
@@ -168,14 +172,12 @@ export function AstrologyProfileSetupScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Your birth details</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.AstrologyProfileSetupScreen.yourBirthDetails')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Used only for traditional astrology calculations - reflective interpretation, not scientific
-        prediction. Exact birth time and place meaningfully change your Moon sign, nakshatra and daily
-        transits, so all three are required for an accurate reading.
+        {t('ui.AstrologyProfileSetupScreen.usedOnlyForTraditionalAstrology')}
       </Text>
 
-      <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>ASTROLOGY SYSTEM</Text>
+      <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>{t('ui.AstrologyProfileSetupScreen.astrologySystem')}</Text>
       <View style={styles.systemRow}>
         {(['western', 'vedic'] as AstrologySystem[]).map((s) => (
           <Button
@@ -189,11 +191,10 @@ export function AstrologyProfileSetupScreen() {
         ))}
       </View>
       <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-        Vedic (sidereal) and Western (tropical) use different conventions and will show different sign
-        and transit results for the same birth details.
+        {t('ui.AstrologyProfileSetupScreen.vedicSiderealAndWesternTropical')}
       </Text>
 
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>DATE OF BIRTH</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.AstrologyProfileSetupScreen.dateOfBirth')}</Text>
       <Card onPress={() => setShowDatePicker(true)} style={styles.selectorCard}>
         <Calendar size={16} color={color.accent} strokeWidth={1.75} />
         <Text variant="bodySm" tone={birthDate ? 'primary' : 'muted'} style={{ marginLeft: spacing.sm }}>
@@ -211,7 +212,7 @@ export function AstrologyProfileSetupScreen() {
         />
       )}
 
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>EXACT TIME OF BIRTH</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.AstrologyProfileSetupScreen.exactTimeOfBirth')}</Text>
       <Card onPress={() => setShowTimePicker(true)} style={styles.selectorCard}>
         <Clock size={16} color={color.accent} strokeWidth={1.75} />
         <Text variant="bodySm" tone={birthTime ? 'primary' : 'muted'} style={{ marginLeft: spacing.sm }}>
@@ -219,8 +220,7 @@ export function AstrologyProfileSetupScreen() {
         </Text>
       </Card>
       <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-        Check your birth certificate or ask a parent if unsure - even a 30-minute difference can shift
-        your Moon sign near a sign boundary.
+        {t('ui.AstrologyProfileSetupScreen.checkYourBirthCertificateOr')}
       </Text>
       {showTimePicker && (
         <DateTimePicker
@@ -232,7 +232,7 @@ export function AstrologyProfileSetupScreen() {
         />
       )}
 
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>BIRTHPLACE</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.AstrologyProfileSetupScreen.birthplace')}</Text>
       <Card onPress={() => setShowPlacePicker(true)} style={styles.selectorCard}>
         <MapPin size={16} color={color.accent} strokeWidth={1.75} />
         <Text variant="bodySm" tone={birthplace ? 'primary' : 'muted'} style={{ marginLeft: spacing.sm }}>
@@ -240,7 +240,7 @@ export function AstrologyProfileSetupScreen() {
         </Text>
       </Card>
       <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-        Choose the closest major city - this also sets your birth time zone for accurate calculation.
+        {t('ui.AstrologyProfileSetupScreen.chooseTheClosestMajorCity')}
       </Text>
 
       {error && (
@@ -250,7 +250,7 @@ export function AstrologyProfileSetupScreen() {
       )}
 
       <Button
-        label="Save and continue"
+        label={t('ui.AstrologyProfileSetupScreen.saveAndContinue')}
         fullWidth
         disabled={!canContinue}
         loading={saving}

@@ -33,7 +33,7 @@ export const readingsById = new SqliteMap<string, PalmReading>('readings', {
  * pre-existing users are not treated as profile-less just because of the
  * schema change. */
 export function primaryReadingFor(userId: string): PalmReading | undefined {
-  const mine = [...readingsById.values()].filter((r) => r.userId === userId);
+  const mine = readingsById.valuesForUser(userId);
   if (mine.length === 0) return undefined;
   return mine.find((r) => r.isPrimary) ?? mine.sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
 }
@@ -103,7 +103,7 @@ export function unlockPalmSection(readingId: string, userId: string, section: st
  * used for the free-tier per-user section-unlock quota, same shape as
  * premiumReportsUsedBy() in routes/palm.ts. */
 export function sectionUnlocksUsedBy(userId: string): number {
-  return [...palmSectionUnlocks.values()].filter((v) => v.userId === userId).length;
+  return palmSectionUnlocks.valuesForUser(userId).length;
 }
 
 export interface MoodCheckIn {
@@ -188,7 +188,7 @@ export const userIdentities = new SqliteMap<string, UserIdentity>('userIdentitie
 // any real calculation/grounding path, only onboarding-resume logic).
 export const onboardingDrafts = new SqliteMap<string, OnboardingDraft>('onboardingDrafts');
 // key: `${userId}:${localDate}:${system}`
-export const dailyHoroscopesByKey = new SqliteMap<string, DailyHoroscope>('dailyHoroscopes');
+export const dailyHoroscopesByKey = new SqliteMap<string, DailyHoroscope>('dailyHoroscopes', { userId: (v) => v.userId });
 export const astrologyFollowupCounts = new SqliteMap<string, number>('astrologyFollowupCounts'); // key: horoscopeId
 
 export const partnerInvitations = new SqliteMap<string, PartnerInvitation>('partnerInvitations');
@@ -204,7 +204,7 @@ export const kundliChartsById = new SqliteMap<string, KundliChart>('kundliCharts
   userId: (v) => v.userId, createdAt: (v) => v.createdAt,
 });
 // AI soul-energy personality readings, keyed by userId:localDate (one per day, like dailyHoroscopesByKey).
-export const soulEnergyReadingsByKey = new SqliteMap<string, SoulEnergyReading>('soulEnergyReadings');
+export const soulEnergyReadingsByKey = new SqliteMap<string, SoulEnergyReading>('soulEnergyReadings', { userId: (v) => v.userId });
 
 /** Gemstone recommendation domain state - see note above. */
 export const gemstoneReportsById = new SqliteMap<string, GemstoneReport>('gemstoneReports', {
@@ -213,8 +213,9 @@ export const gemstoneReportsById = new SqliteMap<string, GemstoneReport>('gemsto
 export const gemstoneFollowupCounts = new SqliteMap<string, number>('gemstoneFollowupCounts'); // key: reportId
 
 /** Vastu Compass domain state - see note above. */
-export const vastuPropertiesById = new SqliteMap<string, PropertyProfile>('vastuProperties');
+export const vastuPropertiesById = new SqliteMap<string, PropertyProfile>('vastuProperties', { userId: (v) => v.userId });
 export const vastuReportsById = new SqliteMap<string, VastuReport>('vastuReports', {
+  userId: (v) => v.userId,
   createdAt: (v) => v.createdAt,
 });
 export const vastuFollowupCounts = new SqliteMap<string, number>('vastuFollowupCounts'); // key: reportId
@@ -307,7 +308,7 @@ export interface AssistantUsageLogEntry {
   generationMs?: number;
   mode?: 'fast' | 'deep_analysis' | 'premium_report' | null;
 }
-export const assistantUsageLog: AssistantUsageLogEntry[] = persistentArray<AssistantUsageLogEntry>('assistantUsageLog');
+export const assistantUsageLog: AssistantUsageLogEntry[] = persistentArray<AssistantUsageLogEntry>('assistantUsageLog', { maxInMemory: 20000 });
 
 export interface AdminAuditEntry {
   id: string;
@@ -384,7 +385,7 @@ export const wellnessAiConversationsById = new SqliteMap<string, WellnessAiConve
 
 /** Analytics events: metadata-only, never free text - see types/wellness.ts
  * doc comment on WellnessAnalyticsEvent and wellness/analytics.ts. */
-export const wellnessAnalyticsEvents: WellnessAnalyticsEvent[] = persistentArray<WellnessAnalyticsEvent>('wellnessAnalyticsEvents');
+export const wellnessAnalyticsEvents: WellnessAnalyticsEvent[] = persistentArray<WellnessAnalyticsEvent>('wellnessAnalyticsEvents', { maxInMemory: 20000 });
 
 /** Daily Discovery state - see types/wellness.ts and
  * wellness/discoveryQuestions.ts. Same SQLite-backed Map pattern as above. */
@@ -426,15 +427,20 @@ export interface EmailVerificationRecord {
   accountId: string;
   expiresAt: string;
 }
+/** One row per user per local calendar day they opened the app (key `${userId}:${localDate}`). Drives the streak. */
+export interface DailyActivity { userId: string; localDate: string; createdAt: string }
+export const dailyActivityByKey = new SqliteMap<string, DailyActivity>('dailyActivity', { userId: (v) => v.userId, createdAt: (v) => v.createdAt });
+
+/** Logout/revoked session tokens (by JWT id) until they would have expired anyway. */
+export const revokedTokens = new SqliteMap<string, { jti: string; exp: number }>('revokedTokens');
+export const passwordResetsByHash = new SqliteMap<string, import('../types/auth').PasswordResetRecord>('passwordResets');
+
 export const emailVerificationsByToken = new SqliteMap<string, EmailVerificationRecord>('emailVerifications');
 
-/** Email lookups are rare enough (only on signup/login) that a linear scan
- * over accountsById is fine - no separate email index table needed for
- * this app's scale. Case-insensitive, since email addresses are compared
- * that way everywhere else a user might type one in. */
+/** Case-insensitive account lookup by email, done in SQL on an expression index (login/signup hot path). */
 export function findAccountByEmail(email: string): Account | undefined {
   const normalized = email.trim().toLowerCase();
-  return [...accountsById.values()].find((a) => a.email.toLowerCase() === normalized);
+  return accountsById.findOneByField('email', normalized);
 }
 
 export function createGuestSession(id: string): GuestSession {
@@ -463,7 +469,7 @@ export interface SoulmateAnalyticsEvent {
   createdAt: string;
   data: Record<string, string | number | boolean>;
 }
-export const soulmateAnalyticsEvents: SoulmateAnalyticsEvent[] = persistentArray<SoulmateAnalyticsEvent>('soulmateAnalyticsEvents');
+export const soulmateAnalyticsEvents: SoulmateAnalyticsEvent[] = persistentArray<SoulmateAnalyticsEvent>('soulmateAnalyticsEvents', { maxInMemory: 20000 });
 
 /** True if this exact Razorpay payment id has already been applied to a
  * sketch - a payment id must never be accepted twice, whether that's a
@@ -482,7 +488,7 @@ export function isPaymentIdUsed(paymentId: string): boolean {
  * exact record rather than ever creating a second free one.
  */
 export function freeTrialSketchFor(userId: string): SoulmateSketch | undefined {
-  return [...soulmateSketchesById.values()].find((s) => s.userId === userId && s.isFreeTrial);
+  return soulmateSketchesById.valuesForUser(userId).find((s) => s.isFreeTrial);
 }
 
 // ---------------------------------------------------------------------
@@ -503,10 +509,12 @@ export interface AiUsageEvent {
   estimatedOutputTokens: number;
   latencyMs: number;
   success: boolean;
+  /** 'actual' = provider-reported token counts; 'estimated' = ~4 chars/token guess. */
+  tokenSource?: 'actual' | 'estimated';
   createdAt: string;
 }
 
-export const aiUsageEvents: AiUsageEvent[] = persistentArray<AiUsageEvent>('aiUsageEvents');
+export const aiUsageEvents: AiUsageEvent[] = persistentArray<AiUsageEvent>('aiUsageEvents', { maxInMemory: 20000 });
 
 export function recordAiUsage(event: Omit<AiUsageEvent, 'id' | 'createdAt'>): void {
   aiUsageEvents.push({ ...event, id: randomUUID(), createdAt: new Date().toISOString() });

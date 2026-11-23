@@ -12,7 +12,9 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, InspirationContent } from '../../services/wellnessApi';
 import { shareText } from '../../utils/shareContent';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'AffirmationDetail'>;
 
@@ -44,6 +46,7 @@ const REFLECTIONS: Record<string, string> = {
  * with the real data the app has.
  */
 export function AffirmationDetailScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const { params } = useRoute<Route>();
   const [content, setContent] = React.useState<InspirationContent | null>(params?.content ?? null);
@@ -56,7 +59,7 @@ export function AffirmationDetailScreen() {
     setLoading(true);
     wellnessApi.getTodayInspiration()
       .then((res) => setContent(res.content))
-      .catch((err: any) => setError(err.message ?? 'Could not load today\'s affirmation.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.AffirmationDetailScreen.couldNotLoadTodayS')))
       .finally(() => setLoading(false));
   }, [params?.content]);
 
@@ -76,11 +79,11 @@ export function AffirmationDetailScreen() {
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (error || !content) {
-    return <PageContainer><EmptyState icon={RefreshCw} title="Something went wrong" description={error ?? 'No content available.'} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error ?? 'No content available.'} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
@@ -93,19 +96,19 @@ export function AffirmationDetailScreen() {
       </Card>
 
       <Card style={{ marginBottom: spacing.lg }}>
-        <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.xs }}>A moment to reflect</Text>
+        <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.xs }}>{t('ui.AffirmationDetailScreen.aMomentToReflect')}</Text>
         <Text variant="bodySm" tone="secondary">{REFLECTIONS[content.type] ?? 'Take a moment with this before moving on.'}</Text>
       </Card>
 
       {content.astrologyFlavored && (
         <Text variant="caption" tone="muted" style={{ marginBottom: spacing.lg }}>
-          This piece is from the optional astrology-flavored subset of the library.
+          {t('ui.AffirmationDetailScreen.thisPieceIsFromThe')}
         </Text>
       )}
 
       <View style={{ flexDirection: 'row' }}>
         <Button label={favorited ? 'Favorited' : 'Favorite'} icon={Heart} variant={favorited ? 'primary' : 'secondary'} onPress={toggleFavorite} />
-        <Button label="Share" icon={Share2} variant="secondary" onPress={share} style={{ marginLeft: spacing.sm }} />
+        <Button label={t('ui.SoulmateResultScreen.share')} icon={Share2} variant="secondary" onPress={share} style={{ marginLeft: spacing.sm }} />
       </View>
     </PageContainer>
   );

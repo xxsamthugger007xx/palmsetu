@@ -10,7 +10,9 @@ import { Button } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, Emotion, EMOTION_OPTIONS, MoodLevel } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const MOOD_LEVELS: { value: MoodLevel; label: string }[] = [
   { value: 'low', label: 'Low' },
   { value: 'down', label: 'Down' },
@@ -29,7 +31,7 @@ function SegmentedScale({ label, value, onChange }: { label: string; value: numb
         {SCALE.map((n) => {
           const selected = value === n;
           return (
-            <Pressable
+            <Pressable accessibilityRole="button"
               key={n}
               onPress={() => onChange(n)}
               style={[styles.scaleItem, selected && styles.scaleItemSelected]}
@@ -44,6 +46,7 @@ function SegmentedScale({ label, value, onChange }: { label: string; value: numb
 }
 
 export function MoodCheckInScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const today = wellnessApi.todayLocalDate();
 
@@ -85,8 +88,9 @@ export function MoodCheckInScreen() {
     try {
       await wellnessApi.saveMood({ localDate: today, mood, emotions, energy, stress, sleepQuality, note: note.trim() || undefined });
       navigation.goBack();
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not save your check-in.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.MoodCheckInScreen.couldNotSaveYourCheck'));
     } finally {
       setSaving(false);
     }
@@ -95,7 +99,7 @@ export function MoodCheckInScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="body" tone="muted" style={{ marginTop: spacing.xl }}>Loading...</Text>
+        <Text variant="body" tone="muted" style={{ marginTop: spacing.xl }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -117,7 +121,7 @@ export function MoodCheckInScreen() {
           {MOOD_LEVELS.map((m) => {
             const selected = mood === m.value;
             return (
-              <Pressable key={m.value} onPress={() => setMood(m.value)} style={styles.moodItem}>
+              <Pressable accessibilityRole="button" key={m.value} onPress={() => setMood(m.value)} style={styles.moodItem}>
                 <View style={[styles.moodDot, selected && styles.moodDotSelected]} />
                 <Text variant="caption" tone={selected ? 'accent' : 'muted'} style={{ marginTop: spacing.xs }}>{m.label}</Text>
               </Pressable>
@@ -127,12 +131,12 @@ export function MoodCheckInScreen() {
       </Card>
 
       <View style={{ marginBottom: spacing.lg }}>
-        <SectionHeader title="What are you feeling? (optional)" />
+        <SectionHeader title={t('ui.MoodCheckInScreen.whatAreYouFeelingOptional')} />
         <View style={styles.chipRow}>
           {EMOTION_OPTIONS.map((e) => {
             const selected = emotions.includes(e);
             return (
-              <Pressable key={e} onPress={() => toggleEmotion(e)} style={[styles.chip, selected && styles.chipSelected]}>
+              <Pressable accessibilityRole="button" key={e} onPress={() => toggleEmotion(e)} style={[styles.chip, selected && styles.chipSelected]}>
                 <Text variant="caption" tone={selected ? 'accent' : 'secondary'}>{e}</Text>
               </Pressable>
             );
@@ -141,18 +145,18 @@ export function MoodCheckInScreen() {
       </View>
 
       <Card style={{ marginBottom: spacing.lg }}>
-        <SegmentedScale label="Energy" value={energy} onChange={setEnergy} />
-        <SegmentedScale label="Stress" value={stress} onChange={setStress} />
-        <SegmentedScale label="Sleep quality" value={sleepQuality} onChange={setSleepQuality} />
+        <SegmentedScale label={t('ui.MoodCheckInScreen.energy')} value={energy} onChange={setEnergy} />
+        <SegmentedScale label={t('ui.MoodCheckInScreen.stress')} value={stress} onChange={setStress} />
+        <SegmentedScale label={t('ui.MoodCheckInScreen.sleepQuality')} value={sleepQuality} onChange={setSleepQuality} />
       </Card>
 
       <View style={{ marginBottom: spacing.lg }}>
-        <SectionHeader title="Note (optional)" />
+        <SectionHeader title={t('ui.MoodCheckInScreen.noteOptional')} />
         <Card>
           <TextInput
             value={note}
             onChangeText={setNote}
-            placeholder="Anything you want to remember about today..."
+            placeholder={t('ui.MoodCheckInScreen.anythingYouWantToRemember')} accessibilityLabel={t('ui.MoodCheckInScreen.anythingYouWantToRemember')}
             placeholderTextColor={color.textMuted}
             multiline
             style={{ minHeight: 60, color: color.textPrimary, fontSize: 14 }}

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
@@ -10,7 +10,7 @@ import { GemstoneReport } from '../types/gemstone';
 import { recordCompletedReading, invalidateMemoryForSource } from '../memory/memoryService';
 
 /** TEMPORARY testing shim, same as astrology/tarot routes: no real auth exists yet. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -40,7 +40,7 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
   router.get('/limits', (req, res) => {
     const userId = currentUserId(req);
     const tier = getUserTier(userId);
-    const reportCount = [...gemstoneReportsById.values()].filter((r) => r.userId === userId).length;
+    const reportCount = gemstoneReportsById.valuesForUser(userId).length;
     res.json({
       tier,
       canCreateReport: tier === 'premium' || reportCount < MAX_REPORTS_FREE,
@@ -63,7 +63,7 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
     const tier = getUserTier(userId);
-    const existingCount = [...gemstoneReportsById.values()].filter((r) => r.userId === userId).length;
+    const existingCount = gemstoneReportsById.valuesForUser(userId).length;
     if (tier !== 'premium' && existingCount >= MAX_REPORTS_FREE) {
       return res.status(403).json({ error: 'Free plan allows 1 gemstone report. Upgrade for additional reports.', code: 'LIMIT_REACHED' });
     }
@@ -93,8 +93,7 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
 
   router.get('/reports', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...gemstoneReportsById.values()]
-      .filter((r) => r.userId === userId)
+    const items = gemstoneReportsById.valuesForUser(userId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ items });
   });

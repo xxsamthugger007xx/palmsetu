@@ -11,7 +11,9 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, MeditationContent, MeditationCategory } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const CATEGORY_LABELS: Record<MeditationCategory, string> = {
@@ -29,6 +31,7 @@ const CATEGORY_LABELS: Record<MeditationCategory, string> = {
 };
 
 export function MeditationScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -41,7 +44,7 @@ export function MeditationScreen() {
     setError(null);
     wellnessApi.getMeditationCatalogue()
       .then((res) => setItems(res.items))
-      .catch((err: any) => setError(err.message ?? 'Could not load meditation content. Please try again.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.MeditationScreen.couldNotLoadMeditationContent')))
       .finally(() => setLoading(false));
     wellnessApi.getRecentMeditation().then((res) => setRecentIds(res.sessions.map((s) => s.contentId))).catch(() => setRecentIds([]));
   }, []);
@@ -63,8 +66,8 @@ export function MeditationScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Meditation & Sleep</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MeditationScreen.meditationSleep')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -72,22 +75,22 @@ export function MeditationScreen() {
   if (error) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Meditation & Sleep</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MeditationScreen.meditationSleep')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Meditation & Sleep</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MeditationScreen.meditationSleep')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Guided sessions and ambient sounds, organized by what you need right now.
+        {t('ui.MeditationScreen.guidedSessionsAndAmbientSounds')}
       </Text>
 
       {recent.length > 0 && (
         <View style={{ marginBottom: spacing.lg }}>
-          <SectionHeader title="Recently played" />
+          <SectionHeader title={t('ui.MeditationScreen.recentlyPlayed')} />
           {recent.map((item) => (
             <MeditationRow key={item.id} item={item} onPress={() => navigation.navigate('MeditationPlayer', { contentId: item.id })} />
           ))}
@@ -104,7 +107,7 @@ export function MeditationScreen() {
       ))}
 
       {items.length === 0 && (
-        <EmptyState icon={Moon} title="No content available" description="Please try again later." />
+        <EmptyState icon={Moon} title={t('ui.MeditationScreen.noContentAvailable')} description={t('ui.BreathingTechniquesScreen.pleaseTryAgainLater')} />
       )}
     </PageContainer>
   );

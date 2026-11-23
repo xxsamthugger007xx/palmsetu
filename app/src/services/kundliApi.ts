@@ -17,6 +17,7 @@ export interface CreateKundliPayload {
   // Only needed for subject 'other' (self uses the saved profile's coordinates).
   latitude?: number;
   longitude?: number;
+  timezone?: string;
 }
 
 function todayLocalDate(): string {

@@ -20,10 +20,12 @@ export function buildCompanionRouter(aiProvider: AiProvider) {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
     const { message, mode } = parsed.data;
-    const userId = (req.headers['x-demo-user'] as string) || 'demo-user';
+    const userId = req.auth?.userId || (req.headers['x-demo-user'] as string) || 'demo-user';
 
     let conversationId = parsed.data.conversationId;
     let conversation = conversationId ? conversationsById.get(conversationId) : undefined;
+    // Never continue (or read the history of) a conversation that belongs to someone else.
+    if (conversation && conversation.userId !== userId) conversation = undefined;
     if (!conversation) {
       conversationId = uuid();
       conversation = { id: conversationId, userId, mode, messages: [] };

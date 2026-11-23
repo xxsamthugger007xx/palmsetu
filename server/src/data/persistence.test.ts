@@ -34,3 +34,20 @@ describe('SQLite file persistence across a simulated restart', () => {
     second.close();
   });
 });
+
+describe('persistentArray memory cap', () => {
+  it('keeps only the newest N rows in memory but every row in SQLite, and trims in batches', async () => {
+    const { persistentArray } = await import('./sqliteCollections');
+    const { db } = await import('./db');
+    const table = `capTest${Date.now()}`;
+    db.exec(`CREATE TABLE IF NOT EXISTS log_${table} (id TEXT PRIMARY KEY, value TEXT NOT NULL, userId TEXT, createdAt TEXT NOT NULL)`);
+    const arr = persistentArray<{ id: string; createdAt: string }>(table, { maxInMemory: 10 });
+    for (let i = 0; i < 40; i++) arr.push({ id: `r${i}`, createdAt: new Date(2026, 0, 1, 0, 0, i).toISOString() });
+    expect(arr.length).toBeLessThanOrEqual(12); // 10 + 25% batch slack
+    expect(arr[arr.length - 1].id).toBe('r39');
+    expect((db.prepare(`SELECT COUNT(*) c FROM log_${table}`).get() as { c: number }).c).toBe(40);
+    const reloaded = persistentArray<{ id: string; createdAt: string }>(table, { maxInMemory: 10 });
+    expect(reloaded.map((r) => r.id)).toEqual(Array.from({ length: 10 }, (_, i) => `r${30 + i}`));
+    db.exec(`DROP TABLE log_${table}`);
+  });
+});

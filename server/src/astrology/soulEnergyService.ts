@@ -47,10 +47,15 @@ export async function generateSoulEnergyReading(
   ascendantSign: string | null,
   aiProvider: AiProvider
 ): Promise<Omit<SoulEnergyReading, 'id' | 'userId' | 'localDate' | 'createdAt'>> {
-  const raw = await aiProvider.complete([
-    { role: 'system', content: SOUL_ENERGY_SYSTEM_PROMPT },
-    { role: 'user', content: buildPrompt(profile, ascendantSign) },
-  ]);
+  // The default 800-token cap (and Gemini's thinking tokens counting toward it) truncates
+  // this 7-section JSON mid-object, which made parsing fail. Give it explicit headroom.
+  const raw = await aiProvider.complete(
+    [
+      { role: 'system', content: SOUL_ENERGY_SYSTEM_PROMPT },
+      { role: 'user', content: buildPrompt(profile, ascendantSign) },
+    ],
+    { feature: 'astrology', operation: 'soul_energy', maxOutputTokens: 3000 }
+  );
   const parsed = tryParseAiJson(raw);
   if (!parsed) {
     throw new Error('Soul Energy Reading generation returned an unparsable response.');

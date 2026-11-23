@@ -1,3 +1,4 @@
+import { tr } from '../../utils/tr';
 import React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -12,11 +13,14 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, WellnessGoal } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError, ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'GoalDetail'>;
 
 export function GoalDetailScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const { params } = useRoute<Route>();
   const [loading, setLoading] = React.useState(true);
@@ -39,7 +43,7 @@ export function GoalDetailScreen() {
         setEditTitle(found.title);
         setEditFrequency(found.targetFrequency ?? '');
       })
-      .catch((err: any) => setError(err.message ?? 'Could not load this goal.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.GoalDetailScreen.couldNotLoadThisGoal')))
       .finally(() => setLoading(false));
   }, [params.id]);
 
@@ -52,8 +56,9 @@ export function GoalDetailScreen() {
       const res = await wellnessApi.addGoalProgress(goal.id, note.trim() || undefined);
       setGoal(res.goal);
       setNote('');
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not log progress.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.GoalDetailScreen.couldNotLogProgress'));
     } finally {
       setBusy(false);
     }
@@ -65,8 +70,9 @@ export function GoalDetailScreen() {
     try {
       const res = await wellnessApi.completeGoal(goal.id);
       setGoal(res.goal);
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not mark goal complete.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.GoalDetailScreen.couldNotMarkGoalComplete'));
     } finally {
       setBusy(false);
     }
@@ -74,17 +80,18 @@ export function GoalDetailScreen() {
 
   const remove = () => {
     if (!goal) return;
-    Alert.alert('Delete this goal?', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('ui.GoalDetailScreen.deleteThisGoal'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
+      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('ui.AssistantHistoryScreen.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await wellnessApi.deleteGoal(goal.id);
             navigation.goBack();
-          } catch (err: any) {
-            setError(err?.message ?? 'Could not delete this goal.');
+          } catch (__err) {
+            const err = asApiError(__err);
+            setError(err?.message ?? t('ui.GoalDetailScreen.couldNotDeleteThisGoal'));
           }
         },
       },
@@ -92,11 +99,11 @@ export function GoalDetailScreen() {
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (error && !goal) {
-    return <PageContainer><EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   if (!goal) return null;
@@ -108,8 +115,9 @@ export function GoalDetailScreen() {
       const res = await wellnessApi.updateGoal(goal.id, { title: editTitle.trim(), targetFrequency: editFrequency.trim() || undefined });
       setGoal(res.goal);
       setEditing(false);
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not update this goal.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.GoalDetailScreen.couldNotUpdateThisGoal'));
     } finally {
       setBusy(false);
     }
@@ -128,6 +136,7 @@ export function GoalDetailScreen() {
         <Card style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>
           <TextInput
             value={editTitle}
+            accessibilityLabel={tr('a11y.goalTitle')}
             onChangeText={setEditTitle}
             placeholderTextColor={color.textMuted}
             style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, marginBottom: spacing.sm }}
@@ -135,13 +144,13 @@ export function GoalDetailScreen() {
           <TextInput
             value={editFrequency}
             onChangeText={setEditFrequency}
-            placeholder="Target frequency"
+            placeholder={t('ui.GoalDetailScreen.targetFrequency')} accessibilityLabel={t('ui.GoalDetailScreen.targetFrequency')}
             placeholderTextColor={color.textMuted}
             style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, marginBottom: spacing.sm }}
           />
           <View style={{ flexDirection: 'row' }}>
-            <Button label="Save" onPress={saveEdit} loading={busy} disabled={!editTitle.trim()} />
-            <Button label="Cancel" variant="ghost" onPress={() => setEditing(false)} style={{ marginLeft: spacing.sm }} />
+            <Button label={t('ui.GoalDetailScreen.save')} onPress={saveEdit} loading={busy} disabled={!editTitle.trim()} />
+            <Button label={t('ui.AssistantHistoryScreen.cancel')} variant="ghost" onPress={() => setEditing(false)} style={{ marginLeft: spacing.sm }} />
           </View>
         </Card>
       ) : (
@@ -156,46 +165,47 @@ export function GoalDetailScreen() {
       {goal.status === 'completed' ? (
         <Card elevated style={{ alignItems: 'center', marginBottom: spacing.lg }}>
           <CheckCircle2 size={20} color={color.success} strokeWidth={2} />
-          <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xs }}>Completed</Text>
+          <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xs }}>{t('ui.GoalDetailScreen.completed')}</Text>
         </Card>
       ) : (
         <Card style={{ marginBottom: spacing.lg }}>
-          <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.xs }}>Log today's progress (user-reported)</Text>
+          <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.xs }}>{t('ui.GoalDetailScreen.logTodaySProgressUser')}</Text>
           <TextInput
             value={note}
             onChangeText={setNote}
-            placeholder="Optional note about today"
+            placeholder={t('ui.GoalDetailScreen.optionalNoteAboutToday')} accessibilityLabel={t('ui.GoalDetailScreen.optionalNoteAboutToday')}
             placeholderTextColor={color.textMuted}
             style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, marginBottom: spacing.sm }}
           />
           <View style={{ flexDirection: 'row' }}>
-            <Button label="Log progress" icon={Target} onPress={addProgress} loading={busy} />
-            <Button label="Mark complete" variant="secondary" onPress={complete} style={{ marginLeft: spacing.sm }} />
+            <Button label={t('ui.GoalDetailScreen.logProgress')} icon={Target} onPress={addProgress} loading={busy} />
+            <Button label={t('ui.GoalDetailScreen.markComplete')} variant="secondary" onPress={complete} style={{ marginLeft: spacing.sm }} />
           </View>
         </Card>
       )}
 
-      <SectionHeader title="User-reported history" />
+      <SectionHeader title={t('ui.GoalDetailScreen.userReportedHistory')} />
       {goal.progress.length === 0 ? (
-        <Text variant="bodySm" tone="muted" style={{ marginBottom: spacing.lg }}>No check-ins logged yet.</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginBottom: spacing.lg }}>{t('ui.GoalDetailScreen.noCheckInsLoggedYet')}</Text>
       ) : (
         [...goal.progress].reverse().map((p, i) => (
           <Card key={i} style={{ marginBottom: spacing.sm }}>
             <Text variant="bodySm" weight="semibold">{p.localDate}</Text>
             {p.note && <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{p.note}</Text>}
-            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>User-reported</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.GoalDetailScreen.userReported')}</Text>
           </Card>
         ))
       )}
 
       {goal.status !== 'completed' && (
-        <Button label="Delete goal" icon={Trash2} variant="danger" onPress={remove} style={{ marginTop: spacing.lg }} />
+        <Button label={t('ui.GoalDetailScreen.deleteGoal')} icon={Trash2} variant="danger" onPress={remove} style={{ marginTop: spacing.lg }} />
       )}
     </PageContainer>
   );
 }
 
 export function GoalsCompletedScreen() {
+  const { t } = useTranslation();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [goals, setGoals] = React.useState<WellnessGoal[]>([]);
@@ -206,25 +216,25 @@ export function GoalsCompletedScreen() {
     setError(null);
     wellnessApi.getGoals('completed')
       .then((res) => setGoals(res.goals))
-      .catch((err: any) => setError(err.message ?? 'Could not load completed goals.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.GoalsCompletedScreen.couldNotLoadCompletedGoals')))
       .finally(() => setLoading(false));
   }, []);
 
   useFocusEffect(React.useCallback(() => { load(); }, [load]));
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (error) {
-    return <PageContainer><EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Completed Goals</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.GoalsCompletedScreen.completedGoals')}</Text>
       {goals.length === 0 ? (
-        <EmptyState icon={CheckCircle2} title="No completed goals yet" description="Goals you complete will show up here." />
+        <EmptyState icon={CheckCircle2} title={t('ui.GoalsCompletedScreen.noCompletedGoalsYet')} description={t('ui.GoalsCompletedScreen.goalsYouCompleteWillShow')} />
       ) : (
         goals.map((g) => (
           <Card key={g.id} onPress={() => navigation.navigate('GoalDetail', { id: g.id })} style={{ marginBottom: spacing.sm }}>

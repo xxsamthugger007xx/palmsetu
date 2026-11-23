@@ -12,8 +12,10 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { gemstoneApi } from '../../services/gemstoneApi';
 import { GemstoneReport } from '../../types/gemstone';
+import { useTranslation } from 'react-i18next';
 
 export function GemstoneHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [items, setItems] = useState<GemstoneReport[]>([]);
@@ -35,14 +37,14 @@ export function GemstoneHistoryScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Gemstone Reports</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.GemstoneHistoryScreen.gemstoneReports')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
-      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>}
-      {state === 'error' && <EmptyState icon={Info} title="Couldn't load reports" actionLabel="Retry" onAction={load} />}
+      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      {state === 'error' && <EmptyState icon={Info} title={t('ui.GemstoneHistoryScreen.couldnTLoadReports')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />}
       {state === 'ready' && items.length === 0 && (
-        <EmptyState icon={Gem} title="No reports yet" description="Your gemstone reports will appear here." />
+        <EmptyState icon={Gem} title={t('ui.GemstoneHistoryScreen.noReportsYet')} description={t('ui.GemstoneHistoryScreen.yourGemstoneReportsWillAppear')} />
       )}
 
       {state === 'ready' && items.map((r) => (

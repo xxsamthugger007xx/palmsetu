@@ -32,13 +32,25 @@ export function isBillingConfigured(): boolean {
 }
 
 let configured = false;
+let currentPurchasesUser: string | null = null;
 
-/** Call once, after the user's real or guest id is known (see AuthContext) - RevenueCat uses this as its app_user_id, the same id the backend's server-side verification call looks up. */
+/** Registers the signed-in account (or guest) id with RevenueCat as its app_user_id - the same id the backend uses when
+ * it verifies a purchase, so Premium belongs to the ACCOUNT and follows it to any device. Safe to call repeatedly: the
+ * first call configures the SDK, later calls with a different id switch the RevenueCat user (login/signup/logout). */
 export function configurePurchases(appUserId: string) {
   const key = apiKey();
-  if (!key || configured) return;
-  Purchases.configure({ apiKey: key, appUserID: appUserId });
-  configured = true;
+  if (!key) return;
+  if (!configured) {
+    Purchases.configure({ apiKey: key, appUserID: appUserId });
+    configured = true;
+    currentPurchasesUser = appUserId;
+    return;
+  }
+  if (currentPurchasesUser === appUserId) return;
+  currentPurchasesUser = appUserId;
+  Purchases.logIn(appUserId).catch(() => {
+    currentPurchasesUser = null; // allow a retry on the next call
+  });
 }
 
 export interface PlanPackageMap {

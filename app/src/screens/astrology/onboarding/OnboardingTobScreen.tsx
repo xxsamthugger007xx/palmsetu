@@ -1,3 +1,4 @@
+import { devWarn } from '../../../utils/log';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +12,9 @@ import { Button, IconButton } from '../../../components/Button';
 import { color, spacing } from '../../../theme/tokens';
 import { AstrologyOnboardingStackParamList } from '../../../navigation/AstrologyOnboardingStack';
 import { astrologyApi } from '../../../services/astrologyApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../../services/apiRequest';
 function formatTime(d: Date): string {
   return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
@@ -22,6 +25,7 @@ function toTimeString(d: Date): string {
 }
 
 export function OnboardingTobScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<AstrologyOnboardingStackParamList>>();
   const [time, setTime] = useState<Date | null>(null);
   const [skipped, setSkipped] = useState(false);
@@ -63,9 +67,10 @@ export function OnboardingTobScreen() {
           : { birthTime: toTimeString(time as Date), birthTimeSkipped: false },
       );
       navigation.navigate('OnboardingPlace');
-    } catch (err: any) {
-      console.warn('[onboarding] failed to save birth time:', err);
-      setError(err?.isNetworkError ? 'Unable to connect. Check your connection and try again.' : (err?.message ?? 'Something went wrong. Please try again.'));
+    } catch (__err) {
+      const err = asApiError(__err);
+      devWarn('[onboarding] failed to save birth time:', err);
+      setError(err?.isNetworkError ? t('ui.OnboardingAstrologySystemScreen.unableToConnectCheckYour') : (err?.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry')));
     } finally {
       setSaving(false);
     }
@@ -78,11 +83,10 @@ export function OnboardingTobScreen() {
           <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         )}
       </View>
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>STEP 3 OF 5</Text>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>What time were you born?</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.md }}>{t('ui.OnboardingTobScreen.step3Of5')}</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.xs }}>{t('ui.OnboardingTobScreen.whatTimeWereYouBorn')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Check your birth certificate or ask a parent if unsure - even a 30-minute difference can shift your Moon
-        sign near a sign boundary.
+        {t('ui.AstrologyProfileSetupScreen.checkYourBirthCertificateOr')}
       </Text>
 
       <Card
@@ -109,10 +113,10 @@ export function OnboardingTobScreen() {
         style={[styles.skipCard, skipped && styles.skipCardActive]}
       >
         <Text variant="bodySm" weight="medium" tone={skipped ? 'accent' : 'primary'}>
-          I don't know my exact birth time
+          {t('ui.OnboardingTobScreen.iDonTKnowMy')}
         </Text>
         <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>
-          Some calculations (Moon sign, nakshatra, daily transits) may be less precise without an exact time.
+          {t('ui.OnboardingTobScreen.someCalculationsMoonSignNakshatra')}
         </Text>
       </Card>
 
@@ -121,7 +125,7 @@ export function OnboardingTobScreen() {
       )}
 
       <Button
-        label="Continue"
+        label={t('ui.OnboardingAstrologySystemScreen.continue')}
         fullWidth
         disabled={!canContinue}
         loading={saving}

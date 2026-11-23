@@ -258,8 +258,15 @@
       "compatibility": {
         "title": "अनुकूलता",
         "description": "आप, वे, और जो आपको जोड़ता है"
+      },
+      "fiveCard": {
+        "title": "पाँच-कार्ड रीडिंग",
+        "description": "पाँच स्थितियों के साथ गहरा मार्ग"
       }
-    }
+    },
+    "personalReadingTitle": "व्यक्तिगत रीडिंग पाएँ",
+    "personalReadingSubtitle": "जानें कि आज कार्ड्स आपको किस बात पर चिंतन करने के लिए आमंत्रित कर सकते हैं।",
+    "personalReadingCta": "रीडिंग शुरू करें"
   },
   "profile": {
     "upgradeTitle": "प्रीमियम में अपग्रेड करें",
@@ -333,5 +340,989 @@
     "title": "भाषा",
     "notice": "आप अपनी भाषा कभी भी बदल सकते हैं। अनुवादित स्क्रीन तुरंत अपडेट होती हैं; बाकी स्क्रीन आगामी अपडेट में आएंगी।",
     "searchPlaceholder": "भाषाएं खोजें"
+  },
+  "a11y": {
+    "back": "वापस जाएँ",
+    "close": "बंद करें",
+    "delete": "हटाएँ",
+    "history": "इतिहास",
+    "share": "साझा करें",
+    "bookmark": "सहेजें",
+    "edit": "संपादित करें",
+    "newConversation": "नई बातचीत",
+    "send": "भेजें",
+    "retry": "फिर कोशिश करें",
+    "info": "अधिक जानकारी",
+    "favorite": "पसंदीदा",
+    "notifications": "सूचनाएँ",
+    "loading": "लोड हो रहा है",
+    "button": "बटन",
+    "selected": "चुना गया",
+    "dismiss": "हटाएँ",
+    "showPassword": "पासवर्ड दिखाएँ",
+    "search": "खोजें",
+    "palmPhoto": "आपकी हथेली की तस्वीर",
+    "palmPreview": "हथेली की तस्वीर का पूर्वावलोकन",
+    "soulmatePortrait": "आपके जीवनसाथी का चित्र",
+    "renameField": "नाम बदलें",
+    "goalTitle": "लक्ष्य का शीर्षक",
+    "goalFrequency": "कितनी बार"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "साइन अप",
+      "logIn": "लॉग इन",
+      "emailAddress": "ईमेल पता",
+      "forgotPassword": "पासवर्ड भूल गए?",
+      "backToLogIn": "लॉग इन पर वापस जाएँ",
+      "continueAsGuest": "अतिथि के रूप में जारी रखें",
+      "termsOfService": "सेवा की शर्तें",
+      "privacyPolicy": "गोपनीयता नीति",
+      "enterYourEmailAndPassword": "अपना ईमेल और पासवर्ड दर्ज करें।",
+      "passwordMustBeAtLeast": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए।",
+      "anAccountWithThisEmail": "इस ईमेल से पहले से एक खाता मौजूद है। इसके बजाय लॉग इन करके देखें।",
+      "incorrectEmailOrPassword": "ईमेल या पासवर्ड गलत है।",
+      "tooManyAttemptsPleaseWait": "बहुत अधिक प्रयास। कृपया कुछ मिनट रुककर फिर कोशिश करें।",
+      "verificationFailedPleaseTryAgain": "सत्यापन विफल रहा। कृपया फिर कोशिश करें।",
+      "enterTheEmailAddressOf": "अपने खाते का ईमेल पता दर्ज करें।"
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "अपनी संपूर्ण आत्म-खोज यात्रा अनलॉक करें",
+      "discoverDeeperInsightsIntoYour": "Palm Setu प्रीमियम के साथ अपनी हथेली, रिश्तों, ज्योतिष और निजी यात्रा की गहरी समझ पाएँ।",
+      "everythingIncludedInPremium": "प्रीमियम में सब कुछ शामिल",
+      "freeVsPremium": "मुफ़्त बनाम प्रीमियम",
+      "chooseYourPlan": "अपना प्लान चुनें",
+      "loadingPlans": "प्लान लोड हो रहे हैं...",
+      "weCouldnTLoadThe": "हम प्लान लोड नहीं कर सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+      "billingIsNotYetConfigured": "इस बिल्ड में Palm Setu प्रीमियम के लिए बिलिंग अभी सेट नहीं है। जब तक यह सेट नहीं होती, यह स्क्रीन न आपसे शुल्क लेगी, न प्रीमियम देगी।",
+      "terms": "शर्तें",
+      "privacy": "गोपनीयता",
+      "secureBillingThroughYourApp": "आपके App Store या Google Play खाते के माध्यम से सुरक्षित बिलिंग।"
+    },
+    "ProfileScreen": {
+      "createAnAccount": "खाता बनाएँ",
+      "signUpFirstToExport": "अपना सहेजा हुआ डेटा निर्यात करने के लिए पहले साइन अप करें।",
+      "yourData": "आपका डेटा",
+      "couldNotExportData": "डेटा निर्यात नहीं हो सका",
+      "pleaseTryAgain": "कृपया फिर कोशिश करें।",
+      "noAccountYet": "अभी तक कोई खाता नहीं",
+      "youAreBrowsingAsA": "आप अतिथि के रूप में ब्राउज़ कर रहे हैं - हटाने के लिए कोई खाता नहीं है।",
+      "couldNotDeleteAccount": "खाता नहीं हटाया जा सका"
+    },
+    "HabitsScreen": {
+      "habits": "आदतें",
+      "couldnTRefreshYourHabits": "आपकी आदतें रीफ़्रेश नहीं हो सकीं।",
+      "noHabitsYetAddOne": "अभी कोई आदत नहीं - शुरू करने के लिए नीचे एक जोड़ें।",
+      "addAHabit": "आदत जोड़ें",
+      "customHabitName": "अपनी आदत का नाम",
+      "add": "जोड़ें",
+      "youVeReachedTheFree": "आप मुफ़्त आदत सीमा तक पहुँच गए हैं। असीमित आदतों के लिए अपग्रेड करें।",
+      "suggestions": "सुझाव",
+      "unableToConnectThatChange": "कनेक्ट नहीं हो सका। वह बदलाव सहेजा नहीं गया।",
+      "couldnTUpdateThatHabit": "वह आदत अपडेट नहीं हो सकी। कृपया फिर कोशिश करें।",
+      "couldNotAddHabit": "आदत नहीं जोड़ी जा सकी।"
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "बातचीत हटाएँ?",
+      "thisCannotBeUndone": "इसे पूर्ववत नहीं किया जा सकता।",
+      "cancel": "रद्द करें",
+      "delete": "हटाएँ",
+      "chatHistory": "चैट इतिहास",
+      "noConversationsYet": "अभी कोई बातचीत नहीं",
+      "startAConversationWithYour": "यहाँ देखने के लिए अपने AI ज्योतिषी से बातचीत शुरू करें।",
+      "startChatting": "चैट शुरू करें",
+      "couldnTDeleteThatConversation": "वह बातचीत हटाई नहीं जा सकी। कृपया फिर कोशिश करें।"
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "सूचना प्राथमिकताएँ",
+      "pushDeliveryIsnTWired": "इस बिल्ड में पुश डिलीवरी अभी वास्तविक डिवाइस-टोकन/शेड्यूलर से जुड़ी नहीं है - ये प्राथमिकताएँ सहेजी जाती हैं और वह ढाँचा जुड़ने पर लागू होंगी।",
+      "personalDailyMessage": "व्यक्तिगत दैनिक संदेश",
+      "sharedRelationshipMessage": "साझा रिश्ते का संदेश",
+      "detailedLockScreenPreview": "विस्तृत लॉक-स्क्रीन पूर्वावलोकन",
+      "preferredTime": "पसंदीदा समय",
+      "unableToConnectYourChange": "कनेक्ट नहीं हो सका। आपका बदलाव सहेजा नहीं गया।",
+      "couldnTSaveYourChange": "आपका बदलाव सहेजा नहीं जा सका। कृपया फिर कोशिश करें।"
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "सूचनाएँ",
+      "localRemindersScheduledOnThis": "नीचे चुने गए विकल्पों के आधार पर इस डिवाइस पर शेड्यूल किए गए स्थानीय रिमाइंडर।",
+      "enableNotifications": "सूचनाएँ चालू करें",
+      "hhMm": "HH:mm",
+      "quietHours": "शांत समय",
+      "noReminderWillBeScheduled": "इस अवधि में कोई रिमाइंडर शेड्यूल नहीं होगा। शांत समय न चाहिए तो खाली छोड़ें।",
+      "start": "शुरू",
+      "end": "समाप्त",
+      "couldNotLoadNotificationSettings": "सूचना सेटिंग लोड नहीं हो सकीं।",
+      "savedAndScheduled": "सहेजा गया और शेड्यूल हो गया।",
+      "savedEnableNotificationsAboveTo": "सहेजा गया। ये रिमाइंडर वास्तव में पाने के लिए ऊपर सूचनाएँ चालू करें।",
+      "couldNotSaveNotificationSettings": "सूचना सेटिंग सहेजी नहीं जा सकीं।"
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "अपनी भाषा चुनें",
+      "youCanChangeThisAnytime": "आप इसे कभी भी अपनी प्रोफ़ाइल से बदल सकते हैं।",
+      "englishUi": "(अंग्रेज़ी UI)"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "चरण 2 / 5",
+      "whenWereYouBorn": "आपका जन्म कब हुआ था?",
+      "usedOnlyForTraditionalAstrology": "केवल पारंपरिक ज्योतिष गणनाओं के लिए उपयोग होता है - यह चिंतनशील व्याख्या है, वैज्ञानिक भविष्यवाणी नहीं।"
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "चरण 3 / 5",
+      "whatTimeWereYouBorn": "आपका जन्म किस समय हुआ था?",
+      "iDonTKnowMy": "मुझे अपने जन्म का सही समय नहीं पता",
+      "someCalculationsMoonSignNakshatra": "सही समय के बिना कुछ गणनाएँ (चंद्र राशि, नक्षत्र, दैनिक गोचर) कम सटीक हो सकती हैं।"
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "चरण 4 / 5",
+      "whereWereYouBorn": "आपका जन्म कहाँ हुआ था?"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "चरण 1 / 5",
+      "chooseYourAstrologySystem": "अपनी ज्योतिष पद्धति चुनें",
+      "thisDecidesHowYourSign": "यह तय करता है कि आपकी राशि, कुंडली और दैनिक मार्गदर्शन की गणना कैसे होगी। आप इसे बाद में प्रोफ़ाइल से बदल सकते हैं; चार्ट और व्याख्याएँ उसके अनुसार अपडेट हो जाएँगी।",
+      "continue": "जारी रखें",
+      "unableToConnectCheckYour": "कनेक्ट नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+      "somethingWentWrongPleaseTry": "कुछ गलत हो गया। कृपया फिर कोशिश करें।"
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "चरण 5 / 5",
+      "confirmYourDetails": "अपना विवरण पुष्टि करें",
+      "language": "भाषा",
+      "timeOfBirth": "जन्म का समय",
+      "confirmAndContinue": "पुष्टि करें और जारी रखें"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "व्यक्तिगत जानकारी",
+      "yourNameAndHowYou": "आपका नाम और आप किस तरह संबोधित होना चाहेंगे। जन्म तिथि, समय और स्थान \"दैनिक ब्रह्मांडीय मार्गदर्शन\" में अलग से बदले जाते हैं।",
+      "saveChanges": "बदलाव सहेजें"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "शायद बाद में",
+      "createFreeAccount": "मुफ़्त खाता बनाएँ"
+    },
+    "ListSkeleton": {
+      "loading": "लोड हो रहा है"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "अपना ईमेल सत्यापित करें"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "मासिक AI उपयोग"
+    },
+    "UpgradeButton": {
+      "upgrade": "अपग्रेड"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "AI ज्योतिषी से पूछें",
+      "askAi": "AI से पूछें"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "जल्द आ रहा है",
+      "notAvailableYet": "अभी उपलब्ध नहीं"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "सत्यापन विजेट लोड नहीं हो सका। कृपया अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "पारंपरिक व्याख्या"
+    },
+    "DailyResetHero": {
+      "dailyReset": "दैनिक रीसेट"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "कुछ सामग्री लोड नहीं हो सकी।",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "आपके वेलनेस डेटा का कुछ हिस्सा लोड नहीं हो सका।"
+    },
+    "CompanionScreen": {
+      "aiCompanion": "AI साथी",
+      "shareWhatSOnYour": "अपने मन की बात साझा करें...",
+      "yourCompanionIsAnAi": "आपका साथी एक AI है, लाइसेंस प्राप्त थेरेपिस्ट नहीं। संकट में स्थानीय आपातकालीन सेवाओं से संपर्क करें।"
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "AI ज्योतिषी",
+      "askAboutYourReading": "अपनी रीडिंग के बारे में पूछें..."
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "शुरू करने से पहले",
+      "yourReadingIsGeneratedFrom": "आपकी रीडिंग आपकी फ़ोटो में दिखने वाली रेखाओं और क्षेत्रों पर पारंपरिक हस्तरेखा व्याख्याओं से बनती है। यह मनोरंजन और आत्म-चिंतन के लिए है - वैज्ञानिक, चिकित्सीय या भविष्यसूचक आकलन नहीं।",
+      "weNeverUseYourPalm": "हम आपकी हथेली की फ़ोटो से कभी किसी स्वास्थ्य स्थिति का निदान नहीं करते, और धन, रिश्तों या आयु के बारे में कभी गारंटीशुदा परिणाम का वादा नहीं करते। आपकी फ़ोटो सुरक्षित रूप से प्रोसेस होती है और आप इसे कभी भी हटा सकते हैं।"
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "फ़ोटो दोबारा लें",
+      "analyzingYourPalm": "आपकी हथेली का विश्लेषण हो रहा है",
+      "thisPhotoCouldNotBe": "इस फ़ोटो का उपयोग हस्तरेखा रीडिंग के लिए नहीं हो सका।"
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "आप क्या महसूस कर रहे हैं? (वैकल्पिक)",
+      "energy": "ऊर्जा",
+      "stress": "तनाव",
+      "sleepQuality": "नींद की गुणवत्ता",
+      "noteOptional": "नोट (वैकल्पिक)",
+      "anythingYouWantToRemember": "आज के बारे में जो याद रखना चाहें...",
+      "couldNotSaveYourCheck": "आपका चेक-इन सहेजा नहीं जा सका।"
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "अनुमति आवश्यक",
+      "capture": "कैप्चर करें",
+      "analyzeYourPalm": "अपनी हथेली का विश्लेषण करें",
+      "useNaturalLightHoldYour": "प्राकृतिक रोशनी में हाथ को सपाट रखें, उँगलियाँ थोड़ी फैली हों, और फ़्रेम का अधिकांश हिस्सा भरें।",
+      "retake": "दोबारा लें",
+      "noPhotoYet": "अभी कोई फ़ोटो नहीं",
+      "takePhoto": "फ़ोटो लें",
+      "uploadFromLibrary": "लाइब्रेरी से अपलोड करें",
+      "photoGuidelines": "फ़ोटो दिशानिर्देश",
+      "goodExample": "अच्छा उदाहरण",
+      "flatOpenPalmFillingThe": "सपाट, खुली हथेली जो फ़्रेम भरती हो, समान रोशनी में और बिना आभूषणों के।",
+      "avoidPhotosLikeTheseThey": "ऐसी फ़ोटो से बचें, ये विश्लेषण की सटीकता को प्रभावित कर सकती हैं:",
+      "yourPhotoIsUploadedSecurely": "आपकी फ़ोटो विश्लेषण के लिए सुरक्षित रूप से अपलोड होती है। आप इसे प्रोफ़ाइल → गोपनीयता से कभी भी हटा सकते हैं।"
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "आपकी रीडिंग लोड हो रही है...",
+      "palmReading": "हस्तरेखा पठन",
+      "couldnTLoadThisReading": "यह रीडिंग लोड नहीं हो सकी। कृपया फिर कोशिश करें।",
+      "limitedVisibilityOnlyPartOf": "सीमित दृश्यता: आपकी हथेली का केवल एक हिस्सा फ़्रेम में स्पष्ट था, इसलिए यह रीडिंग पूरे स्कैन की तुलना में कम विशेषताओं को कवर करती है।",
+      "analysisOverview": "विश्लेषण अवलोकन",
+      "sectionsMatched": "मिलान किए गए खंड",
+      "imageQuality": "छवि गुणवत्ता",
+      "unlocked": "अनलॉक",
+      "thisAnalysisReportsQualitativeObservations": "यह विश्लेषण आत्मविश्वास स्कोर के साथ गुणात्मक अवलोकन देता है, सटीक पिक्सेल निर्देशांक नहीं - इसलिए हम आपकी फ़ोटो पर रेखा-पथ ओवरले नहीं बनाते, ताकि ऐसा कुछ न दिखे जो आपकी असली हथेली-रेखाओं की ज्यामिति न हो।",
+      "readingSections": "रीडिंग खंड",
+      "everyLineBelowIncludesOne": "नीचे हर रेखा में आपके स्कैन से एक मुफ़्त, वास्तविक अवलोकन शामिल है। पूरा विवरण देखने के लिए किसी रेखा को अनलॉक करें।",
+      "noSpecificFeaturesCouldBe": "इस फ़ोटो से किसी विशेष विशेषता का भरोसेमंद मिलान नहीं हो सका।",
+      "free": "मुफ़्त",
+      "fullStructureAdditionalDetectedCharacteristics": "इस रेखा की पूरी संरचना, अतिरिक्त पहचानी गई विशेषताएँ और पूर्ण पारंपरिक व्याख्या।",
+      "combinedPatterns": "संयुक्त पैटर्न",
+      "yourPalmHasMoreTo": "आपकी हथेली में बताने को और भी है",
+      "unlockYourCompletePalmReading": "हर पहचानी गई विशेषता और उसकी पारंपरिक व्याख्या देखने के लिए अपनी पूरी हस्तरेखा रीडिंग अनलॉक करें, इस रीडिंग की हर रेखा और पर्वत पर।",
+      "unlockCompleteReading": "पूरी रीडिंग अनलॉक करें",
+      "reflectiveQuestions": "चिंतन प्रश्न",
+      "askAboutThisReading": "इस रीडिंग के बारे में पूछें",
+      "yourPalmReadingIsReady": "आपकी हस्तरेखा रीडिंग तैयार है!",
+      "createYourFreeAccountTo": "अपनी हथेली की प्रोफ़ाइल सहेजने और किसी भी डिवाइस पर कभी भी अपनी पूरी रिपोर्ट देखने के लिए मुफ़्त खाता बनाएँ।",
+      "yourReadingHasBeenSaved": "आपकी रीडिंग सहेज ली गई है। यह अब होम और आपकी हस्तरेखा हिस्ट्री में दिखेगी।",
+      "saveAndContinue": "सहेजें और जारी रखें",
+      "couldNotUnlockThisSection": "यह खंड अनलॉक नहीं हो सका। कृपया फिर कोशिश करें।",
+      "couldNotUnlockYourComplete": "आपकी पूरी रीडिंग अनलॉक नहीं हो सकी। कृपया फिर कोशिश करें।",
+      "upgradeToSeeMore": "(और देखने के लिए अपग्रेड करें)"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "रीडिंग हटाएँ",
+      "couldNotDeleteThisReading": "यह रीडिंग हटाई नहीं जा सकी। कृपया फिर कोशिश करें।",
+      "palmReadingHistory": "हस्तरेखा रीडिंग इतिहास",
+      "noPalmReadingsYet": "अभी कोई हस्तरेखा रीडिंग नहीं",
+      "yourPastPalmScansWill": "आपके पिछले हथेली स्कैन यहाँ दिखाई देंगे।",
+      "scanYourPalm": "अपनी हथेली स्कैन करें"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "यह रीडिंग लोड नहीं हो सकी",
+      "generationDidnTComplete": "तैयार करना पूरा नहीं हुआ",
+      "weCouldnTFinishGenerating": "हम आज की रीडिंग तैयार नहीं कर सके। आप फिर कोशिश कर सकते हैं।",
+      "retryGeneration": "फिर से तैयार करें",
+      "yourDayAtAGlance": "आपका दिन एक नज़र में",
+      "todaySFocus": "आज का फ़ोकस",
+      "careerProductivity": "करियर और उत्पादकता",
+      "loveRelationships": "प्रेम और रिश्ते",
+      "moodSelfCare": "मनोदशा और आत्म-देखभाल",
+      "whatToDoToday": "आज क्या करें",
+      "whatToBeMindfulOf": "किन बातों का ध्यान रखें",
+      "aSmallDailyChallenge": "एक छोटी दैनिक चुनौती",
+      "reflectionQuestion": "चिंतन प्रश्न",
+      "astrologyBehindThisReading": "इस रीडिंग के पीछे की ज्योतिष",
+      "askAFollowUpQuestion": "अनुवर्ती प्रश्न पूछें",
+      "askAboutTodaySReading": "आज की रीडिंग के बारे में पूछें...",
+      "ask": "पूछें"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "मूड इतिहास",
+      "trendsAndCheckInsOver": "समय के साथ रुझान और चेक-इन।",
+      "noMoodCheckInsYet": "अभी कोई मूड चेक-इन नहीं",
+      "logHowYouAreFeeling": "अपने रुझान यहाँ देखने के लिए बताएँ कि आप कैसा महसूस कर रहे हैं।",
+      "checkInNow": "अभी चेक-इन करें",
+      "last7Days": "पिछले 7 दिन",
+      "noCheckInOnThis": "इस तारीख को कोई चेक-इन नहीं।",
+      "trends": "रुझान",
+      "mostFrequentEmotions": "सबसे आम भावनाएँ",
+      "avgEnergy": "औसत ऊर्जा",
+      "avgStress": "औसत तनाव",
+      "avgSleep": "औसत नींद",
+      "allCheckIns": "सभी चेक-इन",
+      "newCheckIn": "नया चेक-इन",
+      "couldNotLoadYourMood": "आपका मूड इतिहास लोड नहीं हो सका। कृपया फिर कोशिश करें।"
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "प्रविष्टि हटाएँ",
+      "type": "प्रकार",
+      "needAPrompt": "कोई सुझाव चाहिए?",
+      "titleOptional": "शीर्षक (वैकल्पिक)",
+      "writeFreely": "खुलकर लिखें...",
+      "tagsCommaSeparated": "टैग, अल्पविराम से अलग",
+      "aiInsight": "AI अंतर्दृष्टि",
+      "thisEntrySTextWould": "इस प्रविष्टि का पाठ अंतर्दृष्टि बनाने के लिए Palm Setu के AI को भेजा जाएगा। यह आपकी स्पष्ट अनुमति के बिना कभी नहीं भेजा जाता, और हर अनुरोध पर इसे दोबारा चुनना आवश्यक है।",
+      "iConsentToShareThis": "मैं इस एक अनुरोध के लिए इस प्रविष्टि का पाठ AI के साथ साझा करने की सहमति देता/देती हूँ",
+      "getAiInsight": "AI अंतर्दृष्टि पाएँ",
+      "couldNotSaveThisEntry": "यह प्रविष्टि सहेजी नहीं जा सकी।",
+      "couldNotGetAnAi": "अभी AI अंतर्दृष्टि नहीं मिल सकी।"
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "स्प्रेड लोड हो रहे हैं...",
+      "couldnTLoadSpreads": "स्प्रेड लोड नहीं हो सके",
+      "eachPositionHasItsOwn": "हर स्थिति का अपना अर्थ है - स्प्रेड चुनने पर नीचे दिखाई देगा।",
+      "secondPersonOptional": "दूसरा व्यक्ति (वैकल्पिक)",
+      "addAFirstNameOr": "यदि आप चाहते हैं कि रीडिंग \"उन्हें\" की जगह उनके नाम से बात करे तो ही कोई पहला नाम या उपनाम जोड़ें। यह कभी खाते के रूप में सहेजा नहीं जाता, किसी के साथ साझा नहीं होता, और रीडिंग हटाने पर अपने-आप हट जाता है। हम उनकी जन्म-जानकारी, संपर्क या उनके बारे में कुछ भी नहीं लेते - और यह रीडिंग उनके असली निजी विचार या भावनाएँ जानने का दावा कभी नहीं करती, केवल एक पारंपरिक प्रतीकात्मक चिंतन देती है।",
+      "eGAlexOptional": "जैसे अलेक्स (वैकल्पिक)"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "रीडिंग इतिहास",
+      "loading": "लोड हो रहा है...",
+      "couldnTLoadHistory": "इतिहास लोड नहीं हो सका",
+      "personalReadings": "व्यक्तिगत रीडिंग",
+      "yourPersonalDailyReadingsAre": "आपकी व्यक्तिगत दैनिक रीडिंग आज के लिए दैनिक ब्रह्मांडीय मार्गदर्शन होम स्क्रीन से उपलब्ध है, और केवल आपके लिए निजी है।",
+      "sharedRelationshipReadings": "साझा रिश्ते की रीडिंग",
+      "noPartnerConnected": "कोई साथी जुड़ा नहीं है",
+      "connectWithAPartnerTo": "साझा रीडिंग का इतिहास बनाना शुरू करने के लिए किसी साथी से जुड़ें।",
+      "noSharedReadingsYet": "अभी कोई साझा रीडिंग नहीं"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "ज्योतिष",
+      "setUpYourBirthDetails": "अपना जन्म विवरण सेट करें",
+      "addYourBirthDateAnd": "व्यक्तिगत दैनिक रीडिंग पाने के लिए अपनी जन्म तिथि (और ज्ञात हो तो समय) जोड़ें।",
+      "getStarted": "शुरू करें",
+      "couldnTLoadThisSection": "यह खंड लोड नहीं हो सका",
+      "retry": "फिर कोशिश करें",
+      "vedicAstrology": "वैदिक ज्योतिष",
+      "generateYourKundliNorthIndia": "अपनी कुंडली बनाएँ: उत्तर भारतीय, दक्षिण भारतीय या पश्चिमी चार्ट शैलियाँ",
+      "soulEnergyReading": "आत्मा ऊर्जा रीडिंग",
+      "anAiGeneratedPersonalityReading": "आपके वास्तविक चार्ट पर आधारित AI-निर्मित व्यक्तित्व रीडिंग"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "ज्योतिष पद्धति बदलें?",
+      "switchingBetweenVedicAndWestern": "वैदिक और पाश्चात्य के बीच बदलने से आपकी राशि, चार्ट और दैनिक मार्गदर्शन बदल जाएँगे। आपका जन्म विवरण वही रहेगा, पर व्याख्याएँ फिर से गणना होंगी।",
+      "changeSystem": "पद्धति बदलें",
+      "yourBirthDetails": "आपका जन्म विवरण",
+      "usedOnlyForTraditionalAstrology": "केवल पारंपरिक ज्योतिष गणनाओं के लिए उपयोग होता है - यह चिंतनशील व्याख्या है, वैज्ञानिक भविष्यवाणी नहीं। सटीक जन्म समय और स्थान आपकी चंद्र राशि, नक्षत्र और दैनिक गोचर को सार्थक रूप से बदलते हैं, इसलिए सटीक रीडिंग के लिए तीनों आवश्यक हैं।",
+      "astrologySystem": "ज्योतिष पद्धति",
+      "vedicSiderealAndWesternTropical": "वैदिक (निरयन) और पाश्चात्य (सायन) अलग-अलग परंपराएँ अपनाते हैं और एक ही जन्म विवरण के लिए अलग राशि और गोचर परिणाम दिखाएँगे।",
+      "dateOfBirth": "जन्म तिथि",
+      "exactTimeOfBirth": "जन्म का सही समय",
+      "checkYourBirthCertificateOr": "यदि निश्चित न हों तो अपना जन्म प्रमाणपत्र देखें या माता-पिता से पूछें - राशि की सीमा के पास 30 मिनट का अंतर भी आपकी चंद्र राशि बदल सकता है।",
+      "birthplace": "जन्म स्थान",
+      "chooseTheClosestMajorCity": "सबसे नज़दीकी बड़ा शहर चुनें - इससे सटीक गणना के लिए आपका जन्म समय-क्षेत्र भी तय होता है।",
+      "saveAndContinue": "सहेजें और जारी रखें",
+      "somethingWentWrongSavingYour": "आपकी प्रोफ़ाइल सहेजते समय कुछ गलत हो गया।"
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "साथी से जुड़ें",
+      "yourPartnerWillNeedTheir": "आपके साथी को अपना खाता चाहिए होगा। जब तक वे स्पष्ट रूप से स्वीकार नहीं करते, कुछ भी साझा नहीं होगा।",
+      "generateAnInvitation": "आमंत्रण बनाएँ",
+      "createACodeToShare": "अपने साथी के साथ साझा करने के लिए एक कोड बनाएँ",
+      "enterACode": "कोड दर्ज करें",
+      "yourPartnerSharedACode": "आपके साथी ने आपके साथ एक कोड साझा किया है",
+      "yourInvitationCode": "आपका आमंत्रण कोड",
+      "shareThisCodeDirectlyWith": "यह कोड सीधे अपने साथी के साथ साझा करें। कोड वाला कोई भी केवल इतना देख सकता है कि यह एक आमंत्रण है - कोई जन्म विवरण उजागर नहीं होता।",
+      "invitationCode": "आमंत्रण कोड",
+      "eGY5ppbubg": "जैसे Y5PPBUBG",
+      "whatYouLlBeSharing": "आप क्या साझा करेंगे",
+      "onceConnectedYouCanEach": "जुड़ने के बाद, आप दोनों स्वतंत्र रूप से तय कर सकते हैं कि क्या साझा हो - अनुकूलता परिणाम, साझा दैनिक रीडिंग, चार्ट विवरण और सूचनाएँ। जर्नल प्रविष्टियाँ और व्यक्तिगत दैनिक रीडिंग तब तक निजी रहती हैं जब तक आप साझा करना न चुनें।",
+      "acceptInvitation": "आमंत्रण स्वीकार करें",
+      "couldNotCreateAnInvitation": "आमंत्रण नहीं बनाया जा सका।",
+      "couldNotAcceptThisInvitation": "यह आमंत्रण स्वीकार नहीं किया जा सका।"
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "यह चार्ट लोड नहीं हो सका",
+      "back": "वापस",
+      "planetaryDetails": "ग्रह विवरण",
+      "planet": "ग्रह",
+      "degree": "अंश",
+      "sign": "राशि",
+      "wholeSignHousesLahiriApproximation": "पूर्ण-राशि भाव, लाहिरी-आधारित अयनांश। केवल महादशा स्तर (कोई अंतर्दशा उप-अवधि नहीं)।"
+    },
+    "KundliStyleScreen": {
+      "styleChart": "चार्ट शैली",
+      "completeYourBirthDetails": "अपना जन्म विवरण पूरा करें",
+      "yourNameBirthDateAnd": "आपका लग्न और भाव निकालने के लिए आपका नाम, जन्म तिथि और समय, और जन्म स्थान चाहिए।",
+      "addBirthDetails": "जन्म विवरण जोड़ें",
+      "upgrade": "अपग्रेड",
+      "chooseAChartStyleAnd": "चार्ट शैली चुनें और बनाने के लिए जन्म विवरण की पुष्टि करें।",
+      "theirDetails": "उनका विवरण",
+      "name": "नाम",
+      "birthDateYyyyMmDd": "जन्म तिथि (YYYY-MM-DD)",
+      "birthTimeHhMm24h": "जन्म समय (HH:MM, 24 घंटे)",
+      "generate": "बनाएँ",
+      "selectBirthplace": "जन्म स्थान चुनें",
+      "searchCityOrCountry": "शहर या देश खोजें",
+      "couldNotGenerateYourChart": "आपका चार्ट नहीं बन सका। कृपया फिर कोशिश करें।"
+    },
+    "MoonSignScreen": {
+      "moonSign": "चंद्र राशि",
+      "addYourBirthDateAnd": "अपनी वास्तविक चंद्र राशि और नक्षत्र देखने के लिए जन्म तिथि (और ज्ञात हो तो समय) जोड़ें।",
+      "siderealVedic": "निरयन (वैदिक)",
+      "nakshatra": "नक्षत्र",
+      "westernTropical": "पाश्चात्य (सायन)",
+      "tropicalMoonSign": "सायन चंद्र राशि",
+      "todaySMoon": "आज का चंद्रमा",
+      "currentPosition": "वर्तमान स्थिति",
+      "lunarPhase": "चंद्र कला",
+      "nextPhase": "अगली कला",
+      "thisAppSEngineDoesn": "इस ऐप का इंजन ऊपर दिए अगली कला के अनुमान से आगे विशिष्ट भविष्य की चंद्र घटनाओं (जैसे नक्षत्र परिवर्तन या ग्रहण) की गणना नहीं करता, इसलिए यहाँ कुछ भी गढ़ा नहीं गया है।"
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "साझा रीडिंग बंद हैं",
+      "ourDayAtAGlance": "हमारा दिन एक नज़र में",
+      "whatMayHelpToday": "आज क्या मदद कर सकता है",
+      "communicationGuidance": "संवाद मार्गदर्शन",
+      "qualityTimeSuggestion": "साथ समय बिताने का सुझाव",
+      "aQuestionToAskEach": "एक-दूसरे से पूछने के लिए एक सवाल",
+      "individualSupport": "व्यक्तिगत सहारा",
+      "thisReadingIsForReflection": "यह रीडिंग चिंतन के लिए है, आपके रिश्ते पर कोई फ़ैसला नहीं। यह कभी बेईमानी या असंगति का संकेत नहीं देती, न ही आपके रिश्ते का भविष्य बताती है।"
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "रिश्ते लोड नहीं हो सके",
+      "ourCosmicConnection": "हमारा ब्रह्मांडीय संबंध",
+      "noPartnerConnectedYet": "अभी कोई साथी नहीं जुड़ा",
+      "connectWithAPartnerTo": "पूर्ण सहमति और गोपनीयता नियंत्रण के साथ बनी साझा दैनिक रीडिंग अनलॉक करने के लिए किसी साथी से जुड़ें।",
+      "connected": "जुड़ा हुआ",
+      "viewTodaySSharedReading": "आज की साझा रीडिंग देखें",
+      "readingHistory": "रीडिंग इतिहास",
+      "privacySharing": "गोपनीयता और साझाकरण",
+      "yourPersonalDailyReadingStays": "आपकी व्यक्तिगत दैनिक रीडिंग डिफ़ॉल्ट रूप से निजी रहती है। साझा रीडिंग केवल संयुक्त चिंतन के लिए ज़रूरी चीज़ें इस्तेमाल करती है - कभी आपकी जर्नल या निजी AI बातचीत नहीं।",
+      "disconnect": "डिस्कनेक्ट करें",
+      "disconnectFromYourPartner": "अपने साथी से डिस्कनेक्ट करें",
+      "thisStopsFutureSharedReadings": "इससे आप दोनों के लिए आगे की साझा रीडिंग और सूचनाएँ बंद हो जाएँगी। आप बाद में नए आमंत्रण से फिर जुड़ सकते हैं।"
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "प्रोफ़ाइल चुनें",
+      "myAstrology": "मेरी ज्योतिष",
+      "free": "मुफ़्त",
+      "otherPersonSAstrology": "किसी और की ज्योतिष",
+      "premium": "प्रीमियम"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "आपकी रीडिंग तैयार हो रही है...",
+      "setUpYourBirthDetails": "पहले अपना जन्म विवरण सेट करें",
+      "yourSoulEnergyReadingIs": "आपकी आत्मा ऊर्जा रीडिंग उसी जन्म कुंडली पर आधारित है जिस पर दैनिक ब्रह्मांडीय मार्गदर्शन आधारित है।",
+      "setUpBirthDetails": "जन्म विवरण सेट करें",
+      "couldnTGenerateThisReading": "यह रीडिंग तैयार नहीं हो सकी",
+      "aiGeneratedGroundedInYour": "AI द्वारा बनी, आपके वास्तविक सूर्य/चंद्र चार्ट पर आधारित।",
+      "basedOnSunAndMoon": "केवल सूर्य और चंद्र राशि पर आधारित - आपका लग्न उपलब्ध नहीं है (इसके लिए सटीक जन्म निर्देशांक चाहिए)।"
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "पाश्चात्य ज्योतिष",
+      "addYourBirthDateAnd": "सायन, पश्चिमी शैली की रीडिंग पाने के लिए अपनी जन्म तिथि और स्थान जोड़ें।",
+      "tropicalSunMoonAndTransits": "सायन सूर्य, चंद्र और गोचर, पश्चिमी तरीके से पढ़े गए",
+      "todaySReading": "आज की रीडिंग",
+      "stillPreparingTodaySReading": "आज की रीडिंग अभी तैयार हो रही है...",
+      "openFullReading": "पूरी रीडिंग खोलें",
+      "wantTheVedicSiderealView": "इसके बजाय वैदिक (निरयन) दृष्टि चाहिए? होम से ज्योतिष या चंद्र राशि खोलें।"
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "आपके मन में क्या है?",
+      "optionalSelectAsManyAs": "वैकल्पिक - जितने लागू हों चुनें। आपकी सिफ़ारिश आपके चार्ट पर आधारित है, लक्ष्यों पर नहीं।",
+      "generateMyGemstoneGuide": "मेरी रत्न मार्गदर्शिका बनाएँ",
+      "somethingWentWrongGeneratingYour": "आपकी रिपोर्ट बनाते समय कुछ गलत हो गया।"
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "रत्न रिपोर्ट",
+      "couldnTLoadReports": "रिपोर्ट लोड नहीं हो सकीं",
+      "noReportsYet": "अभी कोई रिपोर्ट नहीं",
+      "yourGemstoneReportsWillAppear": "आपकी रत्न रिपोर्ट यहाँ दिखाई देंगी।"
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "रत्न मार्गदर्शिका",
+      "yourGemstoneRecommendationUsesThe": "आपकी रत्न सिफ़ारिश उसी जन्म कुंडली का उपयोग करती है जो दैनिक ब्रह्मांडीय मार्गदर्शन में है।",
+      "traditionalVedicGemstoneGuidanceBased": "आपकी जन्म कुंडली पर आधारित पारंपरिक वैदिक रत्न मार्गदर्शन, चिंतन के लिए, वैज्ञानिक नुस्ख़ा नहीं।",
+      "yourPersonalGemstoneGuide": "आपकी निजी रत्न मार्गदर्शिका",
+      "discoverTheGemstoneTraditionallyAssociated": "अपनी चंद्र राशि के स्वामी ग्रह से परंपरागत रूप से जुड़े रत्न को जानें, साथ में धारण मार्गदर्शन, विकल्प और खरीदारी गाइड।",
+      "getMyGemstoneGuide": "मेरी रत्न मार्गदर्शिका पाएँ",
+      "recentReports": "हाल की रिपोर्ट",
+      "basedOnTheRashiMoon": "राशि (चंद्र-राशि) स्वामी को सशक्त करने की परिपाटी पर आधारित, कई प्रलेखित वैदिक परंपराओं में से एक। यह पूर्ण लग्न या ग्रह-पीड़ा विश्लेषण नहीं करता।"
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "यह रिपोर्ट लोड नहीं हो सकी",
+      "noRecommendationAvailable": "कोई सिफ़ारिश उपलब्ध नहीं",
+      "saved": "सहेजा गया",
+      "whyThisGemstoneWasRecommended": "यह रत्न क्यों सुझाया गया",
+      "wearingGuidanceCustomaryPractice": "धारण मार्गदर्शन (प्रचलित परिपाटी)",
+      "traditionalDay": "पारंपरिक दिन",
+      "traditionalFinger": "पारंपरिक उँगली",
+      "traditionalMetal": "पारंपरिक धातु",
+      "alternativeOption": "वैकल्पिक विकल्प",
+      "gemstoneBuyingGuide": "रत्न खरीदारी गाइड",
+      "thisAppDoesNotSell": "यह ऐप रत्न नहीं बेचता और न ही विक्रेताओं की जाँच करता है - यह गाइड केवल शैक्षिक है।",
+      "askAboutThisRecommendation": "इस सिफ़ारिश के बारे में पूछें...",
+      "deleteThisReport": "यह रिपोर्ट हटाएँ",
+      "thisPermanentlyDeletesTheGemstone": "इससे रत्न रिपोर्ट स्थायी रूप से हट जाती है।"
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "विस्तारित राशिफल",
+      "deeperOutlooksBeyondTodayWeekly": "आज से आगे की गहरी झलक, साप्ताहिक और मासिक दृश्य, और बहुत कुछ।"
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "राशि राशिफल",
+      "browseHoroscopesByZodiacSign": "राशि के अनुसार राशिफल देखें, किसी के लिए भी, कभी भी।"
+    },
+    "NumerologyScreen": {
+      "numerology": "अंक ज्योतिष",
+      "yourMoolaankBirthNumberAnd": "आपका मूलांक (जन्म अंक) और भाग्यांक (भाग्य अंक), समझाए गए।"
+    },
+    "MyReportsScreen": {
+      "myReports": "मेरी रिपोर्ट",
+      "allYourPreviousReadingsAnd": "आपकी सभी पिछली रीडिंग और रिपोर्ट, एक ही जगह"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "कुछ गलत हो गया",
+      "thisUsuallyTakesUnderA": "इसमें आमतौर पर एक मिनट से कम लगता है।",
+      "couldNotFinishYourSketch": "आपका स्केच पूरा नहीं हो सका। कृपया फिर कोशिश करें - आपसे दोबारा शुल्क नहीं लिया जाएगा।",
+      "couldNotGenerateYourSketch": "आपका स्केच नहीं बन सका। आप दोबारा भुगतान किए बिना फिर कोशिश कर सकते हैं।"
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "स्केच हटाएँ",
+      "couldNotDeleteThisSketch": "यह स्केच हटाया नहीं जा सका। कृपया फिर कोशिश करें।",
+      "soulmateSketchHistory": "सोलमेट स्केच इतिहास",
+      "noSketchesYet": "अभी कोई स्केच नहीं",
+      "yourPurchasedSoulmateSketchesWill": "आपके खरीदे हुए सोलमेट स्केच यहाँ दिखाई देंगे।",
+      "createASketch": "स्केच बनाएँ"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "सोलमेट स्केच",
+      "aMysteriousArtisticPortraitOf": "उस जीवनसाथी का एक रहस्यमय, कलात्मक चित्र जिसकी कल्पना आपका दिल करता है।",
+      "soulmateSketchIsEntertainmentAnd": "सोलमेट स्केच मनोरंजन और रचनात्मक आत्म-चिंतन है - चित्र काल्पनिक रेखाचित्रों के एक उदाहरण संग्रह से मिलाया जाता है। यह कभी कोई असली व्यक्ति नहीं है, और न ही आपके भावी साथी की कोई वैज्ञानिक या गारंटीशुदा भविष्यवाणी।",
+      "yourFirstSoulmateSketchIs": "आपका पहला सोलमेट स्केच मुफ़्त है।",
+      "yourFreeSketchHasBeen": "आपका मुफ़्त स्केच इस्तेमाल हो चुका है। नीचे और प्रीमियम स्केच देखें।",
+      "viewMyFreeSketch": "मेरा मुफ़्त स्केच देखें"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "समीक्षा और भुगतान",
+      "yourPreferences": "आपकी प्राथमिकताएँ",
+      "gender": "लिंग",
+      "ageRange": "आयु सीमा",
+      "countryBackground": "देश / पृष्ठभूमि",
+      "style": "शैली",
+      "yourPaymentIsProcessedSecurely": "आपका भुगतान सुरक्षित रूप से प्रोसेस होता है। भुगतान सत्यापित होने के बाद ही निर्माण शुरू होता है - निर्माण दोबारा करना पड़े तो आपसे फिर शुल्क नहीं लिया जाता।",
+      "payAndGenerateMySketch": "भुगतान करें और मेरा स्केच बनाएँ",
+      "verifyingYourPayment": "आपका भुगतान सत्यापित हो रहा है...",
+      "paymentsAreNotYetAvailable": "इस सर्वर पर भुगतान अभी उपलब्ध नहीं हैं। कृपया बाद में फिर कोशिश करें।",
+      "couldNotStartCheckoutPlease": "चेकआउट शुरू नहीं हो सका। कृपया फिर कोशिश करें।",
+      "paymentVerificationFailedIfAn": "भुगतान सत्यापन विफल रहा। यदि कोई राशि कटी है, तो वह वापस कर दी जाएगी।",
+      "paymentDidNotCompletePlease": "भुगतान पूरा नहीं हुआ। कृपया फिर कोशिश करें।"
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "पसंदीदा सोलमेट का लिंग",
+      "preferredAgeRange": "पसंदीदा आयु सीमा",
+      "preferredCountryOrCulturalBackground": "पसंदीदा देश या सांस्कृतिक पृष्ठभूमि",
+      "moreCountries": "और देश",
+      "preferredPortraitStyle": "पसंदीदा चित्र शैली",
+      "couldNotStartYourFree": "आपका मुफ़्त स्केच शुरू नहीं हो सका। कृपया फिर कोशिश करें।"
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "आपका स्केच लोड हो रहा है...",
+      "couldnTLoadThisSketch": "यह स्केच लोड नहीं हो सका। कृपया फिर कोशिश करें।",
+      "yourSoulmateSketch": "आपका सोलमेट स्केच",
+      "preferences": "प्राथमिकताएँ",
+      "background": "पृष्ठभूमि",
+      "personalityReflection": "व्यक्तित्व चिंतन",
+      "compatibilityTraits": "अनुकूलता के गुण",
+      "thisPortraitAndReflectionAre": "यह चित्र और चिंतन काल्पनिक मनोरंजन हैं, एक उदाहरण स्केच संग्रह से मिलाए गए - कोई असली व्यक्ति नहीं, और न ही आपके भावी साथी की कोई तथ्यात्मक या गारंटीशुदा भविष्यवाणी।",
+      "share": "साझा करें",
+      "savedToMyReportsShared": "मेरी रिपोर्ट में सहेजा गया - साझा प्रतियों पर Palm Setu वॉटरमार्क होता है, आपकी सहेजी मूल प्रति पर कभी नहीं।",
+      "lovedYourFreeSketch": "अपना मुफ़्त स्केच पसंद आया?",
+      "exploreMorePortraitsAndStyles": "और चित्र और शैलियाँ देखें - प्रीमियम स्केच मामूली कीमत से शुरू होते हैं, जो Palm Setu द्वारा पूरी तरह कॉन्फ़िगर की जाती है।",
+      "explorePremiumSketches": "प्रीमियम स्केच देखें",
+      "done": "हो गया"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "आप क्या खोजना चाहेंगे?",
+      "tarotHereIsATraditional": "यहाँ टैरो चिंतन के लिए एक पारंपरिक, व्याख्यात्मक अभ्यास है - भविष्य की घटनाओं की भविष्यवाणी का वैज्ञानिक रूप से प्रमाणित तरीका नहीं।",
+      "whatSOnYourMind": "आपके मन में क्या है? (निजी रहता है, जब तक आप साझा करना न चुनें)",
+      "chooseASpread": "स्प्रेड चुनें"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "कार्ड फैलाने के लिए डेक पर टैप करें",
+      "takeAMomentAndChoose": "एक पल ठहरें और अपने कार्ड चुनें",
+      "seeMyReading": "मेरी रीडिंग देखें",
+      "somethingWentWrongStartingYour": "आपकी रीडिंग शुरू करते समय कुछ गलत हो गया।"
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "प्रश्न, कार्ड, रिपोर्ट खोजें...",
+      "savedOnly": "केवल सहेजे गए",
+      "previous": "पिछला",
+      "next": "अगला"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+      "context": "संदर्भ",
+      "advice": "सलाह",
+      "symbolism": "प्रतीकवाद",
+      "overallReflection": "समग्र चिंतन",
+      "detailedAiReading": "विस्तृत AI रीडिंग",
+      "practicalSuggestions": "व्यावहारिक सुझाव",
+      "reflectionQuestions": "चिंतन प्रश्न",
+      "yourBirthChartPerspective": "आपकी जन्म कुंडली का दृष्टिकोण",
+      "goDeeperWithAi": "AI के साथ और गहराई में जाएँ",
+      "exploreTheSymbolismOfYour": "अपने चुने कार्डों का प्रतीकवाद, वे कैसे जुड़ते हैं, और किन विषयों पर आप चिंतन करना चाहेंगे, यह जानें।",
+      "followUpQuestionsAreA": "अनुवर्ती प्रश्न एक प्रीमियम सुविधा हैं",
+      "askAnythingAboutThisSpecific": "इस विशेष रीडिंग के बारे में कुछ भी पूछें और अपने असली कार्डों पर आधारित उत्तर पाएँ।",
+      "upgradeToPremium": "प्रीमियम में अपग्रेड करें",
+      "tryAsking": "पूछकर देखें:",
+      "thinking": "सोच रहा है",
+      "askAboutThisReading": "इस रीडिंग के बारे में पूछें...",
+      "journalThisReading": "इस रीडिंग को जर्नल में लिखें",
+      "privateNotesNeverSharedUnless": "निजी नोट - जब तक आप न चुनें, कभी साझा नहीं होते",
+      "saveNote": "नोट सहेजें",
+      "saveThisReading": "यह रीडिंग सहेजें",
+      "createAFreeAccountTo": "अपनी टैरो रीडिंग सहेजने और जब चाहें उसकी अंतर्दृष्टि फिर से देखने के लिए मुफ़्त खाता बनाएँ।",
+      "deleteThisReading": "यह रीडिंग हटाएँ",
+      "thisPermanentlyDeletesTheReading": "इससे रीडिंग और उससे जुड़े सभी जर्नल नोट स्थायी रूप से हट जाते हैं।",
+      "couldNotGetAResponse": "उत्तर नहीं मिल सका। कृपया फिर कोशिश करें।",
+      "somethingWentWrongGeneratingYour": "आपकी विस्तृत रीडिंग बनाते समय कुछ गलत हो गया।"
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "दिशा विवरण लोड नहीं हो सके।",
+      "vastuCompass": "वास्तु कंपास",
+      "holdYourPhoneFlatAway": "सबसे भरोसेमंद रीडिंग के लिए फ़ोन को सपाट रखें, धातु और इलेक्ट्रॉनिक्स से दूर।",
+      "checkingSensorAvailability": "सेंसर की उपलब्धता जाँची जा रही है...",
+      "locationPermissionIsNeededTo": "कंपास की दिशा पढ़ने के लिए स्थान की अनुमति चाहिए (हम आपके GPS निर्देशांक कभी नहीं पढ़ते या सहेजते, केवल दिशा)। नीचे अपनी सामने की दिशा हाथ से चुनें, या लाइव कंपास के लिए अपने डिवाइस की सेटिंग में अनुमति चालू करें।",
+      "aCompassSensorIsnT": "इस डिवाइस या ब्राउज़र पर कंपास सेंसर उपलब्ध नहीं है। नीचे अपनी सामने की दिशा हाथ से चुनें।",
+      "lowAccuracyDetectedMoveAway": "कम सटीकता मिली - धातु की वस्तुओं या इलेक्ट्रॉनिक्स से दूर जाएँ और कैलिब्रेट करने के लिए फ़ोन को 8 के आकार में घुमाएँ।",
+      "approximateReadingNotACalibrated": "अनुमानित रीडिंग, कैलिब्रेटेड सर्वेक्षण यंत्र नहीं।",
+      "selectManuallyInstead": "इसके बजाय हाथ से चुनें",
+      "selectYourDirection": "अपनी दिशा चुनें",
+      "useLiveSensorInstead": "इसके बजाय लाइव सेंसर उपयोग करें",
+      "bestForHome": "घर के लिए सर्वोत्तम",
+      "noStrongTraditionalAssociation": "कोई मज़बूत पारंपरिक संबंध नहीं",
+      "bestForWork": "काम के लिए सर्वोत्तम",
+      "thisShowsADirectionNot": "यह एक दिशा दिखाता है, पूरी संपत्ति का आकलन नहीं। कमरे-दर-कमरे व्यक्तिगत मार्गदर्शन के लिए संपत्ति विश्लेषण इस्तेमाल करें।"
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "वास्तु रिपोर्ट",
+      "yourVastuReportsWillAppear": "आपकी वास्तु रिपोर्ट यहाँ दिखाई देंगी।"
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "अपनी जगह को संरेखित करें - चिंतन के लिए पारंपरिक दिशा-मार्गदर्शन, वैज्ञानिक रूप से प्रमाणित संपत्ति मूल्यांकन नहीं।",
+      "openTheCompass": "कंपास खोलें",
+      "findYourCurrentFacingDirection": "अपने डिवाइस के सेंसर से अपनी वर्तमान सामने की दिशा जानें, या हाथ से चुनें।",
+      "analyzeAProperty": "संपत्ति का विश्लेषण करें",
+      "addRoomDirectionsForA": "व्यावहारिक, कम खर्च वाले सुझावों के साथ व्यक्तिगत रिपोर्ट के लिए कमरों की दिशाएँ जोड़ें।",
+      "analyzeAPropertyToSee": "अपनी पहली रिपोर्ट यहाँ देखने के लिए किसी संपत्ति का विश्लेषण करें।",
+      "vastuIsATraditionalArchitectural": "वास्तु एक पारंपरिक वास्तुकला और सांस्कृतिक मान्यता प्रणाली है। इसके आध्यात्मिक और समृद्धि संबंधी दावे वैज्ञानिक रूप से स्थापित नहीं हैं, और किसी दिशा को कभी बीमारी, आर्थिक हानि या रिश्तों की समस्याओं का कारण नहीं बताया जाता।"
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "कमरे की दिशा हटाएँ?",
+      "remove": "हटाएँ",
+      "alreadyAdded": "पहले से जोड़ा जा चुका है",
+      "analyzeYourProperty": "अपनी संपत्ति का विश्लेषण करें",
+      "configureExactlyTheRoomsYour": "ठीक वही कमरे सेट करें जो आपकी संपत्ति में हैं, फिर हर एक की असली दिशा तय करें - जिनके बारे में पक्का न हो उन्हें छोड़ सकते हैं।",
+      "propertyType": "संपत्ति का प्रकार",
+      "roomConfiguration": "कमरों की व्यवस्था",
+      "commonRooms": "सामान्य कमरे",
+      "roomNameEGStudy": "कमरे का नाम (जैसे स्टडी रूम)",
+      "addRoom": "कमरा जोड़ें",
+      "addAnotherRoom": "एक और कमरा जोड़ें",
+      "additionalDetailsOptional": "अतिरिक्त विवरण (वैकल्पिक)",
+      "tellUsAnythingElseAbout": "अपनी संपत्ति के लेआउट के बारे में कुछ और बताएँ...",
+      "generateMyReport": "मेरी रिपोर्ट बनाएँ"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "संपत्ति अवलोकन",
+      "directionAnalysis": "दिशा विश्लेषण",
+      "suggestionsChecklist": "सुझावों की चेकलिस्ट",
+      "optionalCulturalPractice": "वैकल्पिक सांस्कृतिक परिपाटी",
+      "vastuIsATraditionalArchitectural": "वास्तु एक पारंपरिक वास्तुकला और सांस्कृतिक मान्यता प्रणाली है। इसके आध्यात्मिक और समृद्धि संबंधी दावे वैज्ञानिक रूप से स्थापित नहीं हैं। यहाँ किसी दिशा को बीमारी, आर्थिक हानि या रिश्तों की समस्याओं का कारण नहीं बताया जाता।",
+      "askAboutThisReport": "इस रिपोर्ट के बारे में पूछें...",
+      "thisPermanentlyDeletesTheVastu": "इससे वास्तु रिपोर्ट स्थायी रूप से हट जाती है।"
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "चिंतन का एक पल",
+      "thisPieceIsFromThe": "यह अंश पुस्तकालय के वैकल्पिक ज्योतिष-प्रेरित हिस्से से है।",
+      "couldNotLoadTodayS": "आज की पुष्टि लोड नहीं हो सकी।"
+    },
+    "BreathingSessionScreen": {
+      "saving": "सहेजा जा रहा है...",
+      "stop": "रोकें"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "श्वास अभ्यास",
+      "chooseAGuidedBreathingTechnique": "एक निर्देशित श्वास तकनीक चुनें।",
+      "noTechniquesAvailable": "कोई तकनीक उपलब्ध नहीं",
+      "pleaseTryAgainLater": "कृपया बाद में फिर कोशिश करें।",
+      "couldNotLoadBreathingTechniques": "श्वास तकनीकें लोड नहीं हो सकीं। कृपया फिर कोशिश करें।"
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "यह चैलेंज फिर से शुरू करें?",
+      "thisWipesAllYourProgress": "इससे इस चैलेंज की आपकी सारी प्रगति मिट जाती है और दिन 1 से फिर शुरू होता है। इसे पूर्ववत नहीं किया जा सकता।",
+      "restart": "फिर शुरू करें",
+      "leaveThisChallenge": "यह चैलेंज छोड़ें?",
+      "yourProgressIsKeptBut": "आपकी प्रगति सुरक्षित रहती है, पर यह अब सक्रिय नहीं रहेगा।",
+      "leave": "छोड़ें",
+      "challengeCompleted": "चैलेंज पूरा हुआ",
+      "dayByDayTasks": "दिन-प्रतिदिन के कार्य",
+      "couldNotLoadThisChallenge": "यह चैलेंज लोड नहीं हो सका।",
+      "couldNotJoinThisChallenge": "यह चैलेंज जॉइन नहीं हो सका।",
+      "couldNotMarkThisDay": "इस दिन को पूरा चिह्नित नहीं किया जा सका।",
+      "couldNotRestartThisChallenge": "यह चैलेंज फिर से शुरू नहीं हो सका।",
+      "couldNotLeaveThisChallenge": "यह चैलेंज छोड़ा नहीं जा सका।"
+    },
+    "ChallengesScreen": {
+      "challenges": "चैलेंज",
+      "multiDayGuidedProgramsJoin": "कई दिनों के निर्देशित कार्यक्रम - एक में जुड़ें और अपनी गति से हर दिन एक कार्य पूरा करें।",
+      "noChallengesAvailable": "कोई चैलेंज उपलब्ध नहीं",
+      "couldNotLoadChallengesPlease": "चैलेंज लोड नहीं हो सके। कृपया फिर कोशिश करें।"
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "यह लक्ष्य हटाएँ?",
+      "targetFrequency": "लक्ष्य आवृत्ति",
+      "save": "सहेजें",
+      "completed": "पूर्ण",
+      "logTodaySProgressUser": "आज की प्रगति दर्ज करें (उपयोगकर्ता द्वारा बताई गई)",
+      "optionalNoteAboutToday": "आज के बारे में वैकल्पिक नोट",
+      "logProgress": "प्रगति दर्ज करें",
+      "markComplete": "पूर्ण चिह्नित करें",
+      "userReportedHistory": "उपयोगकर्ता द्वारा बताया गया इतिहास",
+      "noCheckInsLoggedYet": "अभी तक कोई चेक-इन दर्ज नहीं हुआ।",
+      "userReported": "उपयोगकर्ता द्वारा बताया गया",
+      "deleteGoal": "लक्ष्य हटाएँ",
+      "couldNotLoadThisGoal": "यह लक्ष्य लोड नहीं हो सका।",
+      "couldNotLogProgress": "प्रगति दर्ज नहीं हो सकी।",
+      "couldNotMarkGoalComplete": "लक्ष्य पूर्ण चिह्नित नहीं हो सका।",
+      "couldNotDeleteThisGoal": "यह लक्ष्य हटाया नहीं जा सका।",
+      "couldNotUpdateThisGoal": "यह लक्ष्य अपडेट नहीं हो सका।"
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "पूर्ण किए गए लक्ष्य",
+      "noCompletedGoalsYet": "अभी कोई पूर्ण लक्ष्य नहीं",
+      "goalsYouCompleteWillShow": "जो लक्ष्य आप पूरे करेंगे वे यहाँ दिखाई देंगे।",
+      "couldNotLoadCompletedGoals": "पूर्ण लक्ष्य लोड नहीं हो सके।"
+    },
+    "GoalsScreen": {
+      "goals": "लक्ष्य",
+      "progressHereIsAlwaysWhat": "यहाँ प्रगति हमेशा वही होती है जो आप खुद बताते हैं - कुछ भी अपने-आप नहीं मापा जाता।",
+      "activeGoals": "सक्रिय लक्ष्य",
+      "noActiveGoalsYetAdd": "अभी कोई सक्रिय लक्ष्य नहीं - नीचे एक जोड़ें।",
+      "newGoal": "नया लक्ष्य",
+      "goalTitle": "लक्ष्य का शीर्षक",
+      "targetFrequencyOptionalEG": "लक्ष्य आवृत्ति (वैकल्पिक), जैसे सप्ताह में 4 बार",
+      "category": "श्रेणी",
+      "create": "बनाएँ",
+      "couldNotLoadGoalsPlease": "लक्ष्य लोड नहीं हो सके। कृपया फिर कोशिश करें।",
+      "couldNotCreateGoal": "लक्ष्य नहीं बन सका।"
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "प्रेरणा",
+      "browseTheFullLibraryOrganized": "प्रकार के अनुसार व्यवस्थित पूरा पुस्तकालय देखें।",
+      "all": "सभी",
+      "favorites": "पसंदीदा",
+      "couldNotLoadTheInspiration": "प्रेरणा पुस्तकालय लोड नहीं हो सका।"
+    },
+    "JournalScreen": {
+      "journal": "जर्नल",
+      "newEntry": "नई प्रविष्टि",
+      "searchEntries": "प्रविष्टियाँ खोजें",
+      "noJournalEntriesYetStart": "अभी कोई जर्नल प्रविष्टि नहीं। किसी सुझाव या खुले लेखन से शुरू करें।"
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "इस सत्र का ऑडियो जल्द आ रहा है। आपका सत्र फिर भी ट्रैक हो रहा है, और आप नीचे इसे पूर्ण चिह्नित कर सकते हैं।",
+      "sleepTimer": "स्लीप टाइमर",
+      "markSessionComplete": "सत्र पूर्ण चिह्नित करें",
+      "couldNotLoadThisSession": "यह सत्र लोड नहीं हो सका।",
+      "thisSessionRequiresPalmSetu": "इस सत्र के लिए Palm Setu प्रीमियम चाहिए।",
+      "couldNotStartThisSession": "यह सत्र शुरू नहीं हो सका।"
+    },
+    "MeditationScreen": {
+      "meditationSleep": "ध्यान और नींद",
+      "guidedSessionsAndAmbientSounds": "निर्देशित सत्र और परिवेश ध्वनियाँ, इस पर आधारित कि अभी आपको क्या चाहिए।",
+      "recentlyPlayed": "हाल ही में चलाए गए",
+      "noContentAvailable": "कोई सामग्री उपलब्ध नहीं",
+      "couldNotLoadMeditationContent": "ध्यान सामग्री लोड नहीं हो सकी। कृपया फिर कोशिश करें।"
+    },
+    "DirectionSelectorModal": {
+      "direction": "दिशा",
+      "chooseTheDirectionThisRoom": "वह दिशा चुनें जिधर यह कमरा आपकी संपत्ति में वास्तव में खुलता है - यह आपके लिए कभी अंदाज़े से तय नहीं की जाती।",
+      "iMNotSureSkip": "मुझे पक्का नहीं पता, अभी छोड़ें"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "सुरक्षित चेकआउट"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "अर्थ"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "टैरो कैसे काम करता है"
+    }
+  },
+  "errors": {
+    "network": "कनेक्ट नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+    "timeout": "इसमें बहुत समय लग रहा है। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+    "loadFailed": "हम इसे लोड नहीं कर सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+    "partialLoad": "कुछ सामग्री लोड नहीं हो सकी।",
+    "retry": "फिर कोशिश करें",
+    "tryAgain": "फिर से कोशिश करें",
+    "sessionExpired": "आपका सत्र समाप्त हो गया है। कृपया फिर से साइन इन करें।",
+    "aiLimit": "आप इस महीने की AI उपयोग सीमा तक पहुँच गए हैं। यह अगले महीने की शुरुआत में रीसेट होगी।",
+    "rateLimited": "बहुत अधिक अनुरोध। कृपया थोड़ा धीमे चलें और कुछ देर बाद फिर कोशिश करें।",
+    "generic": "कुछ गलत हो गया। कृपया फिर कोशिश करें।"
+  },
+  "aiMeter": {
+    "used": "{{limit}} में से {{used}}",
+    "left": "{{left}} बचे हैं। {{date}} को रीसेट होगा।",
+    "low": "कम बचा है: {{left}} बचे हैं। {{date}} को रीसेट होगा।",
+    "exhausted": "आपने इस महीने का AI कोटा पूरा कर लिया है। यह {{date}} को रीसेट होगा।"
+  },
+  "verifyEmail": {
+    "sentTo": "हमने {{email}} पर नया लिंक भेजा है। उसे खोलें, फिर यहाँ वापस आएँ।",
+    "error": "अभी ईमेल नहीं भेजा जा सका। कृपया फिर कोशिश करें।",
+    "prompt": "{{email}} की पुष्टि करें ताकि आप पासवर्ड रीसेट कर सकें और प्रीमियम को अपने खाते पर सुरक्षित रख सकें।",
+    "send": "सत्यापन ईमेल भेजें",
+    "sending": "भेजा जा रहा है...",
+    "again": "फिर से भेजें"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "उन्नत हस्तरेखा पठन",
+        "tagline": "अपनी पहली मुफ़्त रिपोर्ट से आगे बढ़ें।",
+        "p1": "असीमित विस्तृत हस्तरेखा रिपोर्ट (मुफ़्त प्लान में 1)",
+        "p2": "हर रीडिंग पर असीमित AI-संचालित अनुवर्ती प्रश्न (मुफ़्त प्लान में 2)",
+        "p3": "पहचानी गई हर रेखा और विशेषता अनलॉक, एक-एक करके नहीं",
+        "p4": "आपके सहेजे गए रिपोर्ट इतिहास तक पूर्ण पहुँच"
+      },
+      "tarot": {
+        "title": "प्रीमियम टैरो",
+        "tagline": "हर स्प्रेड, सिर्फ़ एक-कार्ड ड्रॉ नहीं।",
+        "p1": "सभी प्रीमियम स्प्रेड: थ्री-कार्ड, फाइव-कार्ड, सेल्टिक क्रॉस और अन्य (मुफ़्त प्लान में वन-कार्ड ड्रॉ)",
+        "p2": "किसी भी रीडिंग के लिए AI-संचालित विस्तृत टैरो रिपोर्ट",
+        "p3": "प्रतिदिन 20 तक AI अनुवर्ती प्रश्न",
+        "p4": "सहेजा गया पूरा रीडिंग इतिहास"
+      },
+      "compatibility": {
+        "title": "प्रेम और अनुकूलता",
+        "tagline": "दो लोगों के लिए बनी रीडिंग।",
+        "p1": "रिलेशनशिप कम्पैटिबिलिटी और लव एंड रिलेशनशिप टैरो स्प्रेड",
+        "p2": "किसी दूसरे व्यक्ति की कुंडली के लिए ज्योतिष अनुकूलता",
+        "p3": "आपकी सहेजी प्रोफ़ाइल पर आधारित व्यक्तिगत रिश्ते की अंतर्दृष्टि"
+      },
+      "astrology": {
+        "title": "संपूर्ण ज्योतिष पुस्तकालय",
+        "tagline": "वैदिक और पाश्चात्य, और आगे तक।",
+        "p1": "असीमित जन्म-कुंडली निर्माण (मुफ़्त प्लान में 1)",
+        "p2": "अनुकूलता के लिए किसी दूसरे व्यक्ति की कुंडली बनाएँ",
+        "p3": "वैदिक और पाश्चात्य दोनों प्रणालियों तक पूर्ण पहुँच"
+      },
+      "ai": {
+        "title": "व्यक्तिगत AI अनुभव",
+        "tagline": "आपके अपने डेटा पर आधारित, ज़्यादा बातचीत।",
+        "p1": "प्रतिदिन 200 तक AI साथी संदेश (मुफ़्त प्लान में 15)",
+        "p2": "आपकी सहेजी रीडिंग और प्रोफ़ाइल का उपयोग करने वाले संदर्भ-सचेत उत्तर",
+        "p3": "टैरो, हस्तरेखा और रत्न रिपोर्ट में AI-संचालित अनुवर्ती प्रश्न"
+      },
+      "wellness": {
+        "title": "आत्म-खोज और वेलनेस",
+        "tagline": "एक अभ्यास सचमुच बनाने की जगह।",
+        "p1": "असीमित सक्रिय आदतें (मुफ़्त प्लान में 3)",
+        "p2": "सभी श्वास तकनीकें और निर्देशित ध्यान अनलॉक",
+        "p3": "सभी वेलनेस चैलेंज अनलॉक",
+        "p4": "पूरा मूड-इतिहास दृश्य (मुफ़्त प्लान में पिछले 7 दिन)",
+        "p5": "प्रतिदिन अधिक AI जर्नल अंतर्दृष्टि (मुफ़्त प्लान में 2)"
+      }
+    },
+    "compare": {
+      "freeHeader": "मुफ़्त",
+      "premiumHeader": "प्रीमियम",
+      "palm": {
+        "label": "विस्तृत हस्तरेखा रिपोर्ट",
+        "free": "1",
+        "premium": "असीमित"
+      },
+      "tarotSpreads": {
+        "label": "टैरो स्प्रेड",
+        "free": "केवल वन-कार्ड",
+        "premium": "सभी स्प्रेड"
+      },
+      "tarotFollowups": {
+        "label": "टैरो अनुवर्ती प्रश्न",
+        "free": "शामिल नहीं",
+        "premium": "प्रतिदिन 20 तक"
+      },
+      "kundli": {
+        "label": "जन्म-कुंडली निर्माण",
+        "free": "1",
+        "premium": "असीमित"
+      },
+      "otherChart": {
+        "label": "किसी और की कुंडली / अनुकूलता",
+        "free": "शामिल नहीं",
+        "premium": "शामिल"
+      },
+      "companion": {
+        "label": "AI साथी संदेश",
+        "free": "15/दिन",
+        "premium": "200/दिन"
+      },
+      "habits": {
+        "label": "सक्रिय वेलनेस आदतें",
+        "free": "3",
+        "premium": "असीमित"
+      },
+      "moodHistory": {
+        "label": "मूड इतिहास",
+        "free": "7 दिन",
+        "premium": "पूरा इतिहास"
+      }
+    },
+    "period": {
+      "monthly": "/माह",
+      "quarterly": "/3 माह",
+      "annual": "/वर्ष"
+    },
+    "cta": {
+      "unlock": "Palm Setu प्रीमियम अनलॉक करें",
+      "continueWith": "{{plan}} के साथ जारी रखें, {{price}}"
+    },
+    "badge": {
+      "bestValue": "सबसे किफ़ायती",
+      "popular": "लोकप्रिय विकल्प"
+    },
+    "perMonthEquivalent": "{{price}}/माह के बराबर",
+    "save": "{{percent}}% बचाएँ",
+    "processing": "प्रोसेस हो रहा है...",
+    "restoring": "पुनर्स्थापित हो रहा है...",
+    "restore": "खरीदारी पुनर्स्थापित करें",
+    "legal": "सदस्यताएँ स्वतः नवीनीकृत होती हैं, जब तक वर्तमान अवधि समाप्त होने से कम से कम 24 घंटे पहले रद्द न की जाएँ। अपने App Store या Play Store खाते की सेटिंग में कभी भी प्रबंधित या रद्द करें।",
+    "error": {
+      "unavailable": "खरीदारी अभी उपलब्ध नहीं है। कोई शुल्क नहीं लिया गया।",
+      "verifyEmail": "कृपया पहले अपना ईमेल सत्यापित करें (प्रोफ़ाइल स्क्रीन पर कार्ड देखें), फिर सब्सक्राइब करने वापस आएँ।",
+      "planUnavailable": "यह प्लान अभी खरीद के लिए उपलब्ध नहीं है। कृपया थोड़ी देर में फिर कोशिश करें।",
+      "notActiveYet": "खरीदारी पूरी हुई, लेकिन प्रीमियम अभी सक्रिय नहीं है - कृपया कुछ देर में \"खरीदारी पुनर्स्थापित करें\" आज़माएँ।",
+      "purchaseFailed": "खरीदारी में कुछ गड़बड़ हुई। विफल होने पर कोई शुल्क नहीं लिया गया।",
+      "nothingToRestore": "पुनर्स्थापित करने के लिए कोई पिछली खरीदारी नहीं मिली।",
+      "restoreFailed": "अभी खरीदारी पुनर्स्थापित नहीं हो सकी।"
+    },
+    "intent": {
+      "createFirst": "पहले एक मुफ़्त खाता बनाएँ, ताकि आपका प्रीमियम आपके सभी डिवाइस पर काम करे।",
+      "logInToRestore": "इस डिवाइस पर अपना प्रीमियम पुनर्स्थापित करने के लिए लॉग इन करें।"
+    }
+  },
+  "streak": {
+    "dayStreak": "दिन की स्ट्रीक",
+    "longest": "सबसे लंबी: {{n}}",
+    "start": "अपनी स्ट्रीक बनाने के लिए हर दिन Palm Setu खोलें।",
+    "checkedIn": "आज आपका चेक-इन हो गया। इसे जारी रखने के लिए कल फिर आएँ।",
+    "atRisk": "अपनी स्ट्रीक बचाए रखने के लिए आज ऐप खोलें।",
+    "milestone": "लगातार {{n}} दिन। बहुत बढ़िया!",
+    "turnOnReminders": "रिमाइंडर सेट करें"
+  },
+  "notifications": {
+    "dailyReminders": "दैनिक रिमाइंडर",
+    "horoscopeReminder": "दैनिक राशिफल",
+    "streakReminder": "स्ट्रीक रिमाइंडर",
+    "timeLabel": "समय (HH:mm, 24 घंटे)",
+    "invalidTime": "08:00 जैसा समय दर्ज करें।",
+    "unavailable": "ऐप के इस संस्करण में रिमाइंडर उपलब्ध नहीं हैं।",
+    "horoscopeTitle": "आपका दैनिक राशिफल",
+    "horoscopeBody": "आज की रीडिंग आपके लिए तैयार है।",
+    "streakTitle": "अपनी स्ट्रीक जारी रखें",
+    "streakBody": "आप {{count}} दिन की स्ट्रीक पर हैं। इसे जारी रखने के लिए आज Palm Setu खोलें।"
   }
 }

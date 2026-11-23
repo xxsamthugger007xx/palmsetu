@@ -3,6 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native';
 import { color, radius, spacing } from '../theme/tokens';
 import { Text } from './Text';
 import { Button } from './Button';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   visible: boolean;
@@ -23,6 +24,7 @@ export function ConfirmationModal({
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.backdrop}>
@@ -32,7 +34,7 @@ export function ConfirmationModal({
             {description}
           </Text>
           <View style={styles.row}>
-            <Button label="Cancel" variant="secondary" onPress={onCancel} style={{ flex: 1 }} />
+            <Button label={t('ui.AssistantHistoryScreen.cancel')} variant="secondary" onPress={onCancel} style={{ flex: 1 }} />
             <Button label={confirmLabel} variant={destructive ? 'danger' : 'primary'} onPress={onConfirm} style={{ flex: 1 }} />
           </View>
         </View>

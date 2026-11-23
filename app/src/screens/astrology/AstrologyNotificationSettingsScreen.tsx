@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, Info } from 'lucide-react-native';
+import { ErrorBanner, ErrorState } from '../../components/ErrorState';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -11,10 +12,12 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { DailyDeliveryPreference } from '../../types/astrology';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 function ToggleRow({ label, value, onToggle }: { label: string; value: boolean; onToggle: () => void }) {
   return (
-    <Card style={styles.toggleRow} onPress={onToggle}>
+    <Card style={styles.toggleRow} onPress={onToggle} accessibilityRole="switch" accessibilityLabel={label} accessibilityState={{ checked: value }}>
       <Text variant="bodySm" style={{ flex: 1 }}>{label}</Text>
       <View style={[styles.toggle, value && styles.toggleOn]}>
         <View style={[styles.toggleDot, value && styles.toggleDotOn]} />
@@ -24,12 +27,16 @@ function ToggleRow({ label, value, onToggle }: { label: string; value: boolean; 
 }
 
 export function AstrologyNotificationSettingsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [prefs, setPrefs] = useState<DailyDeliveryPreference | null>(null);
   const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const load = React.useCallback(async () => {
-    await astrologyApi.getPreferences().then(setPrefs);
+    setLoadError(false);
+    await astrologyApi.getPreferences().then(setPrefs).catch(() => setLoadError(true));
   }, []);
 
   useEffect(() => {
@@ -39,44 +46,57 @@ export function AstrologyNotificationSettingsScreen() {
   const save = async (next: Partial<DailyDeliveryPreference>) => {
     if (!prefs) return;
     const merged = { ...prefs, ...next };
+    const previous = prefs;
     setPrefs(merged);
     setSaving(true);
+    setSaveError(null);
     try {
       await astrologyApi.savePreferences(merged);
+    } catch (__err) {
+      const err = asApiError(__err);
+      setPrefs(previous); // put the toggle back so the screen never shows a setting that wasn't saved
+      setSaveError(err?.isNetworkError ? t('ui.AstrologyNotificationSettingsScreen.unableToConnectYourChange') : t('ui.AstrologyNotificationSettingsScreen.couldnTSaveYourChange'));
     } finally {
       setSaving(false);
     }
   };
 
   if (!prefs) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return (
+      <PageContainer>
+        {loadError
+          ? <ErrorState onRetry={load} />
+          : <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      </PageContainer>
+    );
   }
 
   return (
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Notification Preferences</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.AstrologyNotificationSettingsScreen.notificationPreferences')}</Text>
         <View style={{ width: 36 }} />
       </View>
+
+      {saveError && <View style={{ marginTop: spacing.md }}><ErrorBanner message={saveError} /></View>}
 
       <Card style={{ marginTop: spacing.lg, flexDirection: 'row', alignItems: 'flex-start' }}>
         <Info size={14} color={color.textMuted} strokeWidth={1.75} style={{ marginTop: 2 }} />
         <Text variant="caption" tone="muted" style={{ marginLeft: spacing.sm, flex: 1 }}>
-          Push delivery isn't wired up to a real device-token/scheduler yet in this build - these
-          preferences are saved and will take effect once that infrastructure is connected.
+          {t('ui.AstrologyNotificationSettingsScreen.pushDeliveryIsnTWired')}
         </Text>
       </Card>
 
-      <ToggleRow label="Personal daily message" value={prefs.dailyHoroscopeEnabled} onToggle={() => save({ dailyHoroscopeEnabled: !prefs.dailyHoroscopeEnabled })} />
-      <ToggleRow label="Shared relationship message" value={prefs.relationshipMessageEnabled} onToggle={() => save({ relationshipMessageEnabled: !prefs.relationshipMessageEnabled })} />
+      <ToggleRow label={t('ui.AstrologyNotificationSettingsScreen.personalDailyMessage')} value={prefs.dailyHoroscopeEnabled} onToggle={() => save({ dailyHoroscopeEnabled: !prefs.dailyHoroscopeEnabled })} />
+      <ToggleRow label={t('ui.AstrologyNotificationSettingsScreen.sharedRelationshipMessage')} value={prefs.relationshipMessageEnabled} onToggle={() => save({ relationshipMessageEnabled: !prefs.relationshipMessageEnabled })} />
       <ToggleRow
-        label="Detailed lock-screen preview"
+        label={t('ui.AstrologyNotificationSettingsScreen.detailedLockScreenPreview')}
         value={prefs.previewMode === 'detailed'}
         onToggle={() => save({ previewMode: prefs.previewMode === 'detailed' ? 'discreet' : 'detailed' })}
       />
 
-      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>PREFERRED TIME</Text>
+      <Text variant="label" tone="muted" style={{ marginTop: spacing.lg, marginBottom: spacing.sm }}>{t('ui.AstrologyNotificationSettingsScreen.preferredTime')}</Text>
       <View style={styles.timeRow}>
         {['07:00', '08:00', '09:00', '19:00', '21:00'].map((t) => (
           <Button

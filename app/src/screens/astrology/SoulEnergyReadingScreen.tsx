@@ -12,7 +12,9 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { kundliApi } from '../../services/kundliApi';
 import { SoulEnergyReading } from '../../types/kundli';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
@@ -47,6 +49,7 @@ const SECTIONS: Section[] = [
 ];
 
 export function SoulEnergyReadingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [state, setState] = useState<LoadState>('loading');
   const [reading, setReading] = useState<SoulEnergyReading | null>(null);
@@ -59,7 +62,8 @@ export function SoulEnergyReadingScreen() {
       const r = await kundliApi.getSoulEnergy(kundliApi.todayLocalDate());
       setReading(r);
       setState('ready');
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setState(err.status === 404 ? 'needsProfile' : 'error');
     }
   }, []);
@@ -75,18 +79,18 @@ export function SoulEnergyReadingScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Generating your reading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.SoulEnergyReadingScreen.generatingYourReading')}</Text></PageContainer>;
   }
 
   if (state === 'needsProfile') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Soul Energy Reading</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.AstrologyLandingScreen.soulEnergyReading')}</Text>
         <EmptyState
           icon={Info}
-          title="Set up your birth details first"
-          description="Your Soul Energy Reading is grounded in the same birth chart as Daily Cosmic Guidance."
-          actionLabel="Set up birth details"
+          title={t('ui.SoulEnergyReadingScreen.setUpYourBirthDetails')}
+          description={t('ui.SoulEnergyReadingScreen.yourSoulEnergyReadingIs')}
+          actionLabel={t('ui.SoulEnergyReadingScreen.setUpBirthDetails')}
           onAction={() => navigation.navigate('AstrologyProfileSetup')}
         />
       </PageContainer>
@@ -94,18 +98,18 @@ export function SoulEnergyReadingScreen() {
   }
 
   if (state === 'error' || !reading) {
-    return <PageContainer><EmptyState icon={Info} title="Couldn't generate this reading" actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.SoulEnergyReadingScreen.couldnTGenerateThisReading')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Soul Energy Reading</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyLandingScreen.soulEnergyReading')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        AI-generated, grounded in your real Sun/Moon chart.
+        {t('ui.SoulEnergyReadingScreen.aiGeneratedGroundedInYour')}
       </Text>
       {reading.dataCompleteness === 'partial' && (
         <Text variant="caption" tone="muted" style={{ marginBottom: spacing.md }}>
-          Based on Sun and Moon sign only - your ascendant isn't available (requires exact birth coordinates).
+          {t('ui.SoulEnergyReadingScreen.basedOnSunAndMoon')}
         </Text>
       )}
 

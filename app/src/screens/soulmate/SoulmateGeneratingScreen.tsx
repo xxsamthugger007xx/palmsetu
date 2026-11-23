@@ -10,7 +10,9 @@ import { Button } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const MESSAGES = [
   'Connecting the stars...',
   'Imagining your soulmate...',
@@ -20,6 +22,7 @@ const MESSAGES = [
 const MESSAGE_INTERVAL_MS = 3200;
 
 export function SoulmateGeneratingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'SoulmateGenerating'>>();
   const { sketchId } = route.params;
@@ -57,11 +60,12 @@ export function SoulmateGeneratingScreen() {
         );
       } else {
         setPhase('failed');
-        setErrorMessage('Could not finish your sketch. Please try again - you will not be charged again.');
+        setErrorMessage(t('ui.SoulmateGeneratingScreen.couldNotFinishYourSketch'));
       }
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setPhase('failed');
-      setErrorMessage(err.message ?? 'Could not generate your sketch. You can retry without paying again.');
+      setErrorMessage(err.message ?? t('ui.SoulmateGeneratingScreen.couldNotGenerateYourSketch'));
     }
   };
 
@@ -80,12 +84,12 @@ export function SoulmateGeneratingScreen() {
             <AlertTriangle size={24} color={color.warning} strokeWidth={1.75} />
           </View>
           <Text variant="title" weight="semibold" style={{ marginTop: spacing.md, textAlign: 'center' }}>
-            Something went wrong
+            {t('ui.SoulmateGeneratingScreen.somethingWentWrong')}
           </Text>
           <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
             {errorMessage}
           </Text>
-          <Button label="Retry" fullWidth style={{ marginTop: spacing.lg }} onPress={runGenerate} />
+          <Button label={t('ui.AstrologyLandingScreen.retry')} fullWidth style={{ marginTop: spacing.lg }} onPress={runGenerate} />
         </View>
       </PageContainer>
     );
@@ -108,7 +112,7 @@ export function SoulmateGeneratingScreen() {
           {MESSAGES[messageIndex]}
         </Text>
         <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
-          This usually takes under a minute.
+          {t('ui.SoulmateGeneratingScreen.thisUsuallyTakesUnderA')}
         </Text>
       </View>
     </PageContainer>

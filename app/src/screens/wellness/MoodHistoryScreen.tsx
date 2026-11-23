@@ -12,7 +12,9 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, MoodEntry, MoodLevel } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const MOOD_COLOR: Record<MoodLevel, string> = {
@@ -34,6 +36,7 @@ type Trends = {
 };
 
 export function MoodHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -62,7 +65,7 @@ export function MoodHistoryScreen() {
         setTotalStored(history.totalEntriesStored);
         setTrends(trendsRes);
       })
-      .catch((err: any) => setError(err.message ?? 'Could not load your mood history. Please try again.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.MoodHistoryScreen.couldNotLoadYourMood')))
       .finally(() => setLoading(false));
   }, [trendsWindow]);
 
@@ -127,8 +130,8 @@ export function MoodHistoryScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Mood History</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MoodHistoryScreen.moodHistory')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -136,25 +139,25 @@ export function MoodHistoryScreen() {
   if (error) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Mood History</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MoodHistoryScreen.moodHistory')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Mood History</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoodHistoryScreen.moodHistory')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Trends and check-ins over time.
+        {t('ui.MoodHistoryScreen.trendsAndCheckInsOver')}
       </Text>
 
       {entries.length === 0 ? (
         <EmptyState
           icon={Heart}
-          title="No mood check-ins yet"
-          description="Log how you are feeling to start seeing your trends here."
-          actionLabel="Check in now"
+          title={t('ui.MoodHistoryScreen.noMoodCheckInsYet')}
+          description={t('ui.MoodHistoryScreen.logHowYouAreFeeling')}
+          actionLabel={t('ui.MoodHistoryScreen.checkInNow')}
           onAction={() => navigation.navigate('MoodCheckIn')}
         />
       ) : (
@@ -170,7 +173,7 @@ export function MoodHistoryScreen() {
           )}
 
           <View style={{ marginBottom: spacing.lg }}>
-            <SectionHeader title="Last 7 days" />
+            <SectionHeader title={t('ui.MoodHistoryScreen.last7Days')} />
             <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.sm }}>
               You checked in {checkedInLast7} of the last 7 days.
             </Text>
@@ -195,11 +198,11 @@ export function MoodHistoryScreen() {
 
           <View style={{ marginBottom: spacing.lg }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm }}>
-              <Pressable onPress={() => changeMonth(-1)} hitSlop={10}>
+              <Pressable accessibilityRole="button" onPress={() => changeMonth(-1)} hitSlop={10}>
                 <ChevronLeft size={18} color={color.textMuted} strokeWidth={1.75} />
               </Pressable>
               <Text variant="bodySm" weight="semibold">{monthLabel}</Text>
-              <Pressable onPress={() => canGoNextMonth && changeMonth(1)} hitSlop={10} disabled={!canGoNextMonth}>
+              <Pressable accessibilityRole="button" onPress={() => canGoNextMonth && changeMonth(1)} hitSlop={10} disabled={!canGoNextMonth}>
                 <ChevronRight size={18} color={canGoNextMonth ? color.textMuted : color.border} strokeWidth={1.75} />
               </Pressable>
             </View>
@@ -217,7 +220,7 @@ export function MoodHistoryScreen() {
                     const isToday = cell.localDate === today;
                     const isSelected = cell.localDate === selectedDate;
                     return (
-                      <Pressable
+                      <Pressable accessibilityRole="button"
                         key={ci}
                         style={{ flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' }}
                         onPress={() => setSelectedDate(isSelected ? null : cell.localDate)}
@@ -258,7 +261,7 @@ export function MoodHistoryScreen() {
                     )}
                   </>
                 ) : (
-                  <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xs }}>No check-in on this date.</Text>
+                  <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.MoodHistoryScreen.noCheckInOnThis')}</Text>
                 )}
               </Card>
             )}
@@ -266,7 +269,7 @@ export function MoodHistoryScreen() {
 
           <View style={{ marginBottom: spacing.lg }}>
             <SectionHeader
-              title="Trends"
+              title={t('ui.MoodHistoryScreen.trends')}
               action={trendsWindow === 'week' ? 'View month' : 'View week'}
               onActionPress={() => setTrendsWindow(trendsWindow === 'week' ? 'month' : 'week')}
             />
@@ -297,7 +300,7 @@ export function MoodHistoryScreen() {
 
                 {Object.keys(trends.emotionFrequency).length > 0 && (
                   <View style={{ marginTop: spacing.md }}>
-                    <Text variant="caption" tone="muted" style={{ marginBottom: spacing.xs }}>Most frequent emotions</Text>
+                    <Text variant="caption" tone="muted" style={{ marginBottom: spacing.xs }}>{t('ui.MoodHistoryScreen.mostFrequentEmotions')}</Text>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                       {Object.entries(trends.emotionFrequency)
                         .sort((a, b) => b[1] - a[1])
@@ -313,15 +316,15 @@ export function MoodHistoryScreen() {
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.md }}>
                   <View>
-                    <Text variant="caption" tone="muted">Avg energy</Text>
+                    <Text variant="caption" tone="muted">{t('ui.MoodHistoryScreen.avgEnergy')}</Text>
                     <Text variant="bodySm" weight="semibold">{trends.averageEnergy != null ? trends.averageEnergy.toFixed(1) : '-'}</Text>
                   </View>
                   <View>
-                    <Text variant="caption" tone="muted">Avg stress</Text>
+                    <Text variant="caption" tone="muted">{t('ui.MoodHistoryScreen.avgStress')}</Text>
                     <Text variant="bodySm" weight="semibold">{trends.averageStress != null ? trends.averageStress.toFixed(1) : '-'}</Text>
                   </View>
                   <View>
-                    <Text variant="caption" tone="muted">Avg sleep</Text>
+                    <Text variant="caption" tone="muted">{t('ui.MoodHistoryScreen.avgSleep')}</Text>
                     <Text variant="bodySm" weight="semibold">{trends.averageSleepQuality != null ? trends.averageSleepQuality.toFixed(1) : '-'}</Text>
                   </View>
                 </View>
@@ -330,7 +333,7 @@ export function MoodHistoryScreen() {
           </View>
 
           <View style={{ marginBottom: spacing.lg }}>
-            <SectionHeader title="All check-ins" />
+            <SectionHeader title={t('ui.MoodHistoryScreen.allCheckIns')} />
             {entries.slice().reverse().map((entry) => (
               <Card key={entry.id} style={{ marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: MOOD_COLOR[entry.mood] }} />
@@ -344,7 +347,7 @@ export function MoodHistoryScreen() {
         </>
       )}
 
-      <Button label="New check-in" onPress={() => navigation.navigate('MoodCheckIn')} style={{ marginTop: spacing.sm }} />
+      <Button label={t('ui.MoodHistoryScreen.newCheckIn')} onPress={() => navigation.navigate('MoodCheckIn')} style={{ marginTop: spacing.sm }} />
     </PageContainer>
   );
 }

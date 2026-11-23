@@ -20,7 +20,7 @@ type Props = {
 export function AppHeader({ greeting, name, gender, onAvatarPress, onNotificationsPress, hasNotifications }: Props) {
   return (
     <View style={styles.row}>
-      <Pressable onPress={onAvatarPress} style={styles.identity}>
+      <Pressable accessibilityRole="button" onPress={onAvatarPress} style={styles.identity}>
         <AIAvatar name={name} gender={gender} size={48} />
         <View style={{ marginLeft: spacing.md }}>
           <Text variant="bodySm" tone="secondary">{greeting}</Text>

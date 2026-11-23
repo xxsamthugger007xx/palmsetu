@@ -2,6 +2,7 @@ import {
   readingsById, tarotReadingsById, kundliChartsById, gemstoneReportsById, vastuReportsById, vastuPropertiesById,
   birthProfiles, userIdentities, userPlans, guestSessionsById, setPrimaryReading, primaryReadingFor,
   soulmateSketchesById,
+  dailyActivityByKey,
 } from '../data/store';
 
 /**
@@ -61,6 +62,16 @@ export function migrateGuestDataToAccount(guestId: string, userId: string): { mi
   // ownership (not regenerating) is what lets a guest who paid before
   // signing up keep their result without paying again.
   counts.soulmateSketches = reassignOwner(soulmateSketchesById, guestId, userId);
+
+  // Streak days: merge the guest's days into the account's (a day already recorded for the account is kept as is),
+  // so signing up never resets a streak the guest had built.
+  let streakDays = 0;
+  for (const a of dailyActivityByKey.valuesForUser(guestId)) {
+    const newKey = `${userId}:${a.localDate}`;
+    if (!dailyActivityByKey.has(newKey)) { dailyActivityByKey.set(newKey, { ...a, userId }); streakDays++; }
+    dailyActivityByKey.delete(`${guestId}:${a.localDate}`);
+  }
+  if (streakDays) counts.streakDays = streakDays;
 
   // Singleton records - only adopted if the account doesn't already have
   // its own, so a returning user's real data is never clobbered.

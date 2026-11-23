@@ -9,11 +9,13 @@ import { Button } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'BreathingSession'>;
 
 export function BreathingSessionScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteT>();
   const { technique } = route.params;
@@ -123,8 +125,8 @@ export function BreathingSessionScreen() {
               ? `You completed ${technique.defaultCycles} cycles of ${technique.name}.`
               : `You practiced for ${elapsedSeconds} seconds before stopping. This was recorded as incomplete.`}
           </Text>
-          {saving && <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>Saving...</Text>}
-          <Button label="Done" onPress={() => navigation.goBack()} style={{ marginTop: spacing.xl, minWidth: 160 }} />
+          {saving && <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.BreathingSessionScreen.saving')}</Text>}
+          <Button label={t('ui.SoulmateResultScreen.done')} onPress={() => navigation.goBack()} style={{ marginTop: spacing.xl, minWidth: 160 }} />
         </View>
       </PageContainer>
     );
@@ -161,7 +163,7 @@ export function BreathingSessionScreen() {
           style={{ marginRight: spacing.md, minWidth: 120 }}
         />
         <Button
-          label="Stop"
+          label={t('ui.BreathingSessionScreen.stop')}
           icon={Square}
           variant="danger"
           onPress={() => finish(false)}

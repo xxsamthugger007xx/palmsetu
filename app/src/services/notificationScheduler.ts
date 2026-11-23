@@ -15,7 +15,9 @@
  * when a function below is actually called - never at import time.
  */
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WellnessNotificationPreferences } from './wellnessApi';
+import { tr } from '../utils/tr';
 
 export type PermissionState = 'granted' | 'denied' | 'undetermined';
 
@@ -193,6 +195,80 @@ export async function cancelAllWellnessNotifications(): Promise<void> {
   } catch {
     // Notifications unavailable in this environment - nothing to cancel.
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Engagement reminders: a daily horoscope nudge and a "keep your streak" nudge. Stored on the device only (no server
+// push), scheduled locally like the wellness reminders above.
+// ---------------------------------------------------------------------------------------------------------------
+export interface EngagementPrefs { horoscopeEnabled: boolean; horoscopeTime: string; streakEnabled: boolean; streakTime: string }
+export const DEFAULT_ENGAGEMENT_PREFS: EngagementPrefs = { horoscopeEnabled: true, horoscopeTime: '08:00', streakEnabled: true, streakTime: '20:00' };
+const ENGAGEMENT_KEY = 'solune.engagementPrefs';
+const HOROSCOPE_NOTIFICATION_ID = 'solune-daily-horoscope';
+const STREAK_NOTIFICATION_ID = 'solune-streak-reminder';
+
+export async function loadEngagementPrefs(): Promise<EngagementPrefs> {
+  try {
+    const raw = await AsyncStorage.getItem(ENGAGEMENT_KEY);
+    return raw ? { ...DEFAULT_ENGAGEMENT_PREFS, ...JSON.parse(raw) } : DEFAULT_ENGAGEMENT_PREFS;
+  } catch {
+    return DEFAULT_ENGAGEMENT_PREFS;
+  }
+}
+
+export async function saveEngagementPrefs(prefs: EngagementPrefs): Promise<void> {
+  try { await AsyncStorage.setItem(ENGAGEMENT_KEY, JSON.stringify(prefs)); } catch { /* storage unavailable: prefs just won't persist */ }
+}
+
+/** True for a valid 24h HH:mm time. */
+export const isValidTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+
+/** The next moment (strictly after `from`) the wall clock reads HH:mm, on the day after `from` if `nextDay`. */
+export function nextOccurrence(time: string, from: Date, nextDay: boolean): Date {
+  const { hour, minute } = parseTime(time);
+  const d = new Date(from);
+  d.setHours(hour, minute, 0, 0);
+  if (nextDay) d.setDate(d.getDate() + 1);
+  else if (d.getTime() <= from.getTime()) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+/**
+ * (Re)schedules the engagement reminders. Safe to call often (every app open and whenever settings change): it
+ * cancels both first. The streak reminder is a ONE-SHOT for tomorrow at the chosen time, replaced on every open, so a
+ * person who opens the app each day never gets nagged, and one who skips a day gets exactly one nudge. Returns what
+ * was scheduled; does nothing (and never throws) where notifications aren't available or permitted.
+ */
+export async function applyEngagementReminders(prefs: EngagementPrefs, streakCurrent: number, now: Date = new Date()): Promise<{ horoscope: boolean; streak: boolean }> {
+  const out = { horoscope: false, streak: false };
+  const mod = loadNotifications();
+  if (!mod) return out;
+  ensureHandlerRegistered(mod);
+  try {
+    await Promise.all([HOROSCOPE_NOTIFICATION_ID, STREAK_NOTIFICATION_ID].map((id) => mod.cancelScheduledNotificationAsync(id).catch(() => {})));
+    if ((await getNotificationPermissionState()) !== 'granted') return out;
+
+    if (prefs.horoscopeEnabled && isValidTime(prefs.horoscopeTime)) {
+      const t = parseTime(prefs.horoscopeTime);
+      await mod.scheduleNotificationAsync({
+        identifier: HOROSCOPE_NOTIFICATION_ID,
+        content: { title: tr('notifications.horoscopeTitle'), body: tr('notifications.horoscopeBody') },
+        trigger: { type: mod.SchedulableTriggerInputTypes.DAILY, hour: t.hour, minute: t.minute },
+      });
+      out.horoscope = true;
+    }
+    if (prefs.streakEnabled && streakCurrent > 0 && isValidTime(prefs.streakTime)) {
+      await mod.scheduleNotificationAsync({
+        identifier: STREAK_NOTIFICATION_ID,
+        content: { title: tr('notifications.streakTitle'), body: tr('notifications.streakBody', { count: streakCurrent }) },
+        trigger: { type: mod.SchedulableTriggerInputTypes.DATE, date: nextOccurrence(prefs.streakTime, now, true) },
+      });
+      out.streak = true;
+    }
+  } catch {
+    /* notifications unavailable here: report only what was actually scheduled */
+  }
+  return out;
 }
 
 export const supportsNotifications = Platform.OS === 'ios' || Platform.OS === 'android';

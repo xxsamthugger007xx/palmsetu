@@ -10,6 +10,7 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Navigation hub only - links out to the real, already-existing per-feature
@@ -17,6 +18,7 @@ import { RootStackParamList } from '../../navigation/types';
  * duplicate what each history screen already does).
  */
 export function MyReportsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const links: { id: string; title: string; description: string; icon: typeof Layers; onPress: () => void }[] = [
@@ -30,9 +32,9 @@ export function MyReportsScreen() {
 
   return (
     <PageContainer onRefresh={async () => {}}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>My Reports</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MyReportsScreen.myReports')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
-        All your previous readings and reports, in one place
+        {t('ui.MyReportsScreen.allYourPreviousReadingsAnd')}
       </Text>
 
       {links.map((link) => (

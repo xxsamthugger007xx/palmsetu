@@ -1,3 +1,4 @@
+import { journalDay } from '../types/wellness';
 import {
   tarotReadingsById, birthProfiles, dailyHoroscopesByKey, gemstoneReportsById,
   vastuReportsById, readingsById, AssistantFeature,
@@ -59,8 +60,7 @@ export interface WellnessSummary {
 }
 
 function buildWellnessSummary(userId: string): WellnessSummary {
-  const moods = [...moodEntriesByUserDate.values()]
-    .filter((m) => m.userId === userId)
+  const moods = moodEntriesByUserDate.valuesForUser(userId)
     .sort((a, b) => b.localDate.localeCompare(a.localDate))
     .slice(0, 14)
     .map((m) => ({ localDate: m.localDate, mood: m.mood }));
@@ -77,17 +77,17 @@ function buildWellnessSummary(userId: string): WellnessSummary {
     }
   }
 
-  const activeHabitNames = [...habitsById.values()].filter((h) => h.userId === userId && h.active).map((h) => h.name);
-  const activeChallenges = [...challengeProgressByKey.values()]
-    .filter((c) => c.userId === userId && c.status === 'active')
+  const activeHabitNames = habitsById.valuesForUser(userId).filter((h) => h.active).map((h) => h.name);
+  const activeChallenges = challengeProgressByKey.valuesForUser(userId)
+    .filter((c) => c.status === 'active')
     .map((c) => ({ challengeId: c.challengeId, currentDay: c.currentDay }));
-  const activeGoalTitles = [...wellnessGoalsById.values()].filter((g) => g.userId === userId && g.status === 'active').map((g) => g.title);
+  const activeGoalTitles = wellnessGoalsById.valuesForUser(userId).filter((g) => g.status === 'active').map((g) => g.title);
 
   const journalCutoff = new Date();
   journalCutoff.setDate(journalCutoff.getDate() - 30);
   const journalCutoffStr = journalCutoff.toISOString().slice(0, 10);
   const journalEntryCountLast30Days = [...journalEntriesById.values()].filter(
-    (j) => j.userId === userId && !j.deletedAt && !j.isDraft && j.createdAt.slice(0, 10) >= journalCutoffStr,
+    (j) => j.userId === userId && !j.deletedAt && !j.isDraft && journalDay(j) >= journalCutoffStr,
   ).length;
 
   const hasAnyData = moods.length > 0 || recentDiscoveryThemes.size > 0 || activeHabitNames.length > 0
@@ -104,18 +104,17 @@ function buildWellnessSummary(userId: string): WellnessSummary {
   };
 }
 
-function latestOf<T extends { userId: string; createdAt: string }>(map: { values(): T[] }, userId: string): T | null {
-  const rows = [...map.values()].filter((r) => r.userId === userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+function latestOf<T extends { userId: string; createdAt: string }>(map: { valuesForUser(userId: string): T[] }, userId: string): T | null {
+  const rows = map.valuesForUser(userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return rows[0] ?? null;
 }
 
-function recentOf<T extends { userId: string; createdAt: string }>(map: { values(): T[] }, userId: string, limit: number): T[] {
-  return [...map.values()].filter((r) => r.userId === userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, limit);
+function recentOf<T extends { userId: string; createdAt: string }>(map: { valuesForUser(userId: string): T[] }, userId: string, limit: number): T[] {
+  return map.valuesForUser(userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, limit);
 }
 
 function latestHoroscopeFor(userId: string): DailyHoroscope | null {
-  const rows = [...dailyHoroscopesByKey.values()]
-    .filter((h) => h.userId === userId)
+  const rows = dailyHoroscopesByKey.valuesForUser(userId)
     .sort((a, b) => b.localDate.localeCompare(a.localDate));
   return rows[0] ?? null;
 }

@@ -11,10 +11,12 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { BirthProfile } from '../../types/astrology';
+import { useTranslation } from 'react-i18next';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
 export function AstrologyLandingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<LoadState>('loading');
   const [profile, setProfile] = useState<BirthProfile | null>(null);
@@ -42,8 +44,8 @@ export function AstrologyLandingScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Astrology</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyLandingScreen.astrology')}</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -51,12 +53,12 @@ export function AstrologyLandingScreen() {
   if (state === 'needsProfile') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Astrology</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.AstrologyLandingScreen.astrology')}</Text>
         <EmptyState
           icon={Sparkles}
-          title="Set up your birth details"
-          description="Add your birth date (and time, if known) to get personalized daily readings."
-          actionLabel="Get started"
+          title={t('ui.AstrologyLandingScreen.setUpYourBirthDetails')}
+          description={t('ui.AstrologyLandingScreen.addYourBirthDateAnd')}
+          actionLabel={t('ui.AstrologyLandingScreen.getStarted')}
           onAction={() => navigation.navigate('AstrologyProfileSetup')}
         />
       </PageContainer>
@@ -66,7 +68,7 @@ export function AstrologyLandingScreen() {
   if (state === 'error') {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this section" actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.AstrologyLandingScreen.couldnTLoadThisSection')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
@@ -74,7 +76,7 @@ export function AstrologyLandingScreen() {
   return (
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
-        <Text variant="display" weight="semibold">Astrology</Text>
+        <Text variant="display" weight="semibold">{t('ui.AstrologyLandingScreen.astrology')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
           {profile?.preferredSystem === 'vedic' ? 'Vedic' : 'Western'} astrology
         </Text>
@@ -84,16 +86,16 @@ export function AstrologyLandingScreen() {
         <Card onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'vedic' })}>
           <View style={styles.row}>
             <Compass size={18} color={color.accent} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Vedic Astrology</Text>
+            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.AstrologyLandingScreen.vedicAstrology')}</Text>
           </View>
-          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>Generate your kundli: North India, South India, or Western chart styles</Text>
+          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.AstrologyLandingScreen.generateYourKundliNorthIndia')}</Text>
         </Card>
         <Card onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'soulEnergy' })} style={{ marginTop: spacing.sm }}>
           <View style={styles.row}>
             <Orbit size={18} color={color.accent} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Soul Energy Reading</Text>
+            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.AstrologyLandingScreen.soulEnergyReading')}</Text>
           </View>
-          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>An AI-generated personality reading grounded in your real chart</Text>
+          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.AstrologyLandingScreen.anAiGeneratedPersonalityReading')}</Text>
         </Card>
       </View>
     </PageContainer>

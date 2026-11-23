@@ -1,4 +1,8 @@
-import { Router } from 'express';
+import { listBackups, runBackup } from '../ops/backup';
+import { lastGuestCleanup, cleanupExpiredGuests } from '../ops/guestCleanup';
+import { errorsLastHour, readRecentErrors } from '../ops/alerts';
+import { estimateCostInr, providerKeyFromName } from '../ai/budget';
+import { Router, Request, Response, NextFunction } from 'express';
 import {
   readingsById,
   conversationsById,
@@ -39,11 +43,11 @@ import {
  * all and has been removed entirely, not just deprecated.
  */
 
-function clientIp(req: any): string {
+function clientIp(req: Request): string {
   return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || req.socket?.remoteAddress || 'unknown';
 }
 
-export async function handleAdminLogin(req: any, res: any) {
+export async function handleAdminLogin(req: Request, res: Response) {
   const ip = clientIp(req);
   const userAgent = (req.headers['user-agent'] as string) || 'unknown';
   const { email, password, totpCode } = req.body ?? {};
@@ -60,7 +64,7 @@ export async function handleAdminLogin(req: any, res: any) {
   res.json({ token: result.token, role: result.role, expiresAt: result.expiresAt, email: result.email });
 }
 
-export function handleAdminLogout(req: any, res: any) {
+export function handleAdminLogout(req: Request, res: Response) {
   const admin = req.admin as { adminId: string; sessionId: string } | undefined;
   if (!admin) return res.status(401).json({ error: 'Not logged in.' });
   revokeSession(admin.adminId, admin.sessionId);
@@ -82,7 +86,7 @@ export function handleAdminLogout(req: any, res: any) {
  */
 const QUERY_TOKEN_ROUTES = new Set(['/users/export']);
 
-function requireAdminRole(req: any, res: any, next: any) {
+function requireAdminRole(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'] as string | undefined;
   let bearer = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
   if (!bearer && QUERY_TOKEN_ROUTES.has(req.path) && typeof req.query.token === 'string') {
@@ -106,9 +110,9 @@ function requireAdminRole(req: any, res: any, next: any) {
 
 /** Restricts a route to one or more roles, beyond the baseline requireAdminRole check. */
 function requireRole(...roles: AdminRole[]) {
-  return (req: any, res: any, next: any) => {
+  return (req: any, res: any, next: NextFunction) => {
     if (!roles.includes(req.adminRole)) {
-      logAdminAudit({ adminId: req.admin.adminId, action: req.method, path: req.originalUrl || req.path, outcome: 'denied' });
+      logAdminAudit({ adminId: req.admin!.adminId, action: req.method, path: req.originalUrl || req.path, outcome: 'denied' });
       return res.status(403).json({ error: `Forbidden: requires role ${roles.join(' or ')}, you have ${req.adminRole}.` });
     }
     next();
@@ -120,7 +124,7 @@ interface DateRange {
   until?: Date;
 }
 
-function parseDateRange(req: any): DateRange {
+function parseDateRange(req: Request): DateRange {
   const since = req.query.since ? new Date(String(req.query.since)) : undefined;
   const until = req.query.until ? new Date(String(req.query.until)) : undefined;
   return {
@@ -277,10 +281,12 @@ function summarizeRevenue(rows: Transaction[]) {
  * provider-reported bill - labeled as such rather than presented as exact. */
 function summarizeAiUsage(range: DateRange) {
   const rows = aiUsageEvents.filter((e) => inRange(e.createdAt, range));
-  const byFeature: Record<string, { calls: number; successes: number; estimatedInputTokens: number; estimatedOutputTokens: number; avgLatencyMs: number }> = {};
+  const byFeature: Record<string, { calls: number; successes: number; estimatedInputTokens: number; estimatedOutputTokens: number; avgLatencyMs: number; estimatedCostInr: number; actualTokenCalls: number }> = {};
   for (const e of rows) {
-    const bucket = byFeature[e.feature] ?? { calls: 0, successes: 0, estimatedInputTokens: 0, estimatedOutputTokens: 0, avgLatencyMs: 0 };
+    const bucket = byFeature[e.feature] ?? { calls: 0, successes: 0, estimatedInputTokens: 0, estimatedOutputTokens: 0, avgLatencyMs: 0, estimatedCostInr: 0, actualTokenCalls: 0 };
     bucket.calls += 1;
+    if (e.tokenSource === 'actual') bucket.actualTokenCalls += 1;
+    bucket.estimatedCostInr += e.success ? estimateCostInr(e.estimatedInputTokens, e.estimatedOutputTokens, e.tokenSource === 'actual', providerKeyFromName(e.model)) : 0;
     if (e.success) bucket.successes += 1;
     bucket.estimatedInputTokens += e.estimatedInputTokens;
     bucket.estimatedOutputTokens += e.estimatedOutputTokens;
@@ -294,7 +300,8 @@ function summarizeAiUsage(range: DateRange) {
     available: true,
     totalCalls: rows.length,
     byFeature,
-    note: 'Token counts are rough estimates (~4 chars/token), not real provider-reported usage - no AiProvider in this app currently returns exact token counts or a dollar cost.',
+    totalEstimatedCostInr: Math.round(Object.values(byFeature).reduce((a, b) => a + b.estimatedCostInr, 0) * 100) / 100,
+    note: 'Gemini calls report real token counts (actualTokenCalls); anything else is a ~4 chars/token guess. Cost uses the AI_*_USD_PER_MTOK / AI_USD_INR settings, so compare totals with the Google AI Studio / Cloud billing usage page.',
   };
 }
 
@@ -303,42 +310,59 @@ export function buildAdminRouter(aiProvider: AiProvider) {
 
   router.use(requireAdminRole);
 
+  // Ops status: backups on disk, recent server errors. POST /ops/backup triggers a snapshot now.
+  router.get('/ops/status', (_req, res) => {
+    const backups = listBackups();
+    res.json({
+      backups: backups.slice(0, 10),
+      newestBackupAgeHours: backups[0] ? Math.round(((Date.now() - new Date(backups[0].createdAt).getTime()) / 3_600_000) * 10) / 10 : null,
+      errorsLastHour: errorsLastHour(),
+      recentErrors: readRecentErrors(10),
+      alertWebhookConfigured: !!process.env.ALERT_WEBHOOK_URL,
+      guestCleanup: lastGuestCleanup(),
+    });
+  });
+  router.post('/ops/guest-cleanup', (_req, res) => res.json(cleanupExpiredGuests()));
+  router.post('/ops/backup', async (_req, res) => {
+    try { res.json(await runBackup()); } catch (err: any) { res.status(500).json({ error: err?.message ?? 'Backup failed' }); }
+  });
+
   // --- Admin session/account self-service -------------------------------
   router.post('/logout', handleAdminLogout);
 
-  router.get('/sessions', (req: any, res: any) => {
-    res.json({ sessions: listSessionsForAdmin(req.admin.adminId) });
+  router.get('/sessions', (req, res) => {
+    res.json({ sessions: listSessionsForAdmin(req.admin!.adminId) });
   });
 
-  router.post('/sessions/:sessionId/revoke', (req: any, res: any) => {
-    const revoked = revokeSession(req.admin.adminId, req.params.sessionId);
-    logAdminAudit({ adminId: req.admin.adminId, action: 'SESSION_REVOKE', path: req.originalUrl, targetType: 'admin_session', targetId: req.params.sessionId, outcome: revoked ? 'success' : 'error' });
+  router.post('/sessions/:sessionId/revoke', (req, res) => {
+    const revoked = revokeSession(req.admin!.adminId, req.params.sessionId);
+    logAdminAudit({ adminId: req.admin!.adminId, action: 'SESSION_REVOKE', path: req.originalUrl, targetType: 'admin_session', targetId: req.params.sessionId, outcome: revoked ? 'success' : 'error' });
     res.json({ ok: revoked });
   });
 
-  router.post('/sessions/revoke-all', (req: any, res: any) => {
-    revokeAllSessionsForAdmin(req.admin.adminId);
-    logAdminAudit({ adminId: req.admin.adminId, action: 'SESSION_REVOKE_ALL', path: req.originalUrl });
+  router.post('/sessions/revoke-all', (req, res) => {
+    revokeAllSessionsForAdmin(req.admin!.adminId);
+    logAdminAudit({ adminId: req.admin!.adminId, action: 'SESSION_REVOKE_ALL', path: req.originalUrl });
     res.json({ ok: true });
   });
 
-  router.get('/login-history', requireRole('super_admin'), (req: any, res: any) => {
+  router.get('/login-history', requireRole('super_admin'), (req, res) => {
     const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
     const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize ?? '50'), 10) || 50));
     res.json(listLoginHistory(page, pageSize));
   });
 
   // --- MFA (TOTP) setup, per logged-in admin ----------------------------
-  router.post('/mfa/setup', (req: any, res: any) => {
-    const admin = findAdminById(req.admin.adminId);
+  router.post('/mfa/setup', (req, res) => {
+    const admin = findAdminById(req.admin!.adminId);
     if (!admin) return res.status(404).json({ error: 'Admin not found.' });
     const secret = generateTotpSecret();
     setAdminMfa(admin.id, secret, false); // not enabled until verified below
     res.json({ secret, otpauthUrl: totpOtpauthUrl(admin.email, secret) });
   });
 
-  router.post('/mfa/verify', (req: any, res: any) => {
-    const admin = findAdminById(req.admin.adminId);
+  router.post('/mfa/verify', (req, res) => {
+    const admin = findAdminById(req.admin!.adminId);
     if (!admin?.mfaSecret) return res.status(400).json({ error: 'Call /mfa/setup first.' });
     const { code } = req.body ?? {};
     if (!code || !verifyTotpCode(admin.mfaSecret, String(code))) {
@@ -349,9 +373,9 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     res.json({ ok: true });
   });
 
-  router.post('/mfa/disable', (req: any, res: any) => {
-    setAdminMfa(req.admin.adminId, null, false);
-    logAdminAudit({ adminId: req.admin.adminId, action: 'MFA_DISABLED', path: req.originalUrl });
+  router.post('/mfa/disable', (req, res) => {
+    setAdminMfa(req.admin!.adminId, null, false);
+    logAdminAudit({ adminId: req.admin!.adminId, action: 'MFA_DISABLED', path: req.originalUrl });
     res.json({ ok: true });
   });
 
@@ -593,8 +617,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
    * closest thing this app has to a payment-history table (the only real
    * payment gateway integration is Soulmate Sketch's Razorpay flow). */
   function paymentsForUser(userId: string) {
-    return [...soulmateSketchesById.values()]
-      .filter((s) => s.userId === userId)
+    return soulmateSketchesById.valuesForUser(userId)
       .map((s) => ({
         sketchId: s.id,
         orderId: s.orderId,
@@ -692,8 +715,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   router.get('/users/:userId/tarot', (req, res) => {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
-    const readings = [...tarotReadingsById.values()]
-      .filter((r) => r.userId === userId)
+    const readings = tarotReadingsById.valuesForUser(userId)
       .map((r) => ({ id: r.id, readingType: r.readingType, spreadType: r.spreadType, status: r.status, saved: r.saved, detailedReportStatus: r.detailedReportStatus, createdAt: r.createdAt, completedAt: r.completedAt }))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ readings });
@@ -702,8 +724,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   router.get('/users/:userId/palm', (req, res) => {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
-    const readings = [...readingsById.values()]
-      .filter((r) => r.userId === userId)
+    const readings = readingsById.valuesForUser(userId)
       .map((r) => ({ id: r.id, premiumReportAvailable: r.premiumReportAvailable, premiumReportGeneratedAt: r.premiumReportGeneratedAt, isPrimary: r.isPrimary ?? false, createdAt: r.createdAt }))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({ readings });
@@ -713,8 +734,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
     const profile = birthProfiles.get(userId);
-    const horoscopes = [...dailyHoroscopesByKey.values()]
-      .filter((h) => h.userId === userId)
+    const horoscopes = dailyHoroscopesByKey.valuesForUser(userId)
       .map((h) => ({ id: h.id, localDate: h.localDate, astrologySystem: h.astrologySystem, createdAt: h.createdAt }))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     res.json({
@@ -728,12 +748,12 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   router.get('/users/:userId/wellness', (req, res) => {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
-    const moodEntries = [...moodEntriesByUserDate.values()].filter((e) => e.userId === userId);
-    const journalEntries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt);
-    const habits = [...habitsById.values()].filter((h) => h.userId === userId);
-    const goals = [...wellnessGoalsById.values()].filter((g) => g.userId === userId);
-    const meditationSessions = [...meditationSessionsById.values()].filter((s) => s.userId === userId);
-    const breathingSessions = [...breathingSessionsById.values()].filter((s) => s.userId === userId);
+    const moodEntries = moodEntriesByUserDate.valuesForUser(userId);
+    const journalEntries = journalEntriesById.valuesForUser(userId).filter((e) => !e.deletedAt);
+    const habits = habitsById.valuesForUser(userId);
+    const goals = wellnessGoalsById.valuesForUser(userId);
+    const meditationSessions = meditationSessionsById.valuesForUser(userId);
+    const breathingSessions = breathingSessionsById.valuesForUser(userId);
     res.json({
       moodCheckIns: { total: moodEntries.length, lastAt: moodEntries.map((e) => e.createdAt).sort().at(-1) ?? null },
       // Metadata only (id/type/dates) - never journal content. See
@@ -753,16 +773,16 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   // unconditionally audited (both the request and which entry was opened) -
   // satisfies "explicit access action + reason + audited" rather than ever
   // showing journal content in a table/list by default.
-  router.post('/users/:userId/journal-access', requireRole('super_admin'), (req: any, res: any) => {
+  router.post('/users/:userId/journal-access', requireRole('super_admin'), (req, res) => {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
     const { reason, entryId } = req.body ?? {};
     if (!reason || String(reason).trim().length < 5) {
       return res.status(400).json({ error: 'A reason (5+ characters) is required to access private journal content.' });
     }
-    const entries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt && (!entryId || e.id === entryId));
+    const entries = journalEntriesById.valuesForUser(userId).filter((e) => !e.deletedAt && (!entryId || e.id === entryId));
     logAdminAudit({
-      adminId: req.admin.adminId,
+      adminId: req.admin!.adminId,
       action: 'SENSITIVE_ACCESS_JOURNAL',
       path: req.originalUrl,
       targetType: 'journal_entry',

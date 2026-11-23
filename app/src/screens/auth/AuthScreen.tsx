@@ -12,7 +12,10 @@ import { TurnstileWidget } from '../../components/TurnstileWidget';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
+import { authApi } from '../../services/authApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const BENEFITS = [
   'Save your palm profile, Tarot readings and Kundli permanently',
   'Pick up right where you left off, on any device',
@@ -20,6 +23,7 @@ const BENEFITS = [
 ];
 
 export function AuthScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Auth'>>();
   const { signUp, logIn } = useAuth();
@@ -30,15 +34,17 @@ export function AuthScreen() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forgot, setForgot] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const handleSubmit = async () => {
     setError(null);
     if (!email.trim() || !password) {
-      setError('Enter your email and password.');
+      setError(t('ui.AuthScreen.enterYourEmailAndPassword'));
       return;
     }
     if (tab === 'signup' && password.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(t('ui.AuthScreen.passwordMustBeAtLeast'));
       return;
     }
     setSubmitting(true);
@@ -49,12 +55,30 @@ export function AuthScreen() {
         await logIn(email.trim(), password, turnstileToken ?? undefined);
       }
       navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'MainTabs' }] }));
-    } catch (err: any) {
-      if (err.code === 'EMAIL_TAKEN') setError('An account with this email already exists. Try logging in instead.');
-      else if (err.code === 'INVALID_CREDENTIALS') setError('Incorrect email or password.');
-      else if (err.code === 'RATE_LIMITED') setError('Too many attempts. Please wait a few minutes and try again.');
-      else if (err.code === 'TURNSTILE_FAILED') setError('Verification failed. Please try again.');
-      else setError(err.message ?? 'Something went wrong. Please try again.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      if (err.code === 'EMAIL_TAKEN') setError(t('ui.AuthScreen.anAccountWithThisEmail'));
+      else if (err.code === 'INVALID_CREDENTIALS') setError(t('ui.AuthScreen.incorrectEmailOrPassword'));
+      else if (err.code === 'RATE_LIMITED') setError(t('ui.AuthScreen.tooManyAttemptsPleaseWait'));
+      else if (err.code === 'TURNSTILE_FAILED') setError(t('ui.AuthScreen.verificationFailedPleaseTryAgain'));
+      else setError(err.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleForgot = async () => {
+    setError(null);
+    if (!email.trim()) { setError(t('ui.AuthScreen.enterTheEmailAddressOf')); return; }
+    setSubmitting(true);
+    try {
+      await authApi.forgotPassword(email.trim(), turnstileToken ?? undefined);
+      setResetSent(true); // same message whether or not the email has an account
+    } catch (__err) {
+      const err = asApiError(__err);
+      if (err.code === 'RATE_LIMITED') setError(t('ui.AuthScreen.tooManyAttemptsPleaseWait'));
+      else if (err.code === 'TURNSTILE_FAILED') setError(t('ui.AuthScreen.verificationFailedPleaseTryAgain'));
+      else setError(err.isNetworkError ? err.message : (err.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry')));
     } finally {
       setSubmitting(false);
     }
@@ -98,8 +122,8 @@ export function AuthScreen() {
       )}
 
       <View style={styles.tabRow}>
-        <TabButton label="Sign up" active={tab === 'signup'} onPress={() => { setTab('signup'); setError(null); }} />
-        <TabButton label="Log in" active={tab === 'login'} onPress={() => { setTab('login'); setError(null); }} />
+        <TabButton label={t('ui.AuthScreen.signUp')} active={tab === 'signup'} onPress={() => { setTab('signup'); setError(null); setForgot(false); setResetSent(false); }} />
+        <TabButton label={t('ui.AuthScreen.logIn')} active={tab === 'login'} onPress={() => { setTab('login'); setError(null); setForgot(false); setResetSent(false); }} />
       </View>
 
       <View style={styles.fieldWrap}>
@@ -107,7 +131,7 @@ export function AuthScreen() {
         <TextInput
           value={email}
           onChangeText={setEmail}
-          placeholder="Email address"
+          placeholder={t('ui.AuthScreen.emailAddress')} accessibilityLabel={t('ui.AuthScreen.emailAddress')}
           placeholderTextColor={color.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
@@ -116,19 +140,34 @@ export function AuthScreen() {
         />
       </View>
 
-      <View style={styles.fieldWrap}>
+      {!forgot && <View style={styles.fieldWrap}>
         <Lock size={16} color={color.textMuted} strokeWidth={1.75} style={styles.fieldIcon} />
         <TextInput
           value={password}
           onChangeText={setPassword}
-          placeholder={tab === 'signup' ? 'Create a password (min. 8 characters)' : 'Password'}
+          placeholder={tab === 'signup' ? 'Create a password (min. 8 characters)' : 'Password'} accessibilityLabel={tab === 'signup' ? 'Create a password (min. 8 characters)' : 'Password'}
           placeholderTextColor={color.textMuted}
           secureTextEntry
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
         />
-      </View>
+      </View>}
+
+      {tab === 'login' && !forgot && (
+        <Text variant="caption" tone="accent" onPress={() => { setForgot(true); setError(null); setResetSent(false); }}
+          accessibilityRole="button" style={{ marginTop: spacing.sm, textAlign: 'right' }}>
+          {t('ui.AuthScreen.forgotPassword')}
+        </Text>
+      )}
+
+      {forgot && (
+        <Text variant="caption" tone="secondary" style={{ marginTop: spacing.sm }}>
+          {resetSent
+            ? "If an account exists for that email, we've sent a link to reset your password. Check your inbox (and spam folder). The link works for 1 hour."
+            : "Enter your account's email and we'll send you a link to choose a new password."}
+        </Text>
+      )}
 
       <View style={{ marginTop: spacing.sm }}>
         <TurnstileWidget onToken={setTurnstileToken} />
@@ -139,22 +178,28 @@ export function AuthScreen() {
       )}
 
       <Button
-        label={tab === 'signup' ? 'Create account' : 'Log in'}
+        label={forgot ? (resetSent ? 'Send again' : 'Send reset link') : tab === 'signup' ? 'Create account' : 'Log in'}
         fullWidth
         loading={submitting}
         disabled={submitting}
         style={{ marginTop: spacing.lg }}
-        onPress={handleSubmit}
+        onPress={forgot ? handleForgot : handleSubmit}
       />
+      {forgot && (
+        <Text variant="caption" tone="accent" onPress={() => { setForgot(false); setResetSent(false); setError(null); }}
+          accessibilityRole="button" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
+          {t('ui.AuthScreen.backToLogIn')}
+        </Text>
+      )}
 
-      <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>Continue as guest</Text>
-      <Button label="Continue as guest" variant="secondary" fullWidth style={{ marginTop: spacing.xs }} onPress={continueAsGuest} />
+      <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>{t('ui.AuthScreen.continueAsGuest')}</Text>
+      <Button label={t('ui.AuthScreen.continueAsGuest')} variant="secondary" fullWidth style={{ marginTop: spacing.xs }} onPress={continueAsGuest} />
 
       <Text variant="caption" tone="muted" style={styles.legal}>
         By continuing, you agree to Palm Setu's{' '}
-        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/terms')}>Terms of Service</Text>
+        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/terms')}>{t('ui.AuthScreen.termsOfService')}</Text>
         {' '}and{' '}
-        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/privacy')}>Privacy Policy</Text>.
+        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/privacy')}>{t('ui.AuthScreen.privacyPolicy')}</Text>.
       </Text>
     </PageContainer>
   );

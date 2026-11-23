@@ -13,6 +13,7 @@ export function Card({ elevated = false, padded = true, style, children, onPress
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
         style={({ pressed }) => [
           styles.base,
           elevated ? styles.elevated : styles.flat,

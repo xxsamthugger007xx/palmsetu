@@ -13,8 +13,13 @@ import { wellnessApi, WellnessNotificationPreferences } from '../../services/wel
 import {
   getNotificationPermissionState, requestNotificationPermission,
   rescheduleWellnessNotifications, PermissionState,
+  EngagementPrefs, DEFAULT_ENGAGEMENT_PREFS, loadEngagementPrefs, saveEngagementPrefs, applyEngagementReminders,
+  isNotificationsAvailable, isValidTime as isValidEngagementTime,
 } from '../../services/notificationScheduler';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError, ApiError } from '../../services/apiRequest';
+import { streakApi } from '../../services/streakApi';
 type CategoryKey = 'mood' | 'habit' | 'journal' | 'meditation';
 
 const CATEGORY_META: { key: CategoryKey; label: string; description: string; enabledField: keyof WellnessNotificationPreferences; timeField: keyof WellnessNotificationPreferences }[] = [
@@ -29,19 +34,21 @@ function isValidTime(v: string) {
 }
 
 export function NotificationSettingsScreen() {
+  const { t } = useTranslation();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [prefs, setPrefs] = React.useState<WellnessNotificationPreferences | null>(null);
   const [permission, setPermission] = React.useState<PermissionState>('undetermined');
+  const [engagement, setEngagement] = React.useState<EngagementPrefs>(DEFAULT_ENGAGEMENT_PREFS);
   const [saving, setSaving] = React.useState(false);
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
 
   const load = React.useCallback(() => {
     setLoading(true);
     setError(null);
-    Promise.all([wellnessApi.getWellnessPreferences(), getNotificationPermissionState()])
-      .then(([p, perm]) => { setPrefs(p); setPermission(perm); })
-      .catch((err: any) => setError(err.message ?? 'Could not load notification settings.'))
+    Promise.all([wellnessApi.getWellnessPreferences(), getNotificationPermissionState(), loadEngagementPrefs()])
+      .then(([p, perm, eng]) => { setPrefs(p); setPermission(perm); setEngagement(eng); })
+      .catch((err: ApiError) => setError(err.message ?? t('ui.NotificationSettingsScreen.couldNotLoadNotificationSettings')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -59,6 +66,10 @@ export function NotificationSettingsScreen() {
 
   const save = async () => {
     if (!prefs) return;
+    if (!isValidEngagementTime(engagement.horoscopeTime) || !isValidEngagementTime(engagement.streakTime)) {
+      setError(t('notifications.invalidTime'));
+      return;
+    }
     setSaving(true);
     setStatusMessage(null);
     setError(null);
@@ -76,39 +87,45 @@ export function NotificationSettingsScreen() {
         quietHoursEnd: prefs.quietHoursEnd,
       });
       setPrefs(saved);
+      await saveEngagementPrefs(engagement);
+      if (permission === 'granted') {
+        const st = await streakApi.get().catch(() => null);
+        await applyEngagementReminders(engagement, st?.current ?? 0).catch(() => {});
+      }
 
       if (permission === 'granted') {
         const result = await rescheduleWellnessNotifications(saved);
         if (result.skippedQuietHours.length > 0) {
           setStatusMessage(`Saved. Skipped scheduling for ${result.skippedQuietHours.join(', ')} - inside your quiet hours.`);
         } else {
-          setStatusMessage('Saved and scheduled.');
+          setStatusMessage(t('ui.NotificationSettingsScreen.savedAndScheduled'));
         }
       } else {
-        setStatusMessage('Saved. Enable notifications above to actually receive these reminders.');
+        setStatusMessage(t('ui.NotificationSettingsScreen.savedEnableNotificationsAboveTo'));
       }
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not save notification settings.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.NotificationSettingsScreen.couldNotSaveNotificationSettings'));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (error && !prefs) {
-    return <PageContainer><EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   if (!prefs) return null;
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>Notifications</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>{t('ui.NotificationSettingsScreen.notifications')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
-        Local reminders scheduled on this device, based on what you enable below.
+        {t('ui.NotificationSettingsScreen.localRemindersScheduledOnThis')}
       </Text>
 
       {permission !== 'granted' && (
@@ -124,7 +141,7 @@ export function NotificationSettingsScreen() {
                 : 'Enable notifications to receive reminders based on the preferences below.'}
             </Text>
             {permission !== 'denied' && (
-              <Button label="Enable notifications" icon={Bell} size="sm" onPress={askPermission} style={{ marginTop: spacing.sm }} />
+              <Button label={t('ui.NotificationSettingsScreen.enableNotifications')} icon={Bell} size="sm" onPress={askPermission} style={{ marginTop: spacing.sm }} />
             )}
           </View>
         </Card>
@@ -151,7 +168,7 @@ export function NotificationSettingsScreen() {
               <TextInput
                 value={time}
                 onChangeText={(v) => update(cat.timeField, v as any)}
-                placeholder="HH:mm"
+                placeholder={t('ui.NotificationSettingsScreen.hhMm')} accessibilityLabel={t('ui.NotificationSettingsScreen.hhMm')}
                 placeholderTextColor={color.textMuted}
                 style={{
                   color: isValidTime(time) ? color.textPrimary : color.danger,
@@ -164,28 +181,64 @@ export function NotificationSettingsScreen() {
         );
       })}
 
-      <SectionHeader title="Quiet hours" />
+      <SectionHeader title={t('notifications.dailyReminders')} />
+      {!isNotificationsAvailable() && (
+        <Text variant="caption" tone="muted" style={{ marginBottom: spacing.sm }}>{t('notifications.unavailable')}</Text>
+      )}
+      {([
+        { label: t('notifications.horoscopeReminder'), on: 'horoscopeEnabled', time: 'horoscopeTime' },
+        { label: t('notifications.streakReminder'), on: 'streakEnabled', time: 'streakTime' },
+      ] as const).map((row) => (
+        <Card key={row.on} style={{ marginBottom: spacing.sm }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text variant="bodySm" weight="semibold" style={{ flex: 1, marginRight: spacing.sm }}>{row.label}</Text>
+            <Switch
+              value={engagement[row.on]}
+              onValueChange={(v) => setEngagement({ ...engagement, [row.on]: v })}
+              accessibilityLabel={row.label}
+              trackColor={{ false: color.surfaceElevated, true: color.accentMuted }}
+              thumbColor={engagement[row.on] ? color.accent : color.textMuted}
+            />
+          </View>
+          {engagement[row.on] && (
+            <TextInput
+              value={engagement[row.time]}
+              onChangeText={(v) => setEngagement({ ...engagement, [row.time]: v })}
+              accessibilityLabel={`${row.label} - ${t('notifications.timeLabel')}`}
+              placeholder="08:00"
+              placeholderTextColor={color.textMuted}
+              style={{
+                color: isValidEngagementTime(engagement[row.time]) ? color.textPrimary : color.danger,
+                borderWidth: 1, borderColor: color.border, borderRadius: 8,
+                padding: spacing.sm, marginTop: spacing.sm, width: 100,
+              }}
+            />
+          )}
+        </Card>
+      ))}
+
+      <SectionHeader title={t('ui.NotificationSettingsScreen.quietHours')} />
       <Card style={{ marginBottom: spacing.lg }}>
         <Text variant="caption" tone="muted" style={{ marginBottom: spacing.sm }}>
-          No reminder will be scheduled inside this window. Leave blank for no quiet hours.
+          {t('ui.NotificationSettingsScreen.noReminderWillBeScheduled')}
         </Text>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ marginRight: spacing.md }}>
-            <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>Start</Text>
+            <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>{t('ui.NotificationSettingsScreen.start')}</Text>
             <TextInput
               value={prefs.quietHoursStart ?? ''}
               onChangeText={(v) => update('quietHoursStart', (v || null) as any)}
-              placeholder="22:00"
+              placeholder="22:00" accessibilityLabel="22:00"
               placeholderTextColor={color.textMuted}
               style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, width: 100 }}
             />
           </View>
           <View>
-            <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>End</Text>
+            <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>{t('ui.NotificationSettingsScreen.end')}</Text>
             <TextInput
               value={prefs.quietHoursEnd ?? ''}
               onChangeText={(v) => update('quietHoursEnd', (v || null) as any)}
-              placeholder="07:00"
+              placeholder="07:00" accessibilityLabel="07:00"
               placeholderTextColor={color.textMuted}
               style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, width: 100 }}
             />
@@ -196,7 +249,7 @@ export function NotificationSettingsScreen() {
       {error && <Text variant="bodySm" tone="danger" style={{ marginBottom: spacing.sm }}>{error}</Text>}
       {statusMessage && <Text variant="bodySm" tone="success" style={{ marginBottom: spacing.sm }}>{statusMessage}</Text>}
 
-      <Button label="Save" onPress={save} loading={saving} fullWidth />
+      <Button label={t('ui.GoalDetailScreen.save')} onPress={save} loading={saving} fullWidth />
     </PageContainer>
   );
 }

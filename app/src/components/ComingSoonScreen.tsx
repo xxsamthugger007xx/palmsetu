@@ -6,6 +6,7 @@ import { EmptyState } from './EmptyState';
 import { StatusBadge } from './StatusBadge';
 import { Text } from './Text';
 import { spacing } from '../theme/tokens';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   icon: LucideIcon;
@@ -20,11 +21,12 @@ type Props = {
  * ends. Wraps EmptyState with a header and a "Coming soon" badge.
  */
 export function ComingSoonScreen({ icon, title, description, note }: Props) {
+  const { t } = useTranslation();
   return (
     <PageContainer>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{title}</Text>
       <View style={{ marginTop: spacing.xs }}>
-        <StatusBadge label="Coming soon" status="accent" />
+        <StatusBadge label={t('ui.ComingSoonScreen.comingSoon')} status="accent" />
       </View>
       <Text
         variant="bodySm"
@@ -35,7 +37,7 @@ export function ComingSoonScreen({ icon, title, description, note }: Props) {
       </Text>
       <EmptyState
         icon={icon}
-        title="Not available yet"
+        title={t('ui.ComingSoonScreen.notAvailableYet')}
         description={note ?? 'This feature is planned but not built yet. Check back in a future update.'}
       />
     </PageContainer>

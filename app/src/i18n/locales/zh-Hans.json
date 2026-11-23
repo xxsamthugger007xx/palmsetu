@@ -253,8 +253,15 @@
       "compatibility": {
         "title": "匹配度",
         "description": "你、对方，以及连接你们的事物"
+      },
+      "fiveCard": {
+        "title": "五张牌占卜",
+        "description": "通过五个位置更深入地解读"
       }
-    }
+    },
+    "personalReadingTitle": "获取个人占卜",
+    "personalReadingSubtitle": "探索今天牌面可能邀请你思考的内容。",
+    "personalReadingCta": "开始占卜"
   },
   "profile": {
     "upgradeTitle": "升级到高级版",
@@ -328,5 +335,989 @@
     "title": "语言",
     "notice": "你可以随时更改语言。已翻译的页面会立即更新；其余页面将在后续更新中加入。",
     "searchPlaceholder": "搜索语言"
+  },
+  "a11y": {
+    "back": "返回",
+    "close": "关闭",
+    "delete": "删除",
+    "history": "历史记录",
+    "share": "分享",
+    "bookmark": "保存",
+    "edit": "编辑",
+    "newConversation": "新对话",
+    "send": "发送",
+    "retry": "重试",
+    "info": "更多信息",
+    "favorite": "收藏",
+    "notifications": "通知",
+    "loading": "加载中",
+    "button": "按钮",
+    "selected": "已选择",
+    "dismiss": "忽略",
+    "showPassword": "显示密码",
+    "search": "搜索",
+    "palmPhoto": "你的手掌照片",
+    "palmPreview": "手掌照片预览",
+    "soulmatePortrait": "你的灵魂伴侣画像",
+    "renameField": "重命名",
+    "goalTitle": "目标标题",
+    "goalFrequency": "频率"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "注册",
+      "logIn": "登录",
+      "emailAddress": "电子邮箱",
+      "forgotPassword": "忘记密码？",
+      "backToLogIn": "返回登录",
+      "continueAsGuest": "以访客身份继续",
+      "termsOfService": "服务条款",
+      "privacyPolicy": "隐私政策",
+      "enterYourEmailAndPassword": "请输入邮箱和密码。",
+      "passwordMustBeAtLeast": "密码至少需要 8 个字符。",
+      "anAccountWithThisEmail": "该邮箱已有账户，请直接登录。",
+      "incorrectEmailOrPassword": "邮箱或密码不正确。",
+      "tooManyAttemptsPleaseWait": "尝试次数过多，请几分钟后再试。",
+      "verificationFailedPleaseTryAgain": "验证失败，请重试。",
+      "enterTheEmailAddressOf": "请输入你账户的邮箱地址。"
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "解锁完整的自我探索之旅",
+      "discoverDeeperInsightsIntoYour": "通过 Palm Setu 高级版，深入了解你的手相、感情关系、星座占星以及个人成长之路。",
+      "everythingIncludedInPremium": "高级版包含的全部内容",
+      "freeVsPremium": "免费版与高级版对比",
+      "chooseYourPlan": "选择你的方案",
+      "loadingPlans": "正在加载方案...",
+      "weCouldnTLoadThe": "无法加载方案。请检查网络连接后重试。",
+      "billingIsNotYetConfigured": "此版本尚未配置 Palm Setu 高级版的计费。配置完成前，此页面不会向你收费，也不会授予高级权限。",
+      "terms": "条款",
+      "privacy": "隐私",
+      "secureBillingThroughYourApp": "通过你的 App Store 或 Google Play 账户安全结算。"
+    },
+    "ProfileScreen": {
+      "createAnAccount": "创建账户",
+      "signUpFirstToExport": "请先注册，才能导出已保存的数据。",
+      "yourData": "你的数据",
+      "couldNotExportData": "无法导出数据",
+      "pleaseTryAgain": "请重试。",
+      "noAccountYet": "还没有账户",
+      "youAreBrowsingAsA": "你正在以访客身份浏览，没有可删除的账户。",
+      "couldNotDeleteAccount": "无法删除账户"
+    },
+    "HabitsScreen": {
+      "habits": "习惯",
+      "couldnTRefreshYourHabits": "无法刷新你的习惯。",
+      "noHabitsYetAddOne": "还没有习惯，在下方添加一个开始吧。",
+      "addAHabit": "添加习惯",
+      "customHabitName": "自定义习惯名称",
+      "add": "添加",
+      "youVeReachedTheFree": "你已达到免费习惯数量上限。升级即可无限添加。",
+      "suggestions": "推荐",
+      "unableToConnectThatChange": "无法连接，该更改未保存。",
+      "couldnTUpdateThatHabit": "无法更新该习惯，请重试。",
+      "couldNotAddHabit": "无法添加习惯。"
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "删除对话？",
+      "thisCannotBeUndone": "此操作无法撤销。",
+      "cancel": "取消",
+      "delete": "删除",
+      "chatHistory": "聊天记录",
+      "noConversationsYet": "还没有对话",
+      "startAConversationWithYour": "与你的 AI 占星师开始对话，就会显示在这里。",
+      "startChatting": "开始聊天",
+      "couldnTDeleteThatConversation": "无法删除该对话，请重试。"
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "通知偏好",
+      "pushDeliveryIsnTWired": "此版本的推送尚未连接真实的设备令牌/调度程序。这些偏好会被保存，待相关基础设施接入后生效。",
+      "personalDailyMessage": "个人每日消息",
+      "sharedRelationshipMessage": "共享关系消息",
+      "detailedLockScreenPreview": "锁屏详细预览",
+      "preferredTime": "偏好时间",
+      "unableToConnectYourChange": "无法连接，你的更改未保存。",
+      "couldnTSaveYourChange": "无法保存你的更改，请重试。"
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "通知",
+      "localRemindersScheduledOnThis": "根据你在下方开启的选项，在此设备上安排的本地提醒。",
+      "enableNotifications": "开启通知",
+      "hhMm": "HH:mm",
+      "quietHours": "免打扰时段",
+      "noReminderWillBeScheduled": "此时段内不会安排任何提醒。若不需要免打扰，请留空。",
+      "start": "开始",
+      "end": "结束",
+      "couldNotLoadNotificationSettings": "无法加载通知设置。",
+      "savedAndScheduled": "已保存并安排。",
+      "savedEnableNotificationsAboveTo": "已保存。请在上方开启通知，才会真正收到这些提醒。",
+      "couldNotSaveNotificationSettings": "无法保存通知设置。"
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "选择你的语言",
+      "youCanChangeThisAnytime": "你可以随时在个人资料中更改。",
+      "englishUi": "（英文界面）"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "第 2 步，共 5 步",
+      "whenWereYouBorn": "你是什么时候出生的？",
+      "usedOnlyForTraditionalAstrology": "仅用于传统占星计算，属于反思性的解读，而非科学预测。"
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "第 3 步，共 5 步",
+      "whatTimeWereYouBorn": "你是几点出生的？",
+      "iDonTKnowMy": "我不知道确切的出生时间",
+      "someCalculationsMoonSignNakshatra": "没有确切时间，部分计算（月亮星座、星宿、每日行运）可能不够精确。"
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "第 4 步，共 5 步",
+      "whereWereYouBorn": "你出生在哪里？"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "第 1 步，共 5 步",
+      "chooseYourAstrologySystem": "选择你的占星体系",
+      "thisDecidesHowYourSign": "这决定了你的星座、星盘和每日指引如何计算。你可以稍后在个人资料中更改，星盘与解读也会随之更新。",
+      "continue": "继续",
+      "unableToConnectCheckYour": "无法连接。请检查网络连接后重试。",
+      "somethingWentWrongPleaseTry": "出了点问题，请重试。"
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "第 5 步，共 5 步",
+      "confirmYourDetails": "确认你的信息",
+      "language": "语言",
+      "timeOfBirth": "出生时间",
+      "confirmAndContinue": "确认并继续"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "个人信息",
+      "yourNameAndHowYou": "你的姓名与称呼方式。出生日期、时间和地点请在“每日星象指引”中单独修改。",
+      "saveChanges": "保存更改"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "以后再说",
+      "createFreeAccount": "创建免费账户"
+    },
+    "ListSkeleton": {
+      "loading": "加载中"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "验证你的邮箱"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "每月 AI 使用量"
+    },
+    "UpgradeButton": {
+      "upgrade": "升级"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "询问 AI 占星师",
+      "askAi": "问 AI"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "即将推出",
+      "notAvailableYet": "暂不可用"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "验证组件加载失败。请检查网络连接后重试。"
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "传统解读"
+    },
+    "DailyResetHero": {
+      "dailyReset": "每日重置"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "部分内容无法加载。",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "部分健康数据无法加载。"
+    },
+    "CompanionScreen": {
+      "aiCompanion": "AI 伙伴",
+      "shareWhatSOnYour": "说说你的心事……",
+      "yourCompanionIsAnAi": "你的伙伴是 AI，不是持证心理治疗师。遇到危机请联系当地紧急服务。"
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "AI 占星师",
+      "askAboutYourReading": "询问你的解读……"
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "开始之前",
+      "yourReadingIsGeneratedFrom": "你的解读基于传统手相学，对照照片中可见的掌纹与区域生成。仅供娱乐与自我反思，不属于科学、医学或预测性评估。",
+      "weNeverUseYourPalm": "我们绝不会用手掌照片诊断健康状况，也不会对财富、感情或寿命作出任何保证。照片会被安全处理，你可随时删除。"
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "重新拍照",
+      "analyzingYourPalm": "正在分析你的手掌",
+      "thisPhotoCouldNotBe": "这张照片无法用于手相解读。"
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "你现在的感受？（可选）",
+      "energy": "精力",
+      "stress": "压力",
+      "sleepQuality": "睡眠质量",
+      "noteOptional": "备注（可选）",
+      "anythingYouWantToRemember": "今天有什么想记住的……",
+      "couldNotSaveYourCheck": "无法保存你的打卡。"
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "需要权限",
+      "capture": "拍摄",
+      "analyzeYourPalm": "分析你的手掌",
+      "useNaturalLightHoldYour": "请在自然光下将手掌摊平、手指微张，并让手掌占满大部分画面。",
+      "retake": "重拍",
+      "noPhotoYet": "还没有照片",
+      "takePhoto": "拍照",
+      "uploadFromLibrary": "从相册上传",
+      "photoGuidelines": "拍照指南",
+      "goodExample": "良好示例",
+      "flatOpenPalmFillingThe": "手掌平展并占满画面，光线均匀，不佩戴饰品。",
+      "avoidPhotosLikeTheseThey": "请避免这类照片，可能影响分析准确性：",
+      "yourPhotoIsUploadedSecurely": "你的照片会被安全上传用于分析，可随时在“个人资料 → 隐私”中删除。"
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "正在加载你的解读...",
+      "palmReading": "手相解读",
+      "couldnTLoadThisReading": "无法加载此解读，请重试。",
+      "limitedVisibilityOnlyPartOf": "可见范围有限：只有部分手掌清晰入镜，因此本次解读涵盖的特征比完整扫描更少。",
+      "analysisOverview": "分析概览",
+      "sectionsMatched": "已识别部分",
+      "imageQuality": "图像质量",
+      "unlocked": "已解锁",
+      "thisAnalysisReportsQualitativeObservations": "此分析给出带置信度的定性观察，而非精确的像素坐标，因此不会在照片上绘制掌纹路径，以免展示并非你真实掌纹几何形状的内容。",
+      "readingSections": "解读部分",
+      "everyLineBelowIncludesOne": "下方每条线都包含一条来自你扫描结果的免费真实观察。解锁某条线可查看完整解析。",
+      "noSpecificFeaturesCouldBe": "无法从这张照片中可靠地识别出具体特征。",
+      "free": "免费",
+      "fullStructureAdditionalDetectedCharacteristics": "此线的完整结构、更多识别特征与完整传统解读。",
+      "combinedPatterns": "综合模式",
+      "yourPalmHasMoreTo": "你的手掌还有更多可探索",
+      "unlockYourCompletePalmReading": "解锁完整手相解读，查看本次解读中每条线与每个丘位上所有识别特征及其传统解读。",
+      "unlockCompleteReading": "解锁完整解读",
+      "reflectiveQuestions": "反思问题",
+      "askAboutThisReading": "询问此解读",
+      "yourPalmReadingIsReady": "你的手相解读已就绪！",
+      "createYourFreeAccountTo": "创建免费账户，即可保存你的手相资料，并随时在任何设备上查看完整报告。",
+      "yourReadingHasBeenSaved": "你的解读已保存，现在可在首页和手相记录中查看。",
+      "saveAndContinue": "保存并继续",
+      "couldNotUnlockThisSection": "无法解锁此部分，请重试。",
+      "couldNotUnlockYourComplete": "无法解锁完整解读，请重试。",
+      "upgradeToSeeMore": "（升级即可查看更多）"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "删除解读",
+      "couldNotDeleteThisReading": "无法删除此解读，请重试。",
+      "palmReadingHistory": "手相解读记录",
+      "noPalmReadingsYet": "还没有手相解读",
+      "yourPastPalmScansWill": "你过去的手掌扫描会显示在这里。",
+      "scanYourPalm": "扫描你的手掌"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "无法加载此解读",
+      "generationDidnTComplete": "生成未完成",
+      "weCouldnTFinishGenerating": "我们未能完成今日解读，你可以重试。",
+      "retryGeneration": "重新生成",
+      "yourDayAtAGlance": "今日概览",
+      "todaySFocus": "今日重点",
+      "careerProductivity": "事业与效率",
+      "loveRelationships": "爱情与关系",
+      "moodSelfCare": "心情与自我关怀",
+      "whatToDoToday": "今天可以做什么",
+      "whatToBeMindfulOf": "需要留意什么",
+      "aSmallDailyChallenge": "每日小挑战",
+      "reflectionQuestion": "反思问题",
+      "astrologyBehindThisReading": "此解读背后的占星依据",
+      "askAFollowUpQuestion": "提出追问",
+      "askAboutTodaySReading": "询问今日解读……",
+      "ask": "提问"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "心情记录",
+      "trendsAndCheckInsOver": "随时间变化的趋势与打卡。",
+      "noMoodCheckInsYet": "还没有心情打卡",
+      "logHowYouAreFeeling": "记录你的感受，即可在此查看趋势。",
+      "checkInNow": "立即打卡",
+      "last7Days": "最近 7 天",
+      "noCheckInOnThis": "这一天没有打卡。",
+      "trends": "趋势",
+      "mostFrequentEmotions": "最常出现的情绪",
+      "avgEnergy": "平均精力",
+      "avgStress": "平均压力",
+      "avgSleep": "平均睡眠",
+      "allCheckIns": "全部打卡",
+      "newCheckIn": "新打卡",
+      "couldNotLoadYourMood": "无法加载你的心情记录，请重试。"
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "删除条目",
+      "type": "类型",
+      "needAPrompt": "需要一个提示吗？",
+      "titleOptional": "标题（可选）",
+      "writeFreely": "自由书写……",
+      "tagsCommaSeparated": "标签，用逗号分隔",
+      "aiInsight": "AI 洞察",
+      "thisEntrySTextWould": "此条目的文字将发送给 Palm Setu 的 AI 以生成洞察。未经你在下方明确同意绝不会发送，且每次请求都需重新勾选。",
+      "iConsentToShareThis": "我同意仅为本次请求把此条目的文字分享给 AI",
+      "getAiInsight": "获取 AI 洞察",
+      "couldNotSaveThisEntry": "无法保存此条目。",
+      "couldNotGetAnAi": "暂时无法获取 AI 洞察。"
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "正在加载牌阵...",
+      "couldnTLoadSpreads": "无法加载牌阵",
+      "eachPositionHasItsOwn": "每个位置都有各自的含义，选择牌阵后会显示在下方。",
+      "secondPersonOptional": "第二个人（可选）",
+      "addAFirstNameOr": "仅当你希望解读用名字而非“对方”称呼对方时，才添加名字或昵称。它不会被保存为账户、不会与任何人分享，并会在你删除此解读时自动删除。我们不会收集对方的出生信息、联系方式或任何其他信息，本解读也绝不声称知道对方真实的私人想法或感受，只提供传统的象征性反思。",
+      "eGAlexOptional": "例如：Alex（可选）"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "解读记录",
+      "loading": "加载中...",
+      "couldnTLoadHistory": "无法加载记录",
+      "personalReadings": "个人解读",
+      "yourPersonalDailyReadingsAre": "你的个人每日解读可在“每日星象指引”首页查看今日内容，且仅你可见。",
+      "sharedRelationshipReadings": "共享关系解读",
+      "noPartnerConnected": "尚未连接伴侣",
+      "connectWithAPartnerTo": "连接伴侣后即可开始积累共享解读记录。",
+      "noSharedReadingsYet": "还没有共享解读"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "占星",
+      "setUpYourBirthDetails": "设置你的出生信息",
+      "addYourBirthDateAnd": "添加出生日期（如知道也加上时间），即可获得个性化的每日解读。",
+      "getStarted": "开始",
+      "couldnTLoadThisSection": "无法加载此部分",
+      "retry": "重试",
+      "vedicAstrology": "吠陀占星",
+      "generateYourKundliNorthIndia": "生成你的 Kundli：北印度、南印度或西方星盘样式",
+      "soulEnergyReading": "灵魂能量解读",
+      "anAiGeneratedPersonalityReading": "基于你真实星盘、由 AI 生成的性格解读"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "更改占星体系？",
+      "switchingBetweenVedicAndWestern": "在吠陀与西方之间切换会改变你的星座、星盘和每日指引。出生信息保持不变，但解读会重新计算。",
+      "changeSystem": "更改体系",
+      "yourBirthDetails": "你的出生信息",
+      "usedOnlyForTraditionalAstrology": "仅用于传统占星计算，属于反思性解读，而非科学预测。确切的出生时间和地点会显著影响你的月亮星座、星宿和每日行运，因此三者都是准确解读所必需的。",
+      "astrologySystem": "占星体系",
+      "vedicSiderealAndWesternTropical": "吠陀（恒星）与西方（回归）采用不同惯例，同样的出生信息会得出不同的星座和行运结果。",
+      "dateOfBirth": "出生日期",
+      "exactTimeOfBirth": "确切出生时间",
+      "checkYourBirthCertificateOr": "如不确定，请查看出生证明或询问父母——在星座分界附近，哪怕差 30 分钟也可能改变你的月亮星座。",
+      "birthplace": "出生地",
+      "chooseTheClosestMajorCity": "请选择最近的大城市——这也会设定你的出生时区，以便精确计算。",
+      "saveAndContinue": "保存并继续",
+      "somethingWentWrongSavingYour": "保存资料时出了点问题。"
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "连接伴侣",
+      "yourPartnerWillNeedTheir": "你的伴侣需要有自己的账户，只有在对方明确接受后才会共享任何内容。",
+      "generateAnInvitation": "生成邀请",
+      "createACodeToShare": "创建一个代码与伴侣分享",
+      "enterACode": "输入代码",
+      "yourPartnerSharedACode": "你的伴侣向你分享了一个代码",
+      "yourInvitationCode": "你的邀请码",
+      "shareThisCodeDirectlyWith": "请直接把此代码分享给你的伴侣。持有代码的人只能看到这是一个邀请，不会暴露任何出生信息。",
+      "invitationCode": "邀请码",
+      "eGY5ppbubg": "例如：Y5PPBUBG",
+      "whatYouLlBeSharing": "你将分享的内容",
+      "onceConnectedYouCanEach": "连接后，你们各自可独立控制共享内容——契合度结果、共享每日解读、星盘详情和通知。日记条目与个人每日解读除非你选择共享，否则保持私密。",
+      "acceptInvitation": "接受邀请",
+      "couldNotCreateAnInvitation": "无法创建邀请。",
+      "couldNotAcceptThisInvitation": "无法接受此邀请。"
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "无法加载此星盘",
+      "back": "返回",
+      "planetaryDetails": "行星详情",
+      "planet": "行星",
+      "degree": "度数",
+      "sign": "星座",
+      "wholeSignHousesLahiriApproximation": "整宫制宫位，近似拉希里岁差。仅到大运（Mahadasha）层级，无小运（Antardasha）。"
+    },
+    "KundliStyleScreen": {
+      "styleChart": "星盘样式",
+      "completeYourBirthDetails": "完善你的出生信息",
+      "yourNameBirthDateAnd": "需要你的姓名、出生日期与时间以及出生地，才能计算上升点和宫位。",
+      "addBirthDetails": "添加出生信息",
+      "upgrade": "升级",
+      "chooseAChartStyleAnd": "选择星盘样式并确认出生信息即可生成。",
+      "theirDetails": "对方信息",
+      "name": "姓名",
+      "birthDateYyyyMmDd": "出生日期（YYYY-MM-DD）",
+      "birthTimeHhMm24h": "出生时间（HH:MM，24 小时制）",
+      "generate": "生成",
+      "selectBirthplace": "选择出生地",
+      "searchCityOrCountry": "搜索城市或国家",
+      "couldNotGenerateYourChart": "无法生成你的星盘，请重试。"
+    },
+    "MoonSignScreen": {
+      "moonSign": "月亮星座",
+      "addYourBirthDateAnd": "添加出生日期（如知道也加上时间），即可查看你真实的月亮星座与星宿。",
+      "siderealVedic": "恒星（吠陀）",
+      "nakshatra": "星宿",
+      "westernTropical": "西方（回归）",
+      "tropicalMoonSign": "回归月亮星座",
+      "todaySMoon": "今日月亮",
+      "currentPosition": "当前位置",
+      "lunarPhase": "月相",
+      "nextPhase": "下一月相",
+      "thisAppSEngineDoesn": "本应用目前除上方对下一月相的估算外，不计算具体的未来月相事件（如星宿变化或月食），因此此处没有任何编造内容。"
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "共享解读已关闭",
+      "ourDayAtAGlance": "我们的一天概览",
+      "whatMayHelpToday": "今天可能有帮助的事",
+      "communicationGuidance": "沟通指引",
+      "qualityTimeSuggestion": "相处时光建议",
+      "aQuestionToAskEach": "可以互相问的一个问题",
+      "individualSupport": "个人支持",
+      "thisReadingIsForReflection": "此解读用于反思，并非对你们关系的裁决。它绝不暗示不诚实或不合，也不预测你们关系的未来。"
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "无法加载关系",
+      "ourCosmicConnection": "我们的星象连结",
+      "noPartnerConnectedYet": "尚未连接伴侣",
+      "connectWithAPartnerTo": "连接伴侣即可解锁共享每日解读，在完全同意与隐私控制下生成。",
+      "connected": "已连接",
+      "viewTodaySSharedReading": "查看今日共享解读",
+      "readingHistory": "解读记录",
+      "privacySharing": "隐私与共享",
+      "yourPersonalDailyReadingStays": "你的个人每日解读默认保持私密。共享解读仅使用共同反思所需的内容，绝不会用到你的日记或私人 AI 对话。",
+      "disconnect": "断开连接",
+      "disconnectFromYourPartner": "与伴侣断开连接",
+      "thisStopsFutureSharedReadings": "这将停止你们双方之后的共享解读和通知。你可以稍后通过新的邀请重新连接。"
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "选择资料",
+      "myAstrology": "我的占星",
+      "free": "免费",
+      "otherPersonSAstrology": "他人占星",
+      "premium": "高级版"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "正在生成你的解读...",
+      "setUpYourBirthDetails": "请先设置你的出生信息",
+      "yourSoulEnergyReadingIs": "你的灵魂能量解读基于与“每日星象指引”相同的出生星盘。",
+      "setUpBirthDetails": "设置出生信息",
+      "couldnTGenerateThisReading": "无法生成此解读",
+      "aiGeneratedGroundedInYour": "由 AI 生成，基于你真实的太阳/月亮星盘。",
+      "basedOnSunAndMoon": "仅基于太阳与月亮星座——上升点不可用（需要精确的出生坐标）。"
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "西方占星",
+      "addYourBirthDateAnd": "添加出生日期和地点，即可获得回归式西方风格的解读。",
+      "tropicalSunMoonAndTransits": "回归太阳、月亮与行运，以西方方式解读",
+      "todaySReading": "今日解读",
+      "stillPreparingTodaySReading": "今日解读仍在准备中……",
+      "openFullReading": "打开完整解读",
+      "wantTheVedicSiderealView": "想看吠陀（恒星）视角？请在首页打开“占星”或“月亮星座”。"
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "你在想什么？",
+      "optionalSelectAsManyAs": "可选——按需多选。推荐基于你的星盘，而非你的目标。",
+      "generateMyGemstoneGuide": "生成我的宝石指南",
+      "somethingWentWrongGeneratingYour": "生成报告时出了点问题。"
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "宝石报告",
+      "couldnTLoadReports": "无法加载报告",
+      "noReportsYet": "还没有报告",
+      "yourGemstoneReportsWillAppear": "你的宝石报告会显示在这里。"
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "宝石指南",
+      "yourGemstoneRecommendationUsesThe": "你的宝石推荐使用与“每日星象指引”相同的出生星盘。",
+      "traditionalVedicGemstoneGuidanceBased": "基于你出生星盘的传统吠陀宝石指引，用于反思，而非科学处方。",
+      "yourPersonalGemstoneGuide": "你的专属宝石指南",
+      "discoverTheGemstoneTraditionallyAssociated": "了解传统上与你月亮星座守护星相关的宝石，附佩戴指引、替代选择和选购指南。",
+      "getMyGemstoneGuide": "获取我的宝石指南",
+      "recentReports": "最近报告",
+      "basedOnTheRashiMoon": "基于强化 Rashi（月亮星座）守护星的惯例，这是多种有文献记载的吠陀传统之一，不进行完整的上升点或行星受克分析。"
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "无法加载此报告",
+      "noRecommendationAvailable": "暂无推荐",
+      "saved": "已保存",
+      "whyThisGemstoneWasRecommended": "为何推荐这颗宝石",
+      "wearingGuidanceCustomaryPractice": "佩戴指引（惯例）",
+      "traditionalDay": "传统日期",
+      "traditionalFinger": "传统手指",
+      "traditionalMetal": "传统金属",
+      "alternativeOption": "替代选择",
+      "gemstoneBuyingGuide": "宝石选购指南",
+      "thisAppDoesNotSell": "本应用不销售宝石，也不核验卖家——此指南仅供教育参考。",
+      "askAboutThisRecommendation": "询问此推荐……",
+      "deleteThisReport": "删除此报告",
+      "thisPermanentlyDeletesTheGemstone": "这将永久删除该宝石报告。"
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "扩展星座运势",
+      "deeperOutlooksBeyondTodayWeekly": "超越今日的更深入展望、每周与每月视图等。"
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "星座运势",
+      "browseHoroscopesByZodiacSign": "按星座浏览运势，任何人、任何时候。"
+    },
+    "NumerologyScreen": {
+      "numerology": "数字命理",
+      "yourMoolaankBirthNumberAnd": "解读你的 Moolaank（生日数）与 Bhagyank（命运数）。"
+    },
+    "MyReportsScreen": {
+      "myReports": "我的报告",
+      "allYourPreviousReadingsAnd": "你过往的所有解读和报告，集中在一处"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "出了点问题",
+      "thisUsuallyTakesUnderA": "通常不到一分钟。",
+      "couldNotFinishYourSketch": "无法完成你的素描。请重试——不会再次扣费。",
+      "couldNotGenerateYourSketch": "无法生成你的素描。你可以重试，无需再次付款。"
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "删除素描",
+      "couldNotDeleteThisSketch": "无法删除此素描，请重试。",
+      "soulmateSketchHistory": "灵魂伴侣素描记录",
+      "noSketchesYet": "还没有素描",
+      "yourPurchasedSoulmateSketchesWill": "你购买的灵魂伴侣素描会显示在这里。",
+      "createASketch": "创建素描"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "灵魂伴侣素描",
+      "aMysteriousArtisticPortraitOf": "你内心所想的灵魂伴侣，一幅神秘而富有艺术感的肖像。",
+      "soulmateSketchIsEntertainmentAnd": "灵魂伴侣素描属于娱乐与创意性的自我反思——画像从一组虚构素描中匹配而来。它绝非真实人物，也不是对你未来伴侣的科学或保证性预测。",
+      "yourFirstSoulmateSketchIs": "你的第一张灵魂伴侣素描免费。",
+      "yourFreeSketchHasBeen": "你的免费素描已使用。请在下方探索更多高级素描。",
+      "viewMyFreeSketch": "查看我的免费素描"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "核对并支付",
+      "yourPreferences": "你的偏好",
+      "gender": "性别",
+      "ageRange": "年龄范围",
+      "countryBackground": "国家 / 背景",
+      "style": "风格",
+      "yourPaymentIsProcessedSecurely": "你的付款会被安全处理。仅在付款验证后才开始生成——若需重试生成，不会再次扣费。",
+      "payAndGenerateMySketch": "付款并生成我的素描",
+      "verifyingYourPayment": "正在验证你的付款...",
+      "paymentsAreNotYetAvailable": "此服务器暂不支持付款，请稍后再试。",
+      "couldNotStartCheckoutPlease": "无法发起结账，请重试。",
+      "paymentVerificationFailedIfAn": "付款验证失败。若已扣款，将会退还。",
+      "paymentDidNotCompletePlease": "付款未完成，请重试。"
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "偏好的灵魂伴侣性别",
+      "preferredAgeRange": "偏好的年龄范围",
+      "preferredCountryOrCulturalBackground": "偏好的国家或文化背景",
+      "moreCountries": "更多国家",
+      "preferredPortraitStyle": "偏好的画像风格",
+      "couldNotStartYourFree": "无法开始你的免费素描，请重试。"
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "正在加载你的素描...",
+      "couldnTLoadThisSketch": "无法加载此素描，请重试。",
+      "yourSoulmateSketch": "你的灵魂伴侣素描",
+      "preferences": "偏好",
+      "background": "背景",
+      "personalityReflection": "性格反思",
+      "compatibilityTraits": "契合特质",
+      "thisPortraitAndReflectionAre": "此画像与反思纯属虚构的娱乐内容，从示意素描集中匹配而来——并非真实人物，也不是对你未来伴侣的事实性或保证性预测。",
+      "share": "分享",
+      "savedToMyReportsShared": "已保存到“我的报告”——分享的副本带有 Palm Setu 水印，你保存的原件则不会。",
+      "lovedYourFreeSketch": "喜欢你的免费素描吗？",
+      "exploreMorePortraitsAndStyles": "探索更多画像与风格——高级素描起价很低，价格由 Palm Setu 灵活配置。",
+      "explorePremiumSketches": "探索高级素描",
+      "done": "完成"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "你想探索什么？",
+      "tarotHereIsATraditional": "这里的塔罗是用于反思的传统诠释性实践，并非经科学验证的预测未来事件的方法。",
+      "whatSOnYourMind": "你在想什么？（除非你选择分享，否则保持私密）",
+      "chooseASpread": "选择牌阵"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "点击牌堆展开牌面",
+      "takeAMomentAndChoose": "静下心来，选择你的牌",
+      "seeMyReading": "查看我的解读",
+      "somethingWentWrongStartingYour": "开始解读时出了点问题。"
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "搜索问题、牌、报告……",
+      "savedOnly": "仅已保存",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "请检查网络连接后重试。",
+      "context": "背景",
+      "advice": "建议",
+      "symbolism": "象征",
+      "overallReflection": "整体反思",
+      "detailedAiReading": "AI 详细解读",
+      "practicalSuggestions": "实用建议",
+      "reflectionQuestions": "反思问题",
+      "yourBirthChartPerspective": "你的出生星盘视角",
+      "goDeeperWithAi": "用 AI 深入探索",
+      "exploreTheSymbolismOfYour": "探索你所选牌的象征意义、它们之间的联系，以及值得反思的主题。",
+      "followUpQuestionsAreA": "追问是高级版功能",
+      "askAnythingAboutThisSpecific": "就这次解读随意提问，获得基于你实际抽到的牌的回答。",
+      "upgradeToPremium": "升级到高级版",
+      "tryAsking": "试着问：",
+      "thinking": "思考中",
+      "askAboutThisReading": "询问此解读……",
+      "journalThisReading": "把这次解读写入日记",
+      "privateNotesNeverSharedUnless": "私人笔记——除非你选择，否则绝不分享",
+      "saveNote": "保存笔记",
+      "saveThisReading": "保存此解读",
+      "createAFreeAccountTo": "创建免费账户即可保存你的塔罗解读，并随时回顾其中的洞察。",
+      "deleteThisReading": "删除此解读",
+      "thisPermanentlyDeletesTheReading": "这将永久删除该解读及其关联的日记笔记。",
+      "couldNotGetAResponse": "无法获得回复，请重试。",
+      "somethingWentWrongGeneratingYour": "生成详细解读时出了点问题。"
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "无法加载方位详情。",
+      "vastuCompass": "Vastu 罗盘",
+      "holdYourPhoneFlatAway": "请将手机水平拿稳，远离金属和电子设备，以获得最可靠的读数。",
+      "checkingSensorAvailability": "正在检查传感器是否可用……",
+      "locationPermissionIsNeededTo": "读取罗盘方向需要定位权限（我们绝不读取或存储你的 GPS 坐标，只使用方向）。请在下方手动选择朝向，或在设备设置中开启权限以使用实时罗盘。",
+      "aCompassSensorIsnT": "此设备或浏览器没有罗盘传感器。请在下方手动选择朝向。",
+      "lowAccuracyDetectedMoveAway": "检测到精度较低——请远离金属物体或电子设备，并以“8”字形晃动手机进行校准。",
+      "approximateReadingNotACalibrated": "仅为近似读数，并非经校准的测量仪器。",
+      "selectManuallyInstead": "改为手动选择",
+      "selectYourDirection": "选择你的朝向",
+      "useLiveSensorInstead": "改用实时传感器",
+      "bestForHome": "最适合居家",
+      "noStrongTraditionalAssociation": "无明显的传统对应",
+      "bestForWork": "最适合工作",
+      "thisShowsADirectionNot": "这里只显示方位，并非完整的房产评估。如需逐个房间的个性化指引，请使用房产分析。"
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "Vastu 报告",
+      "yourVastuReportsWillAppear": "你的 Vastu 报告会显示在这里。"
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "调和你的空间——用于反思的传统方位指引，并非经科学验证的房产评估。",
+      "openTheCompass": "打开罗盘",
+      "findYourCurrentFacingDirection": "用设备传感器确定你当前的朝向，或手动选择。",
+      "analyzeAProperty": "分析房产",
+      "addRoomDirectionsForA": "添加各房间的方位，即可获得带实用低成本建议的个性化报告。",
+      "analyzeAPropertyToSee": "分析一处房产，即可在此查看你的第一份报告。",
+      "vastuIsATraditionalArchitectural": "Vastu 是一种传统的建筑与文化信仰体系。其关于灵性与财运的说法并无科学依据，也绝不会把任何方位说成是疾病、财务损失或感情问题的原因。"
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "移除房间方位？",
+      "remove": "移除",
+      "alreadyAdded": "已添加",
+      "analyzeYourProperty": "分析你的房产",
+      "configureExactlyTheRoomsYour": "准确设置房产里的房间，然后设定每个房间的真实方位——不确定的可以跳过。",
+      "propertyType": "房产类型",
+      "roomConfiguration": "房间配置",
+      "commonRooms": "常见房间",
+      "roomNameEGStudy": "房间名称（例如：书房）",
+      "addRoom": "添加房间",
+      "addAnotherRoom": "再添加一个房间",
+      "additionalDetailsOptional": "补充信息（可选）",
+      "tellUsAnythingElseAbout": "告诉我们关于房产布局的其他信息……",
+      "generateMyReport": "生成我的报告"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "房产概览",
+      "directionAnalysis": "方位分析",
+      "suggestionsChecklist": "建议清单",
+      "optionalCulturalPractice": "可选的文化习俗",
+      "vastuIsATraditionalArchitectural": "Vastu 是一种传统的建筑与文化信仰体系，其关于灵性与财运的说法并无科学依据。此处绝不会把任何方位说成是疾病、财务损失或感情问题的原因。",
+      "askAboutThisReport": "询问此报告……",
+      "thisPermanentlyDeletesTheVastu": "这将永久删除该 Vastu 报告。"
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "片刻反思",
+      "thisPieceIsFromThe": "此内容来自资料库中可选的占星风格部分。",
+      "couldNotLoadTodayS": "无法加载今日肯定语。"
+    },
+    "BreathingSessionScreen": {
+      "saving": "保存中...",
+      "stop": "停止"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "呼吸",
+      "chooseAGuidedBreathingTechnique": "选择一种引导式呼吸法。",
+      "noTechniquesAvailable": "暂无可用的呼吸法",
+      "pleaseTryAgainLater": "请稍后再试。",
+      "couldNotLoadBreathingTechniques": "无法加载呼吸法，请重试。"
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "重新开始此挑战？",
+      "thisWipesAllYourProgress": "这将清除你在此挑战中的所有进度，并从第 1 天重新开始。此操作无法撤销。",
+      "restart": "重新开始",
+      "leaveThisChallenge": "退出此挑战？",
+      "yourProgressIsKeptBut": "你的进度会保留，但不再处于进行状态。",
+      "leave": "退出",
+      "challengeCompleted": "挑战完成",
+      "dayByDayTasks": "每日任务",
+      "couldNotLoadThisChallenge": "无法加载此挑战。",
+      "couldNotJoinThisChallenge": "无法加入此挑战。",
+      "couldNotMarkThisDay": "无法将今天标记为完成。",
+      "couldNotRestartThisChallenge": "无法重新开始此挑战。",
+      "couldNotLeaveThisChallenge": "无法退出此挑战。"
+    },
+    "ChallengesScreen": {
+      "challenges": "挑战",
+      "multiDayGuidedProgramsJoin": "为期多天的引导式计划——加入一个，按自己的节奏每天完成一项任务。",
+      "noChallengesAvailable": "暂无可用挑战",
+      "couldNotLoadChallengesPlease": "无法加载挑战，请重试。"
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "删除此目标？",
+      "targetFrequency": "目标频率",
+      "save": "保存",
+      "completed": "已完成",
+      "logTodaySProgressUser": "记录今日进展（自行填写）",
+      "optionalNoteAboutToday": "关于今天的备注（可选）",
+      "logProgress": "记录进展",
+      "markComplete": "标记为完成",
+      "userReportedHistory": "自行填写的记录",
+      "noCheckInsLoggedYet": "尚未记录任何打卡。",
+      "userReported": "自行填写",
+      "deleteGoal": "删除目标",
+      "couldNotLoadThisGoal": "无法加载此目标。",
+      "couldNotLogProgress": "无法记录进展。",
+      "couldNotMarkGoalComplete": "无法将目标标记为完成。",
+      "couldNotDeleteThisGoal": "无法删除此目标。",
+      "couldNotUpdateThisGoal": "无法更新此目标。"
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "已完成目标",
+      "noCompletedGoalsYet": "还没有已完成的目标",
+      "goalsYouCompleteWillShow": "你完成的目标会显示在这里。",
+      "couldNotLoadCompletedGoals": "无法加载已完成目标。"
+    },
+    "GoalsScreen": {
+      "goals": "目标",
+      "progressHereIsAlwaysWhat": "这里的进展始终由你自己填写，不会自动测量任何内容。",
+      "activeGoals": "进行中的目标",
+      "noActiveGoalsYetAdd": "还没有进行中的目标，请在下方添加。",
+      "newGoal": "新目标",
+      "goalTitle": "目标标题",
+      "targetFrequencyOptionalEG": "目标频率（可选），例如：每周 4 次",
+      "category": "分类",
+      "create": "创建",
+      "couldNotLoadGoalsPlease": "无法加载目标，请重试。",
+      "couldNotCreateGoal": "无法创建目标。"
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "灵感",
+      "browseTheFullLibraryOrganized": "按类型浏览完整资料库。",
+      "all": "全部",
+      "favorites": "收藏",
+      "couldNotLoadTheInspiration": "无法加载灵感资料库。"
+    },
+    "JournalScreen": {
+      "journal": "日记",
+      "newEntry": "新条目",
+      "searchEntries": "搜索条目",
+      "noJournalEntriesYetStart": "还没有日记条目，可从提示或自由书写开始。"
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "此会话的音频即将推出。会话仍会被记录，你可在下方将其标记为完成。",
+      "sleepTimer": "睡眠定时器",
+      "markSessionComplete": "标记会话完成",
+      "couldNotLoadThisSession": "无法加载此会话。",
+      "thisSessionRequiresPalmSetu": "此会话需要 Palm Setu 高级版。",
+      "couldNotStartThisSession": "无法开始此会话。"
+    },
+    "MeditationScreen": {
+      "meditationSleep": "冥想与睡眠",
+      "guidedSessionsAndAmbientSounds": "引导式会话与环境音，按你此刻的需要分类。",
+      "recentlyPlayed": "最近播放",
+      "noContentAvailable": "暂无可用内容",
+      "couldNotLoadMeditationContent": "无法加载冥想内容，请重试。"
+    },
+    "DirectionSelectorModal": {
+      "direction": "方位",
+      "chooseTheDirectionThisRoom": "请选择此房间在你房产中实际朝向的方位——我们绝不替你猜测。",
+      "iMNotSureSkip": "我不确定，先跳过"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "安全结账"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "含义"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "塔罗如何运作"
+    }
+  },
+  "errors": {
+    "network": "无法连接。请检查网络连接后重试。",
+    "timeout": "耗时过长。请检查网络连接后重试。",
+    "loadFailed": "无法加载。请检查网络连接后重试。",
+    "partialLoad": "部分内容无法加载。",
+    "retry": "重试",
+    "tryAgain": "重试",
+    "sessionExpired": "你的登录已过期，请重新登录。",
+    "aiLimit": "你已达到本月的 AI 使用上限，下月初会重置。",
+    "rateLimited": "请求过于频繁，请稍后再试。",
+    "generic": "出了点问题，请重试。"
+  },
+  "aiMeter": {
+    "used": "{{limit}} 中已用 {{used}}",
+    "left": "剩余 {{left}}，将于 {{date}} 重置。",
+    "low": "即将用完：剩余 {{left}}，将于 {{date}} 重置。",
+    "exhausted": "你已用完本月的 AI 额度，将于 {{date}} 重置。"
+  },
+  "verifyEmail": {
+    "sentTo": "我们已向 {{email}} 发送了新链接。打开后请回到这里。",
+    "error": "暂时无法发送邮件，请重试。",
+    "prompt": "请验证 {{email}}，以便重置密码，并让高级版安全地绑定在你的账户上。",
+    "send": "发送验证邮件",
+    "sending": "发送中...",
+    "again": "重新发送"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "高级手相解读",
+        "tagline": "比首份免费报告更深入。",
+        "p1": "无限次详细手相报告（免费版含 1 次）",
+        "p2": "每次解读可无限次 AI 追问（免费版含 2 次）",
+        "p3": "解锁所有识别出的掌纹与特征，而非一次一个",
+        "p4": "完整查看已保存的报告记录"
+      },
+      "tarot": {
+        "title": "高级塔罗",
+        "tagline": "所有牌阵，而不只是单张抽牌。",
+        "p1": "所有高级牌阵：三张牌、五张牌、凯尔特十字等（免费版为单张牌）",
+        "p2": "任何解读都可生成 AI 详细塔罗报告",
+        "p3": "每天最多 20 次 AI 追问",
+        "p4": "完整的已保存解读记录"
+      },
+      "compatibility": {
+        "title": "爱情与契合度",
+        "tagline": "为两个人量身打造的解读。",
+        "p1": "感情契合度与爱情关系塔罗牌阵",
+        "p2": "与他人星盘的占星契合度",
+        "p3": "基于你已保存资料的个性化关系洞察"
+      },
+      "astrology": {
+        "title": "完整占星资料库",
+        "tagline": "吠陀与西方占星，更进一步。",
+        "p1": "无限次生成出生星盘（Kundli）（免费版含 1 次）",
+        "p2": "为他人生成星盘以查看契合度",
+        "p3": "完整使用吠陀与西方占星体系"
+      },
+      "ai": {
+        "title": "个性化 AI 体验",
+        "tagline": "基于你自己数据的更多对话。",
+        "p1": "AI 伙伴每天最多 200 条消息（免费版 15 条）",
+        "p2": "结合你已保存的解读与资料的情境化回答",
+        "p3": "塔罗、手相与宝石报告中的 AI 追问"
+      },
+      "wellness": {
+        "title": "自我探索与身心健康",
+        "tagline": "真正养成习惯的空间。",
+        "p1": "无限活跃习惯（免费版 3 个）",
+        "p2": "解锁所有呼吸法与引导冥想",
+        "p3": "解锁所有健康挑战",
+        "p4": "完整心情记录（免费版仅显示最近 7 天）",
+        "p5": "每天更多 AI 日记洞察（免费版 2 次）"
+      }
+    },
+    "compare": {
+      "freeHeader": "免费",
+      "premiumHeader": "高级版",
+      "palm": {
+        "label": "详细手相报告",
+        "free": "1",
+        "premium": "无限"
+      },
+      "tarotSpreads": {
+        "label": "塔罗牌阵",
+        "free": "仅单张牌",
+        "premium": "所有牌阵"
+      },
+      "tarotFollowups": {
+        "label": "塔罗追问",
+        "free": "不包含",
+        "premium": "每天最多 20 次"
+      },
+      "kundli": {
+        "label": "出生星盘（Kundli）生成",
+        "free": "1",
+        "premium": "无限"
+      },
+      "otherChart": {
+        "label": "他人星盘 / 契合度",
+        "free": "不包含",
+        "premium": "包含"
+      },
+      "companion": {
+        "label": "AI 伙伴消息",
+        "free": "每天 15 条",
+        "premium": "每天 200 条"
+      },
+      "habits": {
+        "label": "活跃健康习惯",
+        "free": "3",
+        "premium": "无限"
+      },
+      "moodHistory": {
+        "label": "心情记录",
+        "free": "7 天",
+        "premium": "完整记录"
+      }
+    },
+    "period": {
+      "monthly": "/月",
+      "quarterly": "/3个月",
+      "annual": "/年"
+    },
+    "cta": {
+      "unlock": "解锁 Palm Setu 高级版",
+      "continueWith": "继续选择{{plan}}，{{price}}"
+    },
+    "badge": {
+      "bestValue": "最超值",
+      "popular": "热门之选"
+    },
+    "perMonthEquivalent": "相当于每月 {{price}}",
+    "save": "节省 {{percent}}%",
+    "processing": "处理中...",
+    "restoring": "恢复中...",
+    "restore": "恢复购买",
+    "legal": "订阅将自动续订，除非在当前周期结束前至少 24 小时取消。你可随时在 App Store 或 Play 商店的账户设置中管理或取消。",
+    "error": {
+      "unavailable": "暂时无法购买，未产生任何扣款。",
+      "verifyEmail": "请先验证邮箱（见“个人资料”页面的卡片），然后再回来订阅。",
+      "planUnavailable": "此方案暂时无法购买，请稍后再试。",
+      "notActiveYet": "购买已完成，但高级版尚未生效，请稍后尝试“恢复购买”。",
+      "purchaseFailed": "购买出了点问题。若失败，不会产生扣款。",
+      "nothingToRestore": "未找到可恢复的历史购买。",
+      "restoreFailed": "暂时无法恢复购买。"
+    },
+    "intent": {
+      "createFirst": "请先创建免费账户，这样你的高级版可在所有设备上使用。",
+      "logInToRestore": "登录以在此设备上恢复你的高级版。"
+    }
+  },
+  "streak": {
+    "dayStreak": "天连续",
+    "longest": "最长：{{n}}",
+    "start": "每天打开 Palm Setu，养成你的连续记录。",
+    "checkedIn": "今天已打卡，明天再来继续保持吧。",
+    "atRisk": "今天打开应用，保住你的连续记录。",
+    "milestone": "连续 {{n}} 天，干得漂亮！",
+    "turnOnReminders": "设置提醒"
+  },
+  "notifications": {
+    "dailyReminders": "每日提醒",
+    "horoscopeReminder": "每日星座运势",
+    "streakReminder": "连续记录提醒",
+    "timeLabel": "时间（HH:mm，24 小时制）",
+    "invalidTime": "请输入类似 08:00 的时间。",
+    "unavailable": "此版本的应用不支持提醒。",
+    "horoscopeTitle": "你的每日星座运势",
+    "horoscopeBody": "今日的解读已为你准备好。",
+    "streakTitle": "保持你的连续记录",
+    "streakBody": "你已连续 {{count}} 天。今天打开 Palm Setu，继续保持。"
   }
 }

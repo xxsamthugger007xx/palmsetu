@@ -23,6 +23,9 @@ export interface GenerationOptions {
    * attributed without each feature building its own tracking. */
   feature?: string;
   operation?: string;
+  /** Called by providers that receive real token counts from their API (Gemini usageMetadata).
+   * outputTokens includes the model's hidden "thinking" tokens, which are billed as output. */
+  onUsage?: (usage: { inputTokens: number; outputTokens: number }) => void;
 }
 
 /** Replaceable AI provider contract. Swap implementations without touching callers. */

@@ -5,6 +5,7 @@ import { color, radius, spacing } from '../theme/tokens';
 import { tarotColor } from '../theme/tarotTheme';
 import { Text } from './Text';
 import { IconButton } from './Button';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   visible: boolean;
@@ -33,12 +34,13 @@ const POINTS = [
  * Info button (was a literal no-op onPress). Uses the same Modal pattern as
  * ConfirmationModal.tsx for consistency with the rest of the app. */
 export function TarotInfoModal({ visible, onClose }: Props) {
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.header}>
-            <Text variant="subtitle" weight="semibold">How Tarot works</Text>
+            <Text variant="subtitle" weight="semibold">{t('ui.TarotInfoModal.howTarotWorks')}</Text>
             <IconButton icon={X} onPress={onClose} />
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>

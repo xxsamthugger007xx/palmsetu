@@ -5,6 +5,7 @@ import { X } from 'lucide-react-native';
 import { Text } from './Text';
 import { IconButton } from './Button';
 import { color, spacing } from '../theme/tokens';
+import { useTranslation } from 'react-i18next';
 
 export interface RazorpaySuccessResult {
   razorpayOrderId: string;
@@ -88,6 +89,7 @@ export function RazorpayCheckoutModal({
   onDismiss: () => void;
   onFailed: (reason: string | undefined) => void;
 }) {
+  const { t } = useTranslation();
   const [loaded, setLoaded] = useState(false);
 
   const handleMessage = (event: { nativeEvent: { data: string } }) => {
@@ -108,7 +110,7 @@ export function RazorpayCheckoutModal({
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onDismiss}>
       <View style={styles.header}>
-        <Text variant="bodySm" weight="semibold">Secure checkout</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.RazorpayCheckoutModal.secureCheckout')}</Text>
         <IconButton icon={X} onPress={onDismiss} />
       </View>
       <View style={styles.webviewWrap}>

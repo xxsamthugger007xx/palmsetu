@@ -14,7 +14,9 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { vastuApi } from '../../services/vastuApi';
 import { VastuReport } from '../../types/vastu';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card style={{ marginBottom: spacing.sm }}>
@@ -25,6 +27,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export function VastuReportScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'VastuReport'>>();
   const { reportId } = route.params;
@@ -80,7 +83,8 @@ export function VastuReportScreen() {
       const res = await vastuApi.askFollowup(report.id, question.trim());
       setAnswers((prev) => [...prev, `Q: ${question.trim()}\n\n${res.answer}`]);
       setQuestion('');
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setAnswers((prev) => [...prev, `Couldn't get a response: ${err.message ?? 'please try again.'}`]);
     } finally {
       setAsking(false);
@@ -88,10 +92,10 @@ export function VastuReportScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
   if (state === 'error' || !report) {
-    return <PageContainer><EmptyState icon={Info} title="Couldn't load this report" actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.GemstoneReportScreen.couldnTLoadThisReport')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
@@ -107,7 +111,7 @@ export function VastuReportScreen() {
 
       {/* A. Property overview */}
       <Card elevated style={{ marginTop: spacing.md }}>
-        <Text variant="label" tone="accent">PROPERTY OVERVIEW</Text>
+        <Text variant="label" tone="accent">{t('ui.VastuReportScreen.propertyOverview')}</Text>
         <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.sm, textTransform: 'capitalize' }}>
           {report.propertyType.replace('-', ' ')}
         </Text>
@@ -128,7 +132,7 @@ export function VastuReportScreen() {
 
       {/* B. Direction analysis */}
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Direction analysis</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.VastuReportScreen.directionAnalysis')}</Text>
         {report.roomAnalyses.map((a) => (
           <Section key={a.roomId} title={a.roomLabel}>
             <View style={styles.badgeRow}>
@@ -148,7 +152,7 @@ export function VastuReportScreen() {
 
       {/* D. Priority checklist */}
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Suggestions checklist</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.VastuReportScreen.suggestionsChecklist')}</Text>
         {report.checklist.map((item) => (
           <Card key={item.id} style={styles.checklistRow} onPress={() => handleToggleChecklist(item.id, item.completed)}>
             {item.completed ? (
@@ -161,7 +165,7 @@ export function VastuReportScreen() {
                 {item.text}
               </Text>
               {item.category === 'cultural-practice' && (
-                <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>Optional cultural practice</Text>
+                <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.VastuReportScreen.optionalCulturalPractice')}</Text>
               )}
             </View>
           </Card>
@@ -171,33 +175,31 @@ export function VastuReportScreen() {
       {/* E. Disclaimer */}
       <Card style={{ marginTop: spacing.lg }}>
         <Text variant="caption" tone="muted">
-          Vastu is a traditional architectural and cultural belief system. Its spiritual and prosperity-related
-          claims are not scientifically established. No direction here is ever presented as causing illness,
-          financial loss, or relationship problems.
+          {t('ui.VastuReportScreen.vastuIsATraditionalArchitectural')}
         </Text>
       </Card>
 
       {/* Ask AI */}
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Ask a follow-up question</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.DailyHoroscopeScreen.askAFollowUpQuestion')}</Text>
         {answers.map((a, i) => (
           <Card key={i} style={{ marginBottom: spacing.sm }}><Text variant="bodySm" tone="secondary">{a}</Text></Card>
         ))}
         <TextInput
           value={question}
           onChangeText={setQuestion}
-          placeholder="Ask about this report..."
+          placeholder={t('ui.VastuReportScreen.askAboutThisReport')} accessibilityLabel={t('ui.VastuReportScreen.askAboutThisReport')}
           placeholderTextColor={color.textMuted}
           style={styles.input}
         />
-        <Button label="Ask" loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
+        <Button label={t('ui.DailyHoroscopeScreen.ask')} loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
       </View>
 
       <ConfirmationModal
         visible={confirmDelete}
-        title="Delete this report"
-        description="This permanently deletes the Vastu report."
-        confirmLabel="Delete"
+        title={t('ui.GemstoneReportScreen.deleteThisReport')}
+        description={t('ui.VastuReportScreen.thisPermanentlyDeletesTheVastu')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
         destructive
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}

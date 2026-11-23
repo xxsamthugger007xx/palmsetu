@@ -18,7 +18,8 @@ export class SqliteMap<K extends string, V> {
   private getUserId: (v: V) => string | null;
   private getCreatedAt: (v: V) => string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private stmts: Record<'get' | 'set' | 'del' | 'clear' | 'all' | 'count', any>;
+  private hasUserIndex: boolean;
+  private stmts: Record<'get' | 'set' | 'del' | 'clear' | 'all' | 'count' | 'byUser', any>;
 
   constructor(
     table: string,
@@ -27,6 +28,7 @@ export class SqliteMap<K extends string, V> {
     this.table = `kv_${table}`;
     this.getUserId = (v) => opts?.userId?.(v) ?? null;
     this.getCreatedAt = (v) => opts?.createdAt?.(v) ?? null;
+    this.hasUserIndex = !!opts?.userId;
     this.stmts = {
       get: db.prepare(`SELECT value FROM ${this.table} WHERE key = ?`),
       set: db.prepare(
@@ -37,7 +39,40 @@ export class SqliteMap<K extends string, V> {
       clear: db.prepare(`DELETE FROM ${this.table}`),
       all: db.prepare(`SELECT key, value FROM ${this.table}`),
       count: db.prepare(`SELECT COUNT(*) as c FROM ${this.table}`),
+      byUser: db.prepare(`SELECT value FROM ${this.table} WHERE userId = ?`),
     };
+    if (this.hasUserIndex) this.backfillUserIds();
+  }
+
+  /** Rows written before this map had a userId extractor have a NULL userId column and would be invisible to
+   * valuesForUser(); fill them in once at startup using the same extractor that set() uses. */
+  private backfillUserIds(): void {
+    const nulls = db.prepare(`SELECT key, value FROM ${this.table} WHERE userId IS NULL`).all() as { key: string; value: string }[];
+    if (nulls.length === 0) return;
+    const upd = db.prepare(`UPDATE ${this.table} SET userId = ? WHERE key = ?`);
+    db.transaction(() => {
+      for (const r of nulls) {
+        const uid = this.getUserId(JSON.parse(r.value) as V);
+        if (uid) upd.run(uid, r.key);
+      }
+    })();
+  }
+
+  /** First value whose JSON field equals `value` (SQL-side filter, case-insensitive for strings), using an
+   * expression index created on first use - avoids parsing every row in JS (e.g. account lookup by email). */
+  findOneByField(field: string, value: string): V | undefined {
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(field)) throw new Error('invalid field name');
+    const expr = `lower(json_extract(value, '$.${field}'))`;
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_${this.table}_${field} ON ${this.table}(${expr})`);
+    const row = db.prepare(`SELECT value FROM ${this.table} WHERE ${expr} = lower(?) LIMIT 1`).get(value) as { value: string } | undefined;
+    return row ? (JSON.parse(row.value) as V) : undefined;
+  }
+
+  /** All values belonging to one user, via the indexed userId column (no full-table scan). Falls back to a
+   * filtered scan for maps constructed without a userId extractor. */
+  valuesForUser(userId: string): V[] {
+    if (!this.hasUserIndex) return this.values().filter((v) => (v as any)?.userId === userId);
+    return (this.stmts.byUser.all(userId) as { value: string }[]).map((r) => JSON.parse(r.value) as V);
   }
 
   /**
@@ -131,9 +166,15 @@ export class SqliteMap<K extends string, V> {
  */
 export function persistentArray<T extends { id: string; userId?: string; createdAt: string }>(
   table: string,
+  opts?: { maxInMemory?: number },
 ): T[] {
   const logTable = `log_${table}`;
-  const rows = db.prepare(`SELECT value FROM ${logTable} ORDER BY createdAt ASC`).all() as { value: string }[];
+  const max = opts?.maxInMemory;
+  // High-volume logs only keep the newest `maxInMemory` rows in the process (every row stays in SQLite), so
+  // memory and startup time stay flat as the log grows. Without a cap the whole table is loaded.
+  const rows = (max
+    ? db.prepare(`SELECT value FROM (SELECT value, createdAt FROM ${logTable} ORDER BY createdAt DESC LIMIT ?) ORDER BY createdAt ASC`).all(max)
+    : db.prepare(`SELECT value FROM ${logTable} ORDER BY createdAt ASC`).all()) as { value: string }[];
   const arr: T[] = rows.map((r) => JSON.parse(r.value) as T);
   const insert = db.prepare(`INSERT OR REPLACE INTO ${logTable} (id, value, userId, createdAt) VALUES (?, ?, ?, ?)`);
 
@@ -142,7 +183,9 @@ export function persistentArray<T extends { id: string; userId?: string; created
     for (const item of items) {
       insert.run(item.id, JSON.stringify(item), item.userId ?? null, item.createdAt);
     }
-    return originalPush(...items);
+    const len = originalPush(...items);
+    if (max && arr.length > max * 1.25) arr.splice(0, arr.length - max); // trim in batches, not on every push
+    return len;
   };
   return arr;
 }

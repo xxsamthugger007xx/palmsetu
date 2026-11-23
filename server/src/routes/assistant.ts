@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
@@ -11,7 +11,7 @@ import { retrieveUserData, hasDataFor } from '../assistant/dataRetrieval';
 
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -106,7 +106,7 @@ function persistReply(
   });
 }
 
-function ownedConversationOr404(res: any, userId: string, id: string): AssistantConversation | undefined {
+function ownedConversationOr404(res: Response, userId: string, id: string): AssistantConversation | undefined {
   const convo = assistantConversationsById.get(id);
   if (!convo || convo.userId !== userId) {
     res.status(404).json({ error: 'Conversation not found' });
@@ -252,8 +252,7 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
 
   router.get('/conversations', (req, res) => {
     const userId = currentUserId(req);
-    const items = [...assistantConversationsById.values()]
-      .filter((c) => c.userId === userId)
+    const items = assistantConversationsById.valuesForUser(userId)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map((c) => ({
         id: c.id,

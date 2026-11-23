@@ -58,7 +58,7 @@ export function AdminEntryScreen() {
         <TextInput
           value={roleInput}
           onChangeText={setRoleInput}
-          placeholder="super_admin, analyst, or viewer"
+          placeholder="super_admin, analyst, or viewer" accessibilityLabel="super_admin, analyst, or viewer"
           placeholderTextColor={color.textMuted}
           autoCapitalize="none"
           autoCorrect={false}

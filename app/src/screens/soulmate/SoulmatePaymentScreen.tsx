@@ -11,7 +11,9 @@ import { RazorpayCheckoutModal, RazorpaySuccessResult } from '../../components/R
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 const GENDER_LABEL: Record<string, string> = { male: 'Male', female: 'Female', 'no-preference': 'No preference' };
 
 function formatCountry(id: string): string {
@@ -26,6 +28,7 @@ const STYLE_LABEL: Record<string, string> = {
 };
 
 export function SoulmatePaymentScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'SoulmatePayment'>>();
   const answers = route.params;
@@ -41,15 +44,16 @@ export function SoulmatePaymentScreen() {
     try {
       const res = await soulmateApi.createSketch(answers);
       if (!res.razorpayKeyId || !res.orderId) {
-        setError('Payments are not yet available on this server. Please try again later.');
+        setError(t('ui.SoulmatePaymentScreen.paymentsAreNotYetAvailable'));
         return;
       }
       setCheckout({ sketchId: res.sketch.id, keyId: res.razorpayKeyId, orderId: res.orderId, amountCents: res.amountCents, currency: res.currency });
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       if (err.code === 'PAYMENT_NOT_CONFIGURED') {
-        setError('Payments are not yet available on this server. Please try again later.');
+        setError(t('ui.SoulmatePaymentScreen.paymentsAreNotYetAvailable'));
       } else {
-        setError(err.message ?? 'Could not start checkout. Please try again.');
+        setError(err.message ?? t('ui.SoulmatePaymentScreen.couldNotStartCheckoutPlease'));
       }
     } finally {
       setSubmitting(false);
@@ -63,9 +67,10 @@ export function SoulmatePaymentScreen() {
       await soulmateApi.verifyPayment(checkout.sketchId, result);
       setCheckout(null);
       navigation.replace('SoulmateGenerating', { sketchId: checkout.sketchId });
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setCheckout(null);
-      setError(err.message ?? 'Payment verification failed. If an amount was deducted, it will be refunded.');
+      setError(err.message ?? t('ui.SoulmatePaymentScreen.paymentVerificationFailedIfAn'));
     } finally {
       setVerifying(false);
     }
@@ -75,23 +80,22 @@ export function SoulmatePaymentScreen() {
     <PageContainer onRefresh={async () => {}}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Review & pay</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.SoulmatePaymentScreen.reviewPay')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Your preferences</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.SoulmatePaymentScreen.yourPreferences')}</Text>
       <Card elevated style={{ marginTop: spacing.md }}>
-        <PreviewRow label="Gender" value={GENDER_LABEL[answers.preferredGender] ?? answers.preferredGender} />
-        <PreviewRow label="Age range" value={answers.preferredAgeRange} />
-        <PreviewRow label="Country / background" value={formatCountry(answers.preferredCountry)} />
-        <PreviewRow label="Style" value={STYLE_LABEL[answers.style] ?? answers.style} last />
+        <PreviewRow label={t('ui.SoulmatePaymentScreen.gender')} value={GENDER_LABEL[answers.preferredGender] ?? answers.preferredGender} />
+        <PreviewRow label={t('ui.SoulmatePaymentScreen.ageRange')} value={answers.preferredAgeRange} />
+        <PreviewRow label={t('ui.SoulmatePaymentScreen.countryBackground')} value={formatCountry(answers.preferredCountry)} />
+        <PreviewRow label={t('ui.SoulmatePaymentScreen.style')} value={STYLE_LABEL[answers.style] ?? answers.style} last />
       </Card>
 
       <Card style={{ marginTop: spacing.lg, flexDirection: 'row', alignItems: 'flex-start' }}>
         <ShieldCheck size={16} color={color.secondary} strokeWidth={1.75} style={{ marginTop: 2 }} />
         <Text variant="caption" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-          Your payment is processed securely. Generation only begins after your payment is verified - you are
-          never charged again if generation needs to be retried.
+          {t('ui.SoulmatePaymentScreen.yourPaymentIsProcessedSecurely')}
         </Text>
       </Card>
 
@@ -100,7 +104,7 @@ export function SoulmatePaymentScreen() {
       )}
 
       <Button
-        label="Pay and generate my sketch"
+        label={t('ui.SoulmatePaymentScreen.payAndGenerateMySketch')}
         fullWidth
         loading={submitting}
         disabled={submitting}
@@ -119,14 +123,14 @@ export function SoulmatePaymentScreen() {
           onDismiss={() => setCheckout(null)}
           onFailed={(reason) => {
             setCheckout(null);
-            setError(reason ?? 'Payment did not complete. Please try again.');
+            setError(reason ?? t('ui.SoulmatePaymentScreen.paymentDidNotCompletePlease'));
           }}
         />
       )}
 
       {verifying && (
         <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
-          Verifying your payment...
+          {t('ui.SoulmatePaymentScreen.verifyingYourPayment')}
         </Text>
       )}
     </PageContainer>

@@ -2,38 +2,36 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   BackHandler,
-  Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
-import { RootStackParamList } from '../../navigation/types';
 import { useOnboardingIntro } from '../../context/OnboardingIntroContext';
 import { PalmHeroVisual } from './intro/PalmHeroVisual';
 import { TarotHeroVisual } from './intro/TarotHeroVisual';
 import { ChatHeroVisual } from './intro/ChatHeroVisual';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PAGE_COUNT = 3;
 
 export function IntroScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { completeIntro } = useOnboardingIntro();
 
   const [page, setPage] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [navigating, setNavigating] = useState(false);
+  // The carousel breaks out of PageContainer's side padding (negative margin below) so
+  // it spans the full window; each page is exactly one window wide and self-centers.
+  const { width: pageWidth } = useWindowDimensions();
   const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
 
   useEffect(() => {
@@ -54,19 +52,19 @@ export function IntroScreen() {
   const goToPage = (index: number) => {
     const clamped = Math.max(0, Math.min(PAGE_COUNT - 1, index));
     setPage(clamped);
-    scrollRef.current?.scrollTo({ x: clamped * SCREEN_WIDTH, animated: !reduceMotion });
+    scrollRef.current?.scrollTo({ x: clamped * pageWidth, animated: !reduceMotion });
   };
 
   const handleScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+    const index = Math.round(e.nativeEvent.contentOffset.x / (pageWidth || 1));
     setPage(index);
   };
 
   const finish = async () => {
     if (navigating) return; // guard against rapid repeated taps
     setNavigating(true);
+    // completeIntro() flips hasSeenIntro; RootNavigator swaps the screen from state.
     await completeIntro();
-    navigation.replace('Onboarding');
   };
 
   const handleSkip = () => finish();
@@ -111,12 +109,14 @@ export function IntroScreen() {
         ref={scrollRef}
         horizontal
         pagingEnabled
+        style={{ marginHorizontal: -spacing.lg, flex: 1 }}
+        contentContainerStyle={{ alignItems: 'stretch' }}
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleScrollEnd}
         scrollEventThrottle={16}
       >
         {pages.map((p, i) => (
-          <View key={i} style={{ width: SCREEN_WIDTH }}>
+          <View key={i} style={{ width: pageWidth }}>
             <View style={styles.pageContent}>
               <View
                 accessible
@@ -124,7 +124,7 @@ export function IntroScreen() {
                 accessibilityLabel={p.alt}
                 style={styles.heroWrap}
               >
-                <p.Hero size={Math.min(SCREEN_WIDTH * 0.62, 260)} />
+                <p.Hero size={Math.min(pageWidth * 0.62, 260)} />
               </View>
 
               <Text variant="label" tone="accent" style={{ marginTop: spacing.xl, textAlign: 'center', width: '100%' }}>

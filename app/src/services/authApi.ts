@@ -23,6 +23,11 @@ export const authApi = {
   logIn: (email: string, password: string, turnstileToken: string | undefined) =>
     request<AuthResult>(BASE_URL, '/auth/login', { method: 'POST', body: JSON.stringify({ email, password, turnstileToken }) }),
 
+  forgotPassword: (email: string, turnstileToken: string | undefined) =>
+    request<{ ok: true }>(BASE_URL, '/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email, turnstileToken }) }),
+
+  resendVerification: () => request<{ ok: true }>(BASE_URL, '/auth/resend-verification', { method: 'POST' }),
+
   me: () => request<{ isGuest: true; userId: string } | { isGuest: false; account: AccountPublic }>(BASE_URL, '/auth/me'),
 
   logOut: () => request<{ ok: true }>(BASE_URL, '/auth/logout', { method: 'POST' }),

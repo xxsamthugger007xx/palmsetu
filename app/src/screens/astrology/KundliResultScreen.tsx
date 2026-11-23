@@ -14,6 +14,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { kundliApi } from '../../services/kundliApi';
 import { KundliChart } from '../../types/kundli';
 import { degreeReadout } from '../../utils/astrology';
+import { useTranslation } from 'react-i18next';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'KundliResult'>;
@@ -23,6 +24,7 @@ const STYLE_TITLE: Record<string, string> = {
 };
 
 export function KundliResultScreen() {
+  const { t } = useTranslation();
   const route = useRoute<RouteT>();
   const navigation = useNavigation<Nav>();
   const { chartId } = route.params;
@@ -39,13 +41,13 @@ export function KundliResultScreen() {
   if (error) {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this chart" actionLabel="Back" onAction={() => navigation.goBack()} />
+        <EmptyState icon={Info} title={t('ui.KundliResultScreen.couldnTLoadThisChart')} actionLabel={t('ui.KundliResultScreen.back')} onAction={() => navigation.goBack()} />
       </PageContainer>
     );
   }
 
   if (!chart) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   return (
@@ -64,12 +66,12 @@ export function KundliResultScreen() {
       </View>
 
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Planetary Details</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.KundliResultScreen.planetaryDetails')}</Text>
         <Card>
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text variant="caption" tone="muted" style={styles.colName}>PLANET</Text>
-            <Text variant="caption" tone="muted" style={styles.colDeg}>DEGREE</Text>
-            <Text variant="caption" tone="muted" style={styles.colSign}>SIGN</Text>
+            <Text variant="caption" tone="muted" style={styles.colName}>{t('ui.KundliResultScreen.planet')}</Text>
+            <Text variant="caption" tone="muted" style={styles.colDeg}>{t('ui.KundliResultScreen.degree')}</Text>
+            <Text variant="caption" tone="muted" style={styles.colSign}>{t('ui.KundliResultScreen.sign')}</Text>
           </View>
           <FadeDivider />
           {chart.chart.placements.map((p, i) => (
@@ -84,7 +86,7 @@ export function KundliResultScreen() {
           ))}
         </Card>
         <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
-          Whole-sign houses, Lahiri-approximation ayanamsa. Mahadasha level only (no antardasha sub-periods).
+          {t('ui.KundliResultScreen.wholeSignHousesLahiriApproximation')}
         </Text>
       </View>
     </PageContainer>

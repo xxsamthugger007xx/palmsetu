@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { astrologyApi } from '../services/astrologyApi';
+import { useAuth } from './AuthContext';
 import { Gender } from '../types/astrology';
 
 export type { Gender };
@@ -36,12 +37,21 @@ const UserProfileContext = createContext<UserProfileContextValue | undefined>(un
 export function UserProfileProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfileState] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { account, isGuest } = useAuth();
+  // Changes when someone logs in/out, signs up or is signed out remotely. The identity must then be re-fetched for the
+  // NEW user - otherwise a second device keeps showing (or lacking) the previous session's name until a restart.
+  const userKey = isGuest ? 'guest' : account?.id ?? 'guest';
+  const firstRun = React.useRef(true);
 
   useEffect(() => {
     let cancelled = false;
+    const isFirst = firstRun.current;
+    firstRun.current = false;
 
-    // 1) Instant paint from the local cache, if any.
-    AsyncStorage.getItem(STORAGE_KEY)
+    if (!isFirst) { setProfileState(null); setLoading(true); AsyncStorage.removeItem(STORAGE_KEY).catch(() => {}); }
+
+    // 1) Instant paint from the local cache, if any (app start only).
+    if (isFirst) AsyncStorage.getItem(STORAGE_KEY)
       .then((raw) => {
         if (!cancelled && raw) setProfileState(JSON.parse(raw));
       })
@@ -75,7 +85,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userKey]);
 
   const setProfile = async (next: UserProfile) => {
     // Optimistic local update so the UI (e.g. the onboarding screen's own

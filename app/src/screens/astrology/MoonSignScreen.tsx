@@ -15,6 +15,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { degreeReadout } from '../../utils/astrology';
 import { BirthProfile, DailyHoroscope } from '../../types/astrology';
+import { useTranslation } from 'react-i18next';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
@@ -27,6 +28,7 @@ type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
  * dedicated frontend presentation.
  */
 export function MoonSignScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<LoadState>('loading');
   const [profile, setProfile] = useState<BirthProfile | null>(null);
@@ -61,8 +63,8 @@ export function MoonSignScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Moon Sign</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoonSignScreen.moonSign')}</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -70,12 +72,12 @@ export function MoonSignScreen() {
   if (state === 'needsProfile') {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Moon Sign</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MoonSignScreen.moonSign')}</Text>
         <EmptyState
           icon={Moon}
-          title="Set up your birth details"
-          description="Add your birth date (and time, if known) to see your real moon sign and nakshatra."
-          actionLabel="Get started"
+          title={t('ui.AstrologyLandingScreen.setUpYourBirthDetails')}
+          description={t('ui.MoonSignScreen.addYourBirthDateAnd')}
+          actionLabel={t('ui.AstrologyLandingScreen.getStarted')}
           onAction={() => navigation.navigate('AstrologyProfileSetup')}
         />
       </PageContainer>
@@ -85,7 +87,7 @@ export function MoonSignScreen() {
   if (state === 'error' || !profile) {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this section" />
+        <EmptyState icon={Info} title={t('ui.AstrologyLandingScreen.couldnTLoadThisSection')} />
       </PageContainer>
     );
   }
@@ -94,7 +96,7 @@ export function MoonSignScreen() {
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Moon Sign</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoonSignScreen.moonSign')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         Based on your birth details, {natal.birthTimeKnown ? 'including birth time' : 'birth date only'}
       </Text>
@@ -115,13 +117,13 @@ export function MoonSignScreen() {
             <Moon size={20} color={color.accent} strokeWidth={1.75} />
           </View>
           <View style={{ marginLeft: spacing.md, flex: 1 }}>
-            <Text variant="label" tone="accent">SIDEREAL (VEDIC)</Text>
+            <Text variant="label" tone="accent">{t('ui.MoonSignScreen.siderealVedic')}</Text>
             <Text variant="title" weight="semibold" style={{ marginTop: 2 }}>{natal.moonSignSidereal}</Text>
           </View>
         </View>
         <FadeDivider style={{ marginVertical: spacing.md }} />
         <View style={styles.dataRow}>
-          <Text variant="bodySm" tone="secondary">Nakshatra</Text>
+          <Text variant="bodySm" tone="secondary">{t('ui.MoonSignScreen.nakshatra')}</Text>
           <Text variant="bodySm" weight="semibold" style={{ fontVariant: ['tabular-nums'] }}>
             {natal.moonNakshatra} · Pada {natal.moonNakshatraPada}
           </Text>
@@ -129,10 +131,10 @@ export function MoonSignScreen() {
       </Card>
 
       <View style={{ marginTop: spacing.lg }}>
-        <SectionHeader title="Western (tropical)" />
+        <SectionHeader title={t('ui.MoonSignScreen.westernTropical')} />
         <Card>
           <View style={styles.dataRow}>
-            <Text variant="bodySm" tone="secondary">Tropical moon sign</Text>
+            <Text variant="bodySm" tone="secondary">{t('ui.MoonSignScreen.tropicalMoonSign')}</Text>
             <Text variant="bodySm" weight="semibold">{natal.moonSignTropical}</Text>
           </View>
         </Card>
@@ -140,10 +142,10 @@ export function MoonSignScreen() {
 
       {dailyHoroscope && (
         <View style={{ marginTop: spacing.lg }}>
-          <SectionHeader title="Today's Moon" />
+          <SectionHeader title={t('ui.MoonSignScreen.todaySMoon')} />
           <Card elevated>
             <View style={styles.dataRow}>
-              <Text variant="bodySm" tone="secondary">Current position</Text>
+              <Text variant="bodySm" tone="secondary">{t('ui.MoonSignScreen.currentPosition')}</Text>
               <Text variant="bodySm" weight="semibold">
                 {dailyHoroscope.astrologySystem === 'vedic'
                   ? dailyHoroscope.transitContext.moonSignSidereal
@@ -157,11 +159,11 @@ export function MoonSignScreen() {
             </View>
             <FadeDivider style={{ marginVertical: spacing.sm }} />
             <View style={styles.dataRow}>
-              <Text variant="bodySm" tone="secondary">Lunar phase</Text>
+              <Text variant="bodySm" tone="secondary">{t('ui.MoonSignScreen.lunarPhase')}</Text>
               <Text variant="bodySm" weight="semibold">{dailyHoroscope.transitContext.moonPhase}</Text>
             </View>
             <View style={[styles.dataRow, { marginTop: spacing.xs }]}>
-              <Text variant="bodySm" tone="secondary">Next phase</Text>
+              <Text variant="bodySm" tone="secondary">{t('ui.MoonSignScreen.nextPhase')}</Text>
               <Text variant="bodySm" weight="semibold">
                 {dailyHoroscope.transitContext.nextMoonPhase} in ~{dailyHoroscope.transitContext.daysUntilNextMoonPhase}d
               </Text>
@@ -170,8 +172,7 @@ export function MoonSignScreen() {
             <Text variant="bodySm" tone="secondary">{dailyHoroscope.selfCarePrompt}</Text>
           </Card>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>
-            This app's engine doesn't currently calculate specific future lunar events (e.g. nakshatra
-            changes or eclipses) beyond the next phase estimate above, so none are fabricated here.
+            {t('ui.MoonSignScreen.thisAppSEngineDoesn')}
           </Text>
         </View>
       )}

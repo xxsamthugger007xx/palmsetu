@@ -1,6 +1,6 @@
 import { DailyPalmGuidance, PalmReading, PalmSectionsResponse } from '../types/palm';
 
-import { request as baseRequest, getAuthToken } from './apiRequest';
+import { request as baseRequest } from './apiRequest';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -47,29 +47,12 @@ export const palmApi = {
 
   deleteReading: (id: string) => request<{ ok: true }>(`/palm/readings/${id}`, { method: 'DELETE' }),
 
-  /** Direct URL for displaying a stored palm photo in an <Image>. Embeds
-   * the session token as a `?token=` query param, which the server accepts
-   * as an alternative to the Authorization header (see auth/context.ts) -
-   * RN's <Image> component makes its own native network request and does
-   * not reliably attach custom headers the way apiRequest.ts's fetch()
-   * wrapper does on every other call, so a header-only approach silently
-   * 404s on some platforms/cache states even for an image the caller
-   * genuinely owns. The query param is the primary mechanism; imageHeaders()
-   * below is still passed too, as harmless defense in depth. */
-  imageUrl: (id: string) => {
-    const token = getAuthToken();
-    return `${BASE_URL}/palm/readings/${id}/image${token ? `?token=${encodeURIComponent(token)}` : ''}`;
-  },
-
-  /** Headers to pair with imageUrl() on an <Image source={{ uri, headers }}>
-   * - carries the same session token every other request already sends,
-   * just attached manually since Image requests don't go through
-   * apiRequest.ts. Returns {} (no Authorization header) if there is no
-   * current token yet, matching how a plain request() call behaves before
-   * AuthContext finishes its first bootstrap. */
-  imageHeaders: (): Record<string, string> => {
-    const token = getAuthToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
+  /** Short-lived signed URL (about 10 minutes) for showing a stored palm photo in an <Image>. <Image> makes its
+   * own native request and cannot reliably send the Authorization header, so the server mints a URL that carries
+   * its own expiring signature instead of the app putting the long-lived session token in a query string. */
+  getImageUrl: async (id: string): Promise<string> => {
+    const { url } = await request<{ url: string }>(`/palm/readings/${id}/image-url`);
+    return `${BASE_URL}${url}`;
   },
 
   getDailyGuidance: (localDate: string) =>

@@ -115,6 +115,8 @@ export interface CombinedInterpretation {
   ruleId: string;
   title: string;
   text: string;
+  /** true when `text` was cut to a teaser */
+  textTruncated?: boolean;
   involvedFeatureIds: string[];
 }
 
@@ -126,7 +128,9 @@ export type PalmSectionKey =
 
 export interface PalmFreeReading {
   summary: string;
-  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey }[];
+  /** true when `summary` was cut to a teaser (not every section is unlocked yet) */
+  summaryTruncated?: boolean;
+  sections: { title: string; text: string; featureIds: string[]; sectionKey?: PalmSectionKey; textTruncated?: boolean }[];
   combinedInterpretations: CombinedInterpretation[];
   reflectiveQuestions: string[];
   limitedVisibility: boolean;
@@ -136,6 +140,8 @@ export interface PalmSectionEntry {
   sectionKey: string;
   title: string;
   freeText: string;
+  /** true when freeText is only the opening line (section still locked) */
+  freeTextTruncated?: boolean;
   unlocked: boolean;
   detail: { title: string; text: string; featureIds: string[] }[] | null;
 }

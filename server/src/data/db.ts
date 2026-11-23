@@ -66,7 +66,7 @@ function createLogTable(name: string) {
 export function runMigrations() {
   // Mirror every former in-memory store 1:1 as a kv table.
   const kvTables = [
-    'readings', 'conversations', 'tarotReadings', 'tarotJournal', 'dailyTarot',
+    'readings', 'dailyActivity', 'aiMonthlySpend', 'revokedTokens', 'passwordResets', 'conversations', 'tarotReadings', 'tarotJournal', 'dailyTarot',
     'tarotFollowupCounts', 'userPlans', 'birthProfiles', 'dailyHoroscopes',
     'astrologyFollowupCounts', 'partnerInvitations', 'relationships',
     'activeRelationshipByUser', 'relationshipConsents', 'relationshipDailyReports',

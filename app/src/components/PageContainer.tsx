@@ -1,3 +1,4 @@
+import { devWarn } from '../utils/log';
 import React from 'react';
 import { Animated, Platform, RefreshControl, StyleSheet, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -73,7 +74,7 @@ export function PageContainer({ children, scroll = true, style, onRefresh }: Pro
       // happened; still fail gracefully rather than leaving the indicator
       // stuck spinning forever.
       failed = true;
-      console.warn('[PageContainer] pull-to-refresh failed:', err);
+      devWarn('[PageContainer] pull-to-refresh failed:', err);
     } finally {
       if (failed) {
         setPhase('idle');

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, Compass as CompassIcon, Info, AlertTriangle, Home, Briefcase } from 'lucide-react-native';
+import { ErrorBanner } from '../../components/ErrorState';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -14,15 +15,19 @@ import { useCompassHeading } from '../../hooks/useCompassHeading';
 import { headingToDirection, DIRECTION_LABELS, Direction } from '../../utils/compass';
 import { vastuApi } from '../../services/vastuApi';
 import { VastuDirectionEntry } from '../../types/vastu';
+import { useTranslation } from 'react-i18next';
 
 export function VastuCompassScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { availability, heading, lowAccuracy } = useCompassHeading();
   const [manualDirection, setManualDirection] = useState<Direction | null>(null);
   const [directions, setDirections] = useState<VastuDirectionEntry[]>([]);
+  const [directionsFailed, setDirectionsFailed] = useState(false);
 
   const load = React.useCallback(async () => {
-    await vastuApi.getDirections().then((res) => setDirections(res.directions)).catch(() => {});
+    setDirectionsFailed(false);
+    await vastuApi.getDirections().then((res) => setDirections(res.directions)).catch(() => setDirectionsFailed(true));
   }, []);
 
   useEffect(() => {
@@ -41,22 +46,22 @@ export function VastuCompassScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md, textAlign: 'center' }}>Vastu Compass</Text>
+      {directionsFailed && <ErrorBanner message={t('ui.VastuCompassScreen.directionDetailsCouldnTBe')} onRetry={load} />}
+
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md, textAlign: 'center' }}>{t('ui.VastuCompassScreen.vastuCompass')}</Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 4, marginBottom: spacing.lg, textAlign: 'center' }}>
-        Hold your phone flat, away from metal and electronics, for the most reliable reading.
+        {t('ui.VastuCompassScreen.holdYourPhoneFlatAway')}
       </Text>
 
       {availability === 'checking' && (
-        <Text variant="bodySm" tone="muted" style={{ textAlign: 'center', marginVertical: spacing.xl }}>Checking sensor availability...</Text>
+        <Text variant="bodySm" tone="muted" style={{ textAlign: 'center', marginVertical: spacing.xl }}>{t('ui.VastuCompassScreen.checkingSensorAvailability')}</Text>
       )}
 
       {availability === 'permission-denied' && !manualDirection && (
         <Card style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.lg }}>
           <AlertTriangle size={16} color={color.warning} strokeWidth={1.75} style={{ marginTop: 2 }} />
           <Text variant="caption" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-            Location permission is needed to read the compass heading (we never read or store your GPS
-            coordinates, only the heading). Select your facing direction manually below, or enable permission
-            in your device settings to use the live compass.
+            {t('ui.VastuCompassScreen.locationPermissionIsNeededTo')}
           </Text>
         </Card>
       )}
@@ -65,7 +70,7 @@ export function VastuCompassScreen() {
         <Card style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.lg }}>
           <AlertTriangle size={16} color={color.warning} strokeWidth={1.75} style={{ marginTop: 2 }} />
           <Text variant="caption" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-            A compass sensor isn't available on this device or browser. Select your facing direction manually below.
+            {t('ui.VastuCompassScreen.aCompassSensorIsnT')}
           </Text>
         </Card>
       )}
@@ -77,14 +82,14 @@ export function VastuCompassScreen() {
           <Text variant="subtitle" tone="accent" style={{ marginTop: 2 }}>{DIRECTION_LABELS[liveDirection]}</Text>
           {lowAccuracy && (
             <Text variant="caption" tone="warning" style={{ marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.lg }}>
-              Low accuracy detected - move away from metal objects or electronics and try moving your phone in a figure-8 to calibrate.
+              {t('ui.VastuCompassScreen.lowAccuracyDetectedMoveAway')}
             </Text>
           )}
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.lg }}>
-            Approximate reading, not a calibrated surveying instrument.
+            {t('ui.VastuCompassScreen.approximateReadingNotACalibrated')}
           </Text>
           <Button
-            label="Select manually instead"
+            label={t('ui.VastuCompassScreen.selectManuallyInstead')}
             variant="ghost"
             size="sm"
             style={{ marginTop: spacing.sm }}
@@ -95,7 +100,7 @@ export function VastuCompassScreen() {
 
       {useManual && (
         <View>
-          <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm, textAlign: 'center' }}>SELECT YOUR DIRECTION</Text>
+          <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm, textAlign: 'center' }}>{t('ui.VastuCompassScreen.selectYourDirection')}</Text>
           <View style={styles.manualGrid}>
             {(Object.keys(DIRECTION_LABELS) as Direction[]).map((d) => {
               const isSelected = activeDirection === d;
@@ -113,7 +118,7 @@ export function VastuCompassScreen() {
             })}
           </View>
           {availability === 'available' && (
-            <Button label="Use live sensor instead" variant="ghost" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'center' }} onPress={() => setManualDirection(null)} />
+            <Button label={t('ui.VastuCompassScreen.useLiveSensorInstead')} variant="ghost" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'center' }} onPress={() => setManualDirection(null)} />
           )}
         </View>
       )}
@@ -138,28 +143,28 @@ export function VastuCompassScreen() {
             <Card style={styles.bestForCard}>
               <View style={styles.bestForHeader}>
                 <Home size={14} color={color.secondary} strokeWidth={1.75} />
-                <Text variant="label" tone="muted" style={{ marginLeft: spacing.xs }}>BEST FOR HOME</Text>
+                <Text variant="label" tone="muted" style={{ marginLeft: spacing.xs }}>{t('ui.VastuCompassScreen.bestForHome')}</Text>
               </View>
               {activeEntry.bestForHome.length > 0 ? (
                 activeEntry.bestForHome.map((item) => (
                   <Text key={item} variant="caption" tone="secondary" style={{ marginTop: spacing.xs }}>• {item}</Text>
                 ))
               ) : (
-                <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>No strong traditional association</Text>
+                <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.VastuCompassScreen.noStrongTraditionalAssociation')}</Text>
               )}
             </Card>
 
             <Card style={styles.bestForCard}>
               <View style={styles.bestForHeader}>
                 <Briefcase size={14} color={color.secondary} strokeWidth={1.75} />
-                <Text variant="label" tone="muted" style={{ marginLeft: spacing.xs }}>BEST FOR WORK</Text>
+                <Text variant="label" tone="muted" style={{ marginLeft: spacing.xs }}>{t('ui.VastuCompassScreen.bestForWork')}</Text>
               </View>
               {activeEntry.bestForWork.length > 0 ? (
                 activeEntry.bestForWork.map((item) => (
                   <Text key={item} variant="caption" tone="secondary" style={{ marginTop: spacing.xs }}>• {item}</Text>
                 ))
               ) : (
-                <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>No strong traditional association</Text>
+                <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.VastuCompassScreen.noStrongTraditionalAssociation')}</Text>
               )}
             </Card>
           </View>
@@ -168,8 +173,7 @@ export function VastuCompassScreen() {
 
       <Card style={{ marginTop: spacing.lg }}>
         <Text variant="caption" tone="muted">
-          This shows a direction, not a full property assessment. For personalized room-by-room guidance,
-          use the property analysis instead.
+          {t('ui.VastuCompassScreen.thisShowsADirectionNot')}
         </Text>
       </Card>
     </PageContainer>

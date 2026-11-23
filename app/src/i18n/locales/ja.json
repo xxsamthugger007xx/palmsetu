@@ -253,8 +253,15 @@
       "compatibility": {
         "title": "相性",
         "description": "あなた、相手、そして二人をつなぐもの"
+      },
+      "fiveCard": {
+        "title": "5枚カード占い",
+        "description": "5つの位置でより深く読み解く"
       }
-    }
+    },
+    "personalReadingTitle": "あなたのための鑑定を受ける",
+    "personalReadingSubtitle": "今日、カードがあなたに振り返りをうながすことを探ってみましょう。",
+    "personalReadingCta": "鑑定を始める"
   },
   "profile": {
     "upgradeTitle": "プレミアムにアップグレード",
@@ -328,5 +335,989 @@
     "title": "言語",
     "notice": "言語はいつでも変更できます。翻訳済みの画面はすぐに更新されます。残りの画面は今後のアップデートで対応予定です。",
     "searchPlaceholder": "言語を検索"
+  },
+  "a11y": {
+    "back": "戻る",
+    "close": "閉じる",
+    "delete": "削除",
+    "history": "履歴",
+    "share": "共有",
+    "bookmark": "保存",
+    "edit": "編集",
+    "newConversation": "新しい会話",
+    "send": "送信",
+    "retry": "再試行",
+    "info": "詳細情報",
+    "favorite": "お気に入り",
+    "notifications": "通知",
+    "loading": "読み込み中",
+    "button": "ボタン",
+    "selected": "選択中",
+    "dismiss": "閉じる",
+    "showPassword": "パスワードを表示",
+    "search": "検索",
+    "palmPhoto": "手のひらの写真",
+    "palmPreview": "手のひら写真のプレビュー",
+    "soulmatePortrait": "ソウルメイトの肖像",
+    "renameField": "名前を変更",
+    "goalTitle": "目標のタイトル",
+    "goalFrequency": "頻度"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "新規登録",
+      "logIn": "ログイン",
+      "emailAddress": "メールアドレス",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "backToLogIn": "ログインに戻る",
+      "continueAsGuest": "ゲストとして続ける",
+      "termsOfService": "利用規約",
+      "privacyPolicy": "プライバシーポリシー",
+      "enterYourEmailAndPassword": "メールアドレスとパスワードを入力してください。",
+      "passwordMustBeAtLeast": "パスワードは8文字以上にしてください。",
+      "anAccountWithThisEmail": "このメールアドレスのアカウントは既にあります。ログインをお試しください。",
+      "incorrectEmailOrPassword": "メールアドレスまたはパスワードが正しくありません。",
+      "tooManyAttemptsPleaseWait": "試行回数が多すぎます。数分待ってからもう一度お試しください。",
+      "verificationFailedPleaseTryAgain": "認証に失敗しました。もう一度お試しください。",
+      "enterTheEmailAddressOf": "アカウントのメールアドレスを入力してください。"
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "自己発見の旅をすべて解放しよう",
+      "discoverDeeperInsightsIntoYour": "Palm Setu プレミアムで、手相・人間関係・占星術・あなた自身の歩みについて、より深い洞察を得ましょう。",
+      "everythingIncludedInPremium": "プレミアムに含まれるすべて",
+      "freeVsPremium": "無料とプレミアムの比較",
+      "chooseYourPlan": "プランを選ぶ",
+      "loadingPlans": "プランを読み込み中...",
+      "weCouldnTLoadThe": "プランを読み込めませんでした。接続を確認してもう一度お試しください。",
+      "billingIsNotYetConfigured": "このビルドでは Palm Setu プレミアムの課金がまだ設定されていません。設定されるまで、この画面で請求されたりプレミアムが付与されたりすることはありません。",
+      "terms": "利用規約",
+      "privacy": "プライバシー",
+      "secureBillingThroughYourApp": "App Store または Google Play アカウントによる安全な課金。"
+    },
+    "ProfileScreen": {
+      "createAnAccount": "アカウントを作成",
+      "signUpFirstToExport": "保存したデータをエクスポートするには、先に登録してください。",
+      "yourData": "あなたのデータ",
+      "couldNotExportData": "データをエクスポートできませんでした",
+      "pleaseTryAgain": "もう一度お試しください。",
+      "noAccountYet": "アカウントはまだありません",
+      "youAreBrowsingAsA": "ゲストとして閲覧中のため、削除するアカウントはありません。",
+      "couldNotDeleteAccount": "アカウントを削除できませんでした"
+    },
+    "HabitsScreen": {
+      "habits": "習慣",
+      "couldnTRefreshYourHabits": "習慣を更新できませんでした。",
+      "noHabitsYetAddOne": "まだ習慣がありません。下から追加して始めましょう。",
+      "addAHabit": "習慣を追加",
+      "customHabitName": "オリジナル習慣の名前",
+      "add": "追加",
+      "youVeReachedTheFree": "無料の習慣の上限に達しました。無制限にするにはアップグレードしてください。",
+      "suggestions": "おすすめ",
+      "unableToConnectThatChange": "接続できません。その変更は保存されませんでした。",
+      "couldnTUpdateThatHabit": "その習慣を更新できませんでした。もう一度お試しください。",
+      "couldNotAddHabit": "習慣を追加できませんでした。"
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "会話を削除しますか？",
+      "thisCannotBeUndone": "この操作は元に戻せません。",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "chatHistory": "チャット履歴",
+      "noConversationsYet": "まだ会話がありません",
+      "startAConversationWithYour": "AI占星術師との会話を始めると、ここに表示されます。",
+      "startChatting": "チャットを始める",
+      "couldnTDeleteThatConversation": "会話を削除できませんでした。もう一度お試しください。"
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "通知設定",
+      "pushDeliveryIsnTWired": "このビルドではプッシュ配信がまだ実際のデバイストークン/スケジューラーに接続されていません。設定は保存され、接続後に有効になります。",
+      "personalDailyMessage": "個人向けデイリーメッセージ",
+      "sharedRelationshipMessage": "共有の関係メッセージ",
+      "detailedLockScreenPreview": "ロック画面に詳細プレビューを表示",
+      "preferredTime": "希望の時間",
+      "unableToConnectYourChange": "接続できません。変更は保存されませんでした。",
+      "couldnTSaveYourChange": "変更を保存できませんでした。もう一度お試しください。"
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "通知",
+      "localRemindersScheduledOnThis": "下で有効にした内容に基づき、この端末にスケジュールされるローカルリマインダーです。",
+      "enableNotifications": "通知を有効にする",
+      "hhMm": "HH:mm",
+      "quietHours": "サイレント時間",
+      "noReminderWillBeScheduled": "この時間帯にはリマインダーが設定されません。サイレント時間が不要なら空欄にしてください。",
+      "start": "開始",
+      "end": "終了",
+      "couldNotLoadNotificationSettings": "通知設定を読み込めませんでした。",
+      "savedAndScheduled": "保存し、スケジュールしました。",
+      "savedEnableNotificationsAboveTo": "保存しました。これらのリマインダーを実際に受け取るには、上で通知を有効にしてください。",
+      "couldNotSaveNotificationSettings": "通知設定を保存できませんでした。"
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "言語を選択",
+      "youCanChangeThisAnytime": "プロフィールからいつでも変更できます。",
+      "englishUi": "(英語UI)"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "ステップ 2/5",
+      "whenWereYouBorn": "生年月日を教えてください",
+      "usedOnlyForTraditionalAstrology": "伝統的な占星術の計算にのみ使用します。内省のための解釈であり、科学的な予測ではありません。"
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "ステップ 3/5",
+      "whatTimeWereYouBorn": "何時に生まれましたか？",
+      "iDonTKnowMy": "正確な出生時間はわかりません",
+      "someCalculationsMoonSignNakshatra": "正確な時刻がないと、一部の計算（月星座、ナクシャトラ、日々のトランジット）の精度が下がることがあります。"
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "ステップ 4/5",
+      "whereWereYouBorn": "どこで生まれましたか？"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "ステップ 1/5",
+      "chooseYourAstrologySystem": "占星術の体系を選ぶ",
+      "thisDecidesHowYourSign": "星座・チャート・毎日のガイダンスの計算方法が決まります。後でプロフィールから変更でき、チャートや解釈もそれに合わせて更新されます。",
+      "continue": "続ける",
+      "unableToConnectCheckYour": "接続できません。接続を確認してもう一度お試しください。",
+      "somethingWentWrongPleaseTry": "問題が発生しました。もう一度お試しください。"
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "ステップ 5/5",
+      "confirmYourDetails": "内容を確認",
+      "language": "言語",
+      "timeOfBirth": "出生時刻",
+      "confirmAndContinue": "確認して続ける"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "個人情報",
+      "yourNameAndHowYou": "お名前と呼ばれ方を設定します。生年月日・時刻・場所は「デイリー・コズミックガイダンス」で別途編集します。",
+      "saveChanges": "変更を保存"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "あとで",
+      "createFreeAccount": "無料アカウントを作成"
+    },
+    "ListSkeleton": {
+      "loading": "読み込み中"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "メールアドレスを確認"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "今月のAI使用量"
+    },
+    "UpgradeButton": {
+      "upgrade": "アップグレード"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "AI占星術師に聞く",
+      "askAi": "AIに聞く"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "近日公開",
+      "notAvailableYet": "まだ利用できません"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "認証ウィジェットを読み込めませんでした。接続を確認してもう一度お試しください。"
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "伝統的な解釈"
+    },
+    "DailyResetHero": {
+      "dailyReset": "デイリーリセット"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "一部のコンテンツを読み込めませんでした。",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "ウェルネスデータの一部を読み込めませんでした。"
+    },
+    "CompanionScreen": {
+      "aiCompanion": "AIコンパニオン",
+      "shareWhatSOnYour": "気になることを話してみましょう…",
+      "yourCompanionIsAnAi": "コンパニオンはAIであり、資格を持つセラピストではありません。緊急時は現地の緊急サービスに連絡してください。"
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "AI占星術師",
+      "askAboutYourReading": "リーディングについて聞いてみましょう…"
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "はじめる前に",
+      "yourReadingIsGeneratedFrom": "リーディングは、写真に写る線や領域に伝統的な手相の解釈を当てはめて生成されます。娯楽と自己省察のためのもので、科学的・医学的・予測的な評価ではありません。",
+      "weNeverUseYourPalm": "手のひらの写真で健康状態を診断することはなく、富・人間関係・寿命について確実な結果を約束することもありません。写真は安全に処理され、いつでも削除できます。"
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "撮り直す",
+      "analyzingYourPalm": "手のひらを分析中",
+      "thisPhotoCouldNotBe": "この写真は手相リーディングに使用できませんでした。"
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "今の気持ちは？（任意）",
+      "energy": "エネルギー",
+      "stress": "ストレス",
+      "sleepQuality": "睡眠の質",
+      "noteOptional": "メモ（任意）",
+      "anythingYouWantToRemember": "今日覚えておきたいことがあれば…",
+      "couldNotSaveYourCheck": "チェックインを保存できませんでした。"
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "許可が必要です",
+      "capture": "撮影",
+      "analyzeYourPalm": "手のひらを分析する",
+      "useNaturalLightHoldYour": "自然光の下で、指を少し広げて手を平らにし、フレームのほとんどを占めるようにしてください。",
+      "retake": "撮り直す",
+      "noPhotoYet": "まだ写真がありません",
+      "takePhoto": "写真を撮る",
+      "uploadFromLibrary": "ライブラリからアップロード",
+      "photoGuidelines": "撮影のガイドライン",
+      "goodExample": "良い例",
+      "flatOpenPalmFillingThe": "フレームいっぱいに広げた平らな手のひら。均一な照明でアクセサリーなし。",
+      "avoidPhotosLikeTheseThey": "次のような写真は避けてください。分析の精度に影響することがあります：",
+      "yourPhotoIsUploadedSecurely": "写真は分析のために安全にアップロードされます。プロフィール → プライバシーからいつでも削除できます。"
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "リーディングを読み込み中...",
+      "palmReading": "手相リーディング",
+      "couldnTLoadThisReading": "このリーディングを読み込めませんでした。もう一度お試しください。",
+      "limitedVisibilityOnlyPartOf": "視認性が限られています：手のひらの一部しか鮮明に写っていなかったため、このリーディングは完全なスキャンより少ない特徴を扱います。",
+      "analysisOverview": "分析の概要",
+      "sectionsMatched": "検出された項目",
+      "imageQuality": "画質",
+      "unlocked": "解放済み",
+      "thisAnalysisReportsQualitativeObservations": "この分析は正確なピクセル座標ではなく、信頼度スコア付きの定性的な観察を示します。実際の手相線の形状ではないものを表示しないよう、写真に線の経路を重ねることはしません。",
+      "readingSections": "リーディングの項目",
+      "everyLineBelowIncludesOne": "下の各線には、スキャンから得られた無料の実際の観察が1つ含まれます。線を解放すると詳細な内容が見られます。",
+      "noSpecificFeaturesCouldBe": "この写真からは、確信を持って特定できる特徴はありませんでした。",
+      "free": "無料",
+      "fullStructureAdditionalDetectedCharacteristics": "この線の全体構造、追加で検出された特徴、伝統的な解釈の全文。",
+      "combinedPatterns": "総合的なパターン",
+      "yourPalmHasMoreTo": "あなたの手のひらには、まだ明かされていないことがあります",
+      "unlockYourCompletePalmReading": "手相リーディング全体を解放して、検出されたすべての特徴と伝統的な解釈を、この結果のすべての線と丘で確認しましょう。",
+      "unlockCompleteReading": "リーディング全体を解放",
+      "reflectiveQuestions": "内省のための質問",
+      "askAboutThisReading": "このリーディングについて聞く",
+      "yourPalmReadingIsReady": "手相リーディングができました！",
+      "createYourFreeAccountTo": "無料アカウントを作成して、手相プロフィールを保存し、どの端末からでもいつでも完全なレポートを確認しましょう。",
+      "yourReadingHasBeenSaved": "リーディングを保存しました。ホームと手相履歴で確認できます。",
+      "saveAndContinue": "保存して続ける",
+      "couldNotUnlockThisSection": "この項目を解放できませんでした。もう一度お試しください。",
+      "couldNotUnlockYourComplete": "リーディング全体を解放できませんでした。もう一度お試しください。",
+      "upgradeToSeeMore": "（アップグレードして続きを見る）"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "リーディングを削除",
+      "couldNotDeleteThisReading": "このリーディングを削除できませんでした。もう一度お試しください。",
+      "palmReadingHistory": "手相リーディング履歴",
+      "noPalmReadingsYet": "手相リーディングはまだありません",
+      "yourPastPalmScansWill": "過去の手のひらスキャンがここに表示されます。",
+      "scanYourPalm": "手のひらをスキャン"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "このリーディングを読み込めませんでした",
+      "generationDidnTComplete": "生成が完了しませんでした",
+      "weCouldnTFinishGenerating": "今日のリーディングを完成できませんでした。もう一度お試しいただけます。",
+      "retryGeneration": "もう一度生成",
+      "yourDayAtAGlance": "今日のあなたの一日",
+      "todaySFocus": "今日のフォーカス",
+      "careerProductivity": "キャリアと生産性",
+      "loveRelationships": "恋愛と人間関係",
+      "moodSelfCare": "気分とセルフケア",
+      "whatToDoToday": "今日やること",
+      "whatToBeMindfulOf": "気をつけたいこと",
+      "aSmallDailyChallenge": "今日のちょっとした挑戦",
+      "reflectionQuestion": "内省の問い",
+      "astrologyBehindThisReading": "このリーディングの占星術的背景",
+      "askAFollowUpQuestion": "追加の質問をする",
+      "askAboutTodaySReading": "今日のリーディングについて聞く…",
+      "ask": "質問"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "気分の履歴",
+      "trendsAndCheckInsOver": "時間の経過に伴う傾向とチェックイン。",
+      "noMoodCheckInsYet": "気分のチェックインはまだありません",
+      "logHowYouAreFeeling": "今の気分を記録すると、ここに傾向が表示されます。",
+      "checkInNow": "今すぐチェックイン",
+      "last7Days": "直近7日間",
+      "noCheckInOnThis": "この日のチェックインはありません。",
+      "trends": "傾向",
+      "mostFrequentEmotions": "よく感じる感情",
+      "avgEnergy": "平均エネルギー",
+      "avgStress": "平均ストレス",
+      "avgSleep": "平均睡眠",
+      "allCheckIns": "すべてのチェックイン",
+      "newCheckIn": "新しいチェックイン",
+      "couldNotLoadYourMood": "気分の履歴を読み込めませんでした。もう一度お試しください。"
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "エントリーを削除",
+      "type": "種類",
+      "needAPrompt": "お題が必要ですか？",
+      "titleOptional": "タイトル（任意）",
+      "writeFreely": "自由に書いてみましょう…",
+      "tagsCommaSeparated": "タグ（カンマ区切り）",
+      "aiInsight": "AIインサイト",
+      "thisEntrySTextWould": "このエントリーの本文は、洞察を生成するためにPalm SetuのAIに送信されます。下で明示的に許可しない限り送信されることはなく、リクエストごとに再度チェックが必要です。",
+      "iConsentToShareThis": "この1回のリクエストに限り、このエントリーの本文をAIと共有することに同意します",
+      "getAiInsight": "AIインサイトを取得",
+      "couldNotSaveThisEntry": "このエントリーを保存できませんでした。",
+      "couldNotGetAnAi": "現在AIインサイトを取得できません。"
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "スプレッドを読み込み中...",
+      "couldnTLoadSpreads": "スプレッドを読み込めませんでした",
+      "eachPositionHasItsOwn": "それぞれの位置に固有の意味があります。スプレッドを選ぶと下に表示されます。",
+      "secondPersonOptional": "もう一人（任意）",
+      "addAFirstNameOr": "リーディングで「相手」ではなく名前で呼びたい場合のみ、名やニックネームを追加してください。アカウントとして保存されたり、誰かと共有されたりすることはなく、このリーディングを削除すると自動的に削除されます。相手の生年月日や連絡先などは一切収集せず、このリーディングが相手の本当の私的な思考や感情を知っていると主張することもありません。伝統的な象徴的省察を提供するだけです。",
+      "eGAlexOptional": "例：アレックス（任意）"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "リーディング履歴",
+      "loading": "読み込み中...",
+      "couldnTLoadHistory": "履歴を読み込めませんでした",
+      "personalReadings": "個人リーディング",
+      "yourPersonalDailyReadingsAre": "個人のデイリーリーディングは、今日の分をデイリー・コズミックガイダンスのホーム画面で確認でき、あなただけに非公開です。",
+      "sharedRelationshipReadings": "共有の関係リーディング",
+      "noPartnerConnected": "パートナーは未接続です",
+      "connectWithAPartnerTo": "パートナーとつながると、共有リーディングの履歴が溜まり始めます。",
+      "noSharedReadingsYet": "共有リーディングはまだありません"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "占星術",
+      "setUpYourBirthDetails": "出生情報を設定",
+      "addYourBirthDateAnd": "生年月日（わかれば時刻も）を追加すると、パーソナライズされたデイリーリーディングが届きます。",
+      "getStarted": "はじめる",
+      "couldnTLoadThisSection": "このセクションを読み込めませんでした",
+      "retry": "再試行",
+      "vedicAstrology": "ヴェーダ占星術",
+      "generateYourKundliNorthIndia": "クンドリを作成：北インド式・南インド式・西洋式のチャート",
+      "soulEnergyReading": "ソウルエネルギーリーディング",
+      "anAiGeneratedPersonalityReading": "あなたの実際のチャートに基づくAI生成の性格リーディング"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "占星術の体系を変更しますか？",
+      "switchingBetweenVedicAndWestern": "ヴェーダ式と西洋式を切り替えると、星座・チャート・毎日のガイダンスが変わります。出生情報はそのままですが、解釈は再計算されます。",
+      "changeSystem": "体系を変更",
+      "yourBirthDetails": "あなたの出生情報",
+      "usedOnlyForTraditionalAstrology": "伝統的な占星術の計算にのみ使用します。内省のための解釈であり、科学的な予測ではありません。正確な出生時刻と場所は月星座・ナクシャトラ・日々のトランジットを大きく変えるため、正確なリーディングには3つすべてが必要です。",
+      "astrologySystem": "占星術の体系",
+      "vedicSiderealAndWesternTropical": "ヴェーダ式（恒星）と西洋式（回帰）は基準が異なり、同じ出生情報でも星座やトランジットの結果が変わります。",
+      "dateOfBirth": "生年月日",
+      "exactTimeOfBirth": "正確な出生時刻",
+      "checkYourBirthCertificateOr": "不確かな場合は出生証明書を確認するか、親に聞いてください。星座の境界付近では30分の違いでも月星座が変わることがあります。",
+      "birthplace": "出生地",
+      "chooseTheClosestMajorCity": "最も近い主要都市を選んでください。正確な計算のため、出生時のタイムゾーンも設定されます。",
+      "saveAndContinue": "保存して続ける",
+      "somethingWentWrongSavingYour": "プロフィールの保存中に問題が発生しました。"
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "パートナーとつながる",
+      "yourPartnerWillNeedTheir": "パートナーにも自分のアカウントが必要です。相手が明示的に承認して初めて、何かが共有されます。",
+      "generateAnInvitation": "招待を作成",
+      "createACodeToShare": "パートナーと共有するコードを作成",
+      "enterACode": "コードを入力",
+      "yourPartnerSharedACode": "パートナーがコードを共有してくれました",
+      "yourInvitationCode": "あなたの招待コード",
+      "shareThisCodeDirectlyWith": "このコードをパートナーに直接共有してください。コードを持つ人には招待であることだけが見え、出生情報は公開されません。",
+      "invitationCode": "招待コード",
+      "eGY5ppbubg": "例：Y5PPBUBG",
+      "whatYouLlBeSharing": "共有される内容",
+      "onceConnectedYouCanEach": "つながった後は、相性の結果、共有デイリーリーディング、チャートの詳細、通知など、共有する内容をそれぞれが個別に管理できます。日記や個人のデイリーリーディングは、共有を選ばない限り非公開のままです。",
+      "acceptInvitation": "招待を承認",
+      "couldNotCreateAnInvitation": "招待を作成できませんでした。",
+      "couldNotAcceptThisInvitation": "この招待を承認できませんでした。"
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "このチャートを読み込めませんでした",
+      "back": "戻る",
+      "planetaryDetails": "惑星の詳細",
+      "planet": "惑星",
+      "degree": "度数",
+      "sign": "星座",
+      "wholeSignHousesLahiriApproximation": "ホールサインハウス、ラヒリ近似のアヤナムシャ。マハダシャのレベルのみ（アンタルダシャの下位期間なし）。"
+    },
+    "KundliStyleScreen": {
+      "styleChart": "チャートスタイル",
+      "completeYourBirthDetails": "出生情報を完成させる",
+      "yourNameBirthDateAnd": "アセンダントとハウスの計算には、名前、生年月日と時刻、出生地が必要です。",
+      "addBirthDetails": "出生情報を追加",
+      "upgrade": "アップグレード",
+      "chooseAChartStyleAnd": "チャートスタイルを選び、出生情報を確認して作成します。",
+      "theirDetails": "相手の情報",
+      "name": "名前",
+      "birthDateYyyyMmDd": "生年月日（YYYY-MM-DD）",
+      "birthTimeHhMm24h": "出生時刻（HH:MM、24時間）",
+      "generate": "作成",
+      "selectBirthplace": "出生地を選択",
+      "searchCityOrCountry": "都市または国を検索",
+      "couldNotGenerateYourChart": "チャートを作成できませんでした。もう一度お試しください。"
+    },
+    "MoonSignScreen": {
+      "moonSign": "月星座",
+      "addYourBirthDateAnd": "生年月日（わかれば時刻も）を追加すると、実際の月星座とナクシャトラが確認できます。",
+      "siderealVedic": "恒星（ヴェーダ式）",
+      "nakshatra": "ナクシャトラ",
+      "westernTropical": "西洋式（回帰）",
+      "tropicalMoonSign": "回帰の月星座",
+      "todaySMoon": "今日の月",
+      "currentPosition": "現在の位置",
+      "lunarPhase": "月相",
+      "nextPhase": "次の月相",
+      "thisAppSEngineDoesn": "このアプリのエンジンは、上記の次の月相の推定以外、ナクシャトラの変化や日食・月食などの将来の月の出来事を計算しません。そのため、ここでは何も捏造していません。"
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "共有リーディングはオフです",
+      "ourDayAtAGlance": "ふたりの一日",
+      "whatMayHelpToday": "今日役立つかもしれないこと",
+      "communicationGuidance": "コミュニケーションのヒント",
+      "qualityTimeSuggestion": "一緒に過ごす時間の提案",
+      "aQuestionToAskEach": "お互いに聞いてみたい質問",
+      "individualSupport": "それぞれへのサポート",
+      "thisReadingIsForReflection": "このリーディングは内省のためのもので、関係に対する判決ではありません。不誠実さや不適合を示唆したり、関係の未来を予測したりすることはありません。"
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "関係を読み込めませんでした",
+      "ourCosmicConnection": "ふたりの宇宙的なつながり",
+      "noPartnerConnectedYet": "まだパートナーがつながっていません",
+      "connectWithAPartnerTo": "パートナーとつながると、完全な同意とプライバシー管理のもとで作られる共有デイリーリーディングが利用できます。",
+      "connected": "接続済み",
+      "viewTodaySSharedReading": "今日の共有リーディングを見る",
+      "readingHistory": "リーディング履歴",
+      "privacySharing": "プライバシーと共有",
+      "yourPersonalDailyReadingStays": "個人のデイリーリーディングは、初期設定では非公開です。共有リーディングは、ふたりでの内省に必要なものだけを使い、日記や非公開のAIとの会話は決して使いません。",
+      "disconnect": "接続を解除",
+      "disconnectFromYourPartner": "パートナーとの接続を解除",
+      "thisStopsFutureSharedReadings": "今後の共有リーディングと通知が、おふたりとも停止します。後で新しい招待で再接続できます。"
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "プロフィールを選択",
+      "myAstrology": "私の占星術",
+      "free": "無料",
+      "otherPersonSAstrology": "他の人の占星術",
+      "premium": "プレミアム"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "リーディングを作成中...",
+      "setUpYourBirthDetails": "まず出生情報を設定してください",
+      "yourSoulEnergyReadingIs": "ソウルエネルギーリーディングは、デイリー・コズミックガイダンスと同じ出生チャートに基づいています。",
+      "setUpBirthDetails": "出生情報を設定",
+      "couldnTGenerateThisReading": "このリーディングを作成できませんでした",
+      "aiGeneratedGroundedInYour": "AI生成。あなたの実際の太陽・月のチャートに基づいています。",
+      "basedOnSunAndMoon": "太陽と月の星座のみに基づきます。アセンダントは正確な出生座標が必要なため利用できません。"
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "西洋占星術",
+      "addYourBirthDateAnd": "生年月日と出生地を追加すると、回帰式の西洋スタイルのリーディングが得られます。",
+      "tropicalSunMoonAndTransits": "回帰の太陽・月・トランジットを西洋式に読み解く",
+      "todaySReading": "今日のリーディング",
+      "stillPreparingTodaySReading": "今日のリーディングを準備中...",
+      "openFullReading": "リーディング全体を開く",
+      "wantTheVedicSiderealView": "代わりにヴェーダ式（恒星）で見たいですか？ホームから「占星術」または「月星座」を開いてください。"
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "今、気になっていることは？",
+      "optionalSelectAsManyAs": "任意：当てはまるものをすべて選んでください。おすすめはチャートに基づくもので、目標には基づきません。",
+      "generateMyGemstoneGuide": "宝石ガイドを作成",
+      "somethingWentWrongGeneratingYour": "レポートの作成中に問題が発生しました。"
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "宝石レポート",
+      "couldnTLoadReports": "レポートを読み込めませんでした",
+      "noReportsYet": "レポートはまだありません",
+      "yourGemstoneReportsWillAppear": "宝石レポートがここに表示されます。"
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "宝石ガイド",
+      "yourGemstoneRecommendationUsesThe": "宝石のおすすめは、デイリー・コズミックガイダンスと同じ出生チャートを使用します。",
+      "traditionalVedicGemstoneGuidanceBased": "出生チャートに基づく伝統的なヴェーダ式の宝石ガイダンス。内省のためのもので、科学的な処方ではありません。",
+      "yourPersonalGemstoneGuide": "あなた専用の宝石ガイド",
+      "discoverTheGemstoneTraditionallyAssociated": "月星座の支配星に伝統的に結びつく宝石を、身につけ方のガイド、代替案、購入ガイドとともに紹介します。",
+      "getMyGemstoneGuide": "宝石ガイドを受け取る",
+      "recentReports": "最近のレポート",
+      "basedOnTheRashiMoon": "ラーシ（月星座）の支配星を強める慣習に基づく、文献に残る複数のヴェーダ伝統のひとつです。アセンダントや惑星の凶意の完全な分析は行いません。"
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "このレポートを読み込めませんでした",
+      "noRecommendationAvailable": "おすすめはありません",
+      "saved": "保存済み",
+      "whyThisGemstoneWasRecommended": "この宝石がおすすめされた理由",
+      "wearingGuidanceCustomaryPractice": "身につけ方のガイド（慣習）",
+      "traditionalDay": "伝統的な曜日",
+      "traditionalFinger": "伝統的な指",
+      "traditionalMetal": "伝統的な金属",
+      "alternativeOption": "代替案",
+      "gemstoneBuyingGuide": "宝石の購入ガイド",
+      "thisAppDoesNotSell": "このアプリは宝石を販売せず、販売者の確認も行いません。このガイドは教育目的のみです。",
+      "askAboutThisRecommendation": "このおすすめについて聞く…",
+      "deleteThisReport": "このレポートを削除",
+      "thisPermanentlyDeletesTheGemstone": "宝石レポートが完全に削除されます。"
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "拡張ホロスコープ",
+      "deeperOutlooksBeyondTodayWeekly": "今日を超えた深い展望、週間・月間ビューなど。"
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "星座別ホロスコープ",
+      "browseHoroscopesByZodiacSign": "星座別にホロスコープを閲覧。誰でも、いつでも。"
+    },
+    "NumerologyScreen": {
+      "numerology": "数秘術",
+      "yourMoolaankBirthNumberAnd": "あなたのムーラーンク（誕生数）とバギャーンク（運命数）を解説します。"
+    },
+    "MyReportsScreen": {
+      "myReports": "マイレポート",
+      "allYourPreviousReadingsAnd": "過去のリーディングとレポートをすべて一か所に"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "問題が発生しました",
+      "thisUsuallyTakesUnderA": "通常1分もかかりません。",
+      "couldNotFinishYourSketch": "スケッチを完成できませんでした。もう一度お試しください。再度請求されることはありません。",
+      "couldNotGenerateYourSketch": "スケッチを作成できませんでした。再度お支払いなしで再試行できます。"
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "スケッチを削除",
+      "couldNotDeleteThisSketch": "このスケッチを削除できませんでした。もう一度お試しください。",
+      "soulmateSketchHistory": "ソウルメイトスケッチ履歴",
+      "noSketchesYet": "スケッチはまだありません",
+      "yourPurchasedSoulmateSketchesWill": "購入したソウルメイトスケッチがここに表示されます。",
+      "createASketch": "スケッチを作る"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "ソウルメイトスケッチ",
+      "aMysteriousArtisticPortraitOf": "あなたの心が思い描くソウルメイトの、神秘的で芸術的な肖像。",
+      "soulmateSketchIsEntertainmentAnd": "ソウルメイトスケッチは娯楽と創造的な自己省察です。肖像は架空のスケッチのイラスト集から選ばれます。実在の人物ではなく、将来のパートナーに関する科学的・確実な予測でもありません。",
+      "yourFirstSoulmateSketchIs": "最初のソウルメイトスケッチは無料です。",
+      "yourFreeSketchHasBeen": "無料スケッチは使用済みです。下でさらにプレミアムスケッチをご覧ください。",
+      "viewMyFreeSketch": "無料スケッチを見る"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "確認して支払う",
+      "yourPreferences": "あなたの希望",
+      "gender": "性別",
+      "ageRange": "年齢層",
+      "countryBackground": "国・背景",
+      "style": "スタイル",
+      "yourPaymentIsProcessedSecurely": "お支払いは安全に処理されます。生成は支払いが確認された後にのみ始まり、生成のやり直しが必要でも再度請求されることはありません。",
+      "payAndGenerateMySketch": "支払ってスケッチを作成",
+      "verifyingYourPayment": "お支払いを確認中...",
+      "paymentsAreNotYetAvailable": "このサーバーでは、まだ支払いを利用できません。後でもう一度お試しください。",
+      "couldNotStartCheckoutPlease": "チェックアウトを開始できませんでした。もう一度お試しください。",
+      "paymentVerificationFailedIfAn": "支払いの確認に失敗しました。金額が引き落とされた場合は返金されます。",
+      "paymentDidNotCompletePlease": "お支払いが完了しませんでした。もう一度お試しください。"
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "希望するソウルメイトの性別",
+      "preferredAgeRange": "希望する年齢層",
+      "preferredCountryOrCulturalBackground": "希望する国または文化的背景",
+      "moreCountries": "その他の国",
+      "preferredPortraitStyle": "希望する肖像のスタイル",
+      "couldNotStartYourFree": "無料スケッチを開始できませんでした。もう一度お試しください。"
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "スケッチを読み込み中...",
+      "couldnTLoadThisSketch": "このスケッチを読み込めませんでした。もう一度お試しください。",
+      "yourSoulmateSketch": "あなたのソウルメイトスケッチ",
+      "preferences": "希望",
+      "background": "背景",
+      "personalityReflection": "性格の省察",
+      "compatibilityTraits": "相性の特徴",
+      "thisPortraitAndReflectionAre": "この肖像と省察は、イラスト集から選ばれたフィクションの娯楽です。実在の人物ではなく、将来のパートナーに関する事実に基づく予測や保証でもありません。",
+      "share": "共有",
+      "savedToMyReportsShared": "マイレポートに保存しました。共有コピーにはPalm Setuの透かしが入りますが、保存した原本には入りません。",
+      "lovedYourFreeSketch": "無料スケッチは気に入りましたか？",
+      "exploreMorePortraitsAndStyles": "さらに多くの肖像とスタイルを探索。プレミアムスケッチは手頃な価格から、Palm Setuで自由に設定できます。",
+      "explorePremiumSketches": "プレミアムスケッチを見る",
+      "done": "完了"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "何を探りたいですか？",
+      "tarotHereIsATraditional": "ここでのタロットは内省のための伝統的で解釈的な実践であり、将来の出来事を予測する科学的に検証された方法ではありません。",
+      "whatSOnYourMind": "今、気になっていることは？（共有を選ばない限り非公開です）",
+      "chooseASpread": "スプレッドを選ぶ"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "デッキをタップしてカードを広げる",
+      "takeAMomentAndChoose": "少し間を置いて、カードを選んでください",
+      "seeMyReading": "リーディングを見る",
+      "somethingWentWrongStartingYour": "リーディングの開始中に問題が発生しました。"
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "質問・カード・レポートを検索…",
+      "savedOnly": "保存済みのみ",
+      "previous": "前へ",
+      "next": "次へ"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "接続を確認してもう一度お試しください。",
+      "context": "文脈",
+      "advice": "アドバイス",
+      "symbolism": "象徴",
+      "overallReflection": "全体の省察",
+      "detailedAiReading": "AIによる詳細リーディング",
+      "practicalSuggestions": "実践的な提案",
+      "reflectionQuestions": "内省のための問い",
+      "yourBirthChartPerspective": "出生チャートの視点",
+      "goDeeperWithAi": "AIでさらに深く",
+      "exploreTheSymbolismOfYour": "選んだカードの象徴、つながり、内省したいテーマを探ります。",
+      "followUpQuestionsAreA": "追加の質問はプレミアム機能です",
+      "askAnythingAboutThisSpecific": "このリーディングについて何でも質問すると、実際のカードに基づく答えが得られます。",
+      "upgradeToPremium": "プレミアムにアップグレード",
+      "tryAsking": "こんなふうに聞いてみましょう：",
+      "thinking": "考え中",
+      "askAboutThisReading": "このリーディングについて聞く…",
+      "journalThisReading": "このリーディングを日記に記録",
+      "privateNotesNeverSharedUnless": "非公開メモ。あなたが選ばない限り共有されません",
+      "saveNote": "メモを保存",
+      "saveThisReading": "このリーディングを保存",
+      "createAFreeAccountTo": "無料アカウントを作成して、タロットリーディングを保存し、いつでも洞察を見返しましょう。",
+      "deleteThisReading": "このリーディングを削除",
+      "thisPermanentlyDeletesTheReading": "リーディングと関連する日記メモが完全に削除されます。",
+      "couldNotGetAResponse": "回答を取得できませんでした。もう一度お試しください。",
+      "somethingWentWrongGeneratingYour": "詳細リーディングの作成中に問題が発生しました。"
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "方角の詳細を読み込めませんでした。",
+      "vastuCompass": "ヴァストゥコンパス",
+      "holdYourPhoneFlatAway": "最も正確に測るため、スマートフォンを水平に持ち、金属や電子機器から離してください。",
+      "checkingSensorAvailability": "センサーの利用可否を確認中...",
+      "locationPermissionIsNeededTo": "コンパスの向きを読み取るには位置情報の許可が必要です（GPS座標は読み取りも保存もせず、向きのみ使用します）。下で向いている方角を手動で選ぶか、端末の設定で許可をオンにしてライブコンパスを使ってください。",
+      "aCompassSensorIsnT": "このデバイスまたはブラウザではコンパスセンサーを利用できません。下で向いている方角を手動で選んでください。",
+      "lowAccuracyDetectedMoveAway": "精度が低下しています。金属や電子機器から離れ、スマートフォンを8の字に動かして補正してください。",
+      "approximateReadingNotACalibrated": "おおよその測定値であり、校正された測量機器ではありません。",
+      "selectManuallyInstead": "代わりに手動で選ぶ",
+      "selectYourDirection": "方角を選択",
+      "useLiveSensorInstead": "代わりにライブセンサーを使う",
+      "bestForHome": "住まいに最適",
+      "noStrongTraditionalAssociation": "伝統的な強い関連はありません",
+      "bestForWork": "仕事に最適",
+      "thisShowsADirectionNot": "これは方角を示すもので、物件全体の評価ではありません。部屋ごとの個別ガイダンスには物件分析をご利用ください。"
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "ヴァストゥレポート",
+      "yourVastuReportsWillAppear": "ヴァストゥレポートがここに表示されます。"
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "空間を整える：内省のための伝統的な方角ガイダンスであり、科学的に検証された物件評価ではありません。",
+      "openTheCompass": "コンパスを開く",
+      "findYourCurrentFacingDirection": "端末のセンサーで現在向いている方角を調べるか、手動で選んでください。",
+      "analyzeAProperty": "物件を分析する",
+      "addRoomDirectionsForA": "部屋ごとの方角を追加すると、実用的で低コストな提案を含むパーソナライズされたレポートが得られます。",
+      "analyzeAPropertyToSee": "物件を分析すると、最初のレポートがここに表示されます。",
+      "vastuIsATraditionalArchitectural": "ヴァストゥは伝統的な建築・文化的信念の体系です。精神面や繁栄に関する主張は科学的に立証されておらず、どの方角も病気・金銭的損失・人間関係の問題の原因として示されることはありません。"
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "部屋の方角を削除しますか？",
+      "remove": "削除",
+      "alreadyAdded": "追加済み",
+      "analyzeYourProperty": "物件を分析する",
+      "configureExactlyTheRoomsYour": "物件にある部屋をそのまま設定し、それぞれの実際の方角を指定してください。わからない部屋は省略できます。",
+      "propertyType": "物件の種類",
+      "roomConfiguration": "部屋の構成",
+      "commonRooms": "一般的な部屋",
+      "roomNameEGStudy": "部屋の名前（例：書斎）",
+      "addRoom": "部屋を追加",
+      "addAnotherRoom": "部屋をもう1つ追加",
+      "additionalDetailsOptional": "追加情報（任意）",
+      "tellUsAnythingElseAbout": "物件の間取りについて他にあれば教えてください…",
+      "generateMyReport": "レポートを作成"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "物件の概要",
+      "directionAnalysis": "方角の分析",
+      "suggestionsChecklist": "提案チェックリスト",
+      "optionalCulturalPractice": "任意の文化的慣習",
+      "vastuIsATraditionalArchitectural": "ヴァストゥは伝統的な建築・文化的信念の体系です。精神面や繁栄に関する主張は科学的に立証されていません。ここでは、どの方角も病気・金銭的損失・人間関係の問題の原因として示されることはありません。",
+      "askAboutThisReport": "このレポートについて聞く…",
+      "thisPermanentlyDeletesTheVastu": "ヴァストゥレポートが完全に削除されます。"
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "内省のひととき",
+      "thisPieceIsFromThe": "この文章は、ライブラリの任意の占星術テイストの一部からのものです。",
+      "couldNotLoadTodayS": "今日のアファメーションを読み込めませんでした。"
+    },
+    "BreathingSessionScreen": {
+      "saving": "保存中...",
+      "stop": "停止"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "呼吸",
+      "chooseAGuidedBreathingTechnique": "ガイド付きの呼吸法を選んでください。",
+      "noTechniquesAvailable": "利用できる呼吸法がありません",
+      "pleaseTryAgainLater": "後でもう一度お試しください。",
+      "couldNotLoadBreathingTechniques": "呼吸法を読み込めませんでした。もう一度お試しください。"
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "このチャレンジをやり直しますか？",
+      "thisWipesAllYourProgress": "このチャレンジの進捗がすべて消え、1日目からやり直します。元に戻せません。",
+      "restart": "やり直す",
+      "leaveThisChallenge": "このチャレンジをやめますか？",
+      "yourProgressIsKeptBut": "進捗は保持されますが、アクティブではなくなります。",
+      "leave": "やめる",
+      "challengeCompleted": "チャレンジ達成",
+      "dayByDayTasks": "日ごとのタスク",
+      "couldNotLoadThisChallenge": "このチャレンジを読み込めませんでした。",
+      "couldNotJoinThisChallenge": "このチャレンジに参加できませんでした。",
+      "couldNotMarkThisDay": "この日を完了にできませんでした。",
+      "couldNotRestartThisChallenge": "このチャレンジをやり直せませんでした。",
+      "couldNotLeaveThisChallenge": "このチャレンジをやめられませんでした。"
+    },
+    "ChallengesScreen": {
+      "challenges": "チャレンジ",
+      "multiDayGuidedProgramsJoin": "数日間のガイド付きプログラム。1つに参加して、自分のペースで毎日1つのタスクを完了しましょう。",
+      "noChallengesAvailable": "利用できるチャレンジがありません",
+      "couldNotLoadChallengesPlease": "チャレンジを読み込めませんでした。もう一度お試しください。"
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "この目標を削除しますか？",
+      "targetFrequency": "目標頻度",
+      "save": "保存",
+      "completed": "達成済み",
+      "logTodaySProgressUser": "今日の進捗を記録（自己申告）",
+      "optionalNoteAboutToday": "今日についてのメモ（任意）",
+      "logProgress": "進捗を記録",
+      "markComplete": "達成にする",
+      "userReportedHistory": "自己申告の履歴",
+      "noCheckInsLoggedYet": "チェックインはまだ記録されていません。",
+      "userReported": "自己申告",
+      "deleteGoal": "目標を削除",
+      "couldNotLoadThisGoal": "この目標を読み込めませんでした。",
+      "couldNotLogProgress": "進捗を記録できませんでした。",
+      "couldNotMarkGoalComplete": "目標を達成にできませんでした。",
+      "couldNotDeleteThisGoal": "この目標を削除できませんでした。",
+      "couldNotUpdateThisGoal": "この目標を更新できませんでした。"
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "達成した目標",
+      "noCompletedGoalsYet": "達成した目標はまだありません",
+      "goalsYouCompleteWillShow": "達成した目標がここに表示されます。",
+      "couldNotLoadCompletedGoals": "達成した目標を読み込めませんでした。"
+    },
+    "GoalsScreen": {
+      "goals": "目標",
+      "progressHereIsAlwaysWhat": "ここでの進捗は常に自己申告です。自動で測定されるものはありません。",
+      "activeGoals": "進行中の目標",
+      "noActiveGoalsYetAdd": "進行中の目標はまだありません。下から追加してください。",
+      "newGoal": "新しい目標",
+      "goalTitle": "目標のタイトル",
+      "targetFrequencyOptionalEG": "目標頻度（任意）例：週4回",
+      "category": "カテゴリー",
+      "create": "作成",
+      "couldNotLoadGoalsPlease": "目標を読み込めませんでした。もう一度お試しください。",
+      "couldNotCreateGoal": "目標を作成できませんでした。"
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "インスピレーション",
+      "browseTheFullLibraryOrganized": "タイプ別に整理されたライブラリ全体を閲覧。",
+      "all": "すべて",
+      "favorites": "お気に入り",
+      "couldNotLoadTheInspiration": "インスピレーションライブラリを読み込めませんでした。"
+    },
+    "JournalScreen": {
+      "journal": "ジャーナル",
+      "newEntry": "新しいエントリー",
+      "searchEntries": "エントリーを検索",
+      "noJournalEntriesYetStart": "ジャーナルのエントリーはまだありません。お題か自由な記述から始めましょう。"
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "このセッションの音声は近日公開です。セッションは引き続き記録され、下で完了にできます。",
+      "sleepTimer": "スリープタイマー",
+      "markSessionComplete": "セッションを完了にする",
+      "couldNotLoadThisSession": "このセッションを読み込めませんでした。",
+      "thisSessionRequiresPalmSetu": "このセッションにはPalm Setuプレミアムが必要です。",
+      "couldNotStartThisSession": "このセッションを開始できませんでした。"
+    },
+    "MeditationScreen": {
+      "meditationSleep": "瞑想と睡眠",
+      "guidedSessionsAndAmbientSounds": "ガイド付きセッションと環境音を、今のあなたに必要なものに合わせて整理しました。",
+      "recentlyPlayed": "最近再生した項目",
+      "noContentAvailable": "利用できるコンテンツがありません",
+      "couldNotLoadMeditationContent": "瞑想コンテンツを読み込めませんでした。もう一度お試しください。"
+    },
+    "DirectionSelectorModal": {
+      "direction": "方角",
+      "chooseTheDirectionThisRoom": "この部屋が物件内で実際に向いている方角を選んでください。こちらで推測することはありません。",
+      "iMNotSureSkip": "わからないので今はスキップ"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "安全なお支払い"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "意味"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "タロットの仕組み"
+    }
+  },
+  "errors": {
+    "network": "接続できません。接続を確認してもう一度お試しください。",
+    "timeout": "時間がかかっています。接続を確認してもう一度お試しください。",
+    "loadFailed": "読み込めませんでした。接続を確認してもう一度お試しください。",
+    "partialLoad": "一部のコンテンツを読み込めませんでした。",
+    "retry": "再試行",
+    "tryAgain": "もう一度試す",
+    "sessionExpired": "セッションの有効期限が切れました。もう一度ログインしてください。",
+    "aiLimit": "今月のAI利用上限に達しました。来月の初めにリセットされます。",
+    "rateLimited": "リクエストが多すぎます。少し待ってからもう一度お試しください。",
+    "generic": "問題が発生しました。もう一度お試しください。"
+  },
+  "aiMeter": {
+    "used": "{{limit}}中{{used}}",
+    "left": "残り{{left}}。{{date}}にリセットされます。",
+    "low": "残りわずか：{{left}}。{{date}}にリセットされます。",
+    "exhausted": "今月のAI利用枠を使い切りました。{{date}}にリセットされます。"
+  },
+  "verifyEmail": {
+    "sentTo": "{{email}} に新しいリンクを送信しました。開いてからここに戻ってください。",
+    "error": "現在メールを送信できません。もう一度お試しください。",
+    "prompt": "{{email}} を確認すると、パスワードの再設定ができ、プレミアムをアカウントに安全に紐づけられます。",
+    "send": "確認メールを送信",
+    "sending": "送信中...",
+    "again": "もう一度送信"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "高度な手相リーディング",
+        "tagline": "最初の無料レポートより、さらに深く。",
+        "p1": "詳細な手相レポートが無制限（無料プランは1件）",
+        "p2": "リーディングごとにAIへの追加質問が無制限（無料プランは2件）",
+        "p3": "検出されたすべての線と特徴を一度に解放",
+        "p4": "保存したレポート履歴にフルアクセス"
+      },
+      "tarot": {
+        "title": "プレミアムタロット",
+        "tagline": "ワンカードだけでなく、すべてのスプレッド。",
+        "p1": "すべてのプレミアムスプレッド：スリーカード、ファイブカード、ケルト十字など（無料プランはワンカード）",
+        "p2": "あらゆるリーディングにAIによる詳細なタロットレポート",
+        "p3": "1日最大20件のAI追加質問",
+        "p4": "保存したリーディング履歴をすべて表示"
+      },
+      "compatibility": {
+        "title": "恋愛と相性",
+        "tagline": "ふたりのためのリーディング。",
+        "p1": "相性・恋愛と人間関係のタロットスプレッド",
+        "p2": "他の人のチャートとの占星術的な相性",
+        "p3": "保存したプロフィールに基づく、あなた向けの人間関係の洞察"
+      },
+      "astrology": {
+        "title": "充実した占星術ライブラリ",
+        "tagline": "ヴェーダ式も西洋式も、さらに深く。",
+        "p1": "出生チャート（クンドリ）を無制限に作成（無料プランは1回）",
+        "p2": "相性のため、他の人のチャートも作成",
+        "p3": "ヴェーダ式・西洋式の両方をフル利用"
+      },
+      "ai": {
+        "title": "パーソナライズされたAI体験",
+        "tagline": "あなた自身のデータに基づく、より多くの会話。",
+        "p1": "AIコンパニオンのメッセージが1日最大200件（無料プランは15件）",
+        "p2": "保存したリーディングとプロフィールを踏まえた、文脈に沿った回答",
+        "p3": "タロット・手相・宝石レポート全体でAIによる追加質問"
+      },
+      "wellness": {
+        "title": "自己発見とウェルネス",
+        "tagline": "本当に習慣を築けるゆとり。",
+        "p1": "アクティブな習慣が無制限（無料プランは3つ）",
+        "p2": "すべての呼吸法とガイド瞑想を解放",
+        "p3": "すべてのウェルネスチャレンジを解放",
+        "p4": "気分の履歴をすべて表示（無料プランは直近7日間）",
+        "p5": "1日のAIジャーナル洞察が増加（無料プランは2件）"
+      }
+    },
+    "compare": {
+      "freeHeader": "無料",
+      "premiumHeader": "プレミアム",
+      "palm": {
+        "label": "詳細な手相レポート",
+        "free": "1",
+        "premium": "無制限"
+      },
+      "tarotSpreads": {
+        "label": "タロットスプレッド",
+        "free": "ワンカードのみ",
+        "premium": "すべてのスプレッド"
+      },
+      "tarotFollowups": {
+        "label": "タロットの追加質問",
+        "free": "含まれません",
+        "premium": "1日最大20件"
+      },
+      "kundli": {
+        "label": "出生チャート（クンドリ）の作成",
+        "free": "1",
+        "premium": "無制限"
+      },
+      "otherChart": {
+        "label": "他の人のチャート／相性",
+        "free": "含まれません",
+        "premium": "含まれます"
+      },
+      "companion": {
+        "label": "AIコンパニオンのメッセージ",
+        "free": "1日15件",
+        "premium": "1日200件"
+      },
+      "habits": {
+        "label": "アクティブなウェルネス習慣",
+        "free": "3",
+        "premium": "無制限"
+      },
+      "moodHistory": {
+        "label": "気分の履歴",
+        "free": "7日間",
+        "premium": "全履歴"
+      }
+    },
+    "period": {
+      "monthly": "/月",
+      "quarterly": "/3か月",
+      "annual": "/年"
+    },
+    "cta": {
+      "unlock": "Palm Setu プレミアムを解放",
+      "continueWith": "{{plan}}で続ける（{{price}}）"
+    },
+    "badge": {
+      "bestValue": "いちばんお得",
+      "popular": "人気"
+    },
+    "perMonthEquivalent": "月あたり{{price}}相当",
+    "save": "{{percent}}%お得",
+    "processing": "処理中...",
+    "restoring": "復元中...",
+    "restore": "購入を復元",
+    "legal": "サブスクリプションは、現在の期間が終了する24時間以上前に解約しない限り自動更新されます。App StoreまたはPlayストアのアカウント設定からいつでも管理・解約できます。",
+    "error": {
+      "unavailable": "現在購入できません。請求は発生していません。",
+      "verifyEmail": "まずメールアドレスを確認してください（プロフィール画面のカードを参照）。その後、購読に戻ってください。",
+      "planUnavailable": "このプランは現在購入できません。しばらくしてからもう一度お試しください。",
+      "notActiveYet": "購入は完了しましたが、プレミアムはまだ有効になっていません。しばらくしてから「購入を復元」をお試しください。",
+      "purchaseFailed": "購入中に問題が発生しました。失敗した場合、請求は発生していません。",
+      "nothingToRestore": "復元できる過去の購入が見つかりませんでした。",
+      "restoreFailed": "現在、購入を復元できません。"
+    },
+    "intent": {
+      "createFirst": "まず無料アカウントを作成すると、プレミアムをすべての端末で使えます。",
+      "logInToRestore": "ログインして、この端末でプレミアムを復元しましょう。"
+    }
+  },
+  "streak": {
+    "dayStreak": "日連続",
+    "longest": "最長：{{n}}",
+    "start": "毎日Palm Setuを開いて連続記録を作りましょう。",
+    "checkedIn": "今日はチェックイン済みです。明日もまた来て続けましょう。",
+    "atRisk": "連続記録を守るため、今日アプリを開きましょう。",
+    "milestone": "{{n}}日連続達成！すばらしい！",
+    "turnOnReminders": "リマインダーを設定"
+  },
+  "notifications": {
+    "dailyReminders": "毎日のリマインダー",
+    "horoscopeReminder": "今日のホロスコープ",
+    "streakReminder": "連続記録のリマインダー",
+    "timeLabel": "時刻（HH:mm、24時間）",
+    "invalidTime": "08:00 のように時刻を入力してください。",
+    "unavailable": "このバージョンのアプリではリマインダーを利用できません。",
+    "horoscopeTitle": "今日のホロスコープ",
+    "horoscopeBody": "今日のリーディングの準備ができました。",
+    "streakTitle": "連続記録を続けましょう",
+    "streakBody": "{{count}}日連続中です。今日Palm Setuを開いて続けましょう。"
   }
 }

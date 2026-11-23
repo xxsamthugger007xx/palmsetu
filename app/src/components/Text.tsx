@@ -44,6 +44,7 @@ export function Text({ variant = 'body', tone = 'primary', weight, style, ...res
   const resolvedWeight = weight ? typography.weight[weight] : base.fontWeight;
   return (
     <RNText
+      accessibilityRole={rest.accessibilityRole ?? (rest.onPress ? 'button' : variant === 'display' || variant === 'title' ? 'header' : undefined)}
       style={[
         base,
         { color: toneColor[tone], fontFamily: fontFamilyForWeight(resolvedWeight) },

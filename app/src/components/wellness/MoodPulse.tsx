@@ -42,7 +42,7 @@ export function MoodPulseSelector({ value, onSelect }: { value: MoodLevel | null
       {MOOD_LEVELS.map((m) => {
         const selected = value === m.value;
         return (
-          <Pressable key={m.value} onPress={() => onSelect(m.value)} style={styles.item} hitSlop={6}>
+          <Pressable accessibilityRole="button" key={m.value} onPress={() => onSelect(m.value)} style={styles.item} hitSlop={6}>
             <View style={[styles.markWrap, selected && { backgroundColor: color.surfaceHover, borderColor: m.tone }]}>
               <MoodMark tone={m.tone} fill={m.fill} size={28} selected={selected} />
             </View>

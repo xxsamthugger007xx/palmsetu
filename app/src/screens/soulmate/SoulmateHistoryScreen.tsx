@@ -13,6 +13,7 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
+import { useTranslation } from 'react-i18next';
 
 function statusBadge(status: SoulmateSketch['generationStatus']): { label: string; status: 'success' | 'warning' | 'danger' | 'neutral' } {
   if (status === 'completed') return { label: 'Completed', status: 'success' };
@@ -22,6 +23,7 @@ function statusBadge(status: SoulmateSketch['generationStatus']): { label: strin
 }
 
 export function SoulmateHistoryScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<SoulmateSketch[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -42,17 +44,17 @@ export function SoulmateHistoryScreen() {
   }, [load]);
 
   const handleDelete = (id: string) => {
-    Alert.alert('Delete sketch', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('ui.SoulmateHistoryScreen.deleteSketch'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
+      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('ui.AssistantHistoryScreen.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await soulmateApi.deleteSketch(id);
             setItems((prev) => prev.filter((s) => s.id !== id));
           } catch {
-            Alert.alert('Could not delete this sketch. Please try again.');
+            Alert.alert(t('ui.SoulmateHistoryScreen.couldNotDeleteThisSketch'));
           }
         },
       },
@@ -63,24 +65,24 @@ export function SoulmateHistoryScreen() {
     <PageContainer onRefresh={load}>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
-        <Text variant="bodySm" weight="semibold">Soulmate Sketch History</Text>
+        <Text variant="bodySm" weight="semibold">{t('ui.SoulmateHistoryScreen.soulmateSketchHistory')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text>
+        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
       )}
 
       {state === 'error' && (
-        <EmptyState icon={Info} title="Couldn't load history" actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.AstrologyHistoryScreen.couldnTLoadHistory')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       )}
 
       {state === 'ready' && items.length === 0 && (
         <EmptyState
           icon={Pencil}
-          title="No sketches yet"
-          description="Your purchased soulmate sketches will appear here."
-          actionLabel="Create a sketch"
+          title={t('ui.SoulmateHistoryScreen.noSketchesYet')}
+          description={t('ui.SoulmateHistoryScreen.yourPurchasedSoulmateSketchesWill')}
+          actionLabel={t('ui.SoulmateHistoryScreen.createASketch')}
           onAction={() => navigation.navigate('SoulmateIntro')}
         />
       )}

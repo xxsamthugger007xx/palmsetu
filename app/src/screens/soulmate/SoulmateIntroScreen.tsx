@@ -12,6 +12,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
+import { useTranslation } from 'react-i18next';
 
 const STEPS = [
   { icon: Heart, title: 'Share a few preferences', description: 'Gender, age range, cultural background and art style - nothing personal beyond that.' },
@@ -20,6 +21,7 @@ const STEPS = [
 ];
 
 export function SoulmateIntroScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loaded, setLoaded] = useState(false);
   const [eligible, setEligible] = useState(true);
@@ -85,10 +87,10 @@ export function SoulmateIntroScreen() {
           <Pencil size={26} color={color.accent} strokeWidth={1.5} />
         </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.md, textAlign: 'center' }}>
-          Soulmate Sketch
+          {t('ui.SoulmateIntroScreen.soulmateSketch')}
         </Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, textAlign: 'center' }}>
-          A mysterious, artistic portrait of the soulmate your heart imagines.
+          {t('ui.SoulmateIntroScreen.aMysteriousArtisticPortraitOf')}
         </Text>
       </LinearGradient>
 
@@ -108,9 +110,7 @@ export function SoulmateIntroScreen() {
 
       <Card style={{ marginTop: spacing.md }}>
         <Text variant="caption" tone="muted">
-          Soulmate Sketch is entertainment and creative self-reflection - the portrait is matched from an
-          illustrative collection of fictional sketches. It is never a real person, and never a scientific or
-          guaranteed prediction of your future partner.
+          {t('ui.SoulmateIntroScreen.soulmateSketchIsEntertainmentAnd')}
         </Text>
       </Card>
 
@@ -119,14 +119,14 @@ export function SoulmateIntroScreen() {
           <Card elevated style={styles.trialBanner}>
             <Gift size={16} color={color.success} strokeWidth={1.75} />
             <Text variant="bodySm" weight="semibold" tone="success" style={{ marginLeft: spacing.sm }}>
-              Your first soulmate sketch is free.
+              {t('ui.SoulmateIntroScreen.yourFirstSoulmateSketchIs')}
             </Text>
           </Card>
         ) : (
           freeSketch?.generationStatus === 'completed' && (
             <Card style={styles.usedBanner}>
               <Text variant="bodySm" tone="secondary">
-                Your free sketch has been used. Explore more premium sketches below.
+                {t('ui.SoulmateIntroScreen.yourFreeSketchHasBeen')}
               </Text>
             </Card>
           )
@@ -144,7 +144,7 @@ export function SoulmateIntroScreen() {
 
       {!eligible && freeSketch?.generationStatus === 'completed' && (
         <Button
-          label="View my free sketch"
+          label={t('ui.SoulmateIntroScreen.viewMyFreeSketch')}
           variant="secondary"
           fullWidth
           style={{ marginTop: spacing.sm }}

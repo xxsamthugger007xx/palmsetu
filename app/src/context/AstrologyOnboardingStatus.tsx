@@ -2,6 +2,8 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { astrologyApi } from '../services/astrologyApi';
 import { BirthProfile, OnboardingDraft } from '../types/astrology';
 import { nextAstrologyOnboardingStep, AstrologyOnboardingStep } from '../utils/onboardingStep';
+import { isLoadFailure } from '../utils/loadFailure';
+import { useAuth } from './AuthContext';
 
 /**
  * Derives whether the current user still needs to go through the
@@ -17,11 +19,22 @@ import { nextAstrologyOnboardingStep, AstrologyOnboardingStep } from '../utils/o
 function useAstrologyOnboardingStatusInternal() {
   const [step, setStep] = useState<AstrologyOnboardingStep | null>(null); // null = still loading
   const [loading, setLoading] = useState(true);
+  const { account, isGuest } = useAuth();
+  // Re-derive when the signed-in user changes (login on a new device, logout, signed out remotely). Without this a
+  // user who logs into their existing account on another device kept the guest's "needs onboarding" state and was
+  // pushed through name/birth-details onboarding again until they restarted the app.
+  const userKey = isGuest ? 'guest' : account?.id ?? 'guest';
 
   const refresh = useCallback(() => {
     setLoading(true);
     Promise.allSettled([astrologyApi.getProfile(), astrologyApi.getOnboardingDraft()])
       .then(([profileResult, draftResult]) => {
+        // Offline / server error is NOT "no birth profile yet": don't trap an existing user in onboarding because of
+        // a bad connection. Keep the last known step, or let them in ('done') if there is none.
+        if (profileResult.status === 'rejected' && isLoadFailure(profileResult.reason)) {
+          setStep((prev) => prev ?? 'done');
+          return;
+        }
         const profile: BirthProfile | null = profileResult.status === 'fulfilled' ? profileResult.value : null;
         const draft: OnboardingDraft | null = draftResult.status === 'fulfilled' ? draftResult.value : null;
         setStep(nextAstrologyOnboardingStep(profile, draft));
@@ -29,7 +42,7 @@ function useAstrologyOnboardingStatusInternal() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => { refresh(); }, [refresh, userKey]);
 
   return { step, loading, refresh };
 }

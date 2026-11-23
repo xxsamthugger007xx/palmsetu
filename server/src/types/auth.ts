@@ -9,6 +9,8 @@ export interface Account {
   email: string;
   passwordHash: string;
   emailVerified: boolean;
+  /** Bumped on password reset so every token issued before it stops working (see auth/context.ts). */
+  tokenVersion?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,4 +36,14 @@ export interface AuthAttemptRecord {
   key: string;
   count: number;
   windowStart: string;
+}
+
+/** One-time password reset request. Only a SHA-256 hash of the emailed token is stored, so a database leak
+ * cannot be used to reset anyone's password. */
+export interface PasswordResetRecord {
+  tokenHash: string;
+  accountId: string;
+  expiresAt: string;
+  usedAt: string | null;
+  createdAt: string;
 }

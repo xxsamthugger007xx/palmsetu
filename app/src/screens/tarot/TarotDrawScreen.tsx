@@ -16,7 +16,9 @@ import { tarotColor } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { TarotCard, TarotReading } from '../../types/tarot';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type Stage = 'loading' | 'shuffling' | 'stacked' | 'selecting' | 'error' | 'limited';
 
 // Enough tiles to feel like fanning out a real deck without rendering all 78
@@ -44,6 +46,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export function TarotDrawScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TarotDraw'>>();
   const { category, question, spreadType, secondPersonName, existingReadingId } = route.params;
@@ -103,12 +106,13 @@ export function TarotDrawScreen() {
 
         setReading(startRes as TarotReading);
         runShuffle();
-      } catch (err: any) {
+      } catch (__err) {
+        const err = asApiError(__err);
         if (err.status === 403) {
           setErrorMessage(err.message);
           setStage('limited');
         } else {
-          setErrorMessage('Something went wrong starting your reading.');
+          setErrorMessage(t('ui.TarotDrawScreen.somethingWentWrongStartingYour'));
           setStage('error');
         }
       }
@@ -270,7 +274,7 @@ export function TarotDrawScreen() {
     return (
       <PageContainer scroll={false}>
         <View style={styles.center}>
-          <Pressable onPress={handleSpreadDeck} accessibilityRole="button" accessibilityLabel="Tap the deck to spread the cards">
+          <Pressable onPress={handleSpreadDeck} accessibilityRole="button" accessibilityLabel={t('ui.TarotDrawScreen.tapTheDeckToSpread')}>
             <View style={styles.deckStack}>
               {[0, 1, 2, 3, 4].map((i) => (
                 <View key={i} style={[styles.stackCard, { top: -i * 3, left: i * 2 }]}>
@@ -280,10 +284,10 @@ export function TarotDrawScreen() {
             </View>
           </Pressable>
           <Text variant="bodySm" style={{ marginTop: spacing.xl, textAlign: 'center', color: tarotColor.gold }}>
-            Take a moment and choose your cards
+            {t('ui.TarotDrawScreen.takeAMomentAndChoose')}
           </Text>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs, textAlign: 'center' }}>
-            Tap the deck to spread the cards
+            {t('ui.TarotDrawScreen.tapTheDeckToSpread')}
           </Text>
         </View>
       </PageContainer>
@@ -431,7 +435,7 @@ export function TarotDrawScreen() {
 
       {allRevealed && reading && (
         <Button
-          label="See my reading"
+          label={t('ui.TarotDrawScreen.seeMyReading')}
           icon={Sparkles}
           fullWidth
           style={{ marginTop: spacing.xl }}

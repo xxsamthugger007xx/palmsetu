@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles } from 'lucide-react-native';
 import { Text } from './Text';
 import { color, radius, spacing } from '../theme/tokens';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   onPress: () => void;
@@ -18,6 +19,7 @@ interface Props {
  * by the caller, not by this component.
  */
 export function FloatingAIButton({ onPress, bottomOffset = 0 }: Props) {
+  const { t } = useTranslation();
   const [reduceMotion, setReduceMotion] = useState(false);
   const [appActive, setAppActive] = useState(true);
   const breathe = useRef(new Animated.Value(0)).current;
@@ -59,13 +61,13 @@ export function FloatingAIButton({ onPress, bottomOffset = 0 }: Props) {
         onPressIn={() => Animated.spring(pressScale, { toValue: 0.92, useNativeDriver: true }).start()}
         onPressOut={() => Animated.spring(pressScale, { toValue: 1, friction: 4, useNativeDriver: true }).start()}
         accessibilityRole="button"
-        accessibilityLabel="Ask the AI Astrologer"
+        accessibilityLabel={t('ui.FloatingAIButton.askTheAiAstrologer')}
         accessibilityHint="Opens the AI assistant chat"
         hitSlop={8}
         style={styles.row}
       >
         <View style={styles.pill}>
-          <Text variant="caption" weight="semibold" style={{ color: color.textPrimary }}>Ask AI</Text>
+          <Text variant="caption" weight="semibold" style={{ color: color.textPrimary }}>{t('ui.FloatingAIButton.askAi')}</Text>
         </View>
 
         <Animated.View style={{ transform: [{ scale: pressScale }] }}>

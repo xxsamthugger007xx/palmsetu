@@ -12,7 +12,9 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, WellnessGoal, WellnessGoalCategory, WELLNESS_GOAL_CATEGORIES } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError, ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const CATEGORY_LABELS: Record<WellnessGoalCategory, string> = {
@@ -29,6 +31,7 @@ const CATEGORY_LABELS: Record<WellnessGoalCategory, string> = {
 };
 
 export function GoalsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -44,7 +47,7 @@ export function GoalsScreen() {
     setError(null);
     wellnessApi.getGoals('active')
       .then((res) => setGoals(res.goals))
-      .catch((err: any) => setError(err.message ?? 'Could not load goals. Please try again.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.GoalsScreen.couldNotLoadGoalsPlease')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -60,8 +63,9 @@ export function GoalsScreen() {
       setTargetFrequency('');
       setShowForm(false);
       load();
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not create goal.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.GoalsScreen.couldNotCreateGoal'));
     } finally {
       setCreating(false);
     }
@@ -70,8 +74,8 @@ export function GoalsScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Goals</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.GoalsScreen.goals')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -79,8 +83,8 @@ export function GoalsScreen() {
   if (error && goals.length === 0 && !showForm) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Goals</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.GoalsScreen.goals')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
@@ -88,21 +92,21 @@ export function GoalsScreen() {
   return (
     <PageContainer onRefresh={load}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm, marginBottom: spacing.xs }}>
-        <Text variant="display" weight="semibold">Goals</Text>
+        <Text variant="display" weight="semibold">{t('ui.GoalsScreen.goals')}</Text>
       </View>
       <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
-        Progress here is always what you report yourself - nothing is measured automatically.
+        {t('ui.GoalsScreen.progressHereIsAlwaysWhat')}
       </Text>
 
       <SectionHeader
-        title="Active goals"
+        title={t('ui.GoalsScreen.activeGoals')}
         action="Completed"
         onActionPress={() => navigation.navigate('GoalsCompleted')}
       />
 
       {goals.length === 0 ? (
         <Card style={{ marginBottom: spacing.lg }}>
-          <Text variant="bodySm" tone="secondary">No active goals yet - add one below.</Text>
+          <Text variant="bodySm" tone="secondary">{t('ui.GoalsScreen.noActiveGoalsYetAdd')}</Text>
         </Card>
       ) : (
         goals.map((g) => (
@@ -126,25 +130,25 @@ export function GoalsScreen() {
       {error && <Text variant="bodySm" tone="danger" style={{ marginBottom: spacing.sm }}>{error}</Text>}
 
       {!showForm ? (
-        <Button label="New goal" icon={Plus} variant="secondary" onPress={() => setShowForm(true)} style={{ marginTop: spacing.sm }} />
+        <Button label={t('ui.GoalsScreen.newGoal')} icon={Plus} variant="secondary" onPress={() => setShowForm(true)} style={{ marginTop: spacing.sm }} />
       ) : (
         <Card style={{ marginTop: spacing.sm }}>
-          <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.sm }}>New goal</Text>
+          <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.GoalsScreen.newGoal')}</Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
-            placeholder="Goal title"
+            placeholder={t('ui.GoalsScreen.goalTitle')} accessibilityLabel={t('ui.GoalsScreen.goalTitle')}
             placeholderTextColor={color.textMuted}
             style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, marginBottom: spacing.sm }}
           />
           <TextInput
             value={targetFrequency}
             onChangeText={setTargetFrequency}
-            placeholder="Target frequency (optional), e.g. 4x per week"
+            placeholder={t('ui.GoalsScreen.targetFrequencyOptionalEG')} accessibilityLabel={t('ui.GoalsScreen.targetFrequencyOptionalEG')}
             placeholderTextColor={color.textMuted}
             style={{ color: color.textPrimary, borderWidth: 1, borderColor: color.border, borderRadius: 8, padding: spacing.sm, marginBottom: spacing.sm }}
           />
-          <Text variant="caption" tone="muted" style={{ marginBottom: spacing.xs }}>Category</Text>
+          <Text variant="caption" tone="muted" style={{ marginBottom: spacing.xs }}>{t('ui.GoalsScreen.category')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: spacing.md }}>
             {WELLNESS_GOAL_CATEGORIES.map((c) => (
               <Button
@@ -158,8 +162,8 @@ export function GoalsScreen() {
             ))}
           </View>
           <View style={{ flexDirection: 'row' }}>
-            <Button label="Create" icon={CheckCircle2} onPress={createGoal} loading={creating} disabled={!title.trim()} />
-            <Button label="Cancel" variant="ghost" onPress={() => setShowForm(false)} style={{ marginLeft: spacing.sm }} />
+            <Button label={t('ui.GoalsScreen.create')} icon={CheckCircle2} onPress={createGoal} loading={creating} disabled={!title.trim()} />
+            <Button label={t('ui.AssistantHistoryScreen.cancel')} variant="ghost" onPress={() => setShowForm(false)} style={{ marginLeft: spacing.sm }} />
           </View>
         </Card>
       )}

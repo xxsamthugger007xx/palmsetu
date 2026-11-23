@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { getBudgetStatus } from '../ai/budget';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { SUBSCRIPTION_PLANS, getPlan, addPeriod, BillingPeriod } from '../data/subscriptionPlans';
 import { getUserTier, userPlans, recordTransaction } from '../data/store';
@@ -31,7 +32,7 @@ function planIdForProductId(productId: string): BillingPeriod | null {
   return plan?.id ?? null;
 }
 
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   return req.auth?.userId ?? 'demo-user';
 }
 
@@ -51,6 +52,11 @@ export function buildBillingRouter() {
 
   router.get('/plans', (_req, res) => {
     res.json({ plans: SUBSCRIPTION_PLANS });
+  });
+
+  // Premium users' monthly AI allowance (estimated spend vs the cap) - see ai/budget.ts.
+  router.get('/ai-budget', (req, res) => {
+    res.json(getBudgetStatus(currentUserId(req)));
   });
 
   router.get('/status', (req, res) => {
@@ -87,7 +93,10 @@ export function buildBillingRouter() {
       return res.status(503).json({ error: 'Billing is not configured on this server yet.', code: 'BILLING_NOT_CONFIGURED' });
     }
 
-    const appUserId = String(req.body?.appUserId ?? userId);
+    // Always the authenticated user's own id - NEVER a client-supplied one. (It used to read req.body.appUserId, so
+    // anyone could submit a premium subscriber's id and be granted their Premium.) The app registers this same id
+    // with RevenueCat, so purchases follow the account across devices.
+    const appUserId = userId;
 
     let subscriber: any;
     try {

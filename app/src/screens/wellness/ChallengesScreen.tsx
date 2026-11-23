@@ -10,10 +10,13 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, ChallengeSummary, ChallengeProgress } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function ChallengesScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -25,7 +28,7 @@ export function ChallengesScreen() {
     setError(null);
     Promise.all([wellnessApi.getChallenges(), wellnessApi.getMyChallengeProgress()])
       .then(([c, p]) => { setChallenges(c.challenges); setProgress(p.progress); })
-      .catch((err: any) => setError(err.message ?? 'Could not load challenges. Please try again.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.ChallengesScreen.couldNotLoadChallengesPlease')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -36,8 +39,8 @@ export function ChallengesScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Challenges</Text>
-        <Text variant="bodySm" tone="muted">Loading...</Text>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.ChallengesScreen.challenges')}</Text>
+        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
       </PageContainer>
     );
   }
@@ -45,21 +48,21 @@ export function ChallengesScreen() {
   if (error) {
     return (
       <PageContainer>
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>Challenges</Text>
-        <EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} />
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.ChallengesScreen.challenges')}</Text>
+        <EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Challenges</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.ChallengesScreen.challenges')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Multi-day guided programs - join one and complete a task each day at your own pace.
+        {t('ui.ChallengesScreen.multiDayGuidedProgramsJoin')}
       </Text>
 
       {challenges.length === 0 ? (
-        <EmptyState icon={Trophy} title="No challenges available" description="Please try again later." />
+        <EmptyState icon={Trophy} title={t('ui.ChallengesScreen.noChallengesAvailable')} description={t('ui.BreathingTechniquesScreen.pleaseTryAgainLater')} />
       ) : (
         challenges.map((c) => {
           const active = progressFor(c.id);

@@ -15,10 +15,13 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { DailyHoroscope } from '../../types/astrology';
 import { formatLongDate } from '../../utils/formatDate';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type LoadState = 'loading' | 'ready' | 'failed' | 'error';
 
 export function DailyHoroscopeScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'DailyHoroscope'>>();
   const { localDate } = route.params;
@@ -64,7 +67,8 @@ export function DailyHoroscopeScreen() {
       const res = await astrologyApi.askFollowup(daily.id, question.trim());
       setAnswers((prev) => [...prev, `Q: ${question.trim()}\n\n${res.answer}`]);
       setQuestion('');
-    } catch (err: any) {
+    } catch (__err) {
+      const err = asApiError(__err);
       setAnswers((prev) => [...prev, `Couldn't get a response: ${err.message ?? 'please try again.'}`]);
     } finally {
       setAsking(false);
@@ -72,13 +76,13 @@ export function DailyHoroscopeScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (state === 'error' || !daily) {
     return (
       <PageContainer>
-        <EmptyState icon={Info} title="Couldn't load this reading" actionLabel="Retry" onAction={load} />
+        <EmptyState icon={Info} title={t('ui.DailyHoroscopeScreen.couldnTLoadThisReading')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
   }
@@ -88,9 +92,9 @@ export function DailyHoroscopeScreen() {
       <PageContainer>
         <EmptyState
           icon={Info}
-          title="Generation didn't complete"
-          description="We couldn't finish generating today's reading. You can retry."
-          actionLabel="Retry generation"
+          title={t('ui.DailyHoroscopeScreen.generationDidnTComplete')}
+          description={t('ui.DailyHoroscopeScreen.weCouldnTFinishGenerating')}
+          actionLabel={t('ui.DailyHoroscopeScreen.retryGeneration')}
           onAction={handleRetry}
         />
       </PageContainer>
@@ -133,31 +137,31 @@ export function DailyHoroscopeScreen() {
         </View>
       </Card>
 
-      <Section title="Your day at a glance"><Text variant="bodySm" tone="secondary">{daily.summary}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.yourDayAtAGlance')}><Text variant="bodySm" tone="secondary">{daily.summary}</Text></Section>
 
-      <Section title="Today's focus">
+      <Section title={t('ui.DailyHoroscopeScreen.todaySFocus')}>
         <Text variant="bodySm" tone="secondary">{daily.focus.priority}</Text>
         <Text variant="bodySm" tone="accent" style={{ marginTop: spacing.xs }}>{daily.focus.action}</Text>
       </Section>
 
-      <Section title="Career & productivity"><Text variant="bodySm" tone="secondary">{daily.careerGuidance}</Text></Section>
-      <Section title="Love & relationships"><Text variant="bodySm" tone="secondary">{daily.relationshipGuidance}</Text></Section>
-      <Section title="Mood & self-care"><Text variant="bodySm" tone="secondary">{daily.selfCarePrompt}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.careerProductivity')}><Text variant="bodySm" tone="secondary">{daily.careerGuidance}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.loveRelationships')}><Text variant="bodySm" tone="secondary">{daily.relationshipGuidance}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.moodSelfCare')}><Text variant="bodySm" tone="secondary">{daily.selfCarePrompt}</Text></Section>
 
-      <Section title="What to do today">
+      <Section title={t('ui.DailyHoroscopeScreen.whatToDoToday')}>
         {daily.doSuggestions.map((s) => <Text key={s} variant="bodySm" tone="secondary" style={{ marginBottom: 4 }}>• {s}</Text>)}
       </Section>
 
-      <Section title="What to be mindful of">
+      <Section title={t('ui.DailyHoroscopeScreen.whatToBeMindfulOf')}>
         {daily.mindfulOfSuggestions.map((s) => <Text key={s} variant="bodySm" tone="secondary" style={{ marginBottom: 4 }}>• {s}</Text>)}
       </Section>
 
-      <Section title="A small daily challenge"><Text variant="bodySm" tone="secondary">{daily.dailyChallenge}</Text></Section>
-      <Section title="Reflection question"><Text variant="bodySm" tone="accent">{daily.reflectionQuestion}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.aSmallDailyChallenge')}><Text variant="bodySm" tone="secondary">{daily.dailyChallenge}</Text></Section>
+      <Section title={t('ui.DailyHoroscopeScreen.reflectionQuestion')}><Text variant="bodySm" tone="accent">{daily.reflectionQuestion}</Text></Section>
 
       <Card style={{ marginBottom: spacing.sm }} onPress={() => setExplanationOpen((o) => !o)}>
         <View style={styles.sectionHeader}>
-          <Text variant="bodySm" weight="semibold">Astrology behind this reading</Text>
+          <Text variant="bodySm" weight="semibold">{t('ui.DailyHoroscopeScreen.astrologyBehindThisReading')}</Text>
           {explanationOpen ? <ChevronUp size={16} color={color.textMuted} /> : <ChevronDown size={16} color={color.textMuted} />}
         </View>
         {explanationOpen && (
@@ -166,18 +170,18 @@ export function DailyHoroscopeScreen() {
       </Card>
 
       <View style={{ marginTop: spacing.lg }}>
-        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>Ask a follow-up question</Text>
+        <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.DailyHoroscopeScreen.askAFollowUpQuestion')}</Text>
         {answers.map((a, i) => (
           <Card key={i} style={{ marginBottom: spacing.sm }}><Text variant="bodySm" tone="secondary">{a}</Text></Card>
         ))}
         <TextInput
           value={question}
           onChangeText={setQuestion}
-          placeholder="Ask about today's reading..."
+          placeholder={t('ui.DailyHoroscopeScreen.askAboutTodaySReading')} accessibilityLabel={t('ui.DailyHoroscopeScreen.askAboutTodaySReading')}
           placeholderTextColor={color.textMuted}
           style={styles.input}
         />
-        <Button label="Ask" loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
+        <Button label={t('ui.DailyHoroscopeScreen.ask')} loading={asking} style={{ marginTop: spacing.sm }} onPress={handleAsk} />
       </View>
     </PageContainer>
   );

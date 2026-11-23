@@ -14,7 +14,7 @@ export function SectionHeader({ title, action, onActionPress }: Props) {
     <View style={styles.row}>
       <Text variant="subtitle" weight="semibold">{title}</Text>
       {action && (
-        <Pressable onPress={onActionPress} hitSlop={8}>
+        <Pressable accessibilityRole="button" onPress={onActionPress} hitSlop={8}>
           <Text variant="bodySm" tone="accent">{action}</Text>
         </Pressable>
       )}

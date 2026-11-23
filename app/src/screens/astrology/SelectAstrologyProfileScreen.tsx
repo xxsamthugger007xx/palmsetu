@@ -8,6 +8,7 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'SelectAstrologyProfile'>;
@@ -19,6 +20,7 @@ type RouteT = RouteProp<RootStackParamList, 'SelectAstrologyProfile'>;
  * not the same free slot).
  */
 export function SelectAstrologyProfileScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteT>();
   const { path } = route.params;
@@ -35,7 +37,7 @@ export function SelectAstrologyProfileScreen() {
 
   return (
     <PageContainer onRefresh={async () => {}}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>Select Profile</Text>
+      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.SelectAstrologyProfileScreen.selectProfile')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         {path === 'vedic'
           ? 'Whose birth chart should we generate?'
@@ -48,8 +50,8 @@ export function SelectAstrologyProfileScreen() {
             <User size={18} color={color.accent} strokeWidth={1.75} />
           </View>
           <View style={{ flex: 1, marginLeft: spacing.sm }}>
-            <Text variant="bodySm" weight="semibold">My Astrology</Text>
-            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>Free</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.SelectAstrologyProfileScreen.myAstrology')}</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.SelectAstrologyProfileScreen.free')}</Text>
           </View>
           <ChevronRight size={18} color={color.textMuted} strokeWidth={1.75} />
         </View>
@@ -61,8 +63,8 @@ export function SelectAstrologyProfileScreen() {
             <Crown size={18} color={color.warning} strokeWidth={1.75} />
           </View>
           <View style={{ flex: 1, marginLeft: spacing.sm }}>
-            <Text variant="bodySm" weight="semibold">Other Person's Astrology</Text>
-            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>Premium</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.SelectAstrologyProfileScreen.otherPersonSAstrology')}</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.SelectAstrologyProfileScreen.premium')}</Text>
           </View>
           <ChevronRight size={18} color={color.textMuted} strokeWidth={1.75} />
         </View>

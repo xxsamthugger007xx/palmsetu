@@ -12,7 +12,9 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, MeditationContent, MeditationSession } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError, ApiError } from '../../services/apiRequest';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'MeditationPlayer'>;
 
@@ -27,6 +29,7 @@ type Route = RouteProp<RootStackParamList, 'MeditationPlayer'>;
  * endpoints works today regardless of whether audio exists.
  */
 export function MeditationPlayerScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const { params } = useRoute<Route>();
   const [loading, setLoading] = React.useState(true);
@@ -51,7 +54,7 @@ export function MeditationPlayerScreen() {
         if (!found) throw new Error('Content not found.');
         setContent(found);
       })
-      .catch((err: any) => setError(err.message ?? 'Could not load this session.'))
+      .catch((err: ApiError) => setError(err.message ?? t('ui.MeditationPlayerScreen.couldNotLoadThisSession')))
       .finally(() => setLoading(false));
     // Note: the backend has no GET endpoint listing a user's favorited
     // meditation content ids (only favorite/unfavorite POST/DELETE), so this
@@ -113,8 +116,9 @@ export function MeditationPlayerScreen() {
         // Honest state: no real audio asset exists yet for this content.
         setIsPlaying(false);
       }
-    } catch (err: any) {
-      setError(err?.status === 403 ? 'This session requires Palm Setu Premium.' : (err?.message ?? 'Could not start this session.'));
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.status === 403 ? t('ui.MeditationPlayerScreen.thisSessionRequiresPalmSetu') : (err?.message ?? t('ui.MeditationPlayerScreen.couldNotStartThisSession')));
       if (err?.status === 403) navigation.navigate('Paywall');
     }
   };
@@ -162,11 +166,11 @@ export function MeditationPlayerScreen() {
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
 
   if (error && !content) {
-    return <PageContainer><EmptyState icon={RefreshCw} title="Something went wrong" description={error} actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={RefreshCw} title={t('ui.SoulmateGeneratingScreen.somethingWentWrong')} description={error} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   if (!content) return null;
@@ -212,12 +216,12 @@ export function MeditationPlayerScreen() {
 
         {!hasRealAudio && session && (
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.md, textAlign: 'center', maxWidth: 260 }}>
-            This session's audio is coming soon. Your session is still being tracked, and you can mark it complete below.
+            {t('ui.MeditationPlayerScreen.thisSessionSAudioIs')}
           </Text>
         )}
       </Card>
 
-      <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.sm }}>Sleep timer</Text>
+      <Text variant="bodySm" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.MeditationPlayerScreen.sleepTimer')}</Text>
       <View style={{ flexDirection: 'row', marginBottom: spacing.lg, flexWrap: 'wrap' }}>
         {[null, 5, 10, 15, 30].map((m) => (
           <Button
@@ -232,7 +236,7 @@ export function MeditationPlayerScreen() {
       </View>
 
       {session && (
-        <Button label="Mark session complete" variant="secondary" fullWidth onPress={finishSession} />
+        <Button label={t('ui.MeditationPlayerScreen.markSessionComplete')} variant="secondary" fullWidth onPress={finishSession} />
       )}
     </PageContainer>
   );

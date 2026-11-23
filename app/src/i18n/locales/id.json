@@ -253,8 +253,15 @@
       "compatibility": {
         "title": "Kecocokan",
         "description": "Anda, mereka, dan apa yang menghubungkan kalian"
+      },
+      "fiveCard": {
+        "title": "Pembacaan lima kartu",
+        "description": "Jalur yang lebih dalam dengan lima posisi"
       }
-    }
+    },
+    "personalReadingTitle": "Dapatkan Pembacaan Pribadi",
+    "personalReadingSubtitle": "Jelajahi apa yang mungkin diajak kartu untuk Anda renungkan hari ini.",
+    "personalReadingCta": "Mulai pembacaan"
   },
   "profile": {
     "upgradeTitle": "Tingkatkan ke Premium",
@@ -328,5 +335,989 @@
     "title": "Bahasa",
     "notice": "Anda dapat mengubah bahasa kapan saja. Layar yang diterjemahkan diperbarui segera; layar lainnya akan menyusul dalam pembaruan mendatang.",
     "searchPlaceholder": "Cari bahasa"
+  },
+  "a11y": {
+    "back": "Kembali",
+    "close": "Tutup",
+    "delete": "Hapus",
+    "history": "Riwayat",
+    "share": "Bagikan",
+    "bookmark": "Simpan",
+    "edit": "Ubah",
+    "newConversation": "Percakapan baru",
+    "send": "Kirim",
+    "retry": "Coba lagi",
+    "info": "Informasi lainnya",
+    "favorite": "Favorit",
+    "notifications": "Notifikasi",
+    "loading": "Memuat",
+    "button": "Tombol",
+    "selected": "Dipilih",
+    "dismiss": "Tutup",
+    "showPassword": "Tampilkan kata sandi",
+    "search": "Cari",
+    "palmPhoto": "Foto telapak tangan Anda",
+    "palmPreview": "Pratinjau foto telapak tangan",
+    "soulmatePortrait": "Potret belahan jiwa Anda",
+    "renameField": "Ubah nama",
+    "goalTitle": "Judul tujuan",
+    "goalFrequency": "Seberapa sering"
+  },
+  "ui": {
+    "AuthScreen": {
+      "signUp": "Daftar",
+      "logIn": "Masuk",
+      "emailAddress": "Alamat email",
+      "forgotPassword": "Lupa kata sandi?",
+      "backToLogIn": "Kembali ke halaman masuk",
+      "continueAsGuest": "Lanjutkan sebagai tamu",
+      "termsOfService": "Ketentuan Layanan",
+      "privacyPolicy": "Kebijakan Privasi",
+      "enterYourEmailAndPassword": "Masukkan email dan kata sandi Anda.",
+      "passwordMustBeAtLeast": "Kata sandi minimal 8 karakter.",
+      "anAccountWithThisEmail": "Akun dengan email ini sudah ada. Coba masuk saja.",
+      "incorrectEmailOrPassword": "Email atau kata sandi salah.",
+      "tooManyAttemptsPleaseWait": "Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.",
+      "verificationFailedPleaseTryAgain": "Verifikasi gagal. Silakan coba lagi.",
+      "enterTheEmailAddressOf": "Masukkan alamat email akun Anda."
+    },
+    "PaywallScreen": {
+      "unlockYourCompleteSelfDiscovery": "Buka seluruh perjalanan penemuan dirimu",
+      "discoverDeeperInsightsIntoYour": "Temukan wawasan lebih dalam tentang telapak tangan, hubungan, astrologi, dan perjalanan pribadimu dengan Palm Setu Premium.",
+      "everythingIncludedInPremium": "Semua yang termasuk dalam Premium",
+      "freeVsPremium": "Gratis vs Premium",
+      "chooseYourPlan": "Pilih paketmu",
+      "loadingPlans": "Memuat paket...",
+      "weCouldnTLoadThe": "Paket tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
+      "billingIsNotYetConfigured": "Penagihan Palm Setu Premium belum dikonfigurasi pada versi ini. Layar ini tidak akan menagih atau memberi akses Premium sampai dikonfigurasi.",
+      "terms": "Ketentuan",
+      "privacy": "Privasi",
+      "secureBillingThroughYourApp": "Penagihan aman melalui akun App Store atau Google Play Anda."
+    },
+    "ProfileScreen": {
+      "createAnAccount": "Buat akun",
+      "signUpFirstToExport": "Daftar dulu untuk mengekspor data tersimpan Anda.",
+      "yourData": "Data Anda",
+      "couldNotExportData": "Tidak dapat mengekspor data",
+      "pleaseTryAgain": "Silakan coba lagi.",
+      "noAccountYet": "Belum ada akun",
+      "youAreBrowsingAsA": "Anda sedang menjelajah sebagai tamu - tidak ada akun yang bisa dihapus.",
+      "couldNotDeleteAccount": "Tidak dapat menghapus akun"
+    },
+    "HabitsScreen": {
+      "habits": "Kebiasaan",
+      "couldnTRefreshYourHabits": "Tidak dapat menyegarkan kebiasaan Anda.",
+      "noHabitsYetAddOne": "Belum ada kebiasaan - tambahkan satu di bawah untuk memulai.",
+      "addAHabit": "Tambah kebiasaan",
+      "customHabitName": "Nama kebiasaan kustom",
+      "add": "Tambah",
+      "youVeReachedTheFree": "Anda mencapai batas kebiasaan gratis. Tingkatkan untuk kebiasaan tanpa batas.",
+      "suggestions": "Saran",
+      "unableToConnectThatChange": "Tidak dapat terhubung. Perubahan itu tidak tersimpan.",
+      "couldnTUpdateThatHabit": "Tidak dapat memperbarui kebiasaan itu. Silakan coba lagi.",
+      "couldNotAddHabit": "Tidak dapat menambah kebiasaan."
+    },
+    "AssistantHistoryScreen": {
+      "deleteConversation": "Hapus percakapan?",
+      "thisCannotBeUndone": "Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "delete": "Hapus",
+      "chatHistory": "Riwayat obrolan",
+      "noConversationsYet": "Belum ada percakapan",
+      "startAConversationWithYour": "Mulai percakapan dengan Astrolog AI Anda agar muncul di sini.",
+      "startChatting": "Mulai mengobrol",
+      "couldnTDeleteThatConversation": "Tidak dapat menghapus percakapan itu. Silakan coba lagi."
+    },
+    "AstrologyNotificationSettingsScreen": {
+      "notificationPreferences": "Preferensi notifikasi",
+      "pushDeliveryIsnTWired": "Pengiriman push belum terhubung ke token perangkat/penjadwal sungguhan pada versi ini - preferensi ini disimpan dan akan berlaku setelah infrastrukturnya terhubung.",
+      "personalDailyMessage": "Pesan harian pribadi",
+      "sharedRelationshipMessage": "Pesan hubungan bersama",
+      "detailedLockScreenPreview": "Pratinjau terperinci di layar kunci",
+      "preferredTime": "WAKTU YANG DIINGINKAN",
+      "unableToConnectYourChange": "Tidak dapat terhubung. Perubahan Anda tidak tersimpan.",
+      "couldnTSaveYourChange": "Tidak dapat menyimpan perubahan Anda. Silakan coba lagi."
+    },
+    "NotificationSettingsScreen": {
+      "notifications": "Notifikasi",
+      "localRemindersScheduledOnThis": "Pengingat lokal yang dijadwalkan di perangkat ini, sesuai yang Anda aktifkan di bawah.",
+      "enableNotifications": "Aktifkan notifikasi",
+      "hhMm": "HH:mm",
+      "quietHours": "Jam tenang",
+      "noReminderWillBeScheduled": "Tidak ada pengingat yang dijadwalkan dalam rentang ini. Kosongkan jika tidak ingin jam tenang.",
+      "start": "Mulai",
+      "end": "Selesai",
+      "couldNotLoadNotificationSettings": "Tidak dapat memuat pengaturan notifikasi.",
+      "savedAndScheduled": "Tersimpan dan dijadwalkan.",
+      "savedEnableNotificationsAboveTo": "Tersimpan. Aktifkan notifikasi di atas agar benar-benar menerima pengingat ini.",
+      "couldNotSaveNotificationSettings": "Tidak dapat menyimpan pengaturan notifikasi."
+    },
+    "LanguageSelectScreen": {
+      "chooseYourLanguage": "Pilih bahasa Anda",
+      "youCanChangeThisAnytime": "Anda dapat mengubahnya kapan saja dari profil.",
+      "englishUi": "(UI bahasa Inggris)"
+    },
+    "OnboardingDobScreen": {
+      "step2Of5": "LANGKAH 2 DARI 5",
+      "whenWereYouBorn": "Kapan Anda lahir?",
+      "usedOnlyForTraditionalAstrology": "Hanya digunakan untuk perhitungan astrologi tradisional - interpretasi reflektif, bukan prediksi ilmiah."
+    },
+    "OnboardingTobScreen": {
+      "step3Of5": "LANGKAH 3 DARI 5",
+      "whatTimeWereYouBorn": "Pukul berapa Anda lahir?",
+      "iDonTKnowMy": "Saya tidak tahu waktu lahir saya yang tepat",
+      "someCalculationsMoonSignNakshatra": "Tanpa waktu yang tepat, beberapa perhitungan (zodiak bulan, nakshatra, transit harian) bisa kurang akurat."
+    },
+    "OnboardingPlaceScreen": {
+      "step4Of5": "LANGKAH 4 DARI 5",
+      "whereWereYouBorn": "Di mana Anda lahir?"
+    },
+    "OnboardingAstrologySystemScreen": {
+      "step1Of5": "LANGKAH 1 DARI 5",
+      "chooseYourAstrologySystem": "Pilih sistem astrologi Anda",
+      "thisDecidesHowYourSign": "Ini menentukan cara zodiak, bagan, dan panduan harianmu dihitung. Anda bisa mengubahnya nanti dari profil; bagan dan interpretasi akan menyesuaikan.",
+      "continue": "Lanjutkan",
+      "unableToConnectCheckYour": "Tidak dapat terhubung. Periksa koneksi Anda dan coba lagi.",
+      "somethingWentWrongPleaseTry": "Terjadi kesalahan. Silakan coba lagi."
+    },
+    "OnboardingConfirmScreen": {
+      "step5Of5": "LANGKAH 5 DARI 5",
+      "confirmYourDetails": "Konfirmasi data Anda",
+      "language": "BAHASA",
+      "timeOfBirth": "WAKTU LAHIR",
+      "confirmAndContinue": "Konfirmasi dan lanjutkan"
+    },
+    "EditProfileScreen": {
+      "personalInfo": "Info pribadi",
+      "yourNameAndHowYou": "Nama Anda dan bagaimana Anda ingin disapa. Tanggal, waktu, dan tempat lahir diedit terpisah di Panduan Kosmik Harian.",
+      "saveChanges": "Simpan perubahan"
+    },
+    "SignUpPromptCard": {
+      "maybeLater": "Mungkin nanti",
+      "createFreeAccount": "Buat akun gratis"
+    },
+    "ListSkeleton": {
+      "loading": "Memuat"
+    },
+    "VerifyEmailCard": {
+      "verifyYourEmail": "Verifikasi email Anda"
+    },
+    "AiUsageMeter": {
+      "monthlyAiUsage": "Penggunaan AI bulanan"
+    },
+    "UpgradeButton": {
+      "upgrade": "UPGRADE"
+    },
+    "FloatingAIButton": {
+      "askTheAiAstrologer": "Tanya Astrolog AI",
+      "askAi": "Tanya AI"
+    },
+    "ComingSoonScreen": {
+      "comingSoon": "Segera hadir",
+      "notAvailableYet": "Belum tersedia"
+    },
+    "TurnstileWidget": {
+      "verificationWidgetFailedToLoad": "Widget verifikasi gagal dimuat. Periksa koneksi Anda dan coba lagi."
+    },
+    "ReportSection": {
+      "traditionalInterpretation": "INTERPRETASI TRADISIONAL"
+    },
+    "DailyResetHero": {
+      "dailyReset": "Reset harian"
+    },
+    "HomeScreen": {
+      "someContentCouldnTBe": "Sebagian konten tidak dapat dimuat.",
+      "palmSetu": "PALM SETU"
+    },
+    "WellnessScreen": {
+      "someOfYourWellnessData": "Sebagian data kesehatan Anda tidak dapat dimuat."
+    },
+    "CompanionScreen": {
+      "aiCompanion": "Pendamping AI",
+      "shareWhatSOnYour": "Ceritakan apa yang Anda pikirkan...",
+      "yourCompanionIsAnAi": "Pendamping Anda adalah AI, bukan terapis berlisensi. Dalam keadaan darurat, hubungi layanan darurat setempat."
+    },
+    "AssistantChatScreen": {
+      "aiAstrologer": "Astrolog AI",
+      "askAboutYourReading": "Tanyakan tentang bacaan Anda..."
+    },
+    "PalmIntroScreen": {
+      "beforeYouBegin": "Sebelum Anda mulai",
+      "yourReadingIsGeneratedFrom": "Bacaan Anda dibuat dari interpretasi tradisional palmistri pada garis dan area yang terlihat di foto. Ditujukan untuk hiburan dan refleksi diri - bukan penilaian ilmiah, medis, atau prediktif.",
+      "weNeverUseYourPalm": "Kami tidak pernah memakai foto telapak tangan Anda untuk mendiagnosis kondisi kesehatan, dan tidak menjanjikan hasil pasti soal kekayaan, hubungan, atau umur. Foto Anda diproses dengan aman dan dapat dihapus kapan saja."
+    },
+    "PalmAnalyzingScreen": {
+      "retakePhoto": "Ambil ulang foto",
+      "analyzingYourPalm": "Menganalisis telapak tangan Anda",
+      "thisPhotoCouldNotBe": "Foto ini tidak dapat digunakan untuk pembacaan telapak tangan."
+    },
+    "MoodCheckInScreen": {
+      "whatAreYouFeelingOptional": "Apa yang Anda rasakan? (opsional)",
+      "energy": "Energi",
+      "stress": "Stres",
+      "sleepQuality": "Kualitas tidur",
+      "noteOptional": "Catatan (opsional)",
+      "anythingYouWantToRemember": "Apa pun yang ingin Anda ingat tentang hari ini...",
+      "couldNotSaveYourCheck": "Tidak dapat menyimpan check-in Anda."
+    },
+    "PalmCaptureScreen": {
+      "permissionNeeded": "Izin diperlukan",
+      "capture": "Ambil",
+      "analyzeYourPalm": "Analisis telapak tangan Anda",
+      "useNaturalLightHoldYour": "Gunakan cahaya alami, letakkan tangan datar dengan jari sedikit terbuka, dan penuhi sebagian besar bingkai.",
+      "retake": "Ulangi",
+      "noPhotoYet": "Belum ada foto",
+      "takePhoto": "Ambil foto",
+      "uploadFromLibrary": "Unggah dari galeri",
+      "photoGuidelines": "PANDUAN FOTO",
+      "goodExample": "CONTOH BAIK",
+      "flatOpenPalmFillingThe": "Telapak tangan terbuka dan datar yang memenuhi bingkai, dengan pencahayaan merata dan tanpa aksesori.",
+      "avoidPhotosLikeTheseThey": "Hindari foto seperti ini, dapat memengaruhi akurasi analisis:",
+      "yourPhotoIsUploadedSecurely": "Foto Anda diunggah dengan aman untuk dianalisis. Anda dapat menghapusnya dari Profil → Privasi kapan saja."
+    },
+    "PalmReportScreen": {
+      "loadingYourReading": "Memuat bacaan Anda...",
+      "palmReading": "Pembacaan Telapak Tangan",
+      "couldnTLoadThisReading": "Tidak dapat memuat bacaan ini. Silakan coba lagi.",
+      "limitedVisibilityOnlyPartOf": "Visibilitas terbatas: hanya sebagian telapak tangan Anda yang jelas di dalam bingkai, sehingga bacaan ini mencakup lebih sedikit fitur daripada pemindaian penuh.",
+      "analysisOverview": "RINGKASAN ANALISIS",
+      "sectionsMatched": "Bagian yang cocok",
+      "imageQuality": "Kualitas gambar",
+      "unlocked": "Terbuka",
+      "thisAnalysisReportsQualitativeObservations": "Analisis ini melaporkan pengamatan kualitatif dengan skor keyakinan, bukan koordinat piksel yang presisi - jadi kami tidak menggambar jalur garis di foto Anda agar tidak menampilkan sesuatu yang bukan geometri garis telapak tangan Anda yang sebenarnya.",
+      "readingSections": "Bagian bacaan",
+      "everyLineBelowIncludesOne": "Setiap garis di bawah menyertakan satu pengamatan gratis dan nyata dari pemindaian Anda. Buka satu garis untuk melihat uraian lengkapnya.",
+      "noSpecificFeaturesCouldBe": "Tidak ada fitur spesifik yang dapat dikenali dengan yakin dari foto ini.",
+      "free": "GRATIS",
+      "fullStructureAdditionalDetectedCharacteristics": "Struktur lengkap, karakteristik tambahan yang terdeteksi, dan interpretasi tradisional lengkap untuk garis ini.",
+      "combinedPatterns": "Pola gabungan",
+      "yourPalmHasMoreTo": "Telapak tangan Anda masih menyimpan lebih banyak",
+      "unlockYourCompletePalmReading": "Buka bacaan telapak tangan lengkap untuk menjelajahi setiap fitur yang terdeteksi dan interpretasi tradisionalnya, di setiap garis dan bukit dalam bacaan ini.",
+      "unlockCompleteReading": "Buka bacaan lengkap",
+      "reflectiveQuestions": "Pertanyaan refleksi",
+      "askAboutThisReading": "Tanya tentang bacaan ini",
+      "yourPalmReadingIsReady": "Bacaan telapak tangan Anda sudah siap!",
+      "createYourFreeAccountTo": "Buat akun gratis untuk menyimpan profil telapak tangan dan mengakses laporan lengkap kapan saja, di perangkat mana pun.",
+      "yourReadingHasBeenSaved": "Bacaan Anda telah disimpan. Kini terlihat di Beranda dan Riwayat Telapak Tangan Anda.",
+      "saveAndContinue": "Simpan dan lanjutkan",
+      "couldNotUnlockThisSection": "Tidak dapat membuka bagian ini. Silakan coba lagi.",
+      "couldNotUnlockYourComplete": "Tidak dapat membuka bacaan lengkap Anda. Silakan coba lagi.",
+      "upgradeToSeeMore": "(tingkatkan untuk melihat selengkapnya)"
+    },
+    "PalmHistoryScreen": {
+      "deleteReading": "Hapus bacaan",
+      "couldNotDeleteThisReading": "Tidak dapat menghapus bacaan ini. Silakan coba lagi.",
+      "palmReadingHistory": "Riwayat Pembacaan Telapak Tangan",
+      "noPalmReadingsYet": "Belum ada pembacaan telapak tangan",
+      "yourPastPalmScansWill": "Pemindaian telapak tangan Anda sebelumnya akan muncul di sini.",
+      "scanYourPalm": "Pindai telapak tangan Anda"
+    },
+    "DailyHoroscopeScreen": {
+      "couldnTLoadThisReading": "Tidak dapat memuat bacaan ini",
+      "generationDidnTComplete": "Pembuatan tidak selesai",
+      "weCouldnTFinishGenerating": "Kami tidak dapat menyelesaikan bacaan hari ini. Anda bisa mencoba lagi.",
+      "retryGeneration": "Coba buat lagi",
+      "yourDayAtAGlance": "Harimu sekilas",
+      "todaySFocus": "Fokus hari ini",
+      "careerProductivity": "Karier & produktivitas",
+      "loveRelationships": "Cinta & hubungan",
+      "moodSelfCare": "Suasana hati & perawatan diri",
+      "whatToDoToday": "Yang bisa dilakukan hari ini",
+      "whatToBeMindfulOf": "Yang perlu diwaspadai",
+      "aSmallDailyChallenge": "Tantangan harian kecil",
+      "reflectionQuestion": "Pertanyaan refleksi",
+      "astrologyBehindThisReading": "Astrologi di balik bacaan ini",
+      "askAFollowUpQuestion": "Ajukan pertanyaan lanjutan",
+      "askAboutTodaySReading": "Tanyakan tentang bacaan hari ini...",
+      "ask": "Tanya"
+    },
+    "MoodHistoryScreen": {
+      "moodHistory": "Riwayat suasana hati",
+      "trendsAndCheckInsOver": "Tren dan check-in dari waktu ke waktu.",
+      "noMoodCheckInsYet": "Belum ada check-in suasana hati",
+      "logHowYouAreFeeling": "Catat perasaan Anda untuk mulai melihat tren di sini.",
+      "checkInNow": "Check-in sekarang",
+      "last7Days": "7 hari terakhir",
+      "noCheckInOnThis": "Tidak ada check-in pada tanggal ini.",
+      "trends": "Tren",
+      "mostFrequentEmotions": "Emosi paling sering",
+      "avgEnergy": "Rata-rata energi",
+      "avgStress": "Rata-rata stres",
+      "avgSleep": "Rata-rata tidur",
+      "allCheckIns": "Semua check-in",
+      "newCheckIn": "Check-in baru",
+      "couldNotLoadYourMood": "Tidak dapat memuat riwayat suasana hati Anda. Silakan coba lagi."
+    },
+    "JournalEditorScreen": {
+      "deleteEntry": "Hapus entri",
+      "type": "Jenis",
+      "needAPrompt": "Butuh ide?",
+      "titleOptional": "Judul (opsional)",
+      "writeFreely": "Tulis dengan bebas...",
+      "tagsCommaSeparated": "Tag, dipisahkan koma",
+      "aiInsight": "Wawasan AI",
+      "thisEntrySTextWould": "Teks entri ini akan dikirim ke AI Palm Setu untuk membuat wawasan. Tidak pernah dikirim tanpa izin eksplisit Anda di bawah, dan setiap permintaan mengharuskan centang ulang.",
+      "iConsentToShareThis": "Saya setuju membagikan teks entri ini dengan AI hanya untuk permintaan ini",
+      "getAiInsight": "Dapatkan wawasan AI",
+      "couldNotSaveThisEntry": "Tidak dapat menyimpan entri ini.",
+      "couldNotGetAnAi": "Tidak dapat memperoleh wawasan AI saat ini."
+    },
+    "TarotSpreadScreen": {
+      "loadingSpreads": "Memuat sebaran...",
+      "couldnTLoadSpreads": "Tidak dapat memuat sebaran",
+      "eachPositionHasItsOwn": "Setiap posisi punya makna sendiri - ditampilkan di bawah setelah Anda memilih sebaran.",
+      "secondPersonOptional": "ORANG KEDUA (OPSIONAL)",
+      "addAFirstNameOr": "Tambahkan nama depan atau panggilan hanya jika Anda ingin bacaan menyebut mereka dengan nama, bukan \"Dia\". Tidak pernah disimpan sebagai akun, tidak pernah dibagikan, dan otomatis dihapus bila Anda menghapus bacaan ini. Kami tidak mengumpulkan data kelahiran, kontak, atau apa pun tentang mereka - dan bacaan ini tidak pernah mengaku tahu pikiran atau perasaan pribadi mereka yang sebenarnya, hanya refleksi simbolis tradisional.",
+      "eGAlexOptional": "mis. Alex (opsional)"
+    },
+    "AstrologyHistoryScreen": {
+      "readingHistory": "Riwayat bacaan",
+      "loading": "Memuat...",
+      "couldnTLoadHistory": "Tidak dapat memuat riwayat",
+      "personalReadings": "Bacaan pribadi",
+      "yourPersonalDailyReadingsAre": "Bacaan harian pribadi Anda untuk hari ini tersedia dari layar utama Panduan Kosmik Harian dan bersifat pribadi.",
+      "sharedRelationshipReadings": "Bacaan hubungan bersama",
+      "noPartnerConnected": "Belum ada pasangan terhubung",
+      "connectWithAPartnerTo": "Hubungkan dengan pasangan untuk mulai membangun riwayat bacaan bersama.",
+      "noSharedReadingsYet": "Belum ada bacaan bersama"
+    },
+    "AstrologyLandingScreen": {
+      "astrology": "Astrologi",
+      "setUpYourBirthDetails": "Atur data kelahiran Anda",
+      "addYourBirthDateAnd": "Tambahkan tanggal lahir (dan waktu, jika diketahui) untuk mendapat bacaan harian yang dipersonalisasi.",
+      "getStarted": "Mulai",
+      "couldnTLoadThisSection": "Tidak dapat memuat bagian ini",
+      "retry": "Coba lagi",
+      "vedicAstrology": "Astrologi Veda",
+      "generateYourKundliNorthIndia": "Buat kundli Anda: gaya bagan India Utara, India Selatan, atau Barat",
+      "soulEnergyReading": "Pembacaan Energi Jiwa",
+      "anAiGeneratedPersonalityReading": "Bacaan kepribadian buatan AI berdasarkan bagan asli Anda"
+    },
+    "AstrologyProfileSetupScreen": {
+      "changeAstrologySystem": "Ganti sistem astrologi?",
+      "switchingBetweenVedicAndWestern": "Beralih antara Veda dan Barat mengubah zodiak, bagan, dan panduan harian Anda. Data kelahiran tetap sama, tetapi interpretasi akan dihitung ulang.",
+      "changeSystem": "Ganti sistem",
+      "yourBirthDetails": "Data kelahiran Anda",
+      "usedOnlyForTraditionalAstrology": "Hanya digunakan untuk perhitungan astrologi tradisional - interpretasi reflektif, bukan prediksi ilmiah. Waktu dan tempat lahir yang tepat sangat memengaruhi zodiak bulan, nakshatra, dan transit harian, jadi ketiganya diperlukan untuk bacaan yang akurat.",
+      "astrologySystem": "SISTEM ASTROLOGI",
+      "vedicSiderealAndWesternTropical": "Veda (sidereal) dan Barat (tropis) memakai konvensi berbeda dan akan menampilkan zodiak serta transit yang berbeda untuk data kelahiran yang sama.",
+      "dateOfBirth": "TANGGAL LAHIR",
+      "exactTimeOfBirth": "WAKTU LAHIR YANG TEPAT",
+      "checkYourBirthCertificateOr": "Periksa akta kelahiran atau tanyakan orang tua jika ragu - selisih 30 menit saja bisa menggeser zodiak bulan Anda di dekat batas zodiak.",
+      "birthplace": "TEMPAT LAHIR",
+      "chooseTheClosestMajorCity": "Pilih kota besar terdekat - ini juga menetapkan zona waktu kelahiran Anda untuk perhitungan yang akurat.",
+      "saveAndContinue": "Simpan dan lanjutkan",
+      "somethingWentWrongSavingYour": "Terjadi kesalahan saat menyimpan profil Anda."
+    },
+    "ConnectPartnerScreen": {
+      "connectWithPartner": "Hubungkan dengan pasangan",
+      "yourPartnerWillNeedTheir": "Pasangan Anda perlu akun sendiri. Tidak ada yang dibagikan sampai mereka menerima secara eksplisit.",
+      "generateAnInvitation": "Buat undangan",
+      "createACodeToShare": "Buat kode untuk dibagikan ke pasangan Anda",
+      "enterACode": "Masukkan kode",
+      "yourPartnerSharedACode": "Pasangan Anda membagikan kode kepada Anda",
+      "yourInvitationCode": "KODE UNDANGAN ANDA",
+      "shareThisCodeDirectlyWith": "Bagikan kode ini langsung ke pasangan Anda. Siapa pun yang memiliki kode hanya melihat bahwa itu undangan - tidak ada data kelahiran yang terbuka.",
+      "invitationCode": "KODE UNDANGAN",
+      "eGY5ppbubg": "mis. Y5PPBUBG",
+      "whatYouLlBeSharing": "Apa yang akan Anda bagikan",
+      "onceConnectedYouCanEach": "Setelah terhubung, masing-masing dapat mengatur apa yang dibagikan - hasil kecocokan, bacaan harian bersama, detail bagan, dan notifikasi. Entri jurnal dan bacaan harian pribadi tetap privat kecuali Anda memilih membagikannya.",
+      "acceptInvitation": "Terima undangan",
+      "couldNotCreateAnInvitation": "Tidak dapat membuat undangan.",
+      "couldNotAcceptThisInvitation": "Tidak dapat menerima undangan ini."
+    },
+    "KundliResultScreen": {
+      "couldnTLoadThisChart": "Tidak dapat memuat bagan ini",
+      "back": "Kembali",
+      "planetaryDetails": "Detail planet",
+      "planet": "PLANET",
+      "degree": "DERAJAT",
+      "sign": "ZODIAK",
+      "wholeSignHousesLahiriApproximation": "Rumah whole-sign, ayanamsa pendekatan Lahiri. Hanya tingkat mahadasha (tanpa sub-periode antardasha)."
+    },
+    "KundliStyleScreen": {
+      "styleChart": "Gaya bagan",
+      "completeYourBirthDetails": "Lengkapi data kelahiran Anda",
+      "yourNameBirthDateAnd": "Nama, tanggal dan waktu lahir, serta tempat lahir diperlukan untuk menghitung ascendant dan rumah.",
+      "addBirthDetails": "Tambah data kelahiran",
+      "upgrade": "Tingkatkan",
+      "chooseAChartStyleAnd": "Pilih gaya bagan dan konfirmasi data kelahiran untuk membuatnya.",
+      "theirDetails": "DATA MEREKA",
+      "name": "Nama",
+      "birthDateYyyyMmDd": "Tanggal lahir (YYYY-MM-DD)",
+      "birthTimeHhMm24h": "Waktu lahir (HH:MM, 24 jam)",
+      "generate": "Buat",
+      "selectBirthplace": "Pilih tempat lahir",
+      "searchCityOrCountry": "Cari kota atau negara",
+      "couldNotGenerateYourChart": "Tidak dapat membuat bagan Anda. Silakan coba lagi."
+    },
+    "MoonSignScreen": {
+      "moonSign": "Zodiak bulan",
+      "addYourBirthDateAnd": "Tambahkan tanggal lahir (dan waktu, jika diketahui) untuk melihat zodiak bulan dan nakshatra Anda yang sebenarnya.",
+      "siderealVedic": "SIDEREAL (VEDA)",
+      "nakshatra": "Nakshatra",
+      "westernTropical": "Barat (tropis)",
+      "tropicalMoonSign": "Zodiak bulan tropis",
+      "todaySMoon": "Bulan hari ini",
+      "currentPosition": "Posisi saat ini",
+      "lunarPhase": "Fase bulan",
+      "nextPhase": "Fase berikutnya",
+      "thisAppSEngineDoesn": "Mesin aplikasi ini saat ini tidak menghitung peristiwa bulan di masa depan secara spesifik (mis. pergantian nakshatra atau gerhana) di luar perkiraan fase berikutnya di atas, jadi tidak ada yang dikarang di sini."
+    },
+    "RelationshipReportScreen": {
+      "sharedReadingsAreOff": "Bacaan bersama dimatikan",
+      "ourDayAtAGlance": "Hari kita sekilas",
+      "whatMayHelpToday": "Yang mungkin membantu hari ini",
+      "communicationGuidance": "Panduan komunikasi",
+      "qualityTimeSuggestion": "Saran waktu berkualitas",
+      "aQuestionToAskEach": "Pertanyaan untuk saling ditanyakan",
+      "individualSupport": "Dukungan individu",
+      "thisReadingIsForReflection": "Bacaan ini untuk refleksi, bukan vonis atas hubungan Anda. Tidak pernah menyiratkan ketidakjujuran atau ketidakcocokan, dan tidak memprediksi masa depan hubungan Anda."
+    },
+    "RelationshipsScreen": {
+      "couldnTLoadRelationships": "Tidak dapat memuat hubungan",
+      "ourCosmicConnection": "Koneksi kosmik kita",
+      "noPartnerConnectedYet": "Belum ada pasangan terhubung",
+      "connectWithAPartnerTo": "Hubungkan dengan pasangan untuk membuka bacaan harian bersama, dibuat dengan persetujuan penuh dan kontrol privasi.",
+      "connected": "Terhubung",
+      "viewTodaySSharedReading": "Lihat bacaan bersama hari ini",
+      "readingHistory": "Riwayat bacaan",
+      "privacySharing": "Privasi & berbagi",
+      "yourPersonalDailyReadingStays": "Bacaan harian pribadi Anda bersifat privat secara default. Bacaan bersama hanya memakai yang diperlukan untuk refleksi bersama - tidak pernah jurnal atau percakapan AI pribadi Anda.",
+      "disconnect": "Putuskan",
+      "disconnectFromYourPartner": "Putuskan dari pasangan Anda",
+      "thisStopsFutureSharedReadings": "Ini menghentikan bacaan bersama dan notifikasi di masa depan untuk Anda berdua. Anda dapat terhubung kembali nanti dengan undangan baru."
+    },
+    "SelectAstrologyProfileScreen": {
+      "selectProfile": "Pilih profil",
+      "myAstrology": "Astrologi saya",
+      "free": "Gratis",
+      "otherPersonSAstrology": "Astrologi orang lain",
+      "premium": "Premium"
+    },
+    "SoulEnergyReadingScreen": {
+      "generatingYourReading": "Membuat bacaan Anda...",
+      "setUpYourBirthDetails": "Atur data kelahiran Anda terlebih dahulu",
+      "yourSoulEnergyReadingIs": "Bacaan Energi Jiwa Anda didasarkan pada bagan kelahiran yang sama dengan Panduan Kosmik Harian.",
+      "setUpBirthDetails": "Atur data kelahiran",
+      "couldnTGenerateThisReading": "Tidak dapat membuat bacaan ini",
+      "aiGeneratedGroundedInYour": "Dibuat oleh AI, berdasarkan bagan Matahari/Bulan asli Anda.",
+      "basedOnSunAndMoon": "Hanya berdasarkan zodiak Matahari dan Bulan - ascendant Anda tidak tersedia (memerlukan koordinat lahir yang tepat)."
+    },
+    "WesternAstrologyScreen": {
+      "westernAstrology": "Astrologi Barat",
+      "addYourBirthDateAnd": "Tambahkan tanggal dan tempat lahir untuk mendapat bacaan tropis bergaya Barat.",
+      "tropicalSunMoonAndTransits": "Matahari, Bulan, dan transit tropis, dibaca ala Barat",
+      "todaySReading": "BACAAN HARI INI",
+      "stillPreparingTodaySReading": "Masih menyiapkan bacaan hari ini...",
+      "openFullReading": "Buka bacaan lengkap",
+      "wantTheVedicSiderealView": "Ingin tampilan Veda (sidereal)? Buka Astrologi atau Zodiak Bulan dari Beranda."
+    },
+    "GemstoneGoalScreen": {
+      "whatSOnYourMind": "Apa yang Anda pikirkan?",
+      "optionalSelectAsManyAs": "Opsional - pilih sebanyak yang sesuai. Rekomendasi Anda didasarkan pada bagan, bukan tujuan Anda.",
+      "generateMyGemstoneGuide": "Buat panduan batu permata saya",
+      "somethingWentWrongGeneratingYour": "Terjadi kesalahan saat membuat laporan Anda."
+    },
+    "GemstoneHistoryScreen": {
+      "gemstoneReports": "Laporan batu permata",
+      "couldnTLoadReports": "Tidak dapat memuat laporan",
+      "noReportsYet": "Belum ada laporan",
+      "yourGemstoneReportsWillAppear": "Laporan batu permata Anda akan muncul di sini."
+    },
+    "GemstoneLandingScreen": {
+      "gemstoneGuide": "Panduan batu permata",
+      "yourGemstoneRecommendationUsesThe": "Rekomendasi batu permata Anda memakai bagan kelahiran yang sama dengan Panduan Kosmik Harian.",
+      "traditionalVedicGemstoneGuidanceBased": "Panduan batu permata Veda tradisional berdasarkan bagan kelahiran Anda, untuk refleksi, bukan resep ilmiah.",
+      "yourPersonalGemstoneGuide": "Panduan batu permata pribadi Anda",
+      "discoverTheGemstoneTraditionallyAssociated": "Temukan batu permata yang secara tradisional terkait dengan planet penguasa zodiak bulan Anda, lengkap dengan panduan pemakaian, alternatif, dan panduan membeli.",
+      "getMyGemstoneGuide": "Dapatkan panduan batu permata saya",
+      "recentReports": "Laporan terbaru",
+      "basedOnTheRashiMoon": "Berdasarkan konvensi penguatan penguasa Rashi (zodiak bulan), salah satu dari beberapa tradisi Veda yang terdokumentasi. Tidak melakukan analisis ascendant atau afliksi planet secara penuh."
+    },
+    "GemstoneReportScreen": {
+      "couldnTLoadThisReport": "Tidak dapat memuat laporan ini",
+      "noRecommendationAvailable": "Tidak ada rekomendasi tersedia",
+      "saved": "Tersimpan",
+      "whyThisGemstoneWasRecommended": "Mengapa batu ini direkomendasikan",
+      "wearingGuidanceCustomaryPractice": "Panduan pemakaian (praktik lazim)",
+      "traditionalDay": "Hari tradisional",
+      "traditionalFinger": "Jari tradisional",
+      "traditionalMetal": "Logam tradisional",
+      "alternativeOption": "Pilihan alternatif",
+      "gemstoneBuyingGuide": "Panduan membeli batu permata",
+      "thisAppDoesNotSell": "Aplikasi ini tidak menjual batu permata atau memverifikasi penjual - panduan ini hanya bersifat edukatif.",
+      "askAboutThisRecommendation": "Tanyakan tentang rekomendasi ini...",
+      "deleteThisReport": "Hapus laporan ini",
+      "thisPermanentlyDeletesTheGemstone": "Ini menghapus laporan batu permata secara permanen."
+    },
+    "HoroscopeLauncherScreen": {
+      "extendedHoroscopes": "Horoskop lanjutan",
+      "deeperOutlooksBeyondTodayWeekly": "Gambaran lebih dalam melampaui hari ini, tampilan mingguan dan bulanan, dan lainnya."
+    },
+    "HoroscopesScreen": {
+      "zodiacHoroscopes": "Horoskop zodiak",
+      "browseHoroscopesByZodiacSign": "Jelajahi horoskop berdasarkan zodiak, untuk siapa saja, kapan saja."
+    },
+    "NumerologyScreen": {
+      "numerology": "Numerologi",
+      "yourMoolaankBirthNumberAnd": "Moolaank (angka kelahiran) dan Bhagyank (angka takdir) Anda, dijelaskan."
+    },
+    "MyReportsScreen": {
+      "myReports": "Laporan saya",
+      "allYourPreviousReadingsAnd": "Semua bacaan dan laporan Anda sebelumnya, di satu tempat"
+    },
+    "SoulmateGeneratingScreen": {
+      "somethingWentWrong": "Terjadi kesalahan",
+      "thisUsuallyTakesUnderA": "Biasanya kurang dari satu menit.",
+      "couldNotFinishYourSketch": "Tidak dapat menyelesaikan sketsa Anda. Silakan coba lagi - Anda tidak akan ditagih lagi.",
+      "couldNotGenerateYourSketch": "Tidak dapat membuat sketsa Anda. Anda dapat mencoba lagi tanpa membayar ulang."
+    },
+    "SoulmateHistoryScreen": {
+      "deleteSketch": "Hapus sketsa",
+      "couldNotDeleteThisSketch": "Tidak dapat menghapus sketsa ini. Silakan coba lagi.",
+      "soulmateSketchHistory": "Riwayat sketsa belahan jiwa",
+      "noSketchesYet": "Belum ada sketsa",
+      "yourPurchasedSoulmateSketchesWill": "Sketsa belahan jiwa yang Anda beli akan muncul di sini.",
+      "createASketch": "Buat sketsa"
+    },
+    "SoulmateIntroScreen": {
+      "soulmateSketch": "Sketsa belahan jiwa",
+      "aMysteriousArtisticPortraitOf": "Potret artistik yang misterius dari belahan jiwa yang dibayangkan hati Anda.",
+      "soulmateSketchIsEntertainmentAnd": "Sketsa belahan jiwa adalah hiburan dan refleksi diri yang kreatif - potret dicocokkan dari koleksi ilustrasi sketsa fiktif. Ini bukan orang sungguhan, dan bukan prediksi ilmiah atau pasti tentang pasangan masa depan Anda.",
+      "yourFirstSoulmateSketchIs": "Sketsa belahan jiwa pertama Anda gratis.",
+      "yourFreeSketchHasBeen": "Sketsa gratis Anda sudah digunakan. Jelajahi sketsa premium lainnya di bawah.",
+      "viewMyFreeSketch": "Lihat sketsa gratis saya"
+    },
+    "SoulmatePaymentScreen": {
+      "reviewPay": "Tinjau & bayar",
+      "yourPreferences": "Preferensi Anda",
+      "gender": "Jenis kelamin",
+      "ageRange": "Rentang usia",
+      "countryBackground": "Negara / latar belakang",
+      "style": "Gaya",
+      "yourPaymentIsProcessedSecurely": "Pembayaran Anda diproses dengan aman. Pembuatan baru dimulai setelah pembayaran diverifikasi - Anda tidak pernah ditagih lagi jika pembuatan perlu diulang.",
+      "payAndGenerateMySketch": "Bayar dan buat sketsa saya",
+      "verifyingYourPayment": "Memverifikasi pembayaran Anda...",
+      "paymentsAreNotYetAvailable": "Pembayaran belum tersedia di server ini. Silakan coba lagi nanti.",
+      "couldNotStartCheckoutPlease": "Tidak dapat memulai pembayaran. Silakan coba lagi.",
+      "paymentVerificationFailedIfAn": "Verifikasi pembayaran gagal. Jika ada dana yang terpotong, akan dikembalikan.",
+      "paymentDidNotCompletePlease": "Pembayaran tidak selesai. Silakan coba lagi."
+    },
+    "SoulmateQuestionnaireScreen": {
+      "preferredSoulmateGender": "Jenis kelamin belahan jiwa yang diinginkan",
+      "preferredAgeRange": "Rentang usia yang diinginkan",
+      "preferredCountryOrCulturalBackground": "Negara atau latar belakang budaya yang diinginkan",
+      "moreCountries": "Negara lainnya",
+      "preferredPortraitStyle": "Gaya potret yang diinginkan",
+      "couldNotStartYourFree": "Tidak dapat memulai sketsa gratis Anda. Silakan coba lagi."
+    },
+    "SoulmateResultScreen": {
+      "loadingYourSketch": "Memuat sketsa Anda...",
+      "couldnTLoadThisSketch": "Tidak dapat memuat sketsa ini. Silakan coba lagi.",
+      "yourSoulmateSketch": "Sketsa belahan jiwa Anda",
+      "preferences": "PREFERENSI",
+      "background": "Latar belakang",
+      "personalityReflection": "REFLEKSI KEPRIBADIAN",
+      "compatibilityTraits": "CIRI KECOCOKAN",
+      "thisPortraitAndReflectionAre": "Potret dan refleksi ini adalah hiburan fiksi, dicocokkan dari koleksi sketsa ilustratif - bukan orang sungguhan dan bukan prediksi faktual atau pasti tentang pasangan masa depan Anda.",
+      "share": "Bagikan",
+      "savedToMyReportsShared": "Tersimpan di Laporan Saya - salinan yang dibagikan memiliki watermark Palm Setu, aslinya yang tersimpan tidak pernah.",
+      "lovedYourFreeSketch": "Suka sketsa gratis Anda?",
+      "exploreMorePortraitsAndStyles": "Jelajahi lebih banyak potret dan gaya - sketsa premium dimulai dari harga kecil, sepenuhnya dapat diatur oleh Palm Setu.",
+      "explorePremiumSketches": "Jelajahi sketsa premium",
+      "done": "Selesai"
+    },
+    "TarotCategoryScreen": {
+      "whatWouldYouLikeTo": "Apa yang ingin Anda jelajahi?",
+      "tarotHereIsATraditional": "Tarot di sini adalah praktik tradisional dan interpretatif untuk refleksi - bukan cara yang tervalidasi secara ilmiah untuk memprediksi peristiwa masa depan.",
+      "whatSOnYourMind": "Apa yang Anda pikirkan? (tetap privat kecuali Anda memilih membagikannya)",
+      "chooseASpread": "Pilih sebaran"
+    },
+    "TarotDrawScreen": {
+      "tapTheDeckToSpread": "Ketuk dek untuk menyebar kartu",
+      "takeAMomentAndChoose": "Luangkan waktu sejenak dan pilih kartu Anda",
+      "seeMyReading": "Lihat bacaan saya",
+      "somethingWentWrongStartingYour": "Terjadi kesalahan saat memulai bacaan Anda."
+    },
+    "TarotHistoryScreen": {
+      "searchQuestionsCardsReports": "Cari pertanyaan, kartu, laporan...",
+      "savedOnly": "Hanya yang tersimpan",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya"
+    },
+    "TarotReportScreen": {
+      "checkYourConnectionAndTry": "Periksa koneksi Anda dan coba lagi.",
+      "context": "KONTEKS",
+      "advice": "SARAN",
+      "symbolism": "SIMBOLISME",
+      "overallReflection": "REFLEKSI KESELURUHAN",
+      "detailedAiReading": "BACAAN AI TERPERINCI",
+      "practicalSuggestions": "SARAN PRAKTIS",
+      "reflectionQuestions": "PERTANYAAN REFLEKSI",
+      "yourBirthChartPerspective": "PERSPEKTIF BAGAN KELAHIRAN ANDA",
+      "goDeeperWithAi": "Gali lebih dalam dengan AI",
+      "exploreTheSymbolismOfYour": "Jelajahi simbolisme kartu pilihan Anda, bagaimana keterkaitannya, dan tema yang mungkin ingin direnungkan.",
+      "followUpQuestionsAreA": "Pertanyaan lanjutan adalah fitur Premium",
+      "askAnythingAboutThisSpecific": "Tanyakan apa saja tentang bacaan ini dan dapatkan jawaban berdasarkan kartu Anda yang sebenarnya.",
+      "upgradeToPremium": "Tingkatkan ke Premium",
+      "tryAsking": "Coba tanyakan:",
+      "thinking": "Berpikir",
+      "askAboutThisReading": "Tanyakan tentang bacaan ini...",
+      "journalThisReading": "Catat bacaan ini di jurnal",
+      "privateNotesNeverSharedUnless": "Catatan pribadi - tidak pernah dibagikan kecuali Anda memilihnya",
+      "saveNote": "Simpan catatan",
+      "saveThisReading": "Simpan bacaan ini",
+      "createAFreeAccountTo": "Buat akun gratis untuk menyimpan bacaan tarot Anda dan meninjau wawasannya kapan pun diperlukan.",
+      "deleteThisReading": "Hapus bacaan ini",
+      "thisPermanentlyDeletesTheReading": "Ini menghapus bacaan dan catatan jurnal terkait secara permanen.",
+      "couldNotGetAResponse": "Tidak dapat memperoleh jawaban. Silakan coba lagi.",
+      "somethingWentWrongGeneratingYour": "Terjadi kesalahan saat membuat bacaan terperinci Anda."
+    },
+    "VastuCompassScreen": {
+      "directionDetailsCouldnTBe": "Detail arah tidak dapat dimuat.",
+      "vastuCompass": "Kompas Vastu",
+      "holdYourPhoneFlatAway": "Pegang ponsel secara datar, jauh dari logam dan elektronik, untuk pembacaan paling andal.",
+      "checkingSensorAvailability": "Memeriksa ketersediaan sensor...",
+      "locationPermissionIsNeededTo": "Izin lokasi diperlukan untuk membaca arah kompas (kami tidak pernah membaca atau menyimpan koordinat GPS Anda, hanya arahnya). Pilih arah hadap Anda secara manual di bawah, atau aktifkan izin di pengaturan perangkat untuk memakai kompas langsung.",
+      "aCompassSensorIsnT": "Sensor kompas tidak tersedia di perangkat atau browser ini. Pilih arah hadap Anda secara manual di bawah.",
+      "lowAccuracyDetectedMoveAway": "Akurasi rendah terdeteksi - jauhi benda logam atau elektronik dan gerakkan ponsel membentuk angka 8 untuk kalibrasi.",
+      "approximateReadingNotACalibrated": "Pembacaan perkiraan, bukan instrumen survei terkalibrasi.",
+      "selectManuallyInstead": "Pilih manual saja",
+      "selectYourDirection": "PILIH ARAH ANDA",
+      "useLiveSensorInstead": "Gunakan sensor langsung",
+      "bestForHome": "TERBAIK UNTUK RUMAH",
+      "noStrongTraditionalAssociation": "Tidak ada asosiasi tradisional yang kuat",
+      "bestForWork": "TERBAIK UNTUK KERJA",
+      "thisShowsADirectionNot": "Ini menunjukkan arah, bukan penilaian properti secara menyeluruh. Untuk panduan personal per ruangan, gunakan analisis properti."
+    },
+    "VastuHistoryScreen": {
+      "vastuReports": "Laporan Vastu",
+      "yourVastuReportsWillAppear": "Laporan Vastu Anda akan muncul di sini."
+    },
+    "VastuLandingScreen": {
+      "alignYourSpaceTraditionalDirection": "Selaraskan ruang Anda - panduan arah tradisional untuk refleksi, bukan penilaian properti yang tervalidasi secara ilmiah.",
+      "openTheCompass": "Buka kompas",
+      "findYourCurrentFacingDirection": "Temukan arah hadap Anda saat ini dengan sensor perangkat, atau pilih secara manual.",
+      "analyzeAProperty": "Analisis properti",
+      "addRoomDirectionsForA": "Tambahkan arah ruangan untuk laporan personal dengan saran praktis dan murah.",
+      "analyzeAPropertyToSee": "Analisis sebuah properti untuk melihat laporan pertama Anda di sini.",
+      "vastuIsATraditionalArchitectural": "Vastu adalah sistem kepercayaan arsitektur dan budaya tradisional. Klaim spiritual dan kemakmurannya tidak terbukti secara ilmiah, dan tidak ada arah yang pernah disajikan sebagai penyebab penyakit, kerugian finansial, atau masalah hubungan."
+    },
+    "VastuPropertyFormScreen": {
+      "removeRoomDirection": "Hapus arah ruangan?",
+      "remove": "Hapus",
+      "alreadyAdded": "Sudah ditambahkan",
+      "analyzeYourProperty": "Analisis properti Anda",
+      "configureExactlyTheRoomsYour": "Atur persis ruangan yang ada di properti Anda, lalu tentukan arah sebenarnya tiap ruangan - Anda boleh melewati yang tidak yakin.",
+      "propertyType": "JENIS PROPERTI",
+      "roomConfiguration": "KONFIGURASI RUANGAN",
+      "commonRooms": "RUANGAN UMUM",
+      "roomNameEGStudy": "Nama ruangan (mis. Ruang Belajar)",
+      "addRoom": "Tambah ruangan",
+      "addAnotherRoom": "Tambah ruangan lain",
+      "additionalDetailsOptional": "DETAIL TAMBAHAN (OPSIONAL)",
+      "tellUsAnythingElseAbout": "Ceritakan hal lain tentang tata letak properti Anda...",
+      "generateMyReport": "Buat laporan saya"
+    },
+    "VastuReportScreen": {
+      "propertyOverview": "RINGKASAN PROPERTI",
+      "directionAnalysis": "Analisis arah",
+      "suggestionsChecklist": "Daftar periksa saran",
+      "optionalCulturalPractice": "Praktik budaya opsional",
+      "vastuIsATraditionalArchitectural": "Vastu adalah sistem kepercayaan arsitektur dan budaya tradisional. Klaim spiritual dan kemakmurannya tidak terbukti secara ilmiah. Tidak ada arah di sini yang disajikan sebagai penyebab penyakit, kerugian finansial, atau masalah hubungan.",
+      "askAboutThisReport": "Tanyakan tentang laporan ini...",
+      "thisPermanentlyDeletesTheVastu": "Ini menghapus laporan Vastu secara permanen."
+    },
+    "AffirmationDetailScreen": {
+      "aMomentToReflect": "Saat untuk merenung",
+      "thisPieceIsFromThe": "Bagian ini berasal dari subset opsional pustaka yang bernuansa astrologi.",
+      "couldNotLoadTodayS": "Tidak dapat memuat afirmasi hari ini."
+    },
+    "BreathingSessionScreen": {
+      "saving": "Menyimpan...",
+      "stop": "Berhenti"
+    },
+    "BreathingTechniquesScreen": {
+      "breathing": "Pernapasan",
+      "chooseAGuidedBreathingTechnique": "Pilih teknik pernapasan terpandu.",
+      "noTechniquesAvailable": "Tidak ada teknik tersedia",
+      "pleaseTryAgainLater": "Silakan coba lagi nanti.",
+      "couldNotLoadBreathingTechniques": "Tidak dapat memuat teknik pernapasan. Silakan coba lagi."
+    },
+    "ChallengeDetailScreen": {
+      "restartThisChallenge": "Mulai ulang tantangan ini?",
+      "thisWipesAllYourProgress": "Ini menghapus semua kemajuan Anda di tantangan ini dan memulai lagi dari hari ke-1. Tidak dapat dibatalkan.",
+      "restart": "Mulai ulang",
+      "leaveThisChallenge": "Keluar dari tantangan ini?",
+      "yourProgressIsKeptBut": "Kemajuan Anda tetap tersimpan, tetapi tidak lagi aktif.",
+      "leave": "Keluar",
+      "challengeCompleted": "Tantangan selesai",
+      "dayByDayTasks": "Tugas harian",
+      "couldNotLoadThisChallenge": "Tidak dapat memuat tantangan ini.",
+      "couldNotJoinThisChallenge": "Tidak dapat bergabung dengan tantangan ini.",
+      "couldNotMarkThisDay": "Tidak dapat menandai hari ini selesai.",
+      "couldNotRestartThisChallenge": "Tidak dapat memulai ulang tantangan ini.",
+      "couldNotLeaveThisChallenge": "Tidak dapat keluar dari tantangan ini."
+    },
+    "ChallengesScreen": {
+      "challenges": "Tantangan",
+      "multiDayGuidedProgramsJoin": "Program terpandu beberapa hari - ikuti satu dan selesaikan satu tugas setiap hari sesuai kecepatan Anda.",
+      "noChallengesAvailable": "Tidak ada tantangan tersedia",
+      "couldNotLoadChallengesPlease": "Tidak dapat memuat tantangan. Silakan coba lagi."
+    },
+    "GoalDetailScreen": {
+      "deleteThisGoal": "Hapus tujuan ini?",
+      "targetFrequency": "Frekuensi target",
+      "save": "Simpan",
+      "completed": "Selesai",
+      "logTodaySProgressUser": "Catat kemajuan hari ini (dilaporkan sendiri)",
+      "optionalNoteAboutToday": "Catatan opsional tentang hari ini",
+      "logProgress": "Catat kemajuan",
+      "markComplete": "Tandai selesai",
+      "userReportedHistory": "Riwayat yang dilaporkan sendiri",
+      "noCheckInsLoggedYet": "Belum ada check-in yang dicatat.",
+      "userReported": "Dilaporkan sendiri",
+      "deleteGoal": "Hapus tujuan",
+      "couldNotLoadThisGoal": "Tidak dapat memuat tujuan ini.",
+      "couldNotLogProgress": "Tidak dapat mencatat kemajuan.",
+      "couldNotMarkGoalComplete": "Tidak dapat menandai tujuan selesai.",
+      "couldNotDeleteThisGoal": "Tidak dapat menghapus tujuan ini.",
+      "couldNotUpdateThisGoal": "Tidak dapat memperbarui tujuan ini."
+    },
+    "GoalsCompletedScreen": {
+      "completedGoals": "Tujuan yang selesai",
+      "noCompletedGoalsYet": "Belum ada tujuan yang selesai",
+      "goalsYouCompleteWillShow": "Tujuan yang Anda selesaikan akan muncul di sini.",
+      "couldNotLoadCompletedGoals": "Tidak dapat memuat tujuan yang selesai."
+    },
+    "GoalsScreen": {
+      "goals": "Tujuan",
+      "progressHereIsAlwaysWhat": "Kemajuan di sini selalu berdasarkan laporan Anda sendiri - tidak ada yang diukur otomatis.",
+      "activeGoals": "Tujuan aktif",
+      "noActiveGoalsYetAdd": "Belum ada tujuan aktif - tambahkan satu di bawah.",
+      "newGoal": "Tujuan baru",
+      "goalTitle": "Judul tujuan",
+      "targetFrequencyOptionalEG": "Frekuensi target (opsional), mis. 4x per minggu",
+      "category": "Kategori",
+      "create": "Buat",
+      "couldNotLoadGoalsPlease": "Tidak dapat memuat tujuan. Silakan coba lagi.",
+      "couldNotCreateGoal": "Tidak dapat membuat tujuan."
+    },
+    "InspirationBrowseScreen": {
+      "inspiration": "Inspirasi",
+      "browseTheFullLibraryOrganized": "Jelajahi seluruh pustaka, diatur berdasarkan jenis.",
+      "all": "Semua",
+      "favorites": "Favorit",
+      "couldNotLoadTheInspiration": "Tidak dapat memuat pustaka inspirasi."
+    },
+    "JournalScreen": {
+      "journal": "Jurnal",
+      "newEntry": "Entri baru",
+      "searchEntries": "Cari entri",
+      "noJournalEntriesYetStart": "Belum ada entri jurnal. Mulai dengan ide atau tulis bebas."
+    },
+    "MeditationPlayerScreen": {
+      "thisSessionSAudioIs": "Audio sesi ini segera hadir. Sesi Anda tetap dicatat, dan Anda dapat menandainya selesai di bawah.",
+      "sleepTimer": "Timer tidur",
+      "markSessionComplete": "Tandai sesi selesai",
+      "couldNotLoadThisSession": "Tidak dapat memuat sesi ini.",
+      "thisSessionRequiresPalmSetu": "Sesi ini memerlukan Palm Setu Premium.",
+      "couldNotStartThisSession": "Tidak dapat memulai sesi ini."
+    },
+    "MeditationScreen": {
+      "meditationSleep": "Meditasi & tidur",
+      "guidedSessionsAndAmbientSounds": "Sesi terpandu dan suara ambient, diatur sesuai kebutuhan Anda saat ini.",
+      "recentlyPlayed": "Baru diputar",
+      "noContentAvailable": "Tidak ada konten tersedia",
+      "couldNotLoadMeditationContent": "Tidak dapat memuat konten meditasi. Silakan coba lagi."
+    },
+    "DirectionSelectorModal": {
+      "direction": "ARAH",
+      "chooseTheDirectionThisRoom": "Pilih arah yang benar-benar dihadapi ruangan ini di properti Anda - tidak pernah ditebak untuk Anda.",
+      "iMNotSureSkip": "Saya tidak yakin, lewati dulu"
+    },
+    "RazorpayCheckoutModal": {
+      "secureCheckout": "Pembayaran aman"
+    },
+    "TarotCardInfoModal": {
+      "meaning": "ARTI"
+    },
+    "TarotInfoModal": {
+      "howTarotWorks": "Cara kerja tarot"
+    }
+  },
+  "errors": {
+    "network": "Tidak dapat terhubung. Periksa koneksi Anda dan coba lagi.",
+    "timeout": "Ini memakan waktu terlalu lama. Periksa koneksi Anda dan coba lagi.",
+    "loadFailed": "Tidak dapat memuat ini. Periksa koneksi Anda dan coba lagi.",
+    "partialLoad": "Sebagian konten tidak dapat dimuat.",
+    "retry": "Coba lagi",
+    "tryAgain": "Coba lagi",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk lagi.",
+    "aiLimit": "Anda telah mencapai batas penggunaan AI bulan ini. Batas direset di awal bulan depan.",
+    "rateLimited": "Terlalu banyak permintaan. Mohon pelan-pelan dan coba lagi sebentar lagi.",
+    "generic": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "aiMeter": {
+    "used": "{{used}} dari {{limit}}",
+    "left": "Sisa {{left}}. Direset pada {{date}}.",
+    "low": "Hampir habis: sisa {{left}}. Direset pada {{date}}.",
+    "exhausted": "Anda telah menghabiskan kuota AI bulan ini. Direset pada {{date}}."
+  },
+  "verifyEmail": {
+    "sentTo": "Kami mengirim tautan baru ke {{email}}. Buka tautannya, lalu kembali ke sini.",
+    "error": "Tidak dapat mengirim email saat ini. Silakan coba lagi.",
+    "prompt": "Konfirmasi {{email}} agar Anda dapat mereset kata sandi dan menjaga Premium tetap aman di akun Anda.",
+    "send": "Kirim email verifikasi",
+    "sending": "Mengirim...",
+    "again": "Kirim lagi"
+  },
+  "paywall": {
+    "benefits": {
+      "palm": {
+        "title": "Pembacaan Telapak Tangan Lanjutan",
+        "tagline": "Lebih dalam dari laporan gratis pertama Anda.",
+        "p1": "Laporan telapak tangan terperinci tanpa batas (paket gratis: 1)",
+        "p2": "Pertanyaan lanjutan berbasis AI tanpa batas per bacaan (paket gratis: 2)",
+        "p3": "Setiap garis dan fitur yang terdeteksi terbuka, tidak satu per satu",
+        "p4": "Akses penuh ke riwayat laporan tersimpan Anda"
+      },
+      "tarot": {
+        "title": "Tarot Premium",
+        "tagline": "Semua sebaran kartu, bukan hanya satu kartu.",
+        "p1": "Semua sebaran premium: Tiga Kartu, Lima Kartu, Celtic Cross, dan lainnya (paket gratis: satu kartu)",
+        "p2": "Laporan tarot terperinci berbasis AI untuk setiap bacaan",
+        "p3": "Hingga 20 pertanyaan lanjutan AI per hari",
+        "p4": "Riwayat bacaan tersimpan lengkap"
+      },
+      "compatibility": {
+        "title": "Cinta & Kecocokan",
+        "tagline": "Bacaan yang dibuat untuk berdua.",
+        "p1": "Sebaran tarot Kecocokan Hubungan serta Cinta & Hubungan",
+        "p2": "Kecocokan astrologi dengan bagan orang lain",
+        "p3": "Wawasan hubungan personal berdasarkan profil tersimpan Anda"
+      },
+      "astrology": {
+        "title": "Perpustakaan Astrologi Lengkap",
+        "tagline": "Veda dan Barat, lebih jauh lagi.",
+        "p1": "Pembuatan bagan kelahiran (Kundli) tanpa batas (paket gratis: 1)",
+        "p2": "Buat bagan orang lain untuk melihat kecocokan",
+        "p3": "Akses penuh ke sistem Veda dan Barat"
+      },
+      "ai": {
+        "title": "Pengalaman AI yang Dipersonalisasi",
+        "tagline": "Lebih banyak percakapan, berdasarkan data Anda sendiri.",
+        "p1": "Hingga 200 pesan Pendamping AI per hari (paket gratis: 15)",
+        "p2": "Jawaban kontekstual yang memakai bacaan dan profil tersimpan Anda",
+        "p3": "Pertanyaan lanjutan AI di laporan Tarot, Telapak Tangan, dan Batu Permata"
+      },
+      "wellness": {
+        "title": "Penemuan Diri & Kesejahteraan",
+        "tagline": "Ruang untuk benar-benar membangun kebiasaan.",
+        "p1": "Kebiasaan aktif tanpa batas (paket gratis: 3)",
+        "p2": "Semua teknik pernapasan dan meditasi terpandu terbuka",
+        "p3": "Semua tantangan kesejahteraan terbuka",
+        "p4": "Tampilan riwayat suasana hati lengkap (paket gratis: 7 hari terakhir)",
+        "p5": "Lebih banyak wawasan jurnal AI per hari (paket gratis: 2)"
+      }
+    },
+    "compare": {
+      "freeHeader": "Gratis",
+      "premiumHeader": "Premium",
+      "palm": {
+        "label": "Laporan telapak tangan terperinci",
+        "free": "1",
+        "premium": "Tanpa batas"
+      },
+      "tarotSpreads": {
+        "label": "Sebaran tarot",
+        "free": "Hanya satu kartu",
+        "premium": "Semua sebaran"
+      },
+      "tarotFollowups": {
+        "label": "Pertanyaan lanjutan tarot",
+        "free": "Tidak termasuk",
+        "premium": "Hingga 20/hari"
+      },
+      "kundli": {
+        "label": "Pembuatan bagan kelahiran (Kundli)",
+        "free": "1",
+        "premium": "Tanpa batas"
+      },
+      "otherChart": {
+        "label": "Bagan orang lain / kecocokan",
+        "free": "Tidak termasuk",
+        "premium": "Termasuk"
+      },
+      "companion": {
+        "label": "Pesan Pendamping AI",
+        "free": "15/hari",
+        "premium": "200/hari"
+      },
+      "habits": {
+        "label": "Kebiasaan kesehatan aktif",
+        "free": "3",
+        "premium": "Tanpa batas"
+      },
+      "moodHistory": {
+        "label": "Riwayat suasana hati",
+        "free": "7 hari",
+        "premium": "Riwayat lengkap"
+      }
+    },
+    "period": {
+      "monthly": "/bulan",
+      "quarterly": "/3 bulan",
+      "annual": "/tahun"
+    },
+    "cta": {
+      "unlock": "Buka Palm Setu Premium",
+      "continueWith": "Lanjutkan dengan {{plan}}, {{price}}"
+    },
+    "badge": {
+      "bestValue": "PALING HEMAT",
+      "popular": "PILIHAN POPULER"
+    },
+    "perMonthEquivalent": "setara {{price}}/bulan",
+    "save": "Hemat {{percent}}%",
+    "processing": "Memproses...",
+    "restoring": "Memulihkan...",
+    "restore": "Pulihkan Pembelian",
+    "legal": "Langganan diperpanjang otomatis kecuali dibatalkan minimal 24 jam sebelum periode berjalan berakhir. Kelola atau batalkan kapan saja di pengaturan akun App Store atau Play Store Anda.",
+    "error": {
+      "unavailable": "Pembelian belum tersedia saat ini. Tidak ada yang ditagih.",
+      "verifyEmail": "Silakan verifikasi email Anda dulu (lihat kartu di layar Profil), lalu kembali untuk berlangganan.",
+      "planUnavailable": "Paket ini belum dapat dibeli saat ini. Silakan coba lagi sebentar lagi.",
+      "notActiveYet": "Pembelian selesai tetapi Premium belum aktif - coba \"Pulihkan Pembelian\" sebentar lagi.",
+      "purchaseFailed": "Terjadi kesalahan pada pembelian. Jika gagal, tidak ada yang ditagih.",
+      "nothingToRestore": "Tidak ada pembelian sebelumnya yang dapat dipulihkan.",
+      "restoreFailed": "Tidak dapat memulihkan pembelian saat ini."
+    },
+    "intent": {
+      "createFirst": "Buat akun gratis dulu agar Premium Anda berfungsi di semua perangkat.",
+      "logInToRestore": "Masuk untuk memulihkan Premium Anda di perangkat ini."
+    }
+  },
+  "streak": {
+    "dayStreak": "hari beruntun",
+    "longest": "Terpanjang: {{n}}",
+    "start": "Buka Palm Setu setiap hari untuk membangun rangkaian harian Anda.",
+    "checkedIn": "Anda sudah check-in hari ini. Kembali besok untuk melanjutkan.",
+    "atRisk": "Buka aplikasi hari ini agar rangkaian Anda tetap hidup.",
+    "milestone": "{{n}} hari beruntun. Kerja bagus!",
+    "turnOnReminders": "Atur pengingat"
+  },
+  "notifications": {
+    "dailyReminders": "Pengingat harian",
+    "horoscopeReminder": "Horoskop harian",
+    "streakReminder": "Pengingat rangkaian",
+    "timeLabel": "Waktu (HH:mm, 24 jam)",
+    "invalidTime": "Gunakan waktu seperti 08:00.",
+    "unavailable": "Pengingat tidak tersedia di versi aplikasi ini.",
+    "horoscopeTitle": "Horoskop harian Anda",
+    "horoscopeBody": "Bacaan hari ini sudah siap untuk Anda.",
+    "streakTitle": "Pertahankan rangkaian Anda",
+    "streakBody": "Anda sedang dalam rangkaian {{count}} hari. Buka Palm Setu hari ini untuk melanjutkannya."
   }
 }

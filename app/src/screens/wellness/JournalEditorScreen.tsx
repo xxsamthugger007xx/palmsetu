@@ -12,7 +12,9 @@ import { Button } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, JournalEntry, JOURNAL_ENTRY_TYPES, JournalEntryType } from '../../services/wellnessApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type RouteType = RouteProp<RootStackParamList, 'JournalEditor'>;
 
 const INSIGHT_TYPES: { value: 'summary' | 'reflective-questions' | 'theme-identification' | 'writing-suggestions'; label: string }[] = [
@@ -23,6 +25,7 @@ const INSIGHT_TYPES: { value: 'summary' | 'reflective-questions' | 'theme-identi
 ];
 
 export function JournalEditorScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteType>();
   const entryId = route.params?.entryId;
@@ -76,8 +79,9 @@ export function JournalEditorScreen() {
         await wellnessApi.createJournalEntry({ type, title: title.trim() || undefined, content, tags, isDraft: false });
       }
       navigation.goBack();
-    } catch (err: any) {
-      setError(err?.message ?? 'Could not save this entry.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.JournalEditorScreen.couldNotSaveThisEntry'));
     } finally {
       setSaving(false);
     }
@@ -91,8 +95,9 @@ export function JournalEditorScreen() {
     try {
       const res = await wellnessApi.getJournalAiInsight({ entryId: entry.id, consent: true, insightType: aiInsightType });
       setAiInsight(res.insight);
-    } catch (err: any) {
-      setAiError(err?.message ?? 'Could not get an AI insight right now.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setAiError(err?.message ?? t('ui.JournalEditorScreen.couldNotGetAnAi'));
     } finally {
       setAiLoading(false);
     }
@@ -100,9 +105,9 @@ export function JournalEditorScreen() {
 
   const confirmDelete = () => {
     if (!entry) return;
-    Alert.alert('Delete entry', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => {
+    Alert.alert(t('ui.JournalEditorScreen.deleteEntry'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
+      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
+      { text: t('ui.AssistantHistoryScreen.delete'), style: 'destructive', onPress: async () => {
         await wellnessApi.deleteJournalEntry(entry.id).catch(() => {});
         navigation.goBack();
       } },
@@ -122,12 +127,12 @@ export function JournalEditorScreen() {
       </Text>
 
       <View style={{ marginBottom: spacing.lg }}>
-        <SectionHeader title="Type" />
+        <SectionHeader title={t('ui.JournalEditorScreen.type')} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
           {JOURNAL_ENTRY_TYPES.map((t) => {
             const selected = type === t;
             return (
-              <Pressable key={t} onPress={() => setType(t)} style={{
+              <Pressable accessibilityRole="button" key={t} onPress={() => setType(t)} style={{
                 paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.pill,
                 borderWidth: 1, borderColor: selected ? color.accentBorder : color.border,
                 backgroundColor: selected ? color.accentMuted : color.surface, marginBottom: spacing.xs,
@@ -141,10 +146,10 @@ export function JournalEditorScreen() {
 
       {!entry && prompts.length > 0 && (
         <View style={{ marginBottom: spacing.lg }}>
-          <SectionHeader title="Need a prompt?" />
+          <SectionHeader title={t('ui.JournalEditorScreen.needAPrompt')} />
           <Card>
             {prompts.filter((p) => p.type === type).slice(0, 2).map((p, i) => (
-              <Pressable key={i} onPress={() => setContent((c) => (c ? `${c}\n\n${p.text}\n` : `${p.text}\n`))}>
+              <Pressable accessibilityRole="button" key={i} onPress={() => setContent((c) => (c ? `${c}\n\n${p.text}\n` : `${p.text}\n`))}>
                 <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.xs }}>{p.text}</Text>
               </Pressable>
             ))}
@@ -156,7 +161,7 @@ export function JournalEditorScreen() {
         <TextInput
           value={title}
           onChangeText={setTitle}
-          placeholder="Title (optional)"
+          placeholder={t('ui.JournalEditorScreen.titleOptional')} accessibilityLabel={t('ui.JournalEditorScreen.titleOptional')}
           placeholderTextColor={color.textMuted}
           style={{ color: color.textPrimary, fontSize: 15, fontWeight: '600', marginBottom: spacing.sm }}
           maxLength={200}
@@ -164,7 +169,7 @@ export function JournalEditorScreen() {
         <TextInput
           value={content}
           onChangeText={setContent}
-          placeholder="Write freely..."
+          placeholder={t('ui.JournalEditorScreen.writeFreely')} accessibilityLabel={t('ui.JournalEditorScreen.writeFreely')}
           placeholderTextColor={color.textMuted}
           multiline
           style={{ minHeight: 160, color: color.textPrimary, fontSize: 14 }}
@@ -176,11 +181,11 @@ export function JournalEditorScreen() {
         <TextInput
           value={tagsText}
           onChangeText={setTagsText}
-          placeholder="Tags, comma separated"
+          placeholder={t('ui.JournalEditorScreen.tagsCommaSeparated')} accessibilityLabel={t('ui.JournalEditorScreen.tagsCommaSeparated')}
           placeholderTextColor={color.textMuted}
           style={{ flex: 1, color: color.textPrimary }}
         />
-        <Pressable onPress={() => setFavorite((v) => !v)} hitSlop={8}>
+        <Pressable accessibilityRole="button" onPress={() => setFavorite((v) => !v)} hitSlop={8}>
           <Star size={18} color={favorite ? color.accent : color.textMuted} fill={favorite ? color.accent : 'transparent'} strokeWidth={1.75} />
         </Pressable>
       </Card>
@@ -192,17 +197,16 @@ export function JournalEditorScreen() {
       {entry && (
         <>
           <View style={{ marginTop: spacing.xl, marginBottom: spacing.lg }}>
-            <SectionHeader title="AI insight" />
+            <SectionHeader title={t('ui.JournalEditorScreen.aiInsight')} />
             <Card elevated>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.sm }}>
                 <Sparkles size={15} color={color.accent} strokeWidth={1.75} style={{ marginTop: 2 }} />
                 <Text variant="bodySm" tone="secondary" style={{ marginLeft: spacing.sm, flex: 1 }}>
-                  This entry's text would be sent to Palm Setu's AI to generate an insight. It is never sent
-                  without your explicit permission below, and each request requires this to be checked again.
+                  {t('ui.JournalEditorScreen.thisEntrySTextWould')}
                 </Text>
               </View>
 
-              <Pressable
+              <Pressable accessibilityRole="button"
                 onPress={() => setAiConsentGiven((v) => !v)}
                 style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}
               >
@@ -213,7 +217,7 @@ export function JournalEditorScreen() {
                   alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
                 }} />
                 <Text variant="bodySm" weight="semibold">
-                  I consent to share this entry's text with the AI for this one request
+                  {t('ui.JournalEditorScreen.iConsentToShareThis')}
                 </Text>
               </Pressable>
 
@@ -221,7 +225,7 @@ export function JournalEditorScreen() {
                 {INSIGHT_TYPES.map((it) => {
                   const selected = aiInsightType === it.value;
                   return (
-                    <Pressable key={it.value} onPress={() => setAiInsightType(it.value)} style={{
+                    <Pressable accessibilityRole="button" key={it.value} onPress={() => setAiInsightType(it.value)} style={{
                       paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.pill,
                       borderWidth: 1, borderColor: selected ? color.accentBorder : color.border,
                       backgroundColor: selected ? color.accentMuted : color.surface,
@@ -233,7 +237,7 @@ export function JournalEditorScreen() {
               </View>
 
               <Button
-                label="Get AI insight"
+                label={t('ui.JournalEditorScreen.getAiInsight')}
                 variant="secondary"
                 size="sm"
                 disabled={!aiConsentGiven || aiLoading}
@@ -248,7 +252,7 @@ export function JournalEditorScreen() {
             </Card>
           </View>
 
-          <Button label="Delete entry" variant="danger" onPress={confirmDelete} fullWidth />
+          <Button label={t('ui.JournalEditorScreen.deleteEntry')} variant="danger" onPress={confirmDelete} fullWidth />
         </>
       )}
     </PageContainer>

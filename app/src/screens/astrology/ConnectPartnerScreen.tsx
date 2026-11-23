@@ -11,10 +11,13 @@ import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
+import { useTranslation } from 'react-i18next';
 
+import { asApiError } from '../../services/apiRequest';
 type Mode = 'choose' | 'generated' | 'enter';
 
 export function ConnectPartnerScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [mode, setMode] = useState<Mode>('choose');
   const [code, setCode] = useState<string | null>(null);
@@ -39,8 +42,9 @@ export function ConnectPartnerScreen() {
       setCode(res.code);
       setExpiresAt(res.expiresAt);
       setMode('generated');
-    } catch (err: any) {
-      setError(err.message ?? 'Could not create an invitation.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err.message ?? t('ui.ConnectPartnerScreen.couldNotCreateAnInvitation'));
     } finally {
       setLoading(false);
     }
@@ -53,8 +57,9 @@ export function ConnectPartnerScreen() {
     try {
       await astrologyApi.acceptInvitation(enteredCode.trim().toUpperCase());
       navigation.replace('Relationships');
-    } catch (err: any) {
-      setError(err.message ?? 'Could not accept this invitation.');
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err.message ?? t('ui.ConnectPartnerScreen.couldNotAcceptThisInvitation'));
     } finally {
       setLoading(false);
     }
@@ -66,27 +71,27 @@ export function ConnectPartnerScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Connect with partner</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.ConnectPartnerScreen.connectWithPartner')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
-        Your partner will need their own account. Only after they explicitly accept will anything be shared.
+        {t('ui.ConnectPartnerScreen.yourPartnerWillNeedTheir')}
       </Text>
 
       {mode === 'choose' && (
         <>
           <Card onPress={handleGenerate} style={{ marginBottom: spacing.sm }}>
-            <Text variant="bodySm" weight="semibold">Generate an invitation</Text>
-            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>Create a code to share with your partner</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.ConnectPartnerScreen.generateAnInvitation')}</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.ConnectPartnerScreen.createACodeToShare')}</Text>
           </Card>
           <Card onPress={() => setMode('enter')}>
-            <Text variant="bodySm" weight="semibold">Enter a code</Text>
-            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>Your partner shared a code with you</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.ConnectPartnerScreen.enterACode')}</Text>
+            <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.ConnectPartnerScreen.yourPartnerSharedACode')}</Text>
           </Card>
         </>
       )}
 
       {mode === 'generated' && code && (
         <Card elevated style={{ alignItems: 'center' }}>
-          <Text variant="label" tone="muted">YOUR INVITATION CODE</Text>
+          <Text variant="label" tone="muted">{t('ui.ConnectPartnerScreen.yourInvitationCode')}</Text>
           <Text variant="display" weight="bold" style={styles.codeText}>{code}</Text>
           <View style={styles.row}>
             <Clock size={13} color={color.textMuted} strokeWidth={1.75} />
@@ -95,8 +100,7 @@ export function ConnectPartnerScreen() {
             </Text>
           </View>
           <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
-            Share this code directly with your partner. Anyone with the code can see only that it's an
-            invitation - no birth details are exposed.
+            {t('ui.ConnectPartnerScreen.shareThisCodeDirectlyWith')}
           </Text>
           <Button label={copied ? 'Copied!' : 'Copy code'} icon={Copy} variant="secondary" size="sm" style={{ marginTop: spacing.md }} onPress={handleCopy} />
         </Card>
@@ -104,24 +108,22 @@ export function ConnectPartnerScreen() {
 
       {mode === 'enter' && (
         <View>
-          <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>INVITATION CODE</Text>
+          <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>{t('ui.ConnectPartnerScreen.invitationCode')}</Text>
           <TextInput
             value={enteredCode}
             onChangeText={(t) => setEnteredCode(t.toUpperCase())}
-            placeholder="e.g. Y5PPBUBG"
+            placeholder={t('ui.ConnectPartnerScreen.eGY5ppbubg')} accessibilityLabel={t('ui.ConnectPartnerScreen.eGY5ppbubg')}
             placeholderTextColor={color.textMuted}
             autoCapitalize="characters"
             style={styles.input}
           />
           <Card style={{ marginTop: spacing.md }}>
-            <Text variant="bodySm" weight="semibold">What you'll be sharing</Text>
+            <Text variant="bodySm" weight="semibold">{t('ui.ConnectPartnerScreen.whatYouLlBeSharing')}</Text>
             <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
-              Once connected, you can each independently control what's shared - compatibility results,
-              shared daily readings, chart details, and notifications. Journal entries and individual
-              daily readings stay private unless you choose to share them.
+              {t('ui.ConnectPartnerScreen.onceConnectedYouCanEach')}
             </Text>
           </Card>
-          <Button label="Accept invitation" fullWidth loading={loading} style={{ marginTop: spacing.lg }} onPress={handleAccept} />
+          <Button label={t('ui.ConnectPartnerScreen.acceptInvitation')} fullWidth loading={loading} style={{ marginTop: spacing.lg }} onPress={handleAccept} />
         </View>
       )}
 

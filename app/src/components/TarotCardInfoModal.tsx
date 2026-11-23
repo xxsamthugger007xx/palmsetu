@@ -7,6 +7,7 @@ import { Text } from './Text';
 import { IconButton } from './Button';
 import { TarotCardFace } from './TarotCardFace';
 import { TarotCard, Orientation } from '../types/tarot';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   visible: boolean;
@@ -20,6 +21,7 @@ type Props = {
  * knowledge base (types/tarot.ts's TarotCard) already fetched by the
  * catalogue - no network/AI call happens here. */
 export function TarotCardInfoModal({ visible, card, orientation, onClose }: Props) {
+  const { t } = useTranslation();
   if (!card) return null;
   const meaning = orientation === 'reversed' ? card.reversedGeneral : card.general;
 
@@ -43,10 +45,10 @@ export function TarotCardInfoModal({ visible, card, orientation, onClose }: Prop
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: spacing.md }}>
-            <Text variant="label" tone="muted">MEANING</Text>
+            <Text variant="label" tone="muted">{t('ui.TarotCardInfoModal.meaning')}</Text>
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.md }}>{meaning}</Text>
 
-            <Text variant="label" tone="muted">SYMBOLISM</Text>
+            <Text variant="label" tone="muted">{t('ui.TarotReportScreen.symbolism')}</Text>
             <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>{card.symbolism}</Text>
           </ScrollView>
         </View>

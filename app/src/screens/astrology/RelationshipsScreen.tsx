@@ -14,6 +14,7 @@ import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { ConsentType, Relationship, RelationshipConsent } from '../../types/astrology';
+import { useTranslation } from 'react-i18next';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -27,6 +28,7 @@ const CONSENT_LABELS: Record<ConsentType, string> = {
 };
 
 export function RelationshipsScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [state, setState] = useState<LoadState>('loading');
   const [relationship, setRelationship] = useState<Relationship | null>(null);
@@ -61,10 +63,10 @@ export function RelationshipsScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>Loading...</Text></PageContainer>;
+    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
   }
   if (state === 'error') {
-    return <PageContainer><EmptyState icon={Info} title="Couldn't load relationships" actionLabel="Retry" onAction={load} /></PageContainer>;
+    return <PageContainer><EmptyState icon={Info} title={t('ui.RelationshipsScreen.couldnTLoadRelationships')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;
   }
 
   return (
@@ -73,14 +75,14 @@ export function RelationshipsScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
       </View>
 
-      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md, marginBottom: spacing.lg }}>Our Cosmic Connection</Text>
+      <Text variant="title" weight="semibold" style={{ marginTop: spacing.md, marginBottom: spacing.lg }}>{t('ui.RelationshipsScreen.ourCosmicConnection')}</Text>
 
       {!relationship ? (
         <EmptyState
           icon={Heart}
-          title="No partner connected yet"
-          description="Connect with a partner to unlock a shared daily reading, built with full consent and privacy control."
-          actionLabel="Connect with partner"
+          title={t('ui.RelationshipsScreen.noPartnerConnectedYet')}
+          description={t('ui.RelationshipsScreen.connectWithAPartnerTo')}
+          actionLabel={t('ui.ConnectPartnerScreen.connectWithPartner')}
           onAction={() => navigation.navigate('ConnectPartner')}
         />
       ) : (
@@ -88,16 +90,16 @@ export function RelationshipsScreen() {
           <Card elevated>
             <View style={styles.row}>
               <Heart size={18} color={color.accent} strokeWidth={1.75} />
-              <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>Connected</Text>
+              <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.RelationshipsScreen.connected')}</Text>
             </View>
             <Button
-              label="View today's shared reading"
+              label={t('ui.RelationshipsScreen.viewTodaySSharedReading')}
               size="sm"
               style={{ marginTop: spacing.md }}
               onPress={() => navigation.navigate('RelationshipReport', { relationshipId: relationship.id, localDate: astrologyApi.todayLocalDate() })}
             />
             <Button
-              label="Reading history"
+              label={t('ui.RelationshipsScreen.readingHistory')}
               variant="secondary"
               size="sm"
               style={{ marginTop: spacing.sm }}
@@ -106,7 +108,7 @@ export function RelationshipsScreen() {
           </Card>
 
           <View style={{ marginTop: spacing.xl }}>
-            <SectionHeader title="Privacy & sharing" />
+            <SectionHeader title={t('ui.RelationshipsScreen.privacySharing')} />
             {consents.map((c) => (
               <Card key={c.consentType} style={styles.consentRow} onPress={() => toggleConsent(c.consentType, c.enabled)}>
                 <Text variant="bodySm" style={{ flex: 1 }}>{CONSENT_LABELS[c.consentType]}</Text>
@@ -120,13 +122,12 @@ export function RelationshipsScreen() {
           <Card style={{ marginTop: spacing.lg, flexDirection: 'row', alignItems: 'flex-start' }}>
             <Shield size={14} color={color.textMuted} strokeWidth={1.75} style={{ marginTop: 2 }} />
             <Text variant="caption" tone="muted" style={{ marginLeft: spacing.sm, flex: 1 }}>
-              Your personal daily reading stays private by default. The shared reading only uses what's
-              needed for a joint reflection - never your journal or private AI conversations.
+              {t('ui.RelationshipsScreen.yourPersonalDailyReadingStays')}
             </Text>
           </Card>
 
           <Button
-            label="Disconnect"
+            label={t('ui.RelationshipsScreen.disconnect')}
             variant="danger"
             fullWidth
             style={{ marginTop: spacing.lg }}
@@ -137,9 +138,9 @@ export function RelationshipsScreen() {
 
       <ConfirmationModal
         visible={confirmDisconnect}
-        title="Disconnect from your partner"
-        description="This stops future shared readings and notifications for both of you. You can reconnect with a new invitation later."
-        confirmLabel="Disconnect"
+        title={t('ui.RelationshipsScreen.disconnectFromYourPartner')}
+        description={t('ui.RelationshipsScreen.thisStopsFutureSharedReadings')}
+        confirmLabel={t('ui.RelationshipsScreen.disconnect')}
         destructive
         onConfirm={handleDisconnect}
         onCancel={() => setConfirmDisconnect(false)}

@@ -1,10 +1,9 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import {
   accountsById, findAccountByEmail, createGuestSession, guestSessionsById,
-  readingsById, tarotReadingsById, kundliChartsById, gemstoneReportsById, vastuReportsById, vastuPropertiesById,
-  birthProfiles, userIdentities, userPlans,
+  revokedTokens,
 } from '../data/store';
 import { Account } from '../types/auth';
 import { hashPassword, verifyPassword } from '../auth/passwords';
@@ -13,8 +12,10 @@ import { verifyTurnstileToken } from '../auth/turnstile';
 import { checkAuthRateLimit, recordAuthAttempt, clearAuthAttempts } from '../auth/rateLimit';
 import { migrateGuestDataToAccount } from '../auth/guestMigration';
 import { requireAccount } from '../auth/middleware';
+import { requestPasswordReset, completePasswordReset } from '../auth/passwordReset';
+import { reportError } from '../ops/alerts';
 import { sendVerificationEmail, consumeVerificationToken } from '../auth/emailVerification';
-import { deleteReadingImage } from '../palmistry/imageStorage';
+import { deleteAllUserData, exportAllUserData } from '../auth/accountData';
 import { getOrCreatePsuId } from '../auth/psuId';
 import { recordEvent } from '../events/eventTracker';
 
@@ -24,7 +25,7 @@ const credentialsSchema = z.object({
   turnstileToken: z.string().optional(),
 });
 
-function clientIp(req: any): string {
+function clientIp(req: Request): string {
   return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
 }
 
@@ -38,7 +39,7 @@ function accountPublicShape(account: Account) {
  * literal legacy 'demo-user'/x-demo-user fallback) - migrateGuestDataToAccount
  * is a no-op when there's nothing to move, and guestId === userId is
  * explicitly short-circuited there too. */
-function migrateIfGuest(req: any, newUserId: string) {
+function migrateIfGuest(req: Request, newUserId: string) {
   if (req.auth?.isGuest && req.auth.userId && req.auth.userId !== newUserId) {
     try {
       migrateGuestDataToAccount(req.auth.userId, newUserId);
@@ -105,7 +106,7 @@ export function buildAuthRouter() {
     sendVerificationEmail(account.id, account.email).catch((err) =>
       console.warn('[auth] verification email failed to send:', err));
 
-    res.json({ token: signUserToken(account.id), account: accountPublicShape(account) });
+    res.json({ token: signUserToken(account.id, account.tokenVersion ?? 0), account: accountPublicShape(account) });
   });
 
   router.post('/login', async (req, res) => {
@@ -137,7 +138,7 @@ export function buildAuthRouter() {
     migrateIfGuest(req, account.id);
     recordEvent({ userId: account.id, eventType: 'USER_LOGIN', feature: 'auth' });
 
-    res.json({ token: signUserToken(account.id), account: accountPublicShape(account) });
+    res.json({ token: signUserToken(account.id, account.tokenVersion ?? 0), account: accountPublicShape(account) });
   });
 
   // Explicit retry endpoint for a migration that may have failed silently
@@ -218,45 +219,60 @@ export function buildAuthRouter() {
     res.json({ isGuest: false, account: accountPublicShape(account) });
   });
 
-  // Stateless JWTs: there is no server-side session to invalidate, so this
-  // is a no-op that exists for API symmetry and so a future server-side
-  // token blacklist (if ever needed) has an obvious place to live.
-  router.post('/logout', (_req, res) => {
+  // --- Password reset ---------------------------------------------------------
+  // forgot-password always answers the same generic success (never reveals whether an email has an account) and is
+  // rate limited per ip+email like login. The emailed link opens /reset-password/ (a small static page served by
+  // this server), which posts the new password to /auth/reset-password.
+  const forgotSchema = z.object({ email: z.string().trim().toLowerCase().email().max(254), turnstileToken: z.string().optional() });
+  router.post('/forgot-password', async (req, res) => {
+    const parsed = forgotSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'Enter a valid email address.', code: 'INVALID_INPUT' });
+    const { email, turnstileToken } = parsed.data;
+    const ip = clientIp(req);
+    if (!checkAuthRateLimit(ip, email)) return res.status(429).json({ error: 'Too many attempts. Please try again later.', code: 'RATE_LIMITED' });
+    recordAuthAttempt(ip, email);
+    const turnstile = await verifyTurnstileToken(turnstileToken, ip);
+    if (!turnstile.ok) return res.status(400).json({ error: 'Verification failed - please retry.', code: 'TURNSTILE_FAILED' });
+    requestPasswordReset(email).catch((err) => reportError('forgot-password', err));
+    res.json({ ok: true });
+  });
+
+  const resetSchema = z.object({ token: z.string().min(20).max(200), password: z.string().min(8).max(200) });
+  router.post('/reset-password', async (req, res) => {
+    const parsed = resetSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'Use a password of at least 8 characters.', code: 'INVALID_INPUT' });
+    const ip = clientIp(req);
+    if (!checkAuthRateLimit(ip, 'reset')) return res.status(429).json({ error: 'Too many attempts. Please try again later.', code: 'RATE_LIMITED' });
+    recordAuthAttempt(ip, 'reset');
+    const result = await completePasswordReset(parsed.data.token, parsed.data.password);
+    if (result !== 'ok') return res.status(400).json({ error: 'This reset link is invalid or has expired. Request a new one.', code: 'INVALID_TOKEN' });
+    res.json({ ok: true });
+  });
+
+  // Revokes just the token used for this request (by its JWT id), so signing out on one device never signs the
+  // user out of their other devices.
+  router.post('/logout', (req, res) => {
+    const { jti, exp } = req.auth ?? {};
+    if (jti) revokedTokens.set(jti, { jti, exp: exp ?? 0 }); // this device's session ends; other devices stay signed in
     res.json({ ok: true });
   });
 
   router.get('/export', requireAccount, (req, res) => {
     const userId = req.auth!.userId;
     res.json({
+      exportedAt: new Date().toISOString(),
       account: accountPublicShape(accountsById.get(userId)!),
-      birthProfile: birthProfiles.get(userId) ?? null,
-      identity: userIdentities.get(userId) ?? null,
-      palmReadings: [...readingsById.values()].filter((r) => r.userId === userId),
-      tarotReadings: [...tarotReadingsById.values()].filter((r) => r.userId === userId),
-      kundliCharts: [...kundliChartsById.values()].filter((r) => r.userId === userId),
-      gemstoneReports: [...gemstoneReportsById.values()].filter((r) => r.userId === userId),
-      vastuReports: [...vastuReportsById.values()].filter((r) => r.userId === userId),
+      data: exportAllUserData(userId),
     });
   });
 
   router.delete('/account', requireAccount, (req, res) => {
     const userId = req.auth!.userId;
-
-    for (const r of [...readingsById.values()].filter((r) => r.userId === userId)) {
-      deleteReadingImage(r.id);
-      readingsById.delete(r.id);
-    }
-    for (const r of [...tarotReadingsById.values()].filter((r) => r.userId === userId)) tarotReadingsById.delete(r.id);
-    for (const r of [...kundliChartsById.values()].filter((r) => r.userId === userId)) kundliChartsById.delete(r.id);
-    for (const r of [...gemstoneReportsById.values()].filter((r) => r.userId === userId)) gemstoneReportsById.delete(r.id);
-    for (const r of [...vastuReportsById.values()].filter((r) => r.userId === userId)) vastuReportsById.delete(r.id);
-    for (const r of [...vastuPropertiesById.values()].filter((r) => r.userId === userId)) vastuPropertiesById.delete(r.id);
-    birthProfiles.delete(userId);
-    userIdentities.delete(userId);
-    userPlans.delete(userId);
+    // Revoke the session first so the token that asked for deletion cannot be used to recreate data afterwards.
+    if (req.auth!.jti) revokedTokens.set(req.auth!.jti, { jti: req.auth!.jti, exp: req.auth!.exp ?? 0 });
+    const removed = deleteAllUserData(userId);
     accountsById.delete(userId);
-
-    res.json({ ok: true });
+    res.json({ ok: true, removed });
   });
 
   return router;

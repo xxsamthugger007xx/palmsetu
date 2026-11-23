@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
@@ -40,7 +40,7 @@ function summarizeTarotReading(reading: TarotReading): string {
  * exists yet. This previously used a hardcoded DEMO_USER constant that ignored
  * this header entirely, which silently broke multi-user testing/entitlement
  * checks for tarot specifically while every other feature already read it. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -87,7 +87,7 @@ const journalSchema = z.object({ content: z.string().trim().min(1).max(5000) });
 const askSchema = z.object({ question: z.string().trim().min(1).max(1000) });
 const dailySchema = z.object({ localDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
 
-function ownedReadingOr404(res: any, userId: string, readingId: string): TarotReading | undefined {
+function ownedReadingOr404(res: Response, userId: string, readingId: string): TarotReading | undefined {
   const reading = tarotReadingsById.get(readingId);
   if (!reading || reading.userId !== userId) {
     res.status(404).json({ error: 'Reading not found' });
@@ -409,8 +409,7 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     const categoryFilter = categorySchema.safeParse(req.query.category);
     const searchQuery = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
 
-    const all = [...tarotReadingsById.values()]
-      .filter((r) => r.userId === userId)
+    const all = tarotReadingsById.valuesForUser(userId)
       .filter((r) => !savedOnly || r.saved)
       .filter((r) => !categoryFilter.success || r.readingType === categoryFilter.data)
       .filter((r) => !searchQuery || searchableText(r).includes(searchQuery))

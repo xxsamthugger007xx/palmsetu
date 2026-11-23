@@ -40,9 +40,9 @@ export function LanguageSelectScreen() {
         <View style={styles.iconWrap}>
           <Globe size={22} color={color.accent} strokeWidth={1.75} />
         </View>
-        <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>Choose your language</Text>
+        <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.LanguageSelectScreen.chooseYourLanguage')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, textAlign: 'center' }}>
-          You can change this anytime from your profile.
+          {t('ui.LanguageSelectScreen.youCanChangeThisAnytime')}
         </Text>
       </View>
 
@@ -51,7 +51,7 @@ export function LanguageSelectScreen() {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder={t('language.searchPlaceholder')}
+          placeholder={t('language.searchPlaceholder')} accessibilityLabel={t('language.searchPlaceholder')}
           placeholderTextColor={color.textMuted}
           style={styles.searchInput}
         />
@@ -73,7 +73,7 @@ export function LanguageSelectScreen() {
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text variant="bodySm" weight="medium">{item.name}</Text>
                     {!translated && (
-                      <Text variant="caption" tone="muted" style={{ marginLeft: spacing.xs }}>(English UI)</Text>
+                      <Text variant="caption" tone="muted" style={{ marginLeft: spacing.xs }}>{t('ui.LanguageSelectScreen.englishUi')}</Text>
                     )}
                   </View>
                   <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{item.nativeName}</Text>

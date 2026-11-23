@@ -289,8 +289,9 @@ export const wellnessApi = {
     request<{ habits: PredefinedHabit[] }>(BASE_URL, '/wellness/habits/predefined'),
   createHabit: (payload: { name: string; description?: string; frequency: HabitFrequency; specificDays?: number[]; reminderTime?: string | null; target?: string }) =>
     request<{ habit: Habit }>(BASE_URL, '/wellness/habits', { method: 'POST', body: JSON.stringify(payload) }),
-  getHabits: () =>
-    request<{ habits: Habit[]; maxFreeHabits: number; tier: 'free' | 'premium' }>(BASE_URL, '/wellness/habits'),
+  getHabits: (localDate?: string) =>
+    request<{ habits: Habit[]; maxFreeHabits: number; tier: 'free' | 'premium'; completedHabitIds?: string[] }>(
+      BASE_URL, `/wellness/habits${localDate ? `?localDate=${localDate}` : ''}`),
   updateHabit: (id: string, payload: Partial<{ name: string; description?: string; frequency: HabitFrequency; specificDays?: number[]; reminderTime?: string | null; target?: string }>) =>
     request<{ habit: Habit }>(BASE_URL, `/wellness/habits/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteHabit: (id: string) =>

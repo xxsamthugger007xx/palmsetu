@@ -49,6 +49,10 @@ export interface JournalEntry {
    * record, which keeps autosave trivial (just PUT the same id repeatedly). */
   isDraft: boolean;
   lastSavedAt: string;
+  /** The writer's own calendar day (YYYY-MM-DD) when the entry was created. Streaks and "journaled today" use this
+   * instead of the UTC date of createdAt, which is the wrong day for hours each day for anyone far from UTC. Absent on
+   * entries created before this field existed (they fall back to the UTC date). */
+  localDate?: string;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -349,4 +353,9 @@ export interface MonthlyReport {
   topMoodInfluenceThemes: { label: string; count: number }[];
   journalEntryCount: number;
   goalsCompleted: number;
+}
+
+/** Calendar day an entry counts toward: the writer's local day if recorded, else the UTC date of createdAt. */
+export function journalDay(e: { localDate?: string; createdAt: string }): string {
+  return e.localDate ?? e.createdAt.slice(0, 10);
 }

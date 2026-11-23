@@ -1,4 +1,6 @@
-import { Router } from 'express';
+import { requestLocalDate, HeaderCarrier } from '../util/localDate';
+import { journalDay } from '../types/wellness';
+import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
@@ -34,7 +36,7 @@ import { recordWellnessEvent } from '../wellness/analytics';
 
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
-function currentUserId(req: any): string {
+function currentUserId(req: Request): string {
   // Prefers the real resolved auth context (see auth/middleware.ts's
   // attachAuthContext, mounted globally in index.ts) - falls back to the
   // legacy header read directly only for a test harness that builds this
@@ -43,8 +45,9 @@ function currentUserId(req: any): string {
   return (req.headers['x-demo-user'] as string) || 'demo-user';
 }
 
-function localDateToday(): string {
-  return new Date().toISOString().slice(0, 10);
+/** The caller's own "today" (X-Local-Date header from the app, validated), not the server's UTC date. */
+function localDateToday(req: HeaderCarrier): string {
+  return requestLocalDate(req);
 }
 
 /** Pure UTC date-string arithmetic, deliberately never mixed with local-time
@@ -115,8 +118,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   });
 
   function userMoodEntries(userId: string): MoodEntry[] {
-    return [...moodEntriesByUserDate.values()]
-      .filter((e) => e.userId === userId)
+    return moodEntriesByUserDate.valuesForUser(userId)
       .sort((a, b) => a.localDate.localeCompare(b.localDate));
   }
 
@@ -232,6 +234,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
       favorite: false,
       isDraft: parsed.data.isDraft ?? false,
       lastSavedAt: now,
+      localDate: localDateToday(req),
       createdAt: now,
       updatedAt: now,
     };
@@ -240,7 +243,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     res.status(201).json({ entry });
   });
 
-  function ownedJournalEntry(req: any, id: string): JournalEntry | undefined {
+  function ownedJournalEntry(req: Request, id: string): JournalEntry | undefined {
     const entry = journalEntriesById.get(id);
     if (!entry || entry.userId !== currentUserId(req) || entry.deletedAt) return undefined;
     return entry;
@@ -274,7 +277,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/journal', (req, res) => {
     const userId = currentUserId(req);
-    let entries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt && !e.isDraft);
+    let entries = journalEntriesById.valuesForUser(userId).filter((e) => !e.deletedAt && !e.isDraft);
 
     const { q, type, from, to, favoriteOnly } = req.query as Record<string, string | undefined>;
     if (q) {
@@ -282,8 +285,10 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
       entries = entries.filter((e) => e.content.toLowerCase().includes(needle) || e.title?.toLowerCase().includes(needle));
     }
     if (type) entries = entries.filter((e) => e.type === type);
-    if (from) entries = entries.filter((e) => e.createdAt >= from);
-    if (to) entries = entries.filter((e) => e.createdAt <= to);
+    // A plain date (YYYY-MM-DD) filters by the writer's local day; a full timestamp keeps filtering by createdAt.
+    const isDay = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v);
+    if (from) entries = entries.filter((e) => (isDay(from) ? journalDay(e) >= from : e.createdAt >= from));
+    if (to) entries = entries.filter((e) => (isDay(to) ? journalDay(e) <= to : e.createdAt <= to));
     if (favoriteOnly === 'true') entries = entries.filter((e) => e.favorite);
 
     entries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -292,8 +297,8 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/journal/streak', (req, res) => {
     const userId = currentUserId(req);
-    const entries = [...journalEntriesById.values()].filter((e) => e.userId === userId && !e.deletedAt && !e.isDraft);
-    const daysWithEntry = new Set(entries.map((e) => e.createdAt.slice(0, 10)));
+    const entries = journalEntriesById.valuesForUser(userId).filter((e) => !e.deletedAt && !e.isDraft);
+    const daysWithEntry = new Set(entries.map((e) => journalDay(e)));
 
     if (daysWithEntry.size === 0) {
       return res.json({ hasData: false, currentStreak: 0, message: 'No journal entries yet - every entry counts, no pressure.' });
@@ -303,7 +308,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     // "in progress" that hasn't been broken by today simply not having
     // happened yet is not treated as already broken).
     let streak = 0;
-    let cursor = localDateToday();
+    let cursor = localDateToday(req);
     if (!daysWithEntry.has(cursor)) {
       cursor = addDaysToDateString(cursor, -1); // allow "yesterday" as the streak's current anchor
     }
@@ -339,7 +344,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
     const tier = getUserTier(userId);
     if (tier !== 'premium') {
-      const today = localDateToday();
+      const today = localDateToday(req);
       const rec = journalAiDailyCountByUser.get(userId);
       const countToday = rec && rec.date === today ? rec.count : 0;
       if (countToday >= FREE_JOURNAL_AI_DAILY_LIMIT) {
@@ -411,7 +416,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/breathing/stats', (req, res) => {
     const userId = currentUserId(req);
-    const sessions = [...breathingSessionsById.values()].filter((s) => s.userId === userId);
+    const sessions = breathingSessionsById.valuesForUser(userId);
     if (sessions.length === 0) {
       return res.json({ hasData: false, totalSessions: 0, completedSessions: 0, totalMinutes: 0 });
     }
@@ -444,7 +449,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     const parsed = habitCreateSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
     const userId = currentUserId(req);
-    const activeCount = [...habitsById.values()].filter((h) => h.userId === userId && h.active).length;
+    const activeCount = habitsById.valuesForUser(userId).filter((h) => h.active).length;
     if (isHabitLimitReached(userId, activeCount)) {
       return res.status(403).json({ error: `Free plan allows ${MAX_FREE_HABITS} active habits. Upgrade for unlimited habits.` });
     }
@@ -465,7 +470,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     res.status(201).json({ habit });
   });
 
-  function ownedHabit(req: any, id: string): Habit | undefined {
+  function ownedHabit(req: Request, id: string): Habit | undefined {
     const habit = habitsById.get(id);
     if (!habit || habit.userId !== currentUserId(req)) return undefined;
     return habit;
@@ -473,8 +478,12 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/habits', (req, res) => {
     const userId = currentUserId(req);
-    const habits = [...habitsById.values()].filter((h) => h.userId === userId && h.active);
-    res.json({ habits, maxFreeHabits: MAX_FREE_HABITS, tier: getUserTier(userId) });
+    const habits = habitsById.valuesForUser(userId).filter((h) => h.active);
+    // With ?localDate=YYYY-MM-DD, also report which habits are already checked off that day, so the app can show
+    // the real state after a restart/refocus instead of starting every habit unchecked.
+    const localDate = typeof req.query.localDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(req.query.localDate) ? req.query.localDate : null;
+    const completedHabitIds = localDate ? habits.filter((h) => habitCompletionsByKey.has(`${h.id}:${localDate}`)).map((h) => h.id) : [];
+    res.json({ habits, maxFreeHabits: MAX_FREE_HABITS, tier: getUserTier(userId), completedHabitIds });
   });
 
   router.put('/habits/:id', (req, res) => {
@@ -540,7 +549,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     }
     // Current streak: count back from today/yesterday, same forgiving anchor as journal streak.
     let current = 0;
-    let cursor = localDateToday();
+    let cursor = localDateToday(req);
     if (!completedDates.has(cursor)) cursor = addDaysToDateString(cursor, -1);
     while (completedDates.has(cursor)) {
       current += 1;
@@ -650,7 +659,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/challenges/progress/mine', (req, res) => {
     const userId = currentUserId(req);
-    const progress = [...challengeProgressByKey.values()].filter((p) => p.userId === userId);
+    const progress = challengeProgressByKey.valuesForUser(userId);
     res.json({ progress });
   });
 
@@ -701,8 +710,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/meditation/recent', (req, res) => {
     const userId = currentUserId(req);
-    const sessions = [...meditationSessionsById.values()]
-      .filter((s) => s.userId === userId)
+    const sessions = meditationSessionsById.valuesForUser(userId)
       .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
       .slice(0, 10);
     res.json({ sessions });
@@ -749,7 +757,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     res.status(201).json({ goal });
   });
 
-  function ownedGoal(req: any, id: string): WellnessGoal | undefined {
+  function ownedGoal(req: Request, id: string): WellnessGoal | undefined {
     const goal = wellnessGoalsById.get(id);
     if (!goal || goal.userId !== currentUserId(req)) return undefined;
     return goal;
@@ -758,7 +766,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   router.get('/goals', (req, res) => {
     const userId = currentUserId(req);
     const { status } = req.query as { status?: string };
-    let goals = [...wellnessGoalsById.values()].filter((g) => g.userId === userId);
+    let goals = wellnessGoalsById.valuesForUser(userId);
     if (status) goals = goals.filter((g) => g.status === status);
     res.json({ goals });
   });
@@ -777,7 +785,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     const goal = ownedGoal(req, req.params.id);
     if (!goal) return res.status(404).json({ error: 'Goal not found.' });
     const note = typeof req.body?.note === 'string' ? req.body.note.slice(0, 500) : undefined;
-    goal.progress.push({ localDate: localDateToday(), note, userReported: true, createdAt: new Date().toISOString() });
+    goal.progress.push({ localDate: localDateToday(req), note, userReported: true, createdAt: new Date().toISOString() });
     wellnessGoalsById.set(goal.id, goal);
     res.json({ goal });
   });
@@ -805,7 +813,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   // =========================================================================
   router.get('/inspiration/today', (req, res) => {
     const userId = currentUserId(req);
-    const today = localDateToday();
+    const today = localDateToday(req);
     let history = inspirationHistoryByUser.get(userId) ?? { userId, shown: [], todayContentId: null, todayLocalDate: null };
 
     if (history.todayLocalDate === today && history.todayContentId) {
@@ -921,17 +929,17 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   function buildWellnessContext(userId: string): string {
     const parts: string[] = [];
-    const moods = [...moodEntriesByUserDate.values()].filter((e) => e.userId === userId).slice(-7);
+    const moods = moodEntriesByUserDate.valuesForUser(userId).slice(-7);
     if (moods.length > 0) {
       parts.push(`Recent mood check-ins (last ${moods.length}): ${moods.map((m) => m.mood).join(', ')}.`);
     }
-    const habits = [...habitsById.values()].filter((h) => h.userId === userId && h.active);
+    const habits = habitsById.valuesForUser(userId).filter((h) => h.active);
     if (habits.length > 0) parts.push(`Active habits: ${habits.map((h) => h.name).join(', ')}.`);
-    const challenges = [...challengeProgressByKey.values()].filter((c) => c.userId === userId && c.status === 'active');
+    const challenges = challengeProgressByKey.valuesForUser(userId).filter((c) => c.status === 'active');
     if (challenges.length > 0) parts.push(`Active challenges: ${challenges.map((c) => `${c.challengeId} (day ${c.currentDay})`).join(', ')}.`);
-    const goals = [...wellnessGoalsById.values()].filter((g) => g.userId === userId && g.status === 'active');
+    const goals = wellnessGoalsById.valuesForUser(userId).filter((g) => g.status === 'active');
     if (goals.length > 0) parts.push(`Active goals: ${goals.map((g) => g.title).join(', ')}.`);
-    const meditations = [...meditationSessionsById.values()].filter((m) => m.userId === userId).slice(-5);
+    const meditations = meditationSessionsById.valuesForUser(userId).slice(-5);
     if (meditations.length > 0) parts.push(`Recently played meditation/sleep content ids: ${meditations.map((m) => m.contentId).join(', ')}.`);
     return parts.length > 0 ? `Context about this user (summaries only, never raw journal text):\n${parts.join('\n')}` : '';
   }
@@ -954,7 +962,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
     const tier = getUserTier(userId);
     const dailyLimit = tier === 'premium' ? PREMIUM_AI_COMPANION_DAILY_MESSAGES : FREE_AI_COMPANION_DAILY_MESSAGES;
-    const today = localDateToday();
+    const today = localDateToday(req);
     const rec = aiCompanionDailyCountByUser.get(userId);
     const countToday = rec && rec.date === today ? rec.count : 0;
     if (countToday >= dailyLimit) {
@@ -1035,7 +1043,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
    * selection cache below), while still varying day to day.
    */
   function selectTodaysQuestions(userId: string, today: string) {
-    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId);
+    const answers = discoveryAnswersByKey.valuesForUser(userId);
     const lastAnsweredByQuestion = new Map<string, string>();
     for (const a of answers) {
       const prev = lastAnsweredByQuestion.get(a.questionId);
@@ -1059,7 +1067,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/discovery/today', (req, res) => {
     const userId = currentUserId(req);
-    const today = localDateToday();
+    const today = localDateToday(req);
     const key = `${userId}:${today}`;
     let selection = discoveryQuestionSelectionsByKey.get(key);
 
@@ -1140,7 +1148,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   router.get('/discovery/history', (req, res) => {
     const userId = currentUserId(req);
     const { from, to } = req.query as { from?: string; to?: string };
-    let answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId);
+    let answers = discoveryAnswersByKey.valuesForUser(userId);
     if (from) answers = answers.filter((a) => a.localDate >= from);
     if (to) answers = answers.filter((a) => a.localDate <= to);
     answers.sort((a, b) => a.localDate.localeCompare(b.localDate));
@@ -1149,8 +1157,8 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/discovery/recommendations', (req, res) => {
     const userId = currentUserId(req);
-    const today = localDateToday();
-    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId && a.localDate === today);
+    const today = localDateToday(req);
+    const answers = discoveryAnswersByKey.valuesForUser(userId).filter((a) => a.localDate === today);
     res.json({ recommendations: buildRecommendations(answers), localDate: today });
   });
 
@@ -1161,9 +1169,9 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   // when the user is done with today's Discovery session.
   router.post('/discovery/insight', async (req, res) => {
     const userId = currentUserId(req);
-    const today = localDateToday();
+    const today = localDateToday(req);
     const mood = moodEntriesByUserDate.get(`${userId}:${today}`);
-    const answers = [...discoveryAnswersByKey.values()].filter((a) => a.userId === userId && a.localDate === today);
+    const answers = discoveryAnswersByKey.valuesForUser(userId).filter((a) => a.localDate === today);
     const result = await generateTodaysInsight(aiProvider, userId, today, mood, answers);
     res.json(result);
   });
@@ -1173,7 +1181,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
   // =========================================================================
   router.get('/reports/weekly', (req, res) => {
     const userId = currentUserId(req);
-    const requested = (req.query.weekStart as string | undefined) ?? localDateToday();
+    const requested = (req.query.weekStart as string | undefined) ?? localDateToday(req);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(requested)) return res.status(400).json({ error: 'weekStart must be YYYY-MM-DD.' });
     const weekStart = mondayOf(requested);
     const key = `${userId}:${weekStart}`;
@@ -1188,7 +1196,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
 
   router.get('/reports/monthly', (req, res) => {
     const userId = currentUserId(req);
-    const month = (req.query.month as string | undefined) ?? localDateToday().slice(0, 7);
+    const month = (req.query.month as string | undefined) ?? localDateToday(req).slice(0, 7);
     if (!/^\d{4}-\d{2}$/.test(month)) return res.status(400).json({ error: 'month must be YYYY-MM.' });
     const key = `${userId}:${month}`;
 

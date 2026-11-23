@@ -1,4 +1,6 @@
+import i18n from '../i18n';
 import { assistantApi, SendMessageResponse } from './assistantApi';
+import { deviceLocalDate, getAuthToken } from './apiRequest';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -11,7 +13,7 @@ export interface StreamHandlers {
   onStage?: (stage: StageEvent) => void;
   onChunk?: (text: string) => void;
   onDone?: (result: SendMessageResponse) => void;
-  onError?: (message: string) => void;
+  onError?: (message: string, code?: string) => void;
 }
 
 export interface StreamHandle {
@@ -50,7 +52,7 @@ export function streamAssistantMessage(
     assistantApi
       .sendMessage(conversationId, message, screenContext)
       .then((res) => handlers.onDone?.(res))
-      .catch((err) => handlers.onError?.(err?.message ?? 'Something went wrong. Please try again.'));
+      .catch((err) => handlers.onError?.(err?.message ?? i18n.t('errors.generic') as string, err?.code));
   };
 
   const handleLine = (line: string) => {
@@ -85,7 +87,7 @@ export function streamAssistantMessage(
     } else if (obj.type === 'error') {
       if (receivedAnyChunk) {
         settled = true;
-        handlers.onError?.(obj.message ?? 'Something went wrong. Please try again.');
+        handlers.onError?.(obj.message ?? (i18n.t('errors.generic') as string), obj.code);
       } else {
         fallback();
       }
@@ -103,6 +105,10 @@ export function streamAssistantMessage(
 
   xhr.open('POST', `${BASE_URL}/assistant/message/stream`);
   xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('X-Local-Date', deviceLocalDate());
+  // Without this the stream ran as an anonymous shared user instead of the signed-in/guest session.
+  const authToken = getAuthToken();
+  if (authToken) xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
   xhr.timeout = 30_000;
 
   xhr.onprogress = drain;

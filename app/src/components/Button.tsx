@@ -3,6 +3,9 @@ import { ActivityIndicator, Pressable, StyleSheet, ViewStyle } from 'react-nativ
 import { LucideIcon } from 'lucide-react-native';
 import { color, radius, spacing } from '../theme/tokens';
 import { Text } from './Text';
+import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { isRtlLayout } from '../utils/rtl';
 
 type Props = {
   label: string;
@@ -29,19 +32,40 @@ export function PrimaryButton(props: Omit<Props, 'variant'>) {
 export function SecondaryButton(props: Omit<Props, 'variant'>) {
   return <Button {...props} variant="secondary" />;
 }
+// Spoken name for icon-only buttons, by the lucide icon's name. Screens can always override with accessibilityLabel.
+const ICON_LABEL_KEYS: Record<string, string> = {
+  ChevronLeft: 'a11y.back', ChevronRight: 'a11y.back', X: 'a11y.close', Trash2: 'a11y.delete', History: 'a11y.history',
+  Share2: 'a11y.share', Bookmark: 'a11y.bookmark', Pencil: 'a11y.edit', SquarePen: 'a11y.newConversation',
+  Send: 'a11y.send', RotateCcw: 'a11y.retry', Info: 'a11y.info', Heart: 'a11y.favorite', Bell: 'a11y.notifications',
+  Search: 'a11y.search',
+};
+
 export function IconButton({
-  icon: Icon,
+  icon,
   onPress,
   size = 20,
   tone = color.textPrimary,
+  accessibilityLabel,
 }: {
   icon: LucideIcon;
   onPress?: () => void;
   size?: number;
   tone?: string;
+  accessibilityLabel?: string;
 }) {
+  const { t } = useTranslation();
+  // In a right-to-left layout "back" points right, so swap the chevron instead of leaving it pointing the wrong way.
+  const Icon: LucideIcon = isRtlLayout() ? (icon === ChevronLeft ? ChevronRight : icon === ChevronRight ? ChevronLeft : icon) : icon;
+  const name = (icon as unknown as { displayName?: string }).displayName ?? '';
+  const label = accessibilityLabel ?? t(ICON_LABEL_KEYS[name] ?? 'a11y.button');
   return (
-    <Pressable onPress={onPress} hitSlop={10} style={({ pressed }) => [iconStyles.base, pressed && iconStyles.pressed]}>
+    <Pressable
+      onPress={onPress}
+      hitSlop={10}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [iconStyles.base, pressed && iconStyles.pressed]}
+    >
       <Icon size={size} color={tone} strokeWidth={1.75} />
     </Pressable>
   );
@@ -62,6 +86,9 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !!(disabled || loading), busy: !!loading }}
       style={({ pressed }) => [
         styles.base,
         size === 'sm' && styles.sm,

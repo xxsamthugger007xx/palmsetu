@@ -90,7 +90,7 @@ describe('routes/tarot - history full-text search', () => {
     const a = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'love', spreadType: 'love-relationship' });
     await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'career', spreadType: 'career-finance' });
 
-    const res = await request(app).get('/tarot/readings?q=love').set('x-demo-user', user);
+    const res = await request(app).get('/tarot/readings?q=love%20relationship').set('x-demo-user', user);
     expect(res.body.items.map((r: any) => r.id)).toEqual([a.body.id]);
   });
 

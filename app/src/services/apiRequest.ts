@@ -10,10 +10,22 @@
  * every thrown error here carries an `isNetworkError` flag screens can
  * branch on instead of dumping err.message straight into the UI.
  */
+import i18n from '../i18n';
 export interface ApiError extends Error {
   status?: number;
   code?: string;
   isNetworkError: boolean;
+  /** Extra fields some endpoints attach (palm photo validation details, purchase cancellation, ...). */
+  [extra: string]: any;
+}
+
+/** Narrow a caught value to an ApiError so screens can read .status/.code/.isNetworkError without `any`. Anything that
+ * isn't an Error (e.g. a thrown string) is wrapped, so .message is always a string. */
+export function asApiError(e: unknown): ApiError {
+  if (e instanceof Error) return e as ApiError;
+  const wrapped = new Error(typeof e === 'string' ? e : 'Unknown error') as ApiError;
+  wrapped.isNetworkError = false;
+  return wrapped;
 }
 
 // Set by AuthContext whenever the current session token (real account or
@@ -23,6 +35,13 @@ export interface ApiError extends Error {
 // single call, so a token refresh/logout takes effect on the very next
 // request with no extra wiring needed at each call site.
 let currentAuthToken: string | null = null;
+
+// Set by AuthContext: called when the server says the stored session is dead (expired, signed out elsewhere, account
+// deleted, password reset). It swaps in a fresh guest session so the app keeps working instead of showing errors.
+let sessionInvalidHandler: (() => void | Promise<void>) | null = null;
+export function setSessionInvalidHandler(fn: (() => void | Promise<void>) | null): void {
+  sessionInvalidHandler = fn;
+}
 
 export function setAuthToken(token: string | null): void {
   currentAuthToken = token;
@@ -41,8 +60,24 @@ export function getAuthToken(): string | null {
   return currentAuthToken;
 }
 
-export const NETWORK_ERROR_MESSAGE = 'Unable to connect. Check your connection and try again.';
-export const TIMEOUT_ERROR_MESSAGE = 'This is taking too long. Check your connection and try again.';
+/** The device's own calendar date (YYYY-MM-DD). Sent on every request so the server knows the user's "today" instead
+ * of assuming UTC - otherwise streaks and "done today" flip at the wrong hour for anyone far from UTC. */
+export function deviceLocalDate(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+// Looked up when an error is created (not at import time) so they follow the user's chosen language.
+export const networkErrorMessage = () => i18n.t('errors.network') as string;
+export const timeoutErrorMessage = () => i18n.t('errors.timeout') as string;
+// Server errors the app has its own translated wording for, by error code (the server always answers in English).
+const TRANSLATED_ERROR_CODES: Record<string, string> = {
+  AI_BUDGET_EXCEEDED: 'errors.aiLimit',
+  SESSION_INVALID: 'errors.sessionExpired',
+  RATE_LIMITED: 'errors.rateLimited',
+};
 
 // No fetch() call in this app had a timeout before this - a stalled
 // connection (flaky wifi, a server that accepted the TCP connection but
@@ -53,7 +88,7 @@ export const TIMEOUT_ERROR_MESSAGE = 'This is taking too long. Check your connec
 const REQUEST_TIMEOUT_MS = 15_000;
 
 function makeNetworkError(cause: unknown): ApiError {
-  const error = new Error(NETWORK_ERROR_MESSAGE) as ApiError;
+  const error = new Error(networkErrorMessage()) as ApiError;
   error.isNetworkError = true;
   if (cause instanceof Error && cause.message) {
     // Keep the raw cause out of the user-facing message, but preserve it
@@ -64,7 +99,7 @@ function makeNetworkError(cause: unknown): ApiError {
 }
 
 function makeTimeoutError(): ApiError {
-  const error = new Error(TIMEOUT_ERROR_MESSAGE) as ApiError;
+  const error = new Error(timeoutErrorMessage()) as ApiError;
   error.isNetworkError = true;
   return error;
 }
@@ -78,6 +113,7 @@ export async function request<T>(baseUrl: string, path: string, options?: Reques
     res = await fetch(`${baseUrl}${path}`, {
       headers: {
         'Content-Type': 'application/json',
+        'X-Local-Date': deviceLocalDate(),
         ...(currentAuthToken ? { Authorization: `Bearer ${currentAuthToken}` } : {}),
       },
       ...options,
@@ -97,7 +133,11 @@ export async function request<T>(baseUrl: string, path: string, options?: Reques
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    const error = new Error(body.error ?? `Request failed: ${res.status}`) as ApiError;
+    if (res.status === 401 && body.code === 'SESSION_INVALID' && currentAuthToken && sessionInvalidHandler) {
+      void sessionInvalidHandler();
+    }
+    const translated = body.code && TRANSLATED_ERROR_CODES[body.code] ? (i18n.t(TRANSLATED_ERROR_CODES[body.code]) as string) : null;
+    const error = new Error(translated ?? body.error ?? `Request failed: ${res.status}`) as ApiError;
     error.status = res.status;
     error.code = body.code;
     error.isNetworkError = false;
