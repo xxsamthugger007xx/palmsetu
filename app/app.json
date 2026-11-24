@@ -41,17 +41,14 @@
       "expo-web-browser",
       "@sentry/react-native"
     ],
-    "extra": {
-      "eas": {
-        "projectId": "c5e65383-30ac-42e0-97cf-ce69e45916a0"
-      }
-    },
-    "owner": "sanskarmalik",
+    "owner": "samthugger7",
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/c5e65383-30ac-42e0-97cf-ce69e45916a0"
+    "extra": {
+      "eas": {
+        "projectId": "438b283d-07a0-41cf-83b2-bba8a4bbd44b"
+      }
     }
   }
 }

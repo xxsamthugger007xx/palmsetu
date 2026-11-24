@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   BackHandler,
+  Image,
+  ImageSourcePropType,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -16,11 +18,12 @@ import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { useOnboardingIntro } from '../../context/OnboardingIntroContext';
-import { PalmHeroVisual } from './intro/PalmHeroVisual';
-import { TarotHeroVisual } from './intro/TarotHeroVisual';
 import { ChatHeroVisual } from './intro/ChatHeroVisual';
 
 const PAGE_COUNT = 3;
+// Illustration for the first intro screen (palm + zodiac wheel). The chat screen still uses a drawn visual until its art arrives.
+const INTRO_PALM_IMAGE = require('../../../assets/intro/intro-palm.webp');
+const INTRO_TAROT_IMAGE = require('../../../assets/intro/intro-tarot.webp');
 
 export function IntroScreen() {
   const { t } = useTranslation();
@@ -76,9 +79,9 @@ export function IntroScreen() {
     }
   };
 
-  const pages = [
-    { Hero: PalmHeroVisual, badge: t('intro.screen1Badge'), headline: t('intro.screen1Headline'), body: t('intro.screen1Body'), alt: t('intro.screen1ImageAlt') },
-    { Hero: TarotHeroVisual, badge: t('intro.screen2Badge'), headline: t('intro.screen2Headline'), body: t('intro.screen2Body'), alt: t('intro.screen2ImageAlt') },
+  const pages: { Hero?: React.ComponentType<{ size?: number }>; image?: ImageSourcePropType; badge: string; headline: string; body: string; alt: string }[] = [
+    { image: INTRO_PALM_IMAGE, badge: t('intro.screen1Badge'), headline: t('intro.screen1Headline'), body: t('intro.screen1Body'), alt: t('intro.screen1ImageAlt') },
+    { image: INTRO_TAROT_IMAGE, badge: t('intro.screen2Badge'), headline: t('intro.screen2Headline'), body: t('intro.screen2Body'), alt: t('intro.screen2ImageAlt') },
     { Hero: ChatHeroVisual, badge: t('intro.screen3Badge'), headline: t('intro.screen3Headline'), body: t('intro.screen3Body'), alt: t('intro.screen3ImageAlt') },
   ];
 
@@ -124,7 +127,11 @@ export function IntroScreen() {
                 accessibilityLabel={p.alt}
                 style={styles.heroWrap}
               >
-                <p.Hero size={Math.min(pageWidth * 0.62, 260)} />
+                {p.image ? (
+                  <Image source={p.image} resizeMode="contain" style={{ width: Math.min(pageWidth * 0.82, 340), height: Math.min(pageWidth * 0.82, 340) * 1.0 }} />
+                ) : p.Hero ? (
+                  <p.Hero size={Math.min(pageWidth * 0.62, 260)} />
+                ) : null}
               </View>
 
               <Text variant="label" tone="accent" style={{ marginTop: spacing.xl, textAlign: 'center', width: '100%' }}>
