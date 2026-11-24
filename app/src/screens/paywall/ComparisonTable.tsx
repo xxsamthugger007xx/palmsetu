@@ -19,10 +19,11 @@ export function ComparisonTable() {
       {COMPARISON_ROW_KEYS.map((key) => (
         <View key={key} style={styles.comparisonRow}>
           <Text variant="caption" tone="secondary" style={{ flex: 1.6 }}>{t(`paywall.compare.${key}.label`)}</Text>
-          <Text variant="caption" tone="muted" style={styles.comparisonCol}>{t(`paywall.compare.${key}.free`)}</Text>
+          <Text variant="caption" tone="secondary" style={styles.comparisonCol}>{t(`paywall.compare.${key}.free`)}</Text>
           <Text variant="caption" weight="semibold" style={[styles.comparisonCol, { color: tarotColor.gold }]}>{t(`paywall.compare.${key}.premium`)}</Text>
         </View>
       ))}
+      <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>{t('paywall.compare.fairUse')}</Text>
     </View>
   );
 }

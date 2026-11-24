@@ -1250,6 +1250,11 @@
         "free": "Tidak termasuk",
         "premium": "Termasuk"
       },
+      "assistant": {
+        "label": "Chat Astrolog AI",
+        "free": "5 jawaban AI/hari",
+        "premium": "Chat AI penuh"
+      },
       "companion": {
         "label": "Pesan Pendamping AI",
         "free": "15/hari",
@@ -1264,7 +1269,8 @@
         "label": "Riwayat suasana hati",
         "free": "7 hari",
         "premium": "Riwayat lengkap"
-      }
+      },
+      "fairUse": "Fitur AI memiliki batas penggunaan wajar."
     },
     "period": {
       "monthly": "/bulan",
@@ -1319,5 +1325,18 @@
     "horoscopeBody": "Bacaan hari ini sudah siap untuk Anda.",
     "streakTitle": "Pertahankan rangkaian Anda",
     "streakBody": "Anda sedang dalam rangkaian {{count}} hari. Buka Palm Setu hari ini untuk melanjutkannya."
+  },
+  "assistant": {
+    "premiumTitle": "Asisten AI adalah fitur Premium",
+    "premiumBody": "Tingkatkan untuk mengobrol dengan asisten tentang telapak tangan, bagan, dan bacaan Anda.",
+    "premiumAction": "Lihat Premium",
+    "freeLeft": "Sisa jawaban AI gratis hari ini: {{n}}",
+    "freeNone": "Jawaban AI gratis hari ini habis. Jawaban dasar tetap berfungsi."
+  },
+  "authGoogle": {
+    "continue": "Lanjutkan dengan Google",
+    "or": "atau",
+    "notConfigured": "Login Google belum disiapkan. Gunakan email untuk sementara.",
+    "failed": "Login Google gagal. Silakan coba lagi."
   }
 }

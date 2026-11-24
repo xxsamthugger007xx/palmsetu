@@ -1255,6 +1255,11 @@
         "free": "Non incluso",
         "premium": "Incluso"
       },
+      "assistant": {
+        "label": "Chat con l’Astrologo IA",
+        "free": "5 risposte IA/giorno",
+        "premium": "Chat IA completa"
+      },
       "companion": {
         "label": "Messaggi del Compagno IA",
         "free": "15/giorno",
@@ -1269,7 +1274,8 @@
         "label": "Cronologia dell’umore",
         "free": "7 giorni",
         "premium": "Cronologia completa"
-      }
+      },
+      "fairUse": "Le funzioni IA hanno limiti di uso equo."
     },
     "period": {
       "monthly": "/mese",
@@ -1324,5 +1330,18 @@
     "horoscopeBody": "La lettura di oggi è pronta per te.",
     "streakTitle": "Mantieni la tua serie",
     "streakBody": "Hai una serie di {{count}} giorni. Apri Palm Setu oggi per mantenerla."
+  },
+  "assistant": {
+    "premiumTitle": "L’assistente IA è una funzione Premium",
+    "premiumBody": "Passa a Premium per chattare con l’assistente su mano, tema e letture.",
+    "premiumAction": "Scopri Premium",
+    "freeLeft": "Risposte IA gratuite rimaste oggi: {{n}}",
+    "freeNone": "Risposte IA gratuite esaurite per oggi. Le risposte di base funzionano ancora."
+  },
+  "authGoogle": {
+    "continue": "Continua con Google",
+    "or": "oppure",
+    "notConfigured": "L’accesso con Google non è ancora configurato. Per ora usa l’e-mail.",
+    "failed": "Accesso con Google non riuscito. Riprova."
   }
 }

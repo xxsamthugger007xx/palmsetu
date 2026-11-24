@@ -59,27 +59,9 @@ export const sections: SectionCard[] = [
     navigate: (nav) => nav.navigate('DailyHoroscope', { localDate: astrologyApi.todayLocalDate() }),
   },
   {
-    id: 'horoscopes',
-    icon: Sun,
-    comingSoon: true,
-    navigate: (nav) => nav.navigate('Horoscopes'),
-  },
-  {
     id: 'lovetest',
     icon: Heart,
     navigate: (nav) => nav.navigate('Relationships'),
-  },
-  {
-    id: 'horoscopelauncher',
-    icon: Rocket,
-    comingSoon: true,
-    navigate: (nav) => nav.navigate('HoroscopeLauncher'),
-  },
-  {
-    id: 'numerology',
-    icon: Hash,
-    comingSoon: true,
-    navigate: (nav) => nav.navigate('Numerology'),
   },
   {
     id: 'western',

@@ -1,10 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
 import {
-  assistantConversationsById, assistantUsageLog, AssistantConversation, getUserTier,
+  assistantConversationsById, assistantUsageLog, AssistantConversation, getUserTier, assistantFreeChatByKey,
 } from '../data/store';
+import { freeChatLimits, getMonthlySpendInr } from '../ai/budget';
+import { requestLocalDate } from '../util/localDate';
 import { assistantConfig } from '../data/assistantConfig';
 import { buildAssistantReply, AssistantReplyResult, StageEvent } from '../assistant/responseBuilder';
 import { retrieveUserData, hasDataFor } from '../assistant/dataRetrieval';
@@ -115,6 +117,46 @@ function ownedConversationOr404(res: Response, userId: string, id: string): Assi
   return convo;
 }
 
+/**
+ * Premium: full AI, bounded only by the monthly AI budget. Free: real AI too, but fast/short, a few messages a day and a
+ * small monthly spend ceiling; past either limit the assistant falls back to answers built without AI.
+ */
+function chatPlan(req: Request, userId: string) {
+  if (getUserTier(userId) === 'premium') return { free: false, options: { aiEnabled: true }, countKey: null as string | null };
+  const limits = freeChatLimits();
+  const localDate = requestLocalDate(req);
+  const countKey = `${userId}:${localDate}`;
+  const used = assistantFreeChatByKey.get(countKey)?.count ?? 0;
+  const dayDone = used >= limits.dailyMessages;
+  const monthDone = getMonthlySpendInr(userId) >= limits.monthlyInr;
+  if (dayDone || monthDone) {
+    return {
+      free: true, countKey: null as string | null,
+      options: {
+        aiEnabled: false,
+        noAiNote: dayDone
+          ? `\n\nYou've used today's ${limits.dailyMessages} free AI messages. They reset tomorrow, or upgrade to Premium to keep chatting.`
+          : '\n\nYou\'ve reached this month\'s free AI chat limit. Upgrade to Premium to keep chatting.',
+      },
+    };
+  }
+  return { free: true, countKey, options: { aiEnabled: true, fastOnly: true } };
+}
+
+/** Counts a free user's AI message, only when the reply really used the AI. */
+/** Free-plan AI messages left today (null for Premium), shown as a small counter in the chat. */
+function freeRemaining(plan: ReturnType<typeof chatPlan>, userId: string, req: Request): number | null {
+  if (!plan.free) return null;
+  const used = assistantFreeChatByKey.get(`${userId}:${requestLocalDate(req)}`)?.count ?? 0;
+  return Math.max(0, freeChatLimits().dailyMessages - used);
+}
+
+function recordFreeChat(plan: ReturnType<typeof chatPlan>, userId: string, result: AssistantReplyResult) {
+  if (!plan.countKey || result.mode === null || !result.success) return;
+  const cur = assistantFreeChatByKey.get(plan.countKey);
+  assistantFreeChatByKey.set(plan.countKey, { userId, localDate: plan.countKey.split(':').pop()!, count: (cur?.count ?? 0) + 1 });
+}
+
 export function buildAssistantRouter(aiProvider: AiProvider) {
   const router = Router();
 
@@ -153,9 +195,10 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
     const { conversation } = loaded;
 
     const start = Date.now();
+    const plan = chatPlan(req, userId);
     let result: AssistantReplyResult;
     try {
-      result = await buildAssistantReply(userId, message, conversation.messages, aiProvider, assistantConfig, screenContext ?? undefined);
+      result = await buildAssistantReply(userId, message, conversation.messages, aiProvider, assistantConfig, screenContext ?? undefined, undefined, undefined, plan.options);
     } catch {
       result = {
         reply: 'Something went wrong generating a response - please try again.',
@@ -164,6 +207,7 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
       };
     }
     const latencyMs = Date.now() - start;
+    recordFreeChat(plan, userId, result);
     persistReply(conversation, userId, result, latencyMs);
 
     res.json({
@@ -172,6 +216,7 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
       premiumCard: result.premiumCard,
       suggestedFollowUps: result.suggestedFollowUps,
       detectedFeature: result.detectedFeature,
+      freeRemaining: freeRemaining(plan, userId, req),
     });
   });
 
@@ -216,17 +261,20 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
     const onChunk = (text: string) => writeLine({ type: 'chunk', text });
 
     const start = Date.now();
+    const plan = chatPlan(req, userId);
     let result: AssistantReplyResult;
     try {
       result = await buildAssistantReply(
         userId, message, conversation.messages, aiProvider, assistantConfig,
         screenContext ?? undefined, onStage, onChunk,
+        plan.options,
       );
     } catch (err: any) {
       writeLine({ type: 'error', message: 'Something went wrong generating a response - please try again.' });
       return res.end();
     }
     const latencyMs = Date.now() - start;
+    recordFreeChat(plan, userId, result);
     persistReply(conversation, userId, result, latencyMs);
 
     if (!result.success) {
@@ -246,6 +294,7 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
       premiumCard: result.premiumCard,
       suggestedFollowUps: result.suggestedFollowUps,
       detectedFeature: result.detectedFeature,
+      freeRemaining: freeRemaining(plan, userId, req),
     });
     res.end();
   });

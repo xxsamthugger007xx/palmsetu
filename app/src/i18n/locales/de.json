@@ -1255,6 +1255,11 @@
         "free": "Nicht enthalten",
         "premium": "Enthalten"
       },
+      "assistant": {
+        "label": "KI-Astrologen-Chat",
+        "free": "5 KI-Antworten/Tag",
+        "premium": "Voller KI-Chat"
+      },
       "companion": {
         "label": "KI-Begleiter-Nachrichten",
         "free": "15/Tag",
@@ -1269,7 +1274,8 @@
         "label": "Stimmungsverlauf",
         "free": "7 Tage",
         "premium": "Voller Verlauf"
-      }
+      },
+      "fairUse": "Für KI-Funktionen gelten Fair-Use-Grenzen."
     },
     "period": {
       "monthly": "/Monat",
@@ -1324,5 +1330,18 @@
     "horoscopeBody": "Deine heutige Deutung ist bereit.",
     "streakTitle": "Halte deine Serie am Laufen",
     "streakBody": "Du bist auf einer {{count}}-Tage-Serie. Öffne Palm Setu heute, um sie zu halten."
+  },
+  "assistant": {
+    "premiumTitle": "Der KI-Assistent ist eine Premium-Funktion",
+    "premiumBody": "Upgrade, um mit dem Assistenten über Handlinien, Horoskop und Deutungen zu chatten.",
+    "premiumAction": "Premium ansehen",
+    "freeLeft": "Kostenlose KI-Antworten heute übrig: {{n}}",
+    "freeNone": "Kostenlose KI-Antworten für heute aufgebraucht. Basisantworten funktionieren weiter."
+  },
+  "authGoogle": {
+    "continue": "Weiter mit Google",
+    "or": "oder",
+    "notConfigured": "Die Google-Anmeldung ist noch nicht eingerichtet. Bitte nutze vorerst E-Mail.",
+    "failed": "Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut."
   }
 }

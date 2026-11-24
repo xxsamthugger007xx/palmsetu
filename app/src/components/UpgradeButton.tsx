@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: spacing.lg,
     zIndex: 10,
+    // Opaque backing so scrolling content never shows through the translucent pill.
+    backgroundColor: color.bg,
+    borderRadius: radius.pill ?? 999,
   },
   inner: {
     flexDirection: 'row',

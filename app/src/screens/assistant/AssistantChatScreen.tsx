@@ -184,6 +184,7 @@ export function AssistantChatScreen() {
   const [conversationId, setConversationId] = useState<string | null>(route.params?.conversationId ?? null);
   const [input, setInput] = useState('');
   const [suggested, setSuggested] = useState<string[]>([]);
+  const [freeLeft, setFreeLeft] = useState<number | null>(null);
   const [welcome, setWelcome] = useState('Hi, I can help with your readings.');
   const listRef = useRef<FlatList>(null);
   const activeStreamRef = useRef<StreamHandle | null>(null);
@@ -272,6 +273,7 @@ export function AssistantChatScreen() {
         activeStreamRef.current = null;
         setConversationId(res.conversationId);
         setSuggested(res.suggestedFollowUps);
+        setFreeLeft(res.freeRemaining ?? null);
         updateLast({
           content: accumulated || res.reply,
           detectedFeature: res.detectedFeature,
@@ -363,6 +365,11 @@ export function AssistantChatScreen() {
             <Send size={20} color={color.accent} />
           </Pressable>
         </View>
+        {freeLeft !== null && (
+          <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginTop: spacing.xs }}>
+            {freeLeft > 0 ? t('assistant.freeLeft', { n: freeLeft }) : t('assistant.freeNone')}
+          </Text>
+        )}
       </PageContainer>
     </KeyboardAvoidingView>
   );

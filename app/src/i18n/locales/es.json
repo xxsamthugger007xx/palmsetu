@@ -1255,6 +1255,11 @@
         "free": "No incluido",
         "premium": "Incluido"
       },
+      "assistant": {
+        "label": "Chat con el Astrólogo IA",
+        "free": "5 respuestas IA/día",
+        "premium": "Chat IA completo"
+      },
       "companion": {
         "label": "Mensajes del Compañero IA",
         "free": "15/día",
@@ -1269,7 +1274,8 @@
         "label": "Historial de ánimo",
         "free": "7 días",
         "premium": "Historial completo"
-      }
+      },
+      "fairUse": "Las funciones de IA tienen límites de uso razonable."
     },
     "period": {
       "monthly": "/mes",
@@ -1324,5 +1330,18 @@
     "horoscopeBody": "Tu lectura de hoy está lista.",
     "streakTitle": "Mantén tu racha",
     "streakBody": "Llevas una racha de {{count}} días. Abre Palm Setu hoy para mantenerla."
+  },
+  "assistant": {
+    "premiumTitle": "El asistente de IA es una función Premium",
+    "premiumBody": "Mejora tu plan para chatear con tu asistente sobre tu palma, tu carta y tus lecturas.",
+    "premiumAction": "Ver Premium",
+    "freeLeft": "Respuestas IA gratis restantes hoy: {{n}}",
+    "freeNone": "Respuestas IA gratis agotadas hoy. Las respuestas básicas siguen funcionando."
+  },
+  "authGoogle": {
+    "continue": "Continuar con Google",
+    "or": "o",
+    "notConfigured": "El inicio con Google aún no está configurado. Usa el correo por ahora.",
+    "failed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo."
   }
 }

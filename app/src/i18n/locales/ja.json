@@ -1250,6 +1250,11 @@
         "free": "含まれません",
         "premium": "含まれます"
       },
+      "assistant": {
+        "label": "AI占星術師チャット",
+        "free": "1日5回のAI回答",
+        "premium": "フルAIチャット"
+      },
       "companion": {
         "label": "AIコンパニオンのメッセージ",
         "free": "1日15件",
@@ -1264,7 +1269,8 @@
         "label": "気分の履歴",
         "free": "7日間",
         "premium": "全履歴"
-      }
+      },
+      "fairUse": "AI機能には公正利用の上限があります。"
     },
     "period": {
       "monthly": "/月",
@@ -1319,5 +1325,18 @@
     "horoscopeBody": "今日のリーディングの準備ができました。",
     "streakTitle": "連続記録を続けましょう",
     "streakBody": "{{count}}日連続中です。今日Palm Setuを開いて続けましょう。"
+  },
+  "assistant": {
+    "premiumTitle": "AIアシスタントはプレミアム機能です",
+    "premiumBody": "アップグレードすると、手相・チャート・リーディングについてアシスタントと話せます。",
+    "premiumAction": "プレミアムを見る",
+    "freeLeft": "今日の残り無料AI回答：{{n}}",
+    "freeNone": "今日の無料AI回答は終了しました。基本の回答は引き続き利用できます。"
+  },
+  "authGoogle": {
+    "continue": "Googleで続ける",
+    "or": "または",
+    "notConfigured": "Googleログインはまだ設定されていません。今はメールをご利用ください。",
+    "failed": "Googleログインに失敗しました。もう一度お試しください。"
   }
 }

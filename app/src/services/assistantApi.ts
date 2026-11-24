@@ -45,6 +45,8 @@ export interface SendMessageResponse {
   premiumCard: PremiumCard | null;
   suggestedFollowUps: string[];
   detectedFeature: string | null;
+  /** Free-plan AI answers left today; null on Premium. */
+  freeRemaining?: number | null;
 }
 
 export const assistantApi = {

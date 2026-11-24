@@ -431,6 +431,10 @@ export interface EmailVerificationRecord {
 export interface DailyActivity { userId: string; localDate: string; createdAt: string }
 export const dailyActivityByKey = new SqliteMap<string, DailyActivity>('dailyActivity', { userId: (v) => v.userId, createdAt: (v) => v.createdAt });
 
+/** Free-plan AI chat messages used per user per local day (key `${userId}:${localDate}`). */
+export interface AssistantFreeChatDay { userId: string; localDate: string; count: number }
+export const assistantFreeChatByKey = new SqliteMap<string, AssistantFreeChatDay>('assistantFreeChat', { userId: (v) => v.userId });
+
 /** Logout/revoked session tokens (by JWT id) until they would have expired anyway. */
 export const revokedTokens = new SqliteMap<string, { jti: string; exp: number }>('revokedTokens');
 export const passwordResetsByHash = new SqliteMap<string, import('../types/auth').PasswordResetRecord>('passwordResets');

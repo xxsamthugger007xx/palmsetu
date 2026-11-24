@@ -9,6 +9,8 @@ export interface Account {
   email: string;
   passwordHash: string;
   emailVerified: boolean;
+  /** Google account id (the `sub` claim) once this account has signed in with Google. */
+  googleSub?: string;
   /** Bumped on password reset so every token issued before it stops working (see auth/context.ts). */
   tokenVersion?: number;
   createdAt: string;

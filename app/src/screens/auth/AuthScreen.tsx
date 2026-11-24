@@ -9,6 +9,7 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { TurnstileWidget } from '../../components/TurnstileWidget';
+import { GoogleSignInButton } from '../../components/GoogleSignInButton';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
@@ -16,6 +17,8 @@ import { authApi } from '../../services/authApi';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+// The server hosts the legal pages (/terms, /privacy), so the links always match the backend this build talks to.
+const LEGAL_BASE = (process.env.EXPO_PUBLIC_LEGAL_BASE_URL ?? process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
 const BENEFITS = [
   'Save your palm profile, Tarot readings and Kundli permanently',
   'Pick up right where you left off, on any device',
@@ -26,7 +29,7 @@ export function AuthScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Auth'>>();
-  const { signUp, logIn } = useAuth();
+  const { signUp, logIn, signInWithGoogle } = useAuth();
 
   const [tab, setTab] = useState<'signup' | 'login'>(route.params?.mode ?? 'signup');
   const [email, setEmail] = useState('');
@@ -62,6 +65,24 @@ export function AuthScreen() {
       else if (err.code === 'RATE_LIMITED') setError(t('ui.AuthScreen.tooManyAttemptsPleaseWait'));
       else if (err.code === 'TURNSTILE_FAILED') setError(t('ui.AuthScreen.verificationFailedPleaseTryAgain'));
       else setError(err.message ?? t('ui.OnboardingAstrologySystemScreen.somethingWentWrongPleaseTry'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleToken = async (idToken: string) => {
+    setError(null);
+    setSubmitting(true);
+    try {
+      await signInWithGoogle(idToken, turnstileToken ?? undefined);
+      navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'MainTabs' }] }));
+    } catch (__err) {
+      const err = asApiError(__err);
+      if (err.code === 'GOOGLE_NOT_CONFIGURED') setError(t('authGoogle.notConfigured'));
+      else if (err.code === 'RATE_LIMITED') setError(t('ui.AuthScreen.tooManyAttemptsPleaseWait'));
+      else if (err.code === 'TURNSTILE_FAILED') setError(t('ui.AuthScreen.verificationFailedPleaseTryAgain'));
+      else if (err.code === 'GOOGLE_FAILED') setError(t('authGoogle.failed'));
+      else setError(err.isNetworkError ? err.message : (err.message ?? t('authGoogle.failed')));
     } finally {
       setSubmitting(false);
     }
@@ -124,6 +145,17 @@ export function AuthScreen() {
       <View style={styles.tabRow}>
         <TabButton label={t('ui.AuthScreen.signUp')} active={tab === 'signup'} onPress={() => { setTab('signup'); setError(null); setForgot(false); setResetSent(false); }} />
         <TabButton label={t('ui.AuthScreen.logIn')} active={tab === 'login'} onPress={() => { setTab('login'); setError(null); setForgot(false); setResetSent(false); }} />
+      </View>
+
+      <GoogleSignInButton
+        busy={submitting}
+        onIdToken={handleGoogleToken}
+        onProblem={(kind) => setError(kind === 'not-configured' ? t('authGoogle.notConfigured') : t('authGoogle.failed'))}
+      />
+      <View style={styles.orRow}>
+        <View style={styles.orLine} />
+        <Text variant="caption" tone="muted" style={{ marginHorizontal: spacing.sm }}>{t('authGoogle.or')}</Text>
+        <View style={styles.orLine} />
       </View>
 
       <View style={styles.fieldWrap}>
@@ -197,9 +229,9 @@ export function AuthScreen() {
 
       <Text variant="caption" tone="muted" style={styles.legal}>
         By continuing, you agree to Palm Setu's{' '}
-        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/terms')}>{t('ui.AuthScreen.termsOfService')}</Text>
+        <Text variant="caption" tone="accent" onPress={() => Linking.openURL(`${LEGAL_BASE}/terms`)}>{t('ui.AuthScreen.termsOfService')}</Text>
         {' '}and{' '}
-        <Text variant="caption" tone="accent" onPress={() => Linking.openURL('https://example.com/privacy')}>{t('ui.AuthScreen.privacyPolicy')}</Text>.
+        <Text variant="caption" tone="accent" onPress={() => Linking.openURL(`${LEGAL_BASE}/privacy`)}>{t('ui.AuthScreen.privacyPolicy')}</Text>.
       </Text>
     </PageContainer>
   );
@@ -261,6 +293,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     color: color.textPrimary,
   },
+  orRow: { flexDirection: 'row', alignItems: 'center', marginVertical: spacing.md },
+  orLine: { flex: 1, height: 1, backgroundColor: color.border },
   legal: {
     marginTop: spacing.lg,
     marginBottom: spacing.xl,

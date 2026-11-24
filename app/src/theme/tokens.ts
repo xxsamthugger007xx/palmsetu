@@ -14,7 +14,7 @@ export const color = {
   // Text
   textPrimary: '#e9e9ed',
   textSecondary: '#b2b6ca',
-  textMuted: '#75798c',
+  textMuted: '#8b8fa4',
 
   // Accents
   accent: '#9184d9',

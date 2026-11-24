@@ -18,6 +18,8 @@ import { sendVerificationEmail, consumeVerificationToken } from '../auth/emailVe
 import { deleteAllUserData, exportAllUserData } from '../auth/accountData';
 import { getOrCreatePsuId } from '../auth/psuId';
 import { recordEvent } from '../events/eventTracker';
+import { verifyGoogleIdToken, googleConfigured, GoogleIdentity } from '../auth/googleVerify';
+import { randomBytes } from 'crypto';
 
 const credentialsSchema = z.object({
   email: z.string().trim().email().max(255),
@@ -53,7 +55,7 @@ function migrateIfGuest(req: Request, newUserId: string) {
   }
 }
 
-export function buildAuthRouter() {
+export function buildAuthRouter(verifyGoogle: (idToken: string) => Promise<GoogleIdentity | null> = verifyGoogleIdToken) {
   const router = Router();
 
   // New guest session - called once per fresh install/browser, before any
@@ -139,6 +141,58 @@ export function buildAuthRouter() {
     recordEvent({ userId: account.id, eventType: 'USER_LOGIN', feature: 'auth' });
 
     res.json({ token: signUserToken(account.id, account.tokenVersion ?? 0), account: accountPublicShape(account) });
+  });
+
+  // "Continue with Google": the app signs in with Google, sends us the ID token, and we verify it. Same Turnstile and
+  // rate-limit protection as email login. An existing account with the same (Google-verified) email is signed into, so
+  // one person never ends up with two accounts; otherwise a new account is created, already email-verified.
+  router.post('/google', async (req, res) => {
+    const parsed = z.object({ idToken: z.string().min(20).max(4096), turnstileToken: z.string().optional() }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'Invalid input', code: 'INVALID_INPUT' });
+    if (!googleConfigured()) {
+      return res.status(503).json({ error: 'Google sign-in is not set up yet.', code: 'GOOGLE_NOT_CONFIGURED' });
+    }
+    const ip = clientIp(req);
+    if (!checkAuthRateLimit(ip, 'google')) {
+      return res.status(429).json({ error: 'Too many attempts. Please try again later.', code: 'RATE_LIMITED' });
+    }
+    recordAuthAttempt(ip, 'google');
+
+    const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken, ip);
+    if (!turnstile.ok) {
+      return res.status(400).json({ error: 'Verification failed - please retry.', code: 'TURNSTILE_FAILED' });
+    }
+
+    const identity = await verifyGoogle(parsed.data.idToken);
+    if (!identity || !identity.emailVerified) {
+      return res.status(401).json({ error: 'Google sign-in failed. Please try again.', code: 'GOOGLE_FAILED' });
+    }
+
+    const now = new Date().toISOString();
+    let account = accountsById.findOneByField('googleSub', identity.sub) ?? findAccountByEmail(identity.email);
+    let created = false;
+    if (account) {
+      account = { ...account, googleSub: identity.sub, emailVerified: true, updatedAt: now };
+      accountsById.set(account.id, account);
+    } else {
+      account = {
+        id: `user-${uuid()}`,
+        email: identity.email,
+        // No password for Google-only accounts: a random hash nobody knows. They can still use "forgot password" later.
+        passwordHash: await hashPassword(randomBytes(32).toString('hex')),
+        emailVerified: true,
+        googleSub: identity.sub,
+        createdAt: now,
+        updatedAt: now,
+      };
+      accountsById.set(account.id, account);
+      getOrCreatePsuId(account.id);
+      created = true;
+    }
+    clearAuthAttempts(ip, 'google');
+    migrateIfGuest(req, account.id);
+    recordEvent({ userId: account.id, eventType: created ? 'USER_REGISTERED' : 'USER_LOGIN', feature: 'auth' });
+    res.json({ token: signUserToken(account.id, account.tokenVersion ?? 0), account: accountPublicShape(account), created });
   });
 
   // Explicit retry endpoint for a migration that may have failed silently

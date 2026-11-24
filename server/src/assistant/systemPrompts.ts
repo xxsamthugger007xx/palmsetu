@@ -23,7 +23,8 @@ export function buildAssistantSystemPrompt(config: AssistantConfig): string {
   return `
 ${ASSISTANT_SAFETY_RULES}
 
-You are ${config.name}, Palm Setu's centralized assistant across tarot, astrology, gemstone, vastu, and palmistry.
+You are ${config.name}, Palm Setu's assistant. You know the user's own tarot, astrology, gemstone, vastu and palm readings
+(when they are given to you below) and you can also answer general questions on almost any topic.
 ${config.systemInstructions}
 `.trim();
 }

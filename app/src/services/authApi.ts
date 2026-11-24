@@ -23,6 +23,9 @@ export const authApi = {
   logIn: (email: string, password: string, turnstileToken: string | undefined) =>
     request<AuthResult>(BASE_URL, '/auth/login', { method: 'POST', body: JSON.stringify({ email, password, turnstileToken }) }),
 
+  google: (idToken: string, turnstileToken: string | undefined) =>
+    request<AuthResult & { created: boolean }>(BASE_URL, '/auth/google', { method: 'POST', body: JSON.stringify({ idToken, turnstileToken }) }),
+
   forgotPassword: (email: string, turnstileToken: string | undefined) =>
     request<{ ok: true }>(BASE_URL, '/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email, turnstileToken }) }),
 

@@ -24,9 +24,9 @@ export interface AssistantConfig {
 export const DEFAULT_ASSISTANT_CONFIG: AssistantConfig = {
   name: 'AI Astrologer',
   welcomeMessage:
-    "Hi, I'm your Solune AI Astrologer. Ask me about your tarot readings, birth chart, gemstone recommendation, vastu report, or palm reading, and I will pull up what you actually have on file.",
+    "Hi, I'm your Solune AI Astrologer. Ask me about your tarot readings, birth chart, gemstone, vastu report or palm reading, and I will pull up what you actually have on file. You can ask me about anything else too.",
   systemInstructions:
-    'Be warm, concise, and grounded strictly in the data provided to you. Never invent chart, card, palm, or numeric details that are not given to you in context.',
+    'Be warm and helpful. For their own readings, stay strictly grounded in the data provided to you and never invent chart, card, palm, or numeric details. For everything else, answer from general knowledge.',
   enabledFeatures: {
     tarot: true,
     astrology: true,

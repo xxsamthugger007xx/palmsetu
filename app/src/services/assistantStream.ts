@@ -83,6 +83,7 @@ export function streamAssistantMessage(
         premiumCard: obj.premiumCard ?? null,
         suggestedFollowUps: obj.suggestedFollowUps ?? [],
         detectedFeature: obj.detectedFeature ?? null,
+        freeRemaining: obj.freeRemaining ?? null,
       });
     } else if (obj.type === 'error') {
       if (receivedAnyChunk) {

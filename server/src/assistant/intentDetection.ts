@@ -59,6 +59,11 @@ export async function detectFeature(message: string, aiProvider: AiProvider): Pr
   const heuristic = detectFeatureHeuristic(message);
   if (heuristic !== 'unknown') return heuristic;
 
+  // Cheap deterministic second pass before any AI call: a named tarot card ("the fool") or palm line ("heart line")
+  // is unambiguous. This also lets plans without AI understand these questions.
+  if (detectTarotCard(message)) return 'tarot';
+  if (detectPalmCategory(message)) return 'palm';
+
   try {
     const reply = await aiProvider.complete([
       {

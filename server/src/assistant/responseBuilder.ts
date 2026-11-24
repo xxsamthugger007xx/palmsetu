@@ -78,6 +78,52 @@ export function estimateCostCents(inputTokens: number, outputTokens: number): nu
     (outputTokens / 1000) * ASSUMED_COST_PER_1K_OUTPUT_TOKENS_CENTS;
 }
 
+class AiDisabledError extends Error {}
+const NO_AI_PROVIDER: AiProvider = {
+  complete: async () => { throw new AiDisabledError('AI disabled for this plan'); },
+} as unknown as AiProvider;
+
+function isAiDisabled(p: AiProvider): boolean { return p === NO_AI_PROVIDER; }
+
+function humanize(id: string): string {
+  return id.replace(/^major-\d+-/, '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** Plain-language answer built only from the user's stored free-tier data (used when the AI is off for the plan). */
+function describeForUser(feature: AssistantFeature, data: UserFeatureData): string {
+  switch (feature) {
+    case 'tarot': {
+      const r = data.tarot!;
+      const cards = r.draws.map((d) => `${d.positionName}: ${humanize(d.cardId)}${d.orientation === 'reversed' ? ' (reversed)' : ''}`).join('\n');
+      return `Your latest ${humanize(r.spreadType)} reading:\n${cards}` + (r.interpretation?.overallInterpretation ? `\n\n${r.interpretation.overallInterpretation}` : '');
+    }
+    case 'astrology': {
+      const profile = data.astrology.profile!;
+      const h = data.astrology.latestHoroscope;
+      const moon = profile.natal.moonSignSidereal ?? profile.natal.moonSignTropical;
+      return `Your moon sign is ${moon} (${profile.preferredSystem} system).` + (h ? `\n\nToday's horoscope: ${h.summary}` : '');
+    }
+    case 'gemstone': {
+      const r = data.gemstone!;
+      return r.primary.gemstone
+        ? `Your recommended gemstone is ${r.primary.gemstone.nameEnglish} (${r.primary.gemstone.nameHindi}).\n\n${r.primary.ruleExplanation}`
+        : `A gemstone couldn't be recommended from your chart data: ${r.primary.reasonUnavailable ?? 'unknown reason'}.`;
+    }
+    case 'vastu': {
+      const r = data.vastu!;
+      return `Your Vastu report:\n` + r.roomAnalyses.map((a) => `- ${a.roomLabel} facing ${a.direction}: ${a.alignment}`).join('\n');
+    }
+    case 'palm': {
+      const r = data.palm!;
+      return `From your palm reading:\n` + r.freeReading.sections.map((x: { title: string; text: string }) => `${x.title}: ${x.text}`).join('\n');
+    }
+    default:
+      return '';
+  }
+}
+
+const DEFAULT_FREE_NOTE = '\n\nUpgrade to Premium to chat with the full AI assistant about anything.';
+
 function mentionsUnimplementedFeature(message: string): string | null {
   const text = message.toLowerCase();
   for (const kw of FEATURES_NOT_IMPLEMENTED) {
@@ -238,7 +284,7 @@ async function answerFromReferenceContent(opts: {
     reply = await aiProvider.complete(messages, generationOptionsForMode('fast'));
     if (!reply.trim()) reply = fallbackText;
   } catch {
-    success = false;
+    success = isAiDisabled(aiProvider);
     reply = fallbackText; // honest static fallback: the real reference content itself, never fabricated
   }
   const generationMs = Date.now() - generationStart;
@@ -272,8 +318,15 @@ export async function buildAssistantReply(
   screenContext?: AssistantFeature,
   onStage?: OnStage,
   onChunk?: (text: string) => void,
+  options: { aiEnabled?: boolean; fastOnly?: boolean; noAiNote?: string } = {},
 ): Promise<AssistantReplyResult> {
   const t0 = Date.now();
+  // Free accounts get the same assistant but with NO AI call: every answer is built from the user's stored data and the
+  // built-in reference content. The wrapped provider refuses to run, so each AI call site takes its existing
+  // non-AI fallback path, and nothing is ever spent.
+  const aiEnabled = options.aiEnabled !== false;
+  if (!aiEnabled) aiProvider = NO_AI_PROVIDER;
+  const freeNote = options.noAiNote ?? DEFAULT_FREE_NOTE;
   if (containsCrisisLanguage(message)) {
     return {
       reply: CRISIS_RESPONSE,
@@ -355,8 +408,7 @@ export async function buildAssistantReply(
     // to look up yet" / "got it, let me know when you're ready" naturally.
     onStage?.({ key: 'generation', label: 'Writing your answer...' });
     const fallbackReply =
-      `I can help with tarot, astrology, gemstone, vastu, or palm questions using your real Palm Setu data. ` +
-      `Could you tell me which of those this is about?`;
+      `I couldn't answer that just now. Please try again, or ask me about your tarot, astrology, gemstone, vastu or palm readings.`;
 
     // Real wellness summary (mood/habits/challenges/goals/discovery themes,
     // never raw journal text) - included here, rather than as a sixth
@@ -376,20 +428,32 @@ export async function buildAssistantReply(
         `Journal entries in the last 30 days: ${data.wellness.journalEntryCountLast30Days} (count only - you do not have access to their content).`
       : '';
 
+    const astroProfile = data.astrology.profile;
+    const astroContext = astroProfile
+      ? `\n\nThe user's real astrology details (use these to give astrology-flavoured, practical answers about their day, ` +
+        `plans or feelings - e.g. a meeting, interview, trip or decision - while never guaranteeing an outcome): ` +
+        `moon sign ${astroProfile.natal.moonSignSidereal ?? astroProfile.natal.moonSignTropical} (${astroProfile.preferredSystem} system)` +
+        `${data.astrology.latestHoroscope ? `; today's horoscope (${data.astrology.latestHoroscope.localDate}): ${data.astrology.latestHoroscope.summary}` : ''}.`
+      : `\n\nThe user has no birth profile on file; for questions about their day or plans, answer practically and suggest ` +
+        `adding their birth details for a more personal astrological view.`;
+
     const smallTalkMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
       {
         role: 'system',
         content:
           `${buildAssistantSystemPrompt(config)}\n\n` +
-          `The user's last message did not clearly point to a specific Palm Setu feature (tarot, astrology, gemstone, ` +
-          `vastu, or palm) - it may be small talk, an acknowledgment like "okay" or "thanks", a wellness question ` +
-          `(mood/habits/journaling/goals), or a genuinely unrelated question. Reply briefly and naturally, in one ` +
-          `short message. Do not repeat the exact same sentence you may have used earlier in this conversation - ` +
-          `vary your phrasing. If it's small talk or an acknowledgment, respond warmly and briefly. If it is a ` +
-          `wellness question and real wellness data is given below, answer it grounded only in that data. If it ` +
-          `seems like a real question outside tarot/astrology/gemstone/vastu/palm/wellness, say plainly that you can ` +
-          `only help with those areas right now. Never invent chart data, card names, or personal details beyond ` +
-          `what is explicitly given to you.${wellnessContext}`,
+          `The user's last message did not point to one specific Palm Setu reading (tarot, astrology, gemstone, ` +
+          `vastu, or palm). Answer it helpfully and directly like a knowledgeable, friendly general assistant: ` +
+          `general knowledge, advice, explanations, writing, planning, small talk, and wellness questions are all ` +
+          `fine - do not refuse a topic just because it is outside astrology or palmistry. Give a complete, useful ` +
+          `answer (a few sentences, longer if the question needs it), and vary your phrasing from earlier replies. ` +
+          `Wellness questions should use the real wellness data below when it is given. If the question is really ` +
+          `about the user's OWN tarot cards, chart, gemstone, vastu or palm reading, ask which one they mean ` +
+          `rather than guessing. Never invent personal chart data, card draws, palm features or details about the ` +
+          `user that are not explicitly given to you, and keep to the safety rules above (no medical, legal or ` +
+          `financial authority, no guarantees about the future). For questions about how something will go (a meeting, ` +
+          `interview, date, exam, trip), answer in an astrology-informed, encouraging and practical way, make clear it is ` +
+          `guidance rather than a prediction, and keep it brief.${astroContext}${wellnessContext}`,
       },
       ...history.slice(-6).map((m) => ({ role: m.role, content: m.content } as const)),
     ];
@@ -401,7 +465,9 @@ export async function buildAssistantReply(
       reply = await aiProvider.complete(smallTalkMessages, generationOptionsForMode('fast'));
       if (!reply.trim()) reply = fallbackReply;
     } catch {
-      reply = fallbackReply; // honest static fallback, never a fabricated answer
+      reply = isAiDisabled(aiProvider)
+        ? `I can answer questions about your tarot, astrology, gemstone, vastu and palm readings, and explain cards, signs, houses, gemstones, directions and palm lines. Try asking "What is my moon sign?" or "What does the heart line mean?".${freeNote}`
+        : fallbackReply; // honest static fallback, never a fabricated answer
     }
     const generationMs = Date.now() - generationStart;
 
@@ -490,7 +556,7 @@ export async function buildAssistantReply(
           reply = await aiProvider.complete(knowledgeMessages, generationOptionsForMode('fast'));
           if (!reply.trim()) reply = entry.detailed;
         } catch {
-          success = false;
+          success = isAiDisabled(aiProvider);
           reply = entry.detailed; // honest static fallback: the real reference content itself, never fabricated
         }
         const generationMs = Date.now() - generationStart;
@@ -630,7 +696,7 @@ export async function buildAssistantReply(
   // modeClassifier.ts. This only tunes reasoning budget/output length for
   // the reply that is about to be generated below; it never changes what
   // data is shown or bypasses the entitlement check above.
-  const mode = classifyMode(message, entitlement.hasPremiumUpsell);
+  const mode = options.fastOnly ? 'fast' : classifyMode(message, entitlement.hasPremiumUpsell);
   const generationOptions = generationOptionsForMode(mode);
 
   const freeDataSummary = describeFreeData(feature, data);
@@ -701,8 +767,13 @@ export async function buildAssistantReply(
       wrappedOnChunk?.(reply);
     }
   } catch {
-    success = false;
-    reply = 'I ran into an issue generating a response just now - please try again in a moment.';
+    if (isAiDisabled(aiProvider)) {
+      reply = describeForUser(feature, data) + freeNote;
+      wrappedOnChunk?.(reply);
+    } else {
+      success = false;
+      reply = 'I ran into an issue generating a response just now - please try again in a moment.';
+    }
   }
   const generationMs = Date.now() - generationStart;
 

@@ -24,7 +24,7 @@ export const BENEFIT_CATEGORIES: BenefitCategory[] = [
 ];
 
 /** Rows of the Free vs Premium table; wording in paywall.compare.<key>.label/.free/.premium. */
-export const COMPARISON_ROW_KEYS = ['palm', 'tarotSpreads', 'tarotFollowups', 'kundli', 'otherChart', 'companion', 'habits', 'moodHistory'] as const;
+export const COMPARISON_ROW_KEYS = ['palm', 'tarotSpreads', 'tarotFollowups', 'kundli', 'otherChart', 'assistant', 'companion', 'habits', 'moodHistory'] as const;
 
 export function formatRupees(cents: number): string {
   return `₹${(cents / 100).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;

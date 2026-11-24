@@ -1250,6 +1250,11 @@
         "free": "不包含",
         "premium": "包含"
       },
+      "assistant": {
+        "label": "AI 占星师聊天",
+        "free": "每天 5 条 AI 回答",
+        "premium": "完整 AI 聊天"
+      },
       "companion": {
         "label": "AI 伙伴消息",
         "free": "每天 15 条",
@@ -1264,7 +1269,8 @@
         "label": "心情记录",
         "free": "7 天",
         "premium": "完整记录"
-      }
+      },
+      "fairUse": "AI 功能适用合理使用限制。"
     },
     "period": {
       "monthly": "/月",
@@ -1319,5 +1325,18 @@
     "horoscopeBody": "今日的解读已为你准备好。",
     "streakTitle": "保持你的连续记录",
     "streakBody": "你已连续 {{count}} 天。今天打开 Palm Setu，继续保持。"
+  },
+  "assistant": {
+    "premiumTitle": "AI 助手是高级会员功能",
+    "premiumBody": "升级后即可与助手聊聊你的手相、星盘和解读。",
+    "premiumAction": "查看高级版",
+    "freeLeft": "今日剩余免费 AI 回答：{{n}}",
+    "freeNone": "今日的免费 AI 回答已用完，基础回答仍可使用。"
+  },
+  "authGoogle": {
+    "continue": "使用 Google 继续",
+    "or": "或",
+    "notConfigured": "Google 登录尚未设置，请先使用邮箱。",
+    "failed": "Google 登录失败，请重试。"
   }
 }

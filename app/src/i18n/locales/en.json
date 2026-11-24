@@ -1255,6 +1255,11 @@
         "free": "Not included",
         "premium": "Included"
       },
+      "assistant": {
+        "label": "AI Astrologer chat",
+        "free": "5 AI answers/day",
+        "premium": "Full AI chat"
+      },
       "companion": {
         "label": "AI Companion messages",
         "free": "15/day",
@@ -1269,7 +1274,8 @@
         "label": "Mood history",
         "free": "7 days",
         "premium": "Full history"
-      }
+      },
+      "fairUse": "Fair-use limits apply to AI features."
     },
     "period": {
       "monthly": "/month",
@@ -1324,5 +1330,18 @@
     "horoscopeBody": "Today's reading is ready for you.",
     "streakTitle": "Keep your streak going",
     "streakBody": "You're on a {{count}}-day streak. Open Palm Setu today to keep it going."
+  },
+  "assistant": {
+    "premiumTitle": "AI assistant is a Premium feature",
+    "premiumBody": "Upgrade to chat with your assistant about your palm, chart and readings.",
+    "premiumAction": "See Premium",
+    "freeLeft": "Free AI answers left today: {{n}}",
+    "freeNone": "Free AI answers used up for today. Basic answers still work."
+  },
+  "authGoogle": {
+    "continue": "Continue with Google",
+    "or": "or",
+    "notConfigured": "Google sign-in isn’t set up yet. Please use email for now.",
+    "failed": "Google sign-in didn’t work. Please try again."
   }
 }

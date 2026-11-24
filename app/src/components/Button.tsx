@@ -147,6 +147,12 @@ const styles = StyleSheet.create({
   },
   primary: {
     backgroundColor: color.accent,
+    // Soft glow so the main action stands out against the dark background.
+    shadowColor: color.accent,
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   secondary: {
     backgroundColor: color.surfaceElevated,

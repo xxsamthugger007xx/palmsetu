@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { tokenStorage } from '../services/tokenStorage';
 import { authApi, AccountPublic } from '../services/authApi';
 import { setAuthToken, setSessionInvalidHandler } from '../services/apiRequest';
 import { configurePurchases } from '../services/purchases';
@@ -25,6 +25,7 @@ interface AuthContextValue {
   account: AccountPublic | null;
   signUp: (email: string, password: string, turnstileToken: string | undefined) => Promise<void>;
   logIn: (email: string, password: string, turnstileToken: string | undefined) => Promise<void>;
+  signInWithGoogle: (idToken: string, turnstileToken: string | undefined) => Promise<void>;
   logOut: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -39,11 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const bootstrap = async () => {
     try {
-      let token = await SecureStore.getItemAsync(TOKEN_KEY);
+      let token = await tokenStorage.get(TOKEN_KEY);
       if (!token) {
         const guest = await authApi.createGuestSession();
         token = guest.token;
-        await SecureStore.setItemAsync(TOKEN_KEY, token);
+        await tokenStorage.set(TOKEN_KEY, token);
       }
       setAuthToken(token);
 
@@ -84,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       recovering.current = true;
       try {
         const guest = await authApi.createGuestSession();
-        await SecureStore.setItemAsync(TOKEN_KEY, guest.token);
+        await tokenStorage.set(TOKEN_KEY, guest.token);
         setAuthToken(guest.token);
         setIsGuest(true);
         setAccount(null);
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const applyAuthResult = async (result: { token: string; account: AccountPublic }) => {
-    await SecureStore.setItemAsync(TOKEN_KEY, result.token);
+    await tokenStorage.set(TOKEN_KEY, result.token);
     setAuthToken(result.token);
     setIsGuest(false);
     setAccount(result.account);
@@ -121,11 +122,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await applyAuthResult(result);
   };
 
+  const signInWithGoogle = async (idToken: string, turnstileToken: string | undefined) => {
+    const result = await authApi.google(idToken, turnstileToken);
+    await applyAuthResult(result);
+  };
+
   // Signing out returns to a fresh guest session, not a logged-out dead end - consistent with "guest first":
   // there is always something usable behind every screen, logged in or not.
   const resetToGuest = async () => {
     const guest = await authApi.createGuestSession();
-    await SecureStore.setItemAsync(TOKEN_KEY, guest.token);
+    await tokenStorage.set(TOKEN_KEY, guest.token);
     setAuthToken(guest.token);
     setIsGuest(true);
     setAccount(null);
@@ -143,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ loading, isGuest, account, signUp, logIn, logOut, deleteAccount, refresh: bootstrap }}>
+    <AuthContext.Provider value={{ loading, isGuest, account, signUp, logIn, signInWithGoogle, logOut, deleteAccount, refresh: bootstrap }}>
       {loading ? (
         // Blocks every nested provider/screen from mounting (and firing its
         // own API calls) until a session token - guest or real - exists, so

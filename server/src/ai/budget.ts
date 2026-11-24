@@ -93,6 +93,11 @@ export function getBudgetStatus(userId: string) {
   };
 }
 
+/** Free plan: how many AI chat messages per day, and the most AI spend (all features) a free user may reach this month before chat falls back to template answers. */
+export function freeChatLimits() {
+  return { dailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5), monthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10) };
+}
+
 export function isOverBudget(userId: string): boolean {
   if (getUserTier(userId) !== 'premium') return false;
   return getMonthlySpendInr(userId) >= budgetConfig().limitInr;

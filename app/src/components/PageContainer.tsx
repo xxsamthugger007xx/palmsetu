@@ -51,7 +51,7 @@ export function PageContainer({ children, scroll = true, style, onRefresh }: Pro
   const padding = {
     paddingHorizontal: spacing.lg,
     paddingTop: insets.top + spacing.sm,
-    paddingBottom: insets.bottom + spacing.xxl,
+    paddingBottom: insets.bottom + spacing.xxl + 64, // clears the floating Ask AI button
   };
 
   React.useEffect(() => () => {
