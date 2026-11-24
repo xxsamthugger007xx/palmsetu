@@ -8,19 +8,18 @@ import { color, spacing } from '../theme/tokens';
 import { FOCUS_AREAS, FocusArea } from '../types/astrology';
 
 const ICONS: Record<FocusArea, LucideIcon> = { love: Heart, career: Briefcase, money: Coins, health: Leaf, family: Users, growth: Sprout };
-export const MAX_FOCUS = 3;
 
-/** "What do you want guidance on?" - pick up to three areas. Controlled: the parent owns the selection. */
+/** "What do you want guidance on?" - pick any number of areas. Controlled: the parent owns the selection. */
 export function FocusPicker({ value, onChange }: { value: FocusArea[]; onChange: (next: FocusArea[]) => void }) {
   const { t } = useTranslation();
   const toggle = (f: FocusArea) => {
     if (value.includes(f)) onChange(value.filter((x) => x !== f));
-    else if (value.length < MAX_FOCUS) onChange([...value, f]);
+    else onChange([...value, f]);
   };
   return (
     <View>
       <Text variant="label" tone="muted">{t('focus.title')}</Text>
-      <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.sm }}>{t('focus.hint', { n: MAX_FOCUS })}</Text>
+      <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.sm }}>{t('focus.hint')}</Text>
       <View style={styles.grid}>
         {FOCUS_AREAS.map((f) => {
           const on = value.includes(f);

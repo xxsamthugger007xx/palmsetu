@@ -1361,7 +1361,7 @@
   },
   "focus": {
     "title": "¿Sobre qué te gustaría recibir orientación?",
-    "hint": "Elige hasta {{n}}. Puedes cambiarlo después.",
+    "hint": "Elige todos los que quieras. Puedes cambiarlo después.",
     "areas": {
       "love": "Amor",
       "career": "Carrera",

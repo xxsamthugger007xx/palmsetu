@@ -1356,7 +1356,7 @@
   },
   "focus": {
     "title": "Anda ingin panduan tentang apa?",
-    "hint": "Pilih hingga {{n}}. Anda bisa mengubahnya nanti.",
+    "hint": "Pilih sebanyak yang Anda mau. Anda bisa mengubahnya nanti.",
     "areas": {
       "love": "Cinta",
       "career": "Karier",

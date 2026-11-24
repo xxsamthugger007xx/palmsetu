@@ -1361,7 +1361,7 @@
   },
   "focus": {
     "title": "Su cosa vorresti una guida?",
-    "hint": "Scegline fino a {{n}}. Puoi cambiare più tardi.",
+    "hint": "Scegline quanti vuoi. Puoi cambiare più tardi.",
     "areas": {
       "love": "Amore",
       "career": "Carriera",

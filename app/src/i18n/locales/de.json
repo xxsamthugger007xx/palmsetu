@@ -1361,7 +1361,7 @@
   },
   "focus": {
     "title": "Wobei möchtest du Orientierung?",
-    "hint": "Wähle bis zu {{n}}. Du kannst das später ändern.",
+    "hint": "Wähle so viele, wie du möchtest. Du kannst das später ändern.",
     "areas": {
       "love": "Liebe",
       "career": "Karriere",

@@ -48,8 +48,8 @@
     "nameLabel": "YOUR NAME",
     "namePlaceholder": "e.g. Samay",
     "genderLabel": "HOW DO YOU IDENTIFY?",
-    "genderWoman": "Woman",
-    "genderMan": "Man",
+    "genderWoman": "Female",
+    "genderMan": "Male",
     "genderNonBinary": "Non-binary",
     "genderPreferNotToSay": "Prefer not to say",
     "continueButton": "Continue",
@@ -1361,7 +1361,7 @@
   },
   "focus": {
     "title": "What would you like guidance on?",
-    "hint": "Pick up to {{n}}. You can change this later.",
+    "hint": "Pick as many as you like. You can change this later.",
     "areas": {
       "love": "Love",
       "career": "Career",

@@ -81,7 +81,7 @@ const userIdentitySchema = z.object({
   name: z.string().min(1).max(100),
   gender: z.enum(['woman', 'man', 'non-binary', 'prefer-not-to-say']).nullable().optional(),
   // Omitted = keep what is stored (so saving just a new name never wipes the focus areas).
-  focus: z.array(z.enum(FOCUS_AREAS)).max(3).optional(),
+  focus: z.array(z.enum(FOCUS_AREAS)).max(FOCUS_AREAS.length).optional(),
 });
 
 // Step-by-step astrology onboarding: every field optional, since this

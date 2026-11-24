@@ -1361,7 +1361,7 @@
   },
   "focus": {
     "title": "Sur quoi souhaitez-vous être guidé(e) ?",
-    "hint": "Choisissez-en jusqu’à {{n}}. Vous pourrez changer plus tard.",
+    "hint": "Choisissez-en autant que vous voulez. Vous pourrez changer plus tard.",
     "areas": {
       "love": "Amour",
       "career": "Carrière",
