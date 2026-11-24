@@ -216,7 +216,8 @@
     "scanAnotherConfirmTitle": "別の手相をスキャンしますか？",
     "scanAnotherConfirmDesc": "これにより、現在保存されている手相プロフィールが新しいスキャンに置き換えられます - 最新のスキャンのみがアクティブなプロフィールとして保持されます。以前のスキャンは履歴で引き続き確認できます。",
     "viewHistory": "履歴",
-    "heroNote": "写真は非公開で、いつでも削除できます。"
+    "heroNote": "写真は非公開で、いつでも削除できます。",
+    "buyPremiumToUnlock": "プレミアムを購入して詳細をすべて見る"
   },
   "tarot": {
     "title": "タロット",
@@ -1242,7 +1243,7 @@
       "premiumHeader": "プレミアム",
       "palm": {
         "label": "詳細な手相レポート",
-        "free": "1",
+        "free": "含まれません",
         "premium": "無制限"
       },
       "tarotSpreads": {

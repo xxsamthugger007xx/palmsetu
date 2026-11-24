@@ -39,14 +39,15 @@ const submitSchema = z.object({
 const askSchema = z.object({ question: z.string().min(1).max(1000) });
 const localDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
-const MAX_FREE_PREMIUM_REPORTS = 1;
+// Full palm detail is a Premium purchase. (Env overrides exist only so a free taste can be re-enabled later.)
+const MAX_FREE_PREMIUM_REPORTS = Number(process.env.PALM_FREE_PREMIUM_REPORTS ?? 0);
 const MAX_FOLLOWUP_FREE = 2;
 // Section-wise unlock quota is tracked independently from the whole-bundle
 // quota above (MAX_FREE_PREMIUM_REPORTS) - a free user gets one free single
 // section AND, separately, the existing one free complete-bundle report.
 // Keeping them independent avoids silently changing the behavior of the
 // already-tested whole-report quota.
-const MAX_FREE_SECTION_UNLOCKS = 1;
+const MAX_FREE_SECTION_UNLOCKS = Number(process.env.PALM_FREE_SECTION_UNLOCKS ?? 0);
 
 /** Same TEMPORARY testing shim as every other route in this app: no real
  * auth exists yet, identity comes from the x-demo-user header. */
@@ -257,7 +258,7 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     const tier = getUserTier(userId);
     const used = premiumReportsUsedBy(userId);
     if (tier !== 'premium' && used >= MAX_FREE_PREMIUM_REPORTS) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FREE_PREMIUM_REPORTS} premium palm report. Upgrade for additional reports.`, code: 'LIMIT_REACHED' });
+      return res.status(403).json({ error: 'The full palm reading is part of Palm Setu Premium.', code: 'LIMIT_REACHED' });
     }
 
     const premiumReport = generatePremiumReport(reading.analysis);
@@ -308,7 +309,7 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     const tier = getUserTier(userId);
     const used = sectionUnlocksUsedBy(userId);
     if (tier !== 'premium' && used >= MAX_FREE_SECTION_UNLOCKS) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FREE_SECTION_UNLOCKS} free section unlock. Upgrade for additional sections.`, code: 'LIMIT_REACHED' });
+      return res.status(403).json({ error: 'Full palm detail is part of Palm Setu Premium.', code: 'LIMIT_REACHED' });
     }
 
     unlockPalmSection(reading.id, userId, section);

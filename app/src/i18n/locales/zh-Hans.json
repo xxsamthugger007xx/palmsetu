@@ -216,7 +216,8 @@
     "scanAnotherConfirmTitle": "要扫描另一只手掌吗？",
     "scanAnotherConfirmDesc": "这将用新的扫描替换你当前保存的手相档案，仅保留最新的扫描作为你的当前档案。之前的扫描记录仍可在历史记录中查看。",
     "viewHistory": "历史记录",
-    "heroNote": "你的照片完全私密，可随时删除。"
+    "heroNote": "你的照片完全私密，可随时删除。",
+    "buyPremiumToUnlock": "购买高级版解锁完整详情"
   },
   "tarot": {
     "title": "塔罗牌",
@@ -1242,7 +1243,7 @@
       "premiumHeader": "高级版",
       "palm": {
         "label": "详细手相报告",
-        "free": "1",
+        "free": "不包含",
         "premium": "无限"
       },
       "tarotSpreads": {

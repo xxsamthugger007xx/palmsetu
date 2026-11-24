@@ -216,7 +216,8 @@
     "scanAnotherConfirmTitle": "Pindai telapak tangan lain?",
     "scanAnotherConfirmDesc": "Ini akan mengganti profil telapak tangan tersimpan Anda saat ini dengan pemindaian baru - hanya pemindaian terbaru Anda yang disimpan sebagai profil aktif. Pemindaian sebelumnya tetap tersedia di Riwayat.",
     "viewHistory": "Riwayat",
-    "heroNote": "Fotomu bersifat pribadi dan bisa dihapus kapan saja."
+    "heroNote": "Fotomu bersifat pribadi dan bisa dihapus kapan saja.",
+    "buyPremiumToUnlock": "Beli Premium untuk membuka semua detail"
   },
   "tarot": {
     "title": "Tarot",
@@ -1242,7 +1243,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Laporan telapak tangan terperinci",
-        "free": "1",
+        "free": "Tidak termasuk",
         "premium": "Tanpa batas"
       },
       "tarotSpreads": {

@@ -220,7 +220,8 @@
     "scanAnotherConfirmTitle": "Scan another palm?",
     "scanAnotherConfirmDesc": "This replaces your current saved palm profile with a new scan - only your most recent scan is kept as your active profile. Your previous scans stay available in History.",
     "viewHistory": "History",
-    "heroNote": "Your photo is private and you can delete it any time."
+    "heroNote": "Your photo is private and you can delete it any time.",
+    "buyPremiumToUnlock": "Buy Premium to unlock full details"
   },
   "tarot": {
     "title": "Your Tarot Space",
@@ -1247,7 +1248,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Palm detailed reports",
-        "free": "1",
+        "free": "Not included",
         "premium": "Unlimited"
       },
       "tarotSpreads": {

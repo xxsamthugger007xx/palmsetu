@@ -139,20 +139,11 @@ describe('routes/palm - free/paid separation and entitlement', () => {
     spy.mockRestore();
   });
 
-  it('a free-tier user can generate exactly one premium report (the free quota), then is locked out', async () => {
-    const readingA = insertReading(freeUser);
-    const readingB = insertReading(freeUser);
-
-    const first = await request(app).post(`/palm/readings/${readingA.id}/premium-report`).set('x-demo-user', freeUser);
-    expect(first.status).toBe(200);
-    expect(first.body.premiumReport.sections.length).toBeGreaterThan(0);
-    // Premium report generation is now fully deterministic - it must never
-    // reach the AI provider at all.
-    expect(provider.callCount).toBe(0);
-
-    const second = await request(app).post(`/palm/readings/${readingB.id}/premium-report`).set('x-demo-user', freeUser);
-    expect(second.status).toBe(403);
-    expect(second.body.code).toBe('LIMIT_REACHED');
+  it('a free-tier user cannot generate a premium report: full detail needs Premium', async () => {
+    const reading = insertReading(freeUser);
+    const res = await request(app).post(`/palm/readings/${reading.id}/premium-report`).set('x-demo-user', freeUser);
+    expect(res.status).toBe(403);
+    expect(res.body.code).toBe('LIMIT_REACHED');
     expect(provider.callCount).toBe(0);
   });
 
@@ -216,6 +207,7 @@ describe('routes/palm - section-wise entitlement', () => {
   });
 
   it('unlocking one section grants access only to that section, not others', async () => {
+    const freeUser = premiumUser; // section unlocks are a Premium action
     const reading = insertReading(freeUser);
 
     const before = await request(app).get(`/palm/readings/${reading.id}/sections`).set('x-demo-user', freeUser);
@@ -258,25 +250,17 @@ describe('routes/palm - section-wise entitlement', () => {
     }
   });
 
-  it('a free user who already used their free section unlock is blocked (declined/failed purchase) and gains no access', async () => {
-    // Deliberately a fresh user id, not the shared `freeUser` - an earlier
-    // test in this block already consumes freeUser's one free section
-    // unlock, and this test specifically needs a user whose quota is
-    // untouched so "first" genuinely means first.
+  it('a free user cannot unlock any section and gains no access', async () => {
     const quotaUser = `free-quota-${uuid()}`;
-    const readingA = insertReading(quotaUser);
-    const readingB = insertReading(quotaUser);
+    const reading = insertReading(quotaUser);
 
-    const first = await request(app).post(`/palm/readings/${readingA.id}/sections/heartLine/unlock`).set('x-demo-user', quotaUser);
-    expect(first.status).toBe(200);
+    const res = await request(app).post(`/palm/readings/${reading.id}/sections/heartLine/unlock`).set('x-demo-user', quotaUser);
+    expect(res.status).toBe(403);
+    expect(res.body.code).toBe('LIMIT_REACHED');
 
-    const second = await request(app).post(`/palm/readings/${readingB.id}/sections/lifeLine/unlock`).set('x-demo-user', quotaUser);
-    expect(second.status).toBe(403);
-    expect(second.body.code).toBe('LIMIT_REACHED');
-
-    const sectionsRes = await request(app).get(`/palm/readings/${readingB.id}/sections`).set('x-demo-user', quotaUser);
-    const life = sectionsRes.body.sections.find((s: any) => s.sectionKey === 'lifeLine');
-    expect(life.unlocked).toBe(false);
+    const sectionsRes = await request(app).get(`/palm/readings/${reading.id}/sections`).set('x-demo-user', quotaUser);
+    const heart = sectionsRes.body.sections.find((s: any) => s.sectionKey === 'heartLine');
+    expect(heart.unlocked).toBe(false);
   });
 
   it('cross-user ownership: one user cannot unlock or read section entitlements on another user\'s reading', async () => {

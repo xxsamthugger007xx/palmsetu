@@ -17,6 +17,7 @@ import { Button, IconButton } from '../../components/Button';
 import { useTranslation } from 'react-i18next';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
+import { billingApi } from '../../services/billingApi';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading, PalmSectionsResponse } from '../../types/palm';
 
@@ -45,6 +46,9 @@ export function PalmReportScreen() {
   const [unlockingSection, setUnlockingSection] = useState<string | null>(null);
   const [sectionError, setSectionError] = useState<string | null>(null);
   const [generatingComplete, setGeneratingComplete] = useState(false);
+  // Full palm detail is a Premium purchase: free users are sent to the paywall instead of unlocking anything here.
+  const [isPremium, setIsPremium] = useState(false);
+  useEffect(() => { billingApi.getStatus().then((b) => setIsPremium(b.tier === 'premium')).catch(() => {}); }, []);
 
   const load = async () => {
     setState('loading');
@@ -67,6 +71,7 @@ export function PalmReportScreen() {
   }, [readingId]);
 
   const handleUnlockSection = async (sectionKey: string) => {
+    if (!isPremium) { navigation.navigate('Paywall'); return; }
     setSectionError(null);
     setUnlockingSection(sectionKey);
     try {
@@ -87,6 +92,7 @@ export function PalmReportScreen() {
   };
 
   const handleUnlockComplete = async () => {
+    if (!isPremium) { navigation.navigate('Paywall'); return; }
     setSectionError(null);
     setGeneratingComplete(true);
     try {
@@ -150,13 +156,10 @@ export function PalmReportScreen() {
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">{t('ui.PalmReportScreen.palmReading')}</Text>
         <View style={styles.headerActions}>
-          {state === 'ready' && (
-            <Card style={styles.saveBadge} padded={false}>
-              <Check size={13} color={color.success} strokeWidth={2.5} />
-              <Text variant="caption" tone="success" weight="semibold" style={{ marginLeft: 4 }}>{t('palm.saveLabel')}</Text>
-            </Card>
-          )}
           <IconButton icon={History} onPress={() => navigation.navigate('PalmHistory')} />
+          {state === 'ready' && (
+            <Button label={t('ui.PalmReportScreen.saveAndContinue')} size="sm" onPress={goHome} style={{ marginLeft: spacing.xs }} />
+          )}
         </View>
       </View>
 
@@ -289,7 +292,7 @@ export function PalmReportScreen() {
                       {t('ui.PalmReportScreen.fullStructureAdditionalDetectedCharacteristics')}
                     </Text>
                     <Button
-                      label={`Unlock ${section.title} Analysis`}
+                      label={isPremium ? `Unlock ${section.title} Analysis` : t('palm.buyPremiumToUnlock')}
                       size="sm"
                       loading={unlockingSection === section.sectionKey}
                       disabled={unlockingSection !== null}
@@ -344,7 +347,7 @@ export function PalmReportScreen() {
             {t('ui.PalmReportScreen.unlockYourCompletePalmReading')}
           </Text>
           <Button
-            label={t('ui.PalmReportScreen.unlockCompleteReading')}
+            label={isPremium ? t('ui.PalmReportScreen.unlockCompleteReading') : t('palm.buyPremiumToUnlock')}
             fullWidth
             loading={generatingComplete}
             disabled={generatingComplete}
@@ -387,7 +390,6 @@ export function PalmReportScreen() {
           {t('ui.PalmReportScreen.yourReadingHasBeenSaved')}
         </Text>
       </Card>
-      <Button label={t('ui.PalmReportScreen.saveAndContinue')} fullWidth style={{ marginTop: spacing.sm }} onPress={goHome} />
 
     </PageContainer>
   );

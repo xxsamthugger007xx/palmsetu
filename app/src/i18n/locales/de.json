@@ -220,7 +220,8 @@
     "scanAnotherConfirmTitle": "Weitere Handfläche scannen?",
     "scanAnotherConfirmDesc": "Dies ersetzt dein aktuell gespeichertes Handflächen-Profil durch einen neuen Scan - nur dein neuester Scan wird als aktives Profil behalten. Deine früheren Scans bleiben im Verlauf verfügbar.",
     "viewHistory": "Verlauf",
-    "heroNote": "Dein Foto bleibt privat und kann jederzeit gelöscht werden."
+    "heroNote": "Dein Foto bleibt privat und kann jederzeit gelöscht werden.",
+    "buyPremiumToUnlock": "Premium kaufen, um alle Details freizuschalten"
   },
   "tarot": {
     "title": "Tarot",
@@ -1247,7 +1248,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Ausführliche Handlese-Berichte",
-        "free": "1",
+        "free": "Nicht enthalten",
         "premium": "Unbegrenzt"
       },
       "tarotSpreads": {

@@ -220,7 +220,8 @@
     "scanAnotherConfirmTitle": "Scansionare un altro palmo?",
     "scanAnotherConfirmDesc": "Questo sostituisce il tuo profilo del palmo salvato attuale con una nuova scansione - solo la tua scansione più recente viene mantenuta come profilo attivo. Le tue scansioni precedenti restano disponibili nella Cronologia.",
     "viewHistory": "Cronologia",
-    "heroNote": "La tua foto è privata e puoi eliminarla quando vuoi."
+    "heroNote": "La tua foto è privata e puoi eliminarla quando vuoi.",
+    "buyPremiumToUnlock": "Acquista Premium per sbloccare tutti i dettagli"
   },
   "tarot": {
     "title": "Tarocchi",
@@ -1247,7 +1248,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Report del palmo dettagliati",
-        "free": "1",
+        "free": "Non incluso",
         "premium": "Illimitati"
       },
       "tarotSpreads": {

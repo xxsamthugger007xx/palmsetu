@@ -220,7 +220,8 @@
     "scanAnotherConfirmTitle": "Scanner une autre paume ?",
     "scanAnotherConfirmDesc": "Cela remplace votre profil de paume actuellement enregistré par un nouveau scan - seul votre scan le plus récent est conservé comme profil actif. Vos scans précédents restent disponibles dans l'historique.",
     "viewHistory": "Historique",
-    "heroNote": "Votre photo est privée et vous pouvez la supprimer à tout moment."
+    "heroNote": "Votre photo est privée et vous pouvez la supprimer à tout moment.",
+    "buyPremiumToUnlock": "Achetez Premium pour débloquer tous les détails"
   },
   "tarot": {
     "title": "Tarot",
@@ -1247,7 +1248,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Rapports de paume détaillés",
-        "free": "1",
+        "free": "Non inclus",
         "premium": "Illimités"
       },
       "tarotSpreads": {

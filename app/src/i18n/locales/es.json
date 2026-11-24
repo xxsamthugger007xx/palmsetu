@@ -220,7 +220,8 @@
     "scanAnotherConfirmTitle": "¿Escanear otra palma?",
     "scanAnotherConfirmDesc": "Esto reemplaza tu perfil de palma guardado actual con un nuevo escaneo - solo se conserva tu escaneo más reciente como perfil activo. Tus escaneos anteriores siguen disponibles en el Historial.",
     "viewHistory": "Historial",
-    "heroNote": "Tu foto es privada y puedes borrarla cuando quieras."
+    "heroNote": "Tu foto es privada y puedes borrarla cuando quieras.",
+    "buyPremiumToUnlock": "Compra Premium para ver todos los detalles"
   },
   "tarot": {
     "title": "Tarot",
@@ -1247,7 +1248,7 @@
       "premiumHeader": "Premium",
       "palm": {
         "label": "Informes de palma detallados",
-        "free": "1",
+        "free": "No incluido",
         "premium": "Ilimitados"
       },
       "tarotSpreads": {

@@ -216,7 +216,8 @@
     "scanAnotherConfirmTitle": "다른 손금을 스캔할까요?",
     "scanAnotherConfirmDesc": "이렇게 하면 현재 저장된 손금 프로필이 새로운 스캔으로 교체돼요 - 가장 최근 스캔만 활성 프로필로 유지돼요. 이전 스캔은 기록에서 계속 확인할 수 있어요.",
     "viewHistory": "기록",
-    "heroNote": "사진은 비공개이며 언제든 삭제할 수 있어요."
+    "heroNote": "사진은 비공개이며 언제든 삭제할 수 있어요.",
+    "buyPremiumToUnlock": "전체 내용을 보려면 프리미엄 구매"
   },
   "tarot": {
     "title": "타로",
@@ -1242,7 +1243,7 @@
       "premiumHeader": "프리미엄",
       "palm": {
         "label": "상세 손금 리포트",
-        "free": "1",
+        "free": "미포함",
         "premium": "무제한"
       },
       "tarotSpreads": {
