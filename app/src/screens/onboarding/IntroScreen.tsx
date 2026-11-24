@@ -18,12 +18,12 @@ import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { useOnboardingIntro } from '../../context/OnboardingIntroContext';
-import { ChatHeroVisual } from './intro/ChatHeroVisual';
 
 const PAGE_COUNT = 3;
-// Illustration for the first intro screen (palm + zodiac wheel). The chat screen still uses a drawn visual until its art arrives.
+// Illustration for the first intro screen (palm + zodiac wheel). All three screens use illustrated artwork.
 const INTRO_PALM_IMAGE = require('../../../assets/intro/intro-palm.webp');
 const INTRO_TAROT_IMAGE = require('../../../assets/intro/intro-tarot.webp');
+const INTRO_CHAT_IMAGE = require('../../../assets/intro/intro-chat.webp');
 
 export function IntroScreen() {
   const { t } = useTranslation();
@@ -82,7 +82,7 @@ export function IntroScreen() {
   const pages: { Hero?: React.ComponentType<{ size?: number }>; image?: ImageSourcePropType; badge: string; headline: string; body: string; alt: string }[] = [
     { image: INTRO_PALM_IMAGE, badge: t('intro.screen1Badge'), headline: t('intro.screen1Headline'), body: t('intro.screen1Body'), alt: t('intro.screen1ImageAlt') },
     { image: INTRO_TAROT_IMAGE, badge: t('intro.screen2Badge'), headline: t('intro.screen2Headline'), body: t('intro.screen2Body'), alt: t('intro.screen2ImageAlt') },
-    { Hero: ChatHeroVisual, badge: t('intro.screen3Badge'), headline: t('intro.screen3Headline'), body: t('intro.screen3Body'), alt: t('intro.screen3ImageAlt') },
+    { image: INTRO_CHAT_IMAGE, badge: t('intro.screen3Badge'), headline: t('intro.screen3Headline'), body: t('intro.screen3Body'), alt: t('intro.screen3ImageAlt') },
   ];
 
   const isLastPage = page === PAGE_COUNT - 1;
