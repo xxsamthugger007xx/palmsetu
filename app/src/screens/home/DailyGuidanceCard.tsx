@@ -11,11 +11,15 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { DailyHoroscope } from '../../types/astrology';
 import { formatLongDate } from '../../utils/formatDate';
+import { guidanceLeadsFor } from './homeSections';
+import { useUserProfile } from '../../context/UserProfileContext';
 
 /** Home card showing today's guidance (career / relationships / energy) from the daily horoscope. */
 export function DailyGuidanceCard({ dailyHoroscope }: { dailyHoroscope: DailyHoroscope | null }) {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { profile } = useUserProfile();
+  const lead = guidanceLeadsFor(profile?.focus);
   return (
   <Card
             elevated
@@ -38,18 +42,14 @@ export function DailyGuidanceCard({ dailyHoroscope }: { dailyHoroscope: DailyHor
             )}
             {dailyHoroscope ? (
               <>
-                <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }}>
-                  <Text variant="bodySm" weight="semibold">{t('home.careerLabel')}</Text>
-                  {dailyHoroscope.careerGuidance}
-                </Text>
-                <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-                  <Text variant="bodySm" weight="semibold">{t('home.relationshipsLabel')}</Text>
-                  {dailyHoroscope.relationshipGuidance}
-                </Text>
-                <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>
-                  <Text variant="bodySm" weight="semibold">{t('home.energyLabel')}</Text>
-                  {dailyHoroscope.selfCarePrompt}
-                </Text>
+                {(['career', 'relationships', 'energy'] as ('career' | 'relationships' | 'energy')[])
+                  .sort((x, y) => (x === lead ? -1 : y === lead ? 1 : 0))
+                  .map((line, i) => (
+                    <Text key={line} variant="bodySm" tone="secondary" style={{ marginTop: i === 0 ? spacing.sm : spacing.xs }}>
+                      <Text variant="bodySm" weight="semibold">{t(`home.${line}Label`)}</Text>
+                      {line === 'career' ? dailyHoroscope.careerGuidance : line === 'relationships' ? dailyHoroscope.relationshipGuidance : dailyHoroscope.selfCarePrompt}
+                    </Text>
+                  ))}
                 <Text variant="caption" tone="accent" style={{ marginTop: spacing.sm }}>
                   {t('home.tryTodayLabel')}{dailyHoroscope.focus.action}
                 </Text>

@@ -1343,5 +1343,17 @@
     "or": "or",
     "notConfigured": "Google sign-in isn’t set up yet. Please use email for now.",
     "failed": "Google sign-in didn’t work. Please try again."
+  },
+  "focus": {
+    "title": "What would you like guidance on?",
+    "hint": "Pick up to {{n}}. You can change this later.",
+    "areas": {
+      "love": "Love",
+      "career": "Career",
+      "money": "Money",
+      "health": "Health",
+      "family": "Family",
+      "growth": "Growth"
+    }
   }
 }

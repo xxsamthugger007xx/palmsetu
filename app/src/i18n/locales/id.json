@@ -1338,5 +1338,17 @@
     "or": "atau",
     "notConfigured": "Login Google belum disiapkan. Gunakan email untuk sementara.",
     "failed": "Login Google gagal. Silakan coba lagi."
+  },
+  "focus": {
+    "title": "Anda ingin panduan tentang apa?",
+    "hint": "Pilih hingga {{n}}. Anda bisa mengubahnya nanti.",
+    "areas": {
+      "love": "Cinta",
+      "career": "Karier",
+      "money": "Uang",
+      "health": "Kesehatan",
+      "family": "Keluarga",
+      "growth": "Pertumbuhan"
+    }
   }
 }

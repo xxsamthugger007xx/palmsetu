@@ -10,7 +10,8 @@ import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
-import { Gender, useUserProfile } from '../../context/UserProfileContext';
+import { FocusPicker } from '../../components/FocusPicker';
+import { FocusArea, Gender, useUserProfile } from '../../context/UserProfileContext';
 
 import { asApiError } from '../../services/apiRequest';
 /**
@@ -26,6 +27,7 @@ export function EditProfileScreen() {
 
   const [name, setName] = useState(profile?.name ?? '');
   const [gender, setGender] = useState<Gender | null>(profile?.gender ?? null);
+  const [focus, setFocus] = useState<FocusArea[]>(profile?.focus ?? []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +45,7 @@ export function EditProfileScreen() {
     setSaving(true);
     setError(null);
     try {
-      await setProfile({ name: name.trim(), gender: gender ?? 'prefer-not-to-say' });
+      await setProfile({ name: name.trim(), gender: gender ?? 'prefer-not-to-say', focus });
       navigation.goBack();
     } catch (__err) {
       const err = asApiError(__err);
@@ -104,6 +106,10 @@ export function EditProfileScreen() {
             />
           );
         })}
+      </View>
+
+      <View style={{ marginTop: spacing.lg }}>
+        <FocusPicker value={focus} onChange={setFocus} />
       </View>
 
       {error && (

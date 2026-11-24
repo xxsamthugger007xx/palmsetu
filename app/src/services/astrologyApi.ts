@@ -1,6 +1,6 @@
 import {
   AstrologySystem, BirthProfile, DailyDeliveryPreference, DailyHoroscope,
-  Relationship, RelationshipConsent, RelationshipDailyReport, ConsentType, UserIdentity, Gender,
+  Relationship, RelationshipConsent, RelationshipDailyReport, ConsentType, UserIdentity, Gender, FocusArea,
   OnboardingDraft,
 } from '../types/astrology';
 import { request } from './apiRequest';
@@ -27,7 +27,7 @@ export const astrologyApi = {
   // profile above. See UserIdentity in types/astrology.ts.
   getIdentity: () => request<UserIdentity>(BASE_URL, '/astrology/identity'),
 
-  saveIdentity: (payload: { name: string; gender?: Gender | null }) =>
+  saveIdentity: (payload: { name: string; gender?: Gender | null; focus?: FocusArea[] }) =>
     request<UserIdentity>(BASE_URL, '/astrology/identity', { method: 'PUT', body: JSON.stringify(payload) }),
 
   // Step-by-step astrology onboarding draft - see OnboardingDraft. 404 from

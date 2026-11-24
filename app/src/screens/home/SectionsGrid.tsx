@@ -8,15 +8,17 @@ import { Text } from '../../components/Text';
 import { StatusBadge } from '../../components/StatusBadge';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
-import { sections } from './homeSections';
+import { sections, orderSectionsForFocus } from './homeSections';
+import { useUserProfile } from '../../context/UserProfileContext';
 
 /** The "Explore" grid of feature tiles. */
 export function SectionsGrid() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { profile } = useUserProfile();
   return (
     <View style={styles.grid}>
-      {sections.map((s) => (
+      {orderSectionsForFocus(sections, profile?.focus).map((s) => (
         <Card key={s.id} style={styles.tile} onPress={() => s.navigate(navigation)}>
           <View style={styles.tileTop}>
             <View style={styles.tileIcon}>

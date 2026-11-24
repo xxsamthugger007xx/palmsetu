@@ -1,6 +1,9 @@
 export type AstrologySystem = 'vedic' | 'western';
 export type GenerationStatus = 'pending' | 'ready' | 'failed';
 export type Gender = 'woman' | 'man' | 'non-binary' | 'prefer-not-to-say';
+/** What someone wants guidance on (picked in onboarding, up to 3). */
+export const FOCUS_AREAS = ['love', 'career', 'money', 'health', 'family', 'growth'] as const;
+export type FocusArea = (typeof FOCUS_AREAS)[number];
 
 /** Backend-persisted identity (name, gender) - see UserIdentity in
  * server/src/types/astrology.ts for why this is kept separate from
@@ -9,6 +12,7 @@ export interface UserIdentity {
   userId: string;
   name: string;
   gender: Gender | null;
+  focus?: FocusArea[];
   updatedAt: string;
 }
 

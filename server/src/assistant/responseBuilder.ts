@@ -1,5 +1,5 @@
 import { AiProvider } from '../ai/types';
-import { AssistantFeature, AssistantMessage } from '../data/store';
+import { AssistantFeature, AssistantMessage, userIdentities } from '../data/store';
 import { AssistantConfig } from '../data/assistantConfig';
 import { buildAssistantSystemPrompt } from './systemPrompts';
 import {
@@ -437,6 +437,11 @@ export async function buildAssistantReply(
       : `\n\nThe user has no birth profile on file; for questions about their day or plans, answer practically and suggest ` +
         `adding their birth details for a more personal astrological view.`;
 
+    const focusAreas = userIdentities.get(userId)?.focus ?? [];
+    const focusContext = focusAreas.length
+      ? `\n\nThe user told us they most want guidance on: ${focusAreas.join(', ')}. Lean towards these when it fits, without forcing them in.`
+      : '';
+
     const smallTalkMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
       {
         role: 'system',
@@ -453,7 +458,7 @@ export async function buildAssistantReply(
           `user that are not explicitly given to you, and keep to the safety rules above (no medical, legal or ` +
           `financial authority, no guarantees about the future). For questions about how something will go (a meeting, ` +
           `interview, date, exam, trip), answer in an astrology-informed, encouraging and practical way, make clear it is ` +
-          `guidance rather than a prediction, and keep it brief.${astroContext}${wellnessContext}`,
+          `guidance rather than a prediction, and keep it brief.${astroContext}${focusContext}${wellnessContext}`,
       },
       ...history.slice(-6).map((m) => ({ role: m.role, content: m.content } as const)),
     ];

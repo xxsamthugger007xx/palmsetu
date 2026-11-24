@@ -1343,5 +1343,17 @@
     "or": "oder",
     "notConfigured": "Die Google-Anmeldung ist noch nicht eingerichtet. Bitte nutze vorerst E-Mail.",
     "failed": "Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut."
+  },
+  "focus": {
+    "title": "Wobei möchtest du Orientierung?",
+    "hint": "Wähle bis zu {{n}}. Du kannst das später ändern.",
+    "areas": {
+      "love": "Liebe",
+      "career": "Karriere",
+      "money": "Geld",
+      "health": "Gesundheit",
+      "family": "Familie",
+      "growth": "Wachstum"
+    }
   }
 }

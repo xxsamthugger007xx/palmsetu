@@ -85,3 +85,29 @@ export const sections: SectionCard[] = [
   },
 ];
 
+
+/** Which Explore tiles best serve each focus area; tiles for what someone picked float to the top, the rest keep their order. */
+const FOCUS_TILES: Record<string, string[]> = {
+  love: ['lovetest', 'tarot', 'astrology'],
+  career: ['dailyreport', 'astrology', 'palm'],
+  money: ['dailyreport', 'astrology', 'palm'],
+  health: ['dailyreport', 'moonsign'],
+  family: ['lovetest', 'astrology'],
+  growth: ['aichat', 'palm', 'tarot'],
+};
+
+export function orderSectionsForFocus(list: SectionCard[], focus: string[] | undefined): SectionCard[] {
+  if (!focus || focus.length === 0) return list;
+  const rank = new Map<string, number>();
+  focus.forEach((f, fi) => (FOCUS_TILES[f] ?? []).forEach((id, i) => { if (!rank.has(id)) rank.set(id, fi * 10 + i); }));
+  return [...list].sort((a, b) => (rank.get(a.id) ?? 1000) - (rank.get(b.id) ?? 1000));
+}
+
+/** Which of today's guidance lines (career / relationships / energy) should lead for these focus areas. */
+export function guidanceLeadsFor(focus: string[] | undefined): 'career' | 'relationships' | 'energy' | null {
+  const first = focus?.[0];
+  if (!first) return null;
+  if (first === 'career' || first === 'money') return 'career';
+  if (first === 'love' || first === 'family') return 'relationships';
+  return 'energy';
+}

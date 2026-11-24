@@ -2,13 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { astrologyApi } from '../services/astrologyApi';
 import { useAuth } from './AuthContext';
-import { Gender } from '../types/astrology';
+import { Gender, FocusArea } from '../types/astrology';
 
-export type { Gender };
+export type { Gender, FocusArea };
 
 export interface UserProfile {
   name: string;
   gender: Gender;
+  /** What they want guidance on. Omitted when saving = keep what is stored. */
+  focus?: FocusArea[];
 }
 
 /**
@@ -70,7 +72,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     astrologyApi.getIdentity()
       .then((identity) => {
         if (cancelled) return;
-        const next: UserProfile = { name: identity.name, gender: identity.gender ?? 'prefer-not-to-say' };
+        const next: UserProfile = { name: identity.name, gender: identity.gender ?? 'prefer-not-to-say', focus: identity.focus ?? [] };
         setProfileState(next);
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
       })
@@ -92,9 +94,10 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     // "continue" button) doesn't wait on the network, then persist to the
     // backend for real. AsyncStorage is updated in both branches purely as
     // a cache mirror of whatever is currently believed to be true.
+    next = { ...next, focus: next.focus ?? profile?.focus ?? [] };
     setProfileState(next);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    await astrologyApi.saveIdentity({ name: next.name, gender: next.gender });
+    await astrologyApi.saveIdentity({ name: next.name, gender: next.gender, focus: next.focus });
   };
 
   const clearProfile = async () => {

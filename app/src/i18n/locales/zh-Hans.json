@@ -1338,5 +1338,17 @@
     "or": "或",
     "notConfigured": "Google 登录尚未设置，请先使用邮箱。",
     "failed": "Google 登录失败，请重试。"
+  },
+  "focus": {
+    "title": "你想获得哪方面的指引？",
+    "hint": "最多选择 {{n}} 项，之后可以修改。",
+    "areas": {
+      "love": "爱情",
+      "career": "事业",
+      "money": "财运",
+      "health": "健康",
+      "family": "家庭",
+      "growth": "成长"
+    }
   }
 }

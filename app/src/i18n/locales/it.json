@@ -1343,5 +1343,17 @@
     "or": "oppure",
     "notConfigured": "L’accesso con Google non è ancora configurato. Per ora usa l’e-mail.",
     "failed": "Accesso con Google non riuscito. Riprova."
+  },
+  "focus": {
+    "title": "Su cosa vorresti una guida?",
+    "hint": "Scegline fino a {{n}}. Puoi cambiare più tardi.",
+    "areas": {
+      "love": "Amore",
+      "career": "Carriera",
+      "money": "Denaro",
+      "health": "Salute",
+      "family": "Famiglia",
+      "growth": "Crescita"
+    }
   }
 }

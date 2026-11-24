@@ -11,10 +11,15 @@ export type Gender = 'woman' | 'man' | 'non-binary' | 'prefer-not-to-say';
  * name/gender during onboarding, before any birth date/time/place is known -
  * BirthProfile.birthDate is required and must not be a fabricated
  * placeholder, so identity has to be settable independently of birth data. */
+/** What a person wants guidance on, picked during onboarding (up to 3). Drives Home ordering and the assistant's context. */
+export const FOCUS_AREAS = ['love', 'career', 'money', 'health', 'family', 'growth'] as const;
+export type FocusArea = (typeof FOCUS_AREAS)[number];
+
 export interface UserIdentity {
   userId: string;
   name: string;
   gender: Gender | null;
+  focus?: FocusArea[];
   updatedAt: string;
 }
 

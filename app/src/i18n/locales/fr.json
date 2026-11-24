@@ -1343,5 +1343,17 @@
     "or": "ou",
     "notConfigured": "La connexion Google n’est pas encore configurée. Utilisez l’e-mail pour l’instant.",
     "failed": "La connexion avec Google a échoué. Veuillez réessayer."
+  },
+  "focus": {
+    "title": "Sur quoi souhaitez-vous être guidé(e) ?",
+    "hint": "Choisissez-en jusqu’à {{n}}. Vous pourrez changer plus tard.",
+    "areas": {
+      "love": "Amour",
+      "career": "Carrière",
+      "money": "Argent",
+      "health": "Santé",
+      "family": "Famille",
+      "growth": "Épanouissement"
+    }
   }
 }

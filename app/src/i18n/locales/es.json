@@ -1343,5 +1343,17 @@
     "or": "o",
     "notConfigured": "El inicio con Google aún no está configurado. Usa el correo por ahora.",
     "failed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo."
+  },
+  "focus": {
+    "title": "¿Sobre qué te gustaría recibir orientación?",
+    "hint": "Elige hasta {{n}}. Puedes cambiarlo después.",
+    "areas": {
+      "love": "Amor",
+      "career": "Carrera",
+      "money": "Dinero",
+      "health": "Salud",
+      "family": "Familia",
+      "growth": "Crecimiento"
+    }
   }
 }

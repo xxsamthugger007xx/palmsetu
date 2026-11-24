@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { AiProvider } from '../ai/types';
 import {
-  assistantConversationsById, assistantUsageLog, AssistantConversation, getUserTier, assistantFreeChatByKey,
+  assistantConversationsById, assistantUsageLog, AssistantConversation, getUserTier, assistantFreeChatByKey, userIdentities,
 } from '../data/store';
 import { freeChatLimits, getMonthlySpendInr } from '../ai/budget';
 import { requestLocalDate } from '../util/localDate';
@@ -176,6 +176,15 @@ export function buildAssistantRouter(aiProvider: AiProvider) {
     const userId = currentUserId(req);
     const data = retrieveUserData(userId);
     const questions: string[] = [];
+    const focusQuestions: Record<string, string> = {
+      love: 'What does my chart say about love and relationships?',
+      career: 'What should I focus on in my career right now?',
+      money: 'How is my money outlook according to my chart?',
+      health: 'How can I look after my energy and wellbeing today?',
+      family: 'How can I bring more harmony to my family life?',
+      growth: 'What should I work on for my personal growth?',
+    };
+    for (const f of userIdentities.get(userId)?.focus ?? []) if (focusQuestions[f]) questions.push(focusQuestions[f]);
     if (hasDataFor('tarot', data)) questions.push('What does my latest tarot card mean?');
     if (hasDataFor('astrology', data)) questions.push("What's today's horoscope based on my chart?");
     if (hasDataFor('gemstone', data)) questions.push('Why was this gemstone recommended for me?');

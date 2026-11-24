@@ -17,7 +17,7 @@ import {
   relationshipDailyReportsByKey, deliveryPreferences, getUserTier,
   kundliChartsById, soulEnergyReadingsByKey, recordTransaction, userIdentities, onboardingDrafts,
 } from '../data/store';
-import { AstrologySystem, BirthProfile, ConsentType, DailyHoroscope, OnboardingDraft, RelationshipDailyReport, UserIdentity } from '../types/astrology';
+import { FOCUS_AREAS, AstrologySystem, BirthProfile, ConsentType, DailyHoroscope, OnboardingDraft, RelationshipDailyReport, UserIdentity } from '../types/astrology';
 import { KundliChart, KundliChartStyle } from '../types/kundli';
 import { recordCompletedReading } from '../memory/memoryService';
 
@@ -80,6 +80,8 @@ const localDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const userIdentitySchema = z.object({
   name: z.string().min(1).max(100),
   gender: z.enum(['woman', 'man', 'non-binary', 'prefer-not-to-say']).nullable().optional(),
+  // Omitted = keep what is stored (so saving just a new name never wipes the focus areas).
+  focus: z.array(z.enum(FOCUS_AREAS)).max(3).optional(),
 });
 
 // Step-by-step astrology onboarding: every field optional, since this
@@ -177,6 +179,7 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
       userId,
       name: parsed.data.name,
       gender: parsed.data.gender ?? null,
+      focus: parsed.data.focus ? [...new Set(parsed.data.focus)] : userIdentities.get(userId)?.focus ?? [],
       updatedAt: new Date().toISOString(),
     };
     userIdentities.set(userId, identity);

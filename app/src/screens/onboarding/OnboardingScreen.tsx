@@ -8,13 +8,15 @@ import { Text } from '../../components/Text';
 import { Button } from '../../components/Button';
 import { AIAvatar } from '../../components/AIAvatar';
 import { color, radius, spacing } from '../../theme/tokens';
-import { Gender, useUserProfile } from '../../context/UserProfileContext';
+import { FocusPicker } from '../../components/FocusPicker';
+import { FocusArea, Gender, useUserProfile } from '../../context/UserProfileContext';
 
 export function OnboardingScreen() {
   const { t } = useTranslation();
   const { setProfile } = useUserProfile();
   const [name, setName] = useState('');
   const [gender, setGender] = useState<Gender | null>(null);
+  const [focus, setFocus] = useState<FocusArea[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const genderOptions: { id: Gender; label: string }[] = [
@@ -37,7 +39,7 @@ export function OnboardingScreen() {
       // unreachable), the name/gender the user entered is not lost: it's
       // already cached in AsyncStorage and will be retried the next time
       // the identity is saved (e.g. from the edit-profile screen).
-      await setProfile({ name: name.trim(), gender });
+      await setProfile({ name: name.trim(), gender, focus });
     } catch (err) {
       devWarn('[onboarding] identity save to backend failed (will retry on next save):', err);
     } finally {
@@ -87,6 +89,10 @@ export function OnboardingScreen() {
             />
           );
         })}
+      </View>
+
+      <View style={{ marginTop: spacing.lg }}>
+        <FocusPicker value={focus} onChange={setFocus} />
       </View>
 
       <Button
