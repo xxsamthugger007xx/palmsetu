@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { color, radius, spacing } from '../theme/tokens';
 import { Text } from './Text';
@@ -20,7 +21,7 @@ type Props = {
 };
 
 const toneForVariant = {
-  primary: 'inverted',
+  primary: 'onPrimary',
   secondary: 'primary',
   ghost: 'primary',
   danger: 'danger',
@@ -102,8 +103,17 @@ export function Button({
         style,
       ]}
     >
+      {variant === 'primary' && (
+        <LinearGradient
+          pointerEvents="none"
+          colors={[color.primary, color.primaryDeep]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? color.bg : color.accent} size="small" />
+        <ActivityIndicator color={variant === 'primary' ? color.onPrimary : color.accent} size="small" />
       ) : (
         <>
           {Icon && <Icon size={16} color={toneColorFor(variant)} strokeWidth={1.75} />}
@@ -119,7 +129,7 @@ export function Button({
 function toneColorFor(variant: Props['variant']) {
   switch (variant) {
     case 'primary':
-      return color.bg;
+      return color.onPrimary;
     case 'danger':
       return color.danger;
     default:
@@ -146,9 +156,10 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   primary: {
-    backgroundColor: color.accent,
+    backgroundColor: color.primaryDeep,
+    overflow: 'hidden',
     // Soft glow so the main action stands out against the dark background.
-    shadowColor: color.accent,
+    shadowColor: color.primary,
     shadowOpacity: 0.45,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },

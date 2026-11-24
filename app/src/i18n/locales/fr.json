@@ -136,6 +136,20 @@
         "title": "Portrait de l'âme sœur",
         "description": "Un portrait de votre âme sœur imaginée, dessiné par IA"
       }
+    },
+    "hero": {
+      "palmTitle": "Découvrez ce que dit votre paume",
+      "palmDesc": "Scannez une fois. Votre première lecture est gratuite et prend environ 20 secondes.",
+      "palmCta": "Scanner ma paume",
+      "cardTitle": "Votre carte du jour",
+      "cardDesc": "Tirez une carte et voyez ce qu’elle vous invite à remarquer.",
+      "cardCta": "Tirer ma carte"
+    },
+    "groups": {
+      "readings": "Lectures",
+      "daily": "Au quotidien",
+      "connection": "Lien",
+      "tools": "Outils"
     }
   },
   "wellness": {
@@ -205,7 +219,8 @@
     "scanAnother": "Scanner une autre paume",
     "scanAnotherConfirmTitle": "Scanner une autre paume ?",
     "scanAnotherConfirmDesc": "Cela remplace votre profil de paume actuellement enregistré par un nouveau scan - seul votre scan le plus récent est conservé comme profil actif. Vos scans précédents restent disponibles dans l'historique.",
-    "viewHistory": "Historique"
+    "viewHistory": "Historique",
+    "heroNote": "Votre photo est privée et vous pouvez la supprimer à tout moment."
   },
   "tarot": {
     "title": "Tarot",
@@ -1355,5 +1370,8 @@
       "family": "Famille",
       "growth": "Épanouissement"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Exemples de croquis"
   }
 }

@@ -3,7 +3,7 @@ import { Text as RNText, TextProps, TextStyle } from 'react-native';
 import { color, typography } from '../theme/tokens';
 
 type Variant = 'display' | 'title' | 'subtitle' | 'body' | 'bodySm' | 'caption' | 'label' | 'mono';
-type Tone = 'primary' | 'secondary' | 'muted' | 'accent' | 'success' | 'warning' | 'danger' | 'inverted';
+type Tone = 'primary' | 'secondary' | 'muted' | 'accent' | 'success' | 'warning' | 'danger' | 'inverted' | 'onPrimary';
 
 type Props = TextProps & {
   variant?: Variant;
@@ -31,6 +31,7 @@ const toneColor: Record<Tone, string> = {
   warning: color.warning,
   danger: color.danger,
   inverted: color.bg,
+  onPrimary: color.onPrimary,
 };
 
 const fontFamilyForWeight = (w: TextStyle['fontWeight']): string => {

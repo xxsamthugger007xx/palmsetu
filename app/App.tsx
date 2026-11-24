@@ -14,12 +14,15 @@ import { AdminRoleProvider } from './src/context/AdminRoleContext';
 import { AstrologyOnboardingStatusProvider } from './src/context/AstrologyOnboardingStatus';
 import { useNocturneFonts } from './src/theme/useNocturneFonts';
 import { AnimatedSplash } from './src/components/AnimatedSplash';
+import { initCrashReporting, wrapWithCrashReporting } from './src/services/crashReporting';
+
+initCrashReporting();
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const MIN_SPLASH_MS = 1400;
 
-export default function App() {
+function App() {
   // Fonts load in the background; the system font fallback renders in the
   // meantime so startup is never blocked on a network font fetch.
   const fontsReady = useNocturneFonts();
@@ -74,3 +77,5 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+export default wrapWithCrashReporting(App);

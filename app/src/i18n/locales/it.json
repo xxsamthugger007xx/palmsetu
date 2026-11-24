@@ -136,6 +136,20 @@
         "title": "Ritratto dell'anima gemella",
         "description": "Un ritratto della tua anima gemella immaginata, disegnato dall'IA"
       }
+    },
+    "hero": {
+      "palmTitle": "Scopri cosa dice il tuo palmo",
+      "palmDesc": "Scansiona una volta. La prima lettura è gratuita e richiede circa 20 secondi.",
+      "palmCta": "Scansiona il mio palmo",
+      "cardTitle": "La tua carta di oggi",
+      "cardDesc": "Pesca una carta e scopri cosa ti invita a notare.",
+      "cardCta": "Pesca la mia carta"
+    },
+    "groups": {
+      "readings": "Letture",
+      "daily": "Giornaliero",
+      "connection": "Connessione",
+      "tools": "Strumenti"
     }
   },
   "wellness": {
@@ -205,7 +219,8 @@
     "scanAnother": "Scansiona un altro palmo",
     "scanAnotherConfirmTitle": "Scansionare un altro palmo?",
     "scanAnotherConfirmDesc": "Questo sostituisce il tuo profilo del palmo salvato attuale con una nuova scansione - solo la tua scansione più recente viene mantenuta come profilo attivo. Le tue scansioni precedenti restano disponibili nella Cronologia.",
-    "viewHistory": "Cronologia"
+    "viewHistory": "Cronologia",
+    "heroNote": "La tua foto è privata e puoi eliminarla quando vuoi."
   },
   "tarot": {
     "title": "Tarocchi",
@@ -1355,5 +1370,8 @@
       "family": "Famiglia",
       "growth": "Crescita"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Schizzi di esempio"
   }
 }

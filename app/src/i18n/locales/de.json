@@ -136,6 +136,20 @@
         "title": "Seelenverwandte-Skizze",
         "description": "Ein KI-Porträt deines imaginierten Seelenverwandten"
       }
+    },
+    "hero": {
+      "palmTitle": "Entdecke, was deine Handfläche verrät",
+      "palmDesc": "Einmal scannen. Deine erste Deutung ist kostenlos und dauert etwa 20 Sekunden.",
+      "palmCta": "Meine Hand scannen",
+      "cardTitle": "Deine Karte für heute",
+      "cardDesc": "Ziehe eine Karte und sieh, worauf sie dich aufmerksam machen möchte.",
+      "cardCta": "Meine Karte ziehen"
+    },
+    "groups": {
+      "readings": "Deutungen",
+      "daily": "Täglich",
+      "connection": "Verbindung",
+      "tools": "Werkzeuge"
     }
   },
   "wellness": {
@@ -205,7 +219,8 @@
     "scanAnother": "Weitere Handfläche scannen",
     "scanAnotherConfirmTitle": "Weitere Handfläche scannen?",
     "scanAnotherConfirmDesc": "Dies ersetzt dein aktuell gespeichertes Handflächen-Profil durch einen neuen Scan - nur dein neuester Scan wird als aktives Profil behalten. Deine früheren Scans bleiben im Verlauf verfügbar.",
-    "viewHistory": "Verlauf"
+    "viewHistory": "Verlauf",
+    "heroNote": "Dein Foto bleibt privat und kann jederzeit gelöscht werden."
   },
   "tarot": {
     "title": "Tarot",
@@ -1355,5 +1370,8 @@
       "family": "Familie",
       "growth": "Wachstum"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Beispielskizzen"
   }
 }

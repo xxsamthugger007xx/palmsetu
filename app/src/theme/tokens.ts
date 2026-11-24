@@ -17,6 +17,11 @@ export const color = {
   textMuted: '#8b8fa4',
 
   // Accents
+  // Main call-to-action: a vivid violet with white text (reads clearly on the dark background), distinct from the softer
+  // 'accent' used for tags, links and selected states.
+  primary: '#7B6CF0',
+  primaryDeep: '#5B4BD6',
+  onPrimary: '#ffffff',
   accent: '#9184d9',
   accentMuted: 'rgba(145, 132, 217, 0.14)',
   accentBorder: 'rgba(145, 132, 217, 0.35)',
@@ -110,20 +115,20 @@ export const typography = {
     semibold: 'Inter_600SemiBold',
   },
   size: {
-    xs: 12,
-    sm: 13,
-    md: 15,
-    lg: 17,
+    xs: 13,
+    sm: 14.5,
+    md: 16,
+    lg: 18,
     xl: 22,
     xxl: 28,
     display: 32,
     hero: 42,
   },
   lineHeight: {
-    xs: 16,
-    sm: 18,
-    md: 22,
-    lg: 24,
+    xs: 18,
+    sm: 21,
+    md: 24,
+    lg: 26,
     xl: 28,
     xxl: 36,
     display: 40,

@@ -136,6 +136,20 @@
         "title": "Sketsa Belahan Jiwa",
         "description": "Potret AI dari belahan jiwa yang Anda bayangkan"
       }
+    },
+    "hero": {
+      "palmTitle": "Temukan apa kata telapak tanganmu",
+      "palmDesc": "Pindai sekali. Bacaan pertama gratis dan hanya sekitar 20 detik.",
+      "palmCta": "Pindai telapak tanganku",
+      "cardTitle": "Kartu untuk hari ini",
+      "cardDesc": "Tarik satu kartu dan lihat apa yang diajaknya untuk kamu perhatikan.",
+      "cardCta": "Tarik kartuku"
+    },
+    "groups": {
+      "readings": "Bacaan",
+      "daily": "Harian",
+      "connection": "Hubungan",
+      "tools": "Alat"
     }
   },
   "wellness": {
@@ -201,7 +215,8 @@
     "scanAnother": "Pindai Telapak Tangan Lain",
     "scanAnotherConfirmTitle": "Pindai telapak tangan lain?",
     "scanAnotherConfirmDesc": "Ini akan mengganti profil telapak tangan tersimpan Anda saat ini dengan pemindaian baru - hanya pemindaian terbaru Anda yang disimpan sebagai profil aktif. Pemindaian sebelumnya tetap tersedia di Riwayat.",
-    "viewHistory": "Riwayat"
+    "viewHistory": "Riwayat",
+    "heroNote": "Fotomu bersifat pribadi dan bisa dihapus kapan saja."
   },
   "tarot": {
     "title": "Tarot",
@@ -1350,5 +1365,8 @@
       "family": "Keluarga",
       "growth": "Pertumbuhan"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Contoh sketsa"
   }
 }

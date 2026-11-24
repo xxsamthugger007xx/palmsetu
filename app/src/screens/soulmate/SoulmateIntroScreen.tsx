@@ -13,6 +13,10 @@ import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
 import { useTranslation } from 'react-i18next';
+import { Image } from 'react-native';
+import { SOULMATE_SKETCH_REGISTRY } from '../../data/soulmateSketchRegistry';
+
+const SAMPLE_FILES = ['soulmate_001.jpg', 'soulmate_002.jpg', 'soulmate_003.jpg'];
 
 const STEPS = [
   { icon: Heart, title: 'Share a few preferences', description: 'Gender, age range, cultural background and art style - nothing personal beyond that.' },
@@ -83,9 +87,17 @@ export function SoulmateIntroScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.hero}
       >
-        <View style={styles.heroIcon}>
-          <Pencil size={26} color={color.accent} strokeWidth={1.5} />
+        <View style={styles.samples}>
+          {SAMPLE_FILES.map((f, i) => (
+            <Image
+              key={f}
+              source={SOULMATE_SKETCH_REGISTRY[f]}
+              accessibilityLabel={t('soulmate.sampleLabel')}
+              style={[styles.sample, i === 1 && styles.sampleCenter, { transform: [{ rotate: `${(i - 1) * 7}deg` }] }]}
+            />
+          ))}
         </View>
+        <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm }}>{t('soulmate.sampleLabel')}</Text>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.md, textAlign: 'center' }}>
           {t('ui.SoulmateIntroScreen.soulmateSketch')}
         </Text>
@@ -156,6 +168,9 @@ export function SoulmateIntroScreen() {
 }
 
 const styles = StyleSheet.create({
+  samples: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 150 },
+  sample: { width: 96, height: 124, borderRadius: radius.md, marginHorizontal: -8, borderWidth: 2, borderColor: 'rgba(255,255,255,0.7)', backgroundColor: color.surface },
+  sampleCenter: { width: 112, height: 144, zIndex: 2 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

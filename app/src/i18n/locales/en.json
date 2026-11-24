@@ -136,6 +136,20 @@
         "title": "Soulmate Sketch",
         "description": "An AI-drawn portrait of your imagined soulmate"
       }
+    },
+    "hero": {
+      "palmTitle": "Discover what your palm says",
+      "palmDesc": "Scan once. Your first reading is free and takes about 20 seconds.",
+      "palmCta": "Scan my palm",
+      "cardTitle": "Your card for today",
+      "cardDesc": "Pull one card and see what it invites you to notice.",
+      "cardCta": "Draw my card"
+    },
+    "groups": {
+      "readings": "Readings",
+      "daily": "Daily",
+      "connection": "Connection",
+      "tools": "Tools"
     }
   },
   "wellness": {
@@ -205,7 +219,8 @@
     "scanAnother": "Scan Another Palm",
     "scanAnotherConfirmTitle": "Scan another palm?",
     "scanAnotherConfirmDesc": "This replaces your current saved palm profile with a new scan - only your most recent scan is kept as your active profile. Your previous scans stay available in History.",
-    "viewHistory": "History"
+    "viewHistory": "History",
+    "heroNote": "Your photo is private and you can delete it any time."
   },
   "tarot": {
     "title": "Your Tarot Space",
@@ -1355,5 +1370,8 @@
       "family": "Family",
       "growth": "Growth"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Sample sketches"
   }
 }

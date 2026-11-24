@@ -136,6 +136,20 @@
         "title": "소울메이트 스케치",
         "description": "당신이 상상하는 소울메이트의 AI 초상화"
       }
+    },
+    "hero": {
+      "palmTitle": "당신의 손금이 말하는 것을 알아보세요",
+      "palmDesc": "한 번 스캔해 보세요. 첫 리딩은 무료이며 약 20초 걸려요.",
+      "palmCta": "내 손금 스캔하기",
+      "cardTitle": "오늘의 카드",
+      "cardDesc": "카드 한 장을 뽑고 어떤 점에 주목하라고 하는지 보세요.",
+      "cardCta": "카드 뽑기"
+    },
+    "groups": {
+      "readings": "리딩",
+      "daily": "오늘",
+      "connection": "인연",
+      "tools": "도구"
     }
   },
   "wellness": {
@@ -201,7 +215,8 @@
     "scanAnother": "다른 손금 스캔하기",
     "scanAnotherConfirmTitle": "다른 손금을 스캔할까요?",
     "scanAnotherConfirmDesc": "이렇게 하면 현재 저장된 손금 프로필이 새로운 스캔으로 교체돼요 - 가장 최근 스캔만 활성 프로필로 유지돼요. 이전 스캔은 기록에서 계속 확인할 수 있어요.",
-    "viewHistory": "기록"
+    "viewHistory": "기록",
+    "heroNote": "사진은 비공개이며 언제든 삭제할 수 있어요."
   },
   "tarot": {
     "title": "타로",
@@ -1350,5 +1365,8 @@
       "family": "가족",
       "growth": "성장"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "샘플 스케치"
   }
 }

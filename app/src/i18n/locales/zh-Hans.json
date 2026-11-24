@@ -136,6 +136,20 @@
         "title": "灵魂伴侣素描",
         "description": "由AI绘制的你想象中灵魂伴侣的肖像"
       }
+    },
+    "hero": {
+      "palmTitle": "探索你的手相说了什么",
+      "palmDesc": "扫描一次即可。首次解读免费，约需 20 秒。",
+      "palmCta": "扫描我的手相",
+      "cardTitle": "你今天的塔罗牌",
+      "cardDesc": "抽一张牌，看看它提醒你留意什么。",
+      "cardCta": "抽我的牌"
+    },
+    "groups": {
+      "readings": "解读",
+      "daily": "每日",
+      "connection": "缘分",
+      "tools": "工具"
     }
   },
   "wellness": {
@@ -201,7 +215,8 @@
     "scanAnother": "扫描另一只手掌",
     "scanAnotherConfirmTitle": "要扫描另一只手掌吗？",
     "scanAnotherConfirmDesc": "这将用新的扫描替换你当前保存的手相档案，仅保留最新的扫描作为你的当前档案。之前的扫描记录仍可在历史记录中查看。",
-    "viewHistory": "历史记录"
+    "viewHistory": "历史记录",
+    "heroNote": "你的照片完全私密，可随时删除。"
   },
   "tarot": {
     "title": "塔罗牌",
@@ -1350,5 +1365,8 @@
       "family": "家庭",
       "growth": "成长"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "示例素描"
   }
 }

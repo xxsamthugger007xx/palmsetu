@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, ChevronRight } from 'lucide-react-native';
+import { Sparkles, ChevronRight, Hand, Layers } from 'lucide-react-native';
+import { HeroActionCard } from '../../components/HeroActionCard';
 import { ErrorBanner } from '../../components/ErrorState';
 import { isLoadFailure } from '../../utils/loadFailure';
 import { PageContainer } from '../../components/PageContainer';
@@ -157,6 +158,25 @@ export function HomeScreen() {
         {formatLongDate(new Date()).toUpperCase()}
       </Text>
 
+      {latestPalmReading === null ? (
+        <HeroActionCard
+          icon={Hand}
+          colors={['#8A5CD6', '#3A2A6B']}
+          title={t('home.hero.palmTitle')}
+          description={t('home.hero.palmDesc')}
+          cta={t('home.hero.palmCta')}
+          onPress={() => navigation.navigate('PalmIntro')}
+        />
+      ) : latestPalmReading ? (
+        <HeroActionCard
+          icon={Layers}
+          title={t('home.hero.cardTitle')}
+          description={t('home.hero.cardDesc')}
+          cta={t('home.hero.cardCta')}
+          onPress={() => navigation.navigate('TarotLanding')}
+        />
+      ) : null}
+
       <View style={styles.dialSection}>
         <Pressable accessibilityRole="button"
           onPress={() => astroProfile && navigation.navigate('MoonSign')}
@@ -200,8 +220,6 @@ export function HomeScreen() {
         )}
       </View>
 
-      <TransitsCard transits={notableTransits} />
-
       {streak && <StreakCard streak={streak} onRemindersPress={streak.current > 0 && streak.current < 3 ? () => navigation.navigate('NotificationSettings') : undefined} />}
       {astroProfile && <DailyGuidanceCard dailyHoroscope={dailyHoroscope} />}
 
@@ -238,6 +256,8 @@ export function HomeScreen() {
       </Card>
 
       <PalmInsightCard latestPalmReading={latestPalmReading} />
+
+      <TransitsCard transits={notableTransits} />
 
       <FadeDivider style={{ marginVertical: spacing.lg }} />
 

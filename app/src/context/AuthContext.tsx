@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { tokenStorage } from '../services/tokenStorage';
+import { setCrashUser } from '../services/crashReporting';
 import { authApi, AccountPublic } from '../services/authApi';
 import { setAuthToken, setSessionInvalidHandler } from '../services/apiRequest';
 import { configurePurchases } from '../services/purchases';
@@ -102,6 +103,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     bootstrap();
   }, []);
+
+  // Anonymous id only (never the email) so a crash can be traced to one person's repeated problem.
+  useEffect(() => { setCrashUser(account?.id ?? null); }, [account?.id]);
 
   const applyAuthResult = async (result: { token: string; account: AccountPublic }) => {
     await tokenStorage.set(TOKEN_KEY, result.token);

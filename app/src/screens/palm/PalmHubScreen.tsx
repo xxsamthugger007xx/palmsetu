@@ -18,6 +18,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
+import { PalmHeroVisual } from '../onboarding/intro/PalmHeroVisual';
 
 const PREVIEW_SECTION_ORDER = ['heartLine', 'headLine', 'lifeLine', 'fateLine'];
 
@@ -180,6 +181,11 @@ export function PalmHubScreen() {
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
         {t('palm.scanSubtitle')}
       </Text>
+
+      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+        <PalmHeroVisual size={200} />
+        <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>{t('palm.heroNote')}</Text>
+      </View>
 
       <Card elevated>
         <View style={styles.row}>

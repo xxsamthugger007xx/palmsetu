@@ -136,6 +136,20 @@
         "title": "Retrato del Alma Gemela",
         "description": "Un retrato de tu alma gemela imaginada, hecho por IA"
       }
+    },
+    "hero": {
+      "palmTitle": "Descubre lo que dice tu palma",
+      "palmDesc": "Escanea una vez. Tu primera lectura es gratis y tarda unos 20 segundos.",
+      "palmCta": "Escanear mi palma",
+      "cardTitle": "Tu carta de hoy",
+      "cardDesc": "Saca una carta y mira qué te invita a notar.",
+      "cardCta": "Sacar mi carta"
+    },
+    "groups": {
+      "readings": "Lecturas",
+      "daily": "Diario",
+      "connection": "Conexión",
+      "tools": "Herramientas"
     }
   },
   "wellness": {
@@ -205,7 +219,8 @@
     "scanAnother": "Escanear otra palma",
     "scanAnotherConfirmTitle": "¿Escanear otra palma?",
     "scanAnotherConfirmDesc": "Esto reemplaza tu perfil de palma guardado actual con un nuevo escaneo - solo se conserva tu escaneo más reciente como perfil activo. Tus escaneos anteriores siguen disponibles en el Historial.",
-    "viewHistory": "Historial"
+    "viewHistory": "Historial",
+    "heroNote": "Tu foto es privada y puedes borrarla cuando quieras."
   },
   "tarot": {
     "title": "Tarot",
@@ -1355,5 +1370,8 @@
       "family": "Familia",
       "growth": "Crecimiento"
     }
+  },
+  "soulmate": {
+    "sampleLabel": "Bocetos de ejemplo"
   }
 }
