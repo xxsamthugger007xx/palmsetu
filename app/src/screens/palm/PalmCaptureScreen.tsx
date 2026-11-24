@@ -16,7 +16,6 @@ import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { assessImageQuality } from '../../services/palmAnalysis';
-import { PalmHeroVisual } from '../onboarding/intro/PalmHeroVisual';
 import { CornerBrackets } from '../../components/CornerBrackets';
 import { useTranslation } from 'react-i18next';
 
@@ -26,8 +25,11 @@ const avoidExamples = [
   { id: 'incomplete', icon: Crop, label: 'Incomplete' },
   { id: 'tooClose', icon: ZoomIn, label: 'Too close' },
   { id: 'bending', icon: RotateCw, label: 'Bending' },
-  { id: 'jewelry', icon: Gem, label: 'Jewelry' },
+  { id: 'jewelry', icon: Gem, label: 'Jewellery' },
 ];
+
+// AI-made example of a well-framed palm photo (flat, open, filling the frame, even light).
+const GOOD_EXAMPLE_HAND = require('../../../assets/palm/good-example-hand.webp');
 
 export function PalmCaptureScreen() {
   const { t } = useTranslation();
@@ -162,7 +164,7 @@ export function PalmCaptureScreen() {
             <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm }}>{t('ui.PalmCaptureScreen.photoGuidelines')}</Text>
 
             <Card elevated style={styles.goodExampleCard}>
-              <PalmHeroVisual size={96} />
+              <Image source={GOOD_EXAMPLE_HAND} accessibilityLabel={t('ui.PalmCaptureScreen.goodExample')} style={{ width: 96, height: 96, borderRadius: radius.md }} />
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <View style={styles.goodBadge}>
                   <Check size={12} color={color.bg} strokeWidth={2.5} />

@@ -240,7 +240,7 @@
     "categories": {
       "oneCard": {
         "title": "Pembacaan satu kartu",
-        "description": "Pengambilan cepat dan terfokus"
+        "description": "Kartu harian gratis Anda"
       },
       "threeCard": {
         "title": "Pembacaan tiga kartu",
@@ -277,7 +277,11 @@
     },
     "personalReadingTitle": "Dapatkan Pembacaan Pribadi",
     "personalReadingSubtitle": "Jelajahi apa yang mungkin diajak kartu untuk Anda renungkan hari ini.",
-    "personalReadingCta": "Mulai pembacaan"
+    "personalReadingCta": "Mulai pembacaan",
+    "questionOptional": "Pertanyaan Anda (opsional)",
+    "questionRequired": "Pertanyaan ya/tidak Anda",
+    "questionPlaceholder": "Apa yang Anda pikirkan?",
+    "deckBrowse": "Geser melalui semua {{count}} kartu, lalu ketuk untuk memilih"
   },
   "profile": {
     "upgradeTitle": "Tingkatkan ke Premium",
@@ -1248,8 +1252,8 @@
       },
       "tarotSpreads": {
         "label": "Sebaran tarot",
-        "free": "Hanya satu kartu",
-        "premium": "Semua sebaran"
+        "free": "Hanya kartu harian",
+        "premium": "Semua sebaran, 10 per hari"
       },
       "tarotFollowups": {
         "label": "Pertanyaan lanjutan tarot",

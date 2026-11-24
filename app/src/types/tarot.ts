@@ -29,8 +29,22 @@ export type SpreadType =
 export type ReadingStatus = 'drawn' | 'interpreted' | 'failed';
 export type DetailedReportStatus = 'none' | 'generating' | 'ready' | 'failed';
 
+const SPREAD_LABELS: Record<SpreadType, string> = {
+  'one-card': 'One-Card Draw',
+  'three-card-ppf': 'Past / Present / Future',
+  'three-card-scg': 'Situation / Challenge / Guidance',
+  'three-card-mbs': 'Mind / Body / Spirit',
+  'five-card': 'Five-Card Path',
+  'celtic-cross': 'Celtic Cross',
+  'love-relationship': 'Love & Relationship',
+  'career-finance': 'Career & Finance',
+  'yes-no': 'Yes / No',
+  'relationship-compatibility': 'Compatibility',
+};
+
+/** Human name of a spread (never the raw id like "three-card-ppf"). */
 export function formatSpreadLabel(spreadType: SpreadType): string {
-  return spreadType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return SPREAD_LABELS[spreadType] ?? spreadType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export interface SpreadPosition {

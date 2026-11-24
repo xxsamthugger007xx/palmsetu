@@ -245,7 +245,7 @@
     "categories": {
       "oneCard": {
         "title": "Einzelkarten-Lesung",
-        "description": "Eine schnelle, fokussierte Ziehung"
+        "description": "Deine kostenlose Tageskarte"
       },
       "threeCard": {
         "title": "Dreikarten-Lesung",
@@ -282,7 +282,11 @@
     },
     "personalReadingTitle": "Persönliche Legung erhalten",
     "personalReadingSubtitle": "Entdecke, worüber dich die Karten heute zum Nachdenken einladen könnten.",
-    "personalReadingCta": "Legung beginnen"
+    "personalReadingCta": "Legung beginnen",
+    "questionOptional": "Deine Frage (optional)",
+    "questionRequired": "Deine Ja/Nein-Frage",
+    "questionPlaceholder": "Was beschäftigt dich?",
+    "deckBrowse": "Wische durch alle {{count}} Karten und tippe zum Wählen"
   },
   "profile": {
     "upgradeTitle": "Auf Premium upgraden",
@@ -1253,8 +1257,8 @@
       },
       "tarotSpreads": {
         "label": "Tarot-Legungen",
-        "free": "Nur Ein-Karten",
-        "premium": "Alle Legungen"
+        "free": "Nur die Tageskarte",
+        "premium": "Alle Legungen, 10 pro Tag"
       },
       "tarotFollowups": {
         "label": "Tarot-Nachfragen",

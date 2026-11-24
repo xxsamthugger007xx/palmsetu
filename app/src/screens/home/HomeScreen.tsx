@@ -31,6 +31,7 @@ import { TransitsCard } from './TransitsCard';
 import { DailyGuidanceCard } from './DailyGuidanceCard';
 import { StreakCard } from '../../components/StreakCard';
 import { useDailyStreak } from '../../hooks/useDailyStreak';
+import { useIsPremium } from '../../hooks/useIsPremium';
 import { PalmInsightCard } from './PalmInsightCard';
 import { SectionsGrid } from './SectionsGrid';
 
@@ -38,6 +39,7 @@ export function HomeScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { streak } = useDailyStreak();
+  const isPremium = useIsPremium();
   const { profile } = useUserProfile();
   const [astroProfile, setAstroProfile] = React.useState<BirthProfile | null>(null);
   const [dailyHoroscope, setDailyHoroscope] = React.useState<DailyHoroscope | null>(null);
@@ -261,6 +263,7 @@ export function HomeScreen() {
 
       <FadeDivider style={{ marginVertical: spacing.lg }} />
 
+      {!isPremium && (
       <Card elevated onPress={() => navigation.navigate('Paywall')} style={styles.upgradeCard}>
         <View style={{ flex: 1 }}>
           <Text variant="label" tone="accent">{t('home.premiumTitle')}</Text>
@@ -270,6 +273,7 @@ export function HomeScreen() {
         </View>
         <StatusBadge label={t('common.upgrade')} status="accent" />
       </Card>
+      )}
 
       <View style={{ marginTop: spacing.lg }}>
         <SectionHeader title={t('home.exploreTitle')} />

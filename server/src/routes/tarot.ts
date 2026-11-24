@@ -196,10 +196,10 @@ export function buildTarotRouter(aiProvider: AiProvider) {
     }
 
     const spreadCheck = isSpreadAllowed(userId, spreadType as SpreadType);
-    if (!spreadCheck.allowed) return res.status(403).json({ error: spreadCheck.reason });
+    if (!spreadCheck.allowed) return res.status(403).json({ error: spreadCheck.reason, code: 'PREMIUM_REQUIRED' });
 
     const limitCheck = checkDailyReadingLimit(userId);
-    if (!limitCheck.allowed) return res.status(403).json({ error: limitCheck.reason });
+    if (!limitCheck.allowed) return res.status(403).json({ error: limitCheck.reason, code: limitCheck.code });
 
     const draws = drawSpread(spreadType as SpreadType);
     const readingId = uuid();

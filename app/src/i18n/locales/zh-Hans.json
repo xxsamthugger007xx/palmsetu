@@ -240,7 +240,7 @@
     "categories": {
       "oneCard": {
         "title": "单张卡牌解读",
-        "description": "快速而专注的抽取"
+        "description": "你的免费每日牌"
       },
       "threeCard": {
         "title": "三张卡牌解读",
@@ -277,7 +277,11 @@
     },
     "personalReadingTitle": "获取个人占卜",
     "personalReadingSubtitle": "探索今天牌面可能邀请你思考的内容。",
-    "personalReadingCta": "开始占卜"
+    "personalReadingCta": "开始占卜",
+    "questionOptional": "你的问题（可选）",
+    "questionRequired": "你的是/否问题",
+    "questionPlaceholder": "你在想什么？",
+    "deckBrowse": "滑动浏览全部 {{count}} 张牌，点按选择"
   },
   "profile": {
     "upgradeTitle": "升级到高级版",
@@ -1248,8 +1252,8 @@
       },
       "tarotSpreads": {
         "label": "塔罗牌阵",
-        "free": "仅单张牌",
-        "premium": "所有牌阵"
+        "free": "仅每日牌",
+        "premium": "全部牌阵，每天 10 次"
       },
       "tarotFollowups": {
         "label": "塔罗追问",

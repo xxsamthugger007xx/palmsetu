@@ -245,7 +245,7 @@
     "categories": {
       "oneCard": {
         "title": "एक-कार्ड रीडिंग",
-        "description": "एक त्वरित, केंद्रित ड्रॉ"
+        "description": "आपका मुफ़्त दैनिक कार्ड"
       },
       "threeCard": {
         "title": "तीन-कार्ड रीडिंग",
@@ -282,7 +282,11 @@
     },
     "personalReadingTitle": "व्यक्तिगत रीडिंग पाएँ",
     "personalReadingSubtitle": "जानें कि आज कार्ड्स आपको किस बात पर चिंतन करने के लिए आमंत्रित कर सकते हैं।",
-    "personalReadingCta": "रीडिंग शुरू करें"
+    "personalReadingCta": "रीडिंग शुरू करें",
+    "questionOptional": "आपका प्रश्न (वैकल्पिक)",
+    "questionRequired": "आपका हाँ/ना प्रश्न",
+    "questionPlaceholder": "आपके मन में क्या है?",
+    "deckBrowse": "सभी {{count}} कार्ड देखने के लिए स्वाइप करें, फिर चुनने के लिए टैप करें"
   },
   "profile": {
     "upgradeTitle": "प्रीमियम में अपग्रेड करें",
@@ -1253,8 +1257,8 @@
       },
       "tarotSpreads": {
         "label": "टैरो स्प्रेड",
-        "free": "केवल वन-कार्ड",
-        "premium": "सभी स्प्रेड"
+        "free": "केवल दैनिक कार्ड",
+        "premium": "सभी स्प्रेड, दिन में 10"
       },
       "tarotFollowups": {
         "label": "टैरो अनुवर्ती प्रश्न",

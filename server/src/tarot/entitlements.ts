@@ -2,7 +2,10 @@ import { getUserTier, tarotReadingsById, dailyTarotByUserDate, tarotFollowupEven
 import { SpreadType } from '../types/tarot';
 import { getSpread } from './spreads';
 
-const FREE_DAILY_READING_LIMIT = 1; // beyond the free daily card itself
+// Tarot access: free accounts get ONE card a day - the Daily Card (see GET /tarot/daily; the "One-card reading" tile
+// and "See my card" are the same thing). Every other reading (any spread, Yes/No, General guidance...) is Premium, and
+// Premium accounts can run up to PREMIUM_DAILY_READING_LIMIT readings a day on top of the daily card.
+const PREMIUM_DAILY_READING_LIMIT = Number(process.env.TAROT_PREMIUM_DAILY_READINGS ?? 10);
 // Follow-up questions are premium-only. PREMIUM_FOLLOWUP_DAILY_LIMIT is a
 // configurable server-side cap (not per-reading) so a premium user can't
 // run unbounded AI cost through one reading's follow-up thread - easy to
@@ -22,25 +25,26 @@ export function isSpreadAllowed(userId: string, spreadType: SpreadType): { allow
   return { allowed: true };
 }
 
-export function checkDailyReadingLimit(userId: string): { allowed: boolean; reason?: string } {
+export function checkDailyReadingLimit(userId: string): { allowed: boolean; reason?: string; code?: 'PREMIUM_REQUIRED' | 'DAILY_LIMIT_REACHED'; remainingToday?: number } {
   const tier = getUserTier(userId);
-  if (tier === 'premium') return { allowed: true };
+  if (tier !== 'premium') {
+    return { allowed: false, reason: 'Your free card is the Daily Card. Tarot readings need Palm Setu Premium.', code: 'PREMIUM_REQUIRED', remainingToday: 0 };
+  }
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
-  // The free daily tarot card doesn't consume the free "regular reading" quota,
-  // it's a separate, always-free entitlement (see DailyTarot records).
+  // The daily card is a separate, always-free entitlement and never counts against the Premium limit.
   const dailyReadingIds = new Set([...dailyTarotByUserDate.values()].map((d) => d.readingId));
 
   const readingsToday = [...tarotReadingsById.values()].filter(
     (r) => r.userId === userId && !dailyReadingIds.has(r.id) && new Date(r.createdAt) >= todayStart
   ).length;
 
-  if (readingsToday >= FREE_DAILY_READING_LIMIT) {
-    return { allowed: false, reason: `Free plan allows ${FREE_DAILY_READING_LIMIT} reading per day. Upgrade for unlimited readings.` };
+  if (readingsToday >= PREMIUM_DAILY_READING_LIMIT) {
+    return { allowed: false, reason: `You've done today's ${PREMIUM_DAILY_READING_LIMIT} tarot readings. Come back tomorrow for more.`, code: 'DAILY_LIMIT_REACHED', remainingToday: 0 };
   }
-  return { allowed: true };
+  return { allowed: true, remainingToday: PREMIUM_DAILY_READING_LIMIT - readingsToday };
 }
 
 /** Follow-up questions are premium-only. Free-tier users are rejected

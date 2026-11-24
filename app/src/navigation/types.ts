@@ -14,7 +14,14 @@ export type RootStackParamList = {
   Paywall: undefined;
   TarotLanding: undefined;
   TarotCategory: { presetCategory?: ReadingCategory } | undefined;
-  TarotSpread: { category: ReadingCategory; question: string | null };
+  TarotSpread: {
+    category: ReadingCategory;
+    question: string | null;
+    /** Only offer these spreads (a landing tile picks its own spread instead of the full list). Preselected when there is one. */
+    spreadIds?: SpreadType[];
+    /** Whether to ask for a question on the spread screen. */
+    questionMode?: 'none' | 'optional' | 'required';
+  };
   TarotDraw: {
     category: ReadingCategory;
     question: string | null;

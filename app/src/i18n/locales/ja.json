@@ -240,7 +240,7 @@
     "categories": {
       "oneCard": {
         "title": "ワンカード占い",
-        "description": "手軽で集中した一枚引き"
+        "description": "無料のデイリーカード"
       },
       "threeCard": {
         "title": "スリーカード占い",
@@ -277,7 +277,11 @@
     },
     "personalReadingTitle": "あなたのための鑑定を受ける",
     "personalReadingSubtitle": "今日、カードがあなたに振り返りをうながすことを探ってみましょう。",
-    "personalReadingCta": "鑑定を始める"
+    "personalReadingCta": "鑑定を始める",
+    "questionOptional": "質問（任意）",
+    "questionRequired": "はい/いいえの質問",
+    "questionPlaceholder": "今、気になっていることは？",
+    "deckBrowse": "{{count}}枚のカードをスワイプして、タップで選びます"
   },
   "profile": {
     "upgradeTitle": "プレミアムにアップグレード",
@@ -1248,8 +1252,8 @@
       },
       "tarotSpreads": {
         "label": "タロットスプレッド",
-        "free": "ワンカードのみ",
-        "premium": "すべてのスプレッド"
+        "free": "デイリーカードのみ",
+        "premium": "全スプレッド、1日10回"
       },
       "tarotFollowups": {
         "label": "タロットの追加質問",

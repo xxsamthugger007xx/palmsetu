@@ -137,6 +137,7 @@ export function ProfileScreen() {
 
       <VerifyEmailCard style={{ marginTop: spacing.md }} />
 
+      {tier !== 'premium' && (
       <Card elevated style={{ marginTop: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View>
           <Text variant="bodySm" weight="semibold">{t('profile.upgradeTitle')}</Text>
@@ -144,6 +145,7 @@ export function ProfileScreen() {
         </View>
         <Text variant="bodySm" tone="accent" weight="semibold" onPress={() => navigation.navigate('Paywall')}>{t('common.upgrade')}</Text>
       </Card>
+      )}
 
       <AiUsageMeter style={{ marginTop: spacing.md }} />
 

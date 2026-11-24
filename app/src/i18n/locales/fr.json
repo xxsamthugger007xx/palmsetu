@@ -245,7 +245,7 @@
     "categories": {
       "oneCard": {
         "title": "Lecture d'une carte",
-        "description": "Un tirage rapide et ciblé"
+        "description": "Votre carte du jour gratuite"
       },
       "threeCard": {
         "title": "Lecture de trois cartes",
@@ -282,7 +282,11 @@
     },
     "personalReadingTitle": "Obtenez un tirage personnel",
     "personalReadingSubtitle": "Explorez ce que les cartes peuvent vous inviter à méditer aujourd’hui.",
-    "personalReadingCta": "Commencer un tirage"
+    "personalReadingCta": "Commencer un tirage",
+    "questionOptional": "Votre question (facultatif)",
+    "questionRequired": "Votre question oui/non",
+    "questionPlaceholder": "Qu’avez-vous en tête ?",
+    "deckBrowse": "Faites défiler les {{count}} cartes, puis touchez pour choisir"
   },
   "profile": {
     "upgradeTitle": "Passer à Premium",
@@ -1253,8 +1257,8 @@
       },
       "tarotSpreads": {
         "label": "Tirages de tarot",
-        "free": "Une carte seulement",
-        "premium": "Tous les tirages"
+        "free": "Carte du jour seulement",
+        "premium": "Tous les tirages, 10 par jour"
       },
       "tarotFollowups": {
         "label": "Questions de suivi tarot",

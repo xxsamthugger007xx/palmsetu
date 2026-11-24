@@ -16,6 +16,7 @@ import { useOnboardingIntro } from '../context/OnboardingIntroContext';
 import { useAstrologyOnboardingStatus } from '../context/AstrologyOnboardingStatus';
 import { FloatingAIButton } from '../components/FloatingAIButton';
 import { UpgradeButton } from '../components/UpgradeButton';
+import { useIsPremium } from '../hooks/useIsPremium';
 import { initSessionTracking, trackScreenChange } from '../services/sessionTracker';
 
 import { LanguageSelectScreen } from '../screens/onboarding/LanguageSelectScreen';
@@ -202,6 +203,9 @@ export function RootNavigator() {
   const navRef = useRef<NavigationContainerRef<RootStackParamList>>(null);
   const [currentRouteName, setCurrentRouteName] = useState<string | undefined>('Home');
 
+  // Must stay above the loading early-return below (hooks cannot run conditionally).
+  const isPremium = useIsPremium(currentRouteName);
+
   const needsAstrologyOnboarding = !!profile && astrologyStep !== null && astrologyStep !== 'done';
 
   if (profileLoading || languageLoading || introLoading || (!!profile && astrologyStepLoading)) {
@@ -347,7 +351,7 @@ export function RootNavigator() {
           onPress={() => navRef.current?.navigate('AssistantChat', screenContext ? { screenContext } : undefined)}
         />
       )}
-      {showFloatingButton && (
+      {showFloatingButton && !isPremium && (
         <UpgradeButton onPress={() => navRef.current?.navigate('Paywall')} />
       )}
     </NavigationContainer>

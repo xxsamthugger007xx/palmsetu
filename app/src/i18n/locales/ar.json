@@ -265,7 +265,7 @@
     "categories": {
       "oneCard": {
         "title": "قراءة بطاقة واحدة",
-        "description": "سحبة سريعة ومركزة"
+        "description": "بطاقتك اليومية المجانية"
       },
       "threeCard": {
         "title": "قراءة ثلاث بطاقات",
@@ -302,7 +302,11 @@
     },
     "personalReadingTitle": "احصل على قراءة شخصية",
     "personalReadingSubtitle": "اكتشف ما قد تدعوك البطاقات إلى التأمل فيه اليوم.",
-    "personalReadingCta": "ابدأ قراءة"
+    "personalReadingCta": "ابدأ قراءة",
+    "questionOptional": "سؤالك (اختياري)",
+    "questionRequired": "سؤالك بنعم/لا",
+    "questionPlaceholder": "ما الذي يشغل بالك؟",
+    "deckBrowse": "مرّر عبر جميع البطاقات الـ{{count}} ثم اضغط للاختيار"
   },
   "profile": {
     "upgradeTitle": "الترقية إلى Premium",
@@ -1273,8 +1277,8 @@
       },
       "tarotSpreads": {
         "label": "فرشات التاروت",
-        "free": "بطاقة واحدة فقط",
-        "premium": "كل الفرشات"
+        "free": "بطاقة اليوم فقط",
+        "premium": "كل الفرشات، 10 يوميًا"
       },
       "tarotFollowups": {
         "label": "أسئلة متابعة التاروت",

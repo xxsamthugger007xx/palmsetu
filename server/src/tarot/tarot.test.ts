@@ -59,11 +59,11 @@ describe('new spread definitions', () => {
     expect(spread.available).toBe(true);
   });
 
-  it('yes-no has exactly 1 card and 1 position, and is free', () => {
+  it('yes-no has exactly 1 card and 1 position, and is premium (free users only get the Daily Card)', () => {
     const spread = spreadDefinitions['yes-no'];
     expect(spread.cardCount).toBe(1);
     expect(spread.positions).toHaveLength(1);
-    expect(spread.premium).toBe(false);
+    expect(spread.premium).toBe(true);
     expect(spread.available).toBe(true);
   });
 

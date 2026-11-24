@@ -245,7 +245,7 @@
     "categories": {
       "oneCard": {
         "title": "Lettura di una carta",
-        "description": "Un'estrazione rapida e mirata"
+        "description": "La tua carta del giorno gratuita"
       },
       "threeCard": {
         "title": "Lettura di tre carte",
@@ -282,7 +282,11 @@
     },
     "personalReadingTitle": "Ottieni una lettura personale",
     "personalReadingSubtitle": "Esplora su cosa le carte potrebbero invitarti a riflettere oggi.",
-    "personalReadingCta": "Inizia una lettura"
+    "personalReadingCta": "Inizia una lettura",
+    "questionOptional": "La tua domanda (facoltativa)",
+    "questionRequired": "La tua domanda sì/no",
+    "questionPlaceholder": "Cosa hai in mente?",
+    "deckBrowse": "Scorri tutte le {{count}} carte, poi tocca per scegliere"
   },
   "profile": {
     "upgradeTitle": "Passa a Premium",
@@ -1253,8 +1257,8 @@
       },
       "tarotSpreads": {
         "label": "Stendimenti di tarocchi",
-        "free": "Solo una carta",
-        "premium": "Tutti gli stendimenti"
+        "free": "Solo la carta del giorno",
+        "premium": "Tutti gli stendimenti, 10 al giorno"
       },
       "tarotFollowups": {
         "label": "Domande di approfondimento sui tarocchi",

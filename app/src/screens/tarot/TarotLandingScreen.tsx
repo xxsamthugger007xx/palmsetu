@@ -18,27 +18,26 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { tarotColor, heroGradient } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
-import { DailyTarot, TarotCard as TarotCardType, TarotReading, formatSpreadLabel } from '../../types/tarot';
+import { DailyTarot, SpreadType, TarotCard as TarotCardType, TarotReading, formatSpreadLabel } from '../../types/tarot';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
-const categoryTiles: {
-  id: string;
-  i18nKey: string;
-  icon: typeof Layers;
-  premium: boolean;
-  comingSoon?: boolean;
-  presetCategory?: 'love' | 'career' | 'general' | 'question';
-}[] = [
-  { id: 'one-card', i18nKey: 'oneCard', icon: Layers, premium: false, presetCategory: 'general' },
-  { id: 'three-card', i18nKey: 'threeCard', icon: Layers, premium: true, presetCategory: 'general' },
-  { id: 'love', i18nKey: 'love', icon: Heart, premium: true, presetCategory: 'love' },
-  { id: 'career', i18nKey: 'career', icon: Briefcase, premium: true, presetCategory: 'career' },
-  { id: 'general', i18nKey: 'general', icon: CompassIcon, premium: false, presetCategory: 'general' },
-  { id: 'celtic-cross', i18nKey: 'celticCross', icon: MessageCircleQuestion, premium: true, presetCategory: 'general' },
-  { id: 'yes-no', i18nKey: 'yesNo', icon: CompassIcon, premium: false, presetCategory: 'question' },
-  { id: 'relationship-compatibility', i18nKey: 'compatibility', icon: Heart, premium: true, presetCategory: 'love' },
-  { id: 'five-card', i18nKey: 'fiveCard', icon: Wand2, premium: true, presetCategory: 'general' },
+type TileTarget = { category: 'love' | 'career' | 'general' | 'question'; spreadIds: SpreadType[]; questionMode: 'none' | 'optional' | 'required' };
+
+/**
+ * Each tile opens ITS OWN spread (not a generic category picker). "One-card reading" is the free Daily Card - the same
+ * card as "See my card" above - so it has no target and opens the daily reveal instead. Every other tile is Premium.
+ */
+const categoryTiles: { id: string; i18nKey: string; icon: typeof Layers; premium: boolean; target?: TileTarget }[] = [
+  { id: 'one-card', i18nKey: 'oneCard', icon: Layers, premium: false },
+  { id: 'three-card', i18nKey: 'threeCard', icon: Layers, premium: true, target: { category: 'general', spreadIds: ['three-card-ppf', 'three-card-scg', 'three-card-mbs'], questionMode: 'optional' } },
+  { id: 'love', i18nKey: 'love', icon: Heart, premium: true, target: { category: 'love', spreadIds: ['love-relationship'], questionMode: 'optional' } },
+  { id: 'career', i18nKey: 'career', icon: Briefcase, premium: true, target: { category: 'career', spreadIds: ['career-finance'], questionMode: 'optional' } },
+  { id: 'general', i18nKey: 'general', icon: CompassIcon, premium: true, target: { category: 'general', spreadIds: ['one-card', 'three-card-scg'], questionMode: 'optional' } },
+  { id: 'celtic-cross', i18nKey: 'celticCross', icon: MessageCircleQuestion, premium: true, target: { category: 'general', spreadIds: ['celtic-cross'], questionMode: 'optional' } },
+  { id: 'yes-no', i18nKey: 'yesNo', icon: CompassIcon, premium: true, target: { category: 'question', spreadIds: ['yes-no'], questionMode: 'required' } },
+  { id: 'relationship-compatibility', i18nKey: 'compatibility', icon: Heart, premium: true, target: { category: 'love', spreadIds: ['relationship-compatibility'], questionMode: 'optional' } },
+  { id: 'five-card', i18nKey: 'fiveCard', icon: Wand2, premium: true, target: { category: 'general', spreadIds: ['five-card'], questionMode: 'optional' } },
 ];
 
 export function TarotLandingScreen() {
@@ -213,11 +212,16 @@ export function TarotLandingScreen() {
             <Card
               key={tile.id}
               style={styles.tile}
-              onPress={() =>
-                tile.comingSoon
-                  ? undefined
-                  : navigation.navigate('TarotCategory', { presetCategory: tile.presetCategory })
-              }
+              onPress={() => {
+                if (!tile.target) {
+                  // One-card = the daily card: reveal it, or open it if it was already revealed today.
+                  if (!daily) return;
+                  if (revealed) navigation.navigate('TarotReport', { readingId: daily.daily.readingId });
+                  else handleReveal();
+                  return;
+                }
+                navigation.navigate('TarotSpread', { category: tile.target.category, question: null, spreadIds: tile.target.spreadIds, questionMode: tile.target.questionMode });
+              }}
             >
               <View style={styles.tileTop}>
                 <View style={styles.tileIcon}>
@@ -231,7 +235,7 @@ export function TarotLandingScreen() {
               </View>
               <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>{t(`tarot.categories.${tile.i18nKey}.title`)}</Text>
               <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>
-                {tile.comingSoon ? t('tarot.categoryComingSoon') : t(`tarot.categories.${tile.i18nKey}.description`)}
+                {t(`tarot.categories.${tile.i18nKey}.description`)}
               </Text>
             </Card>
           ))}

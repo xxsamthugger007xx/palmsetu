@@ -46,6 +46,7 @@ describe('routes/tarot - second-person name on compatibility readings', () => {
 
   it('strips secondPersonName for any other spread type, even if the client sends one', async () => {
     const user = `user-${uuid()}`;
+    userPlans.set(user, { userId: user, tier: 'premium' });
     const res = await request(app).post('/tarot/readings').set('x-demo-user', user).send({
       readingType: 'general',
       spreadType: 'one-card',
@@ -96,6 +97,7 @@ describe('routes/tarot - history full-text search', () => {
 
   it('matches by the actual drawn card name once a free interpretation exists', async () => {
     const user = `user-${uuid()}`;
+    userPlans.set(user, { userId: user, tier: 'premium' });
     const create = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'general', spreadType: 'one-card' });
     const interpreted = await request(app).post(`/tarot/readings/${create.body.id}/interpret`).set('x-demo-user', user);
     const drawnCardName: string = interpreted.body.interpretation.cardInterpretations[0].text.split(' (')[0].split(': ')[1];
@@ -167,8 +169,10 @@ describe('routes/tarot - follow-up questions are premium-only, persisted, and ca
   it('rejects a free-tier user outright, regardless of how many they have asked', async () => {
     const app = buildApp(new ScriptedProvider('A real answer of reasonable length.'));
     const user = `user-${uuid()}`;
+    userPlans.set(user, { userId: user, tier: 'premium' });
     const create = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'general', spreadType: 'one-card' });
     await request(app).post(`/tarot/readings/${create.body.id}/interpret`).set('x-demo-user', user);
+    userPlans.delete(user); // plan lapses: follow-ups are premium-only
 
     const ask = await request(app).post(`/tarot/readings/${create.body.id}/ask`).set('x-demo-user', user).send({ question: 'What should I focus on?' });
     expect(ask.status).toBe(403);
@@ -302,5 +306,38 @@ describe('routes/tarot - daily card is stable per user per local date, even unde
 
     const day2 = await request(app).get('/tarot/daily?localDate=2026-11-16').set('x-demo-user', user);
     expect(day2.body.daily.readingId).not.toBe(day1First.body.daily.readingId);
+  });
+});
+
+describe('routes/tarot - free = daily card only, premium = up to 10 readings a day', () => {
+  const app = buildApp(new ScriptedProvider('x'));
+
+  it('a free account cannot start any reading (one-card, yes-no, anything): its one free card is the Daily Card', async () => {
+    const user = `user-${uuid()}`;
+    for (const spreadType of ['one-card', 'yes-no', 'three-card-ppf']) {
+      const res = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'general', spreadType, question: 'Will it work out?' });
+      expect(res.status).toBe(403);
+      expect(res.body.code).toBe('PREMIUM_REQUIRED');
+    }
+  });
+
+  it('a free account still gets its Daily Card, and it is the same card on every call that day', async () => {
+    const user = `user-${uuid()}`;
+    const first = await request(app).get('/tarot/daily?localDate=2026-11-24').set('x-demo-user', user);
+    expect(first.status).toBe(200);
+    const again = await request(app).get('/tarot/daily?localDate=2026-11-24').set('x-demo-user', user);
+    expect(again.body.daily.cardId).toBe(first.body.daily.cardId);
+  });
+
+  it('a premium account gets 10 readings a day, then a clear daily-limit message (not a paywall)', async () => {
+    const user = `user-${uuid()}`;
+    userPlans.set(user, { userId: user, tier: 'premium' });
+    for (let i = 0; i < 10; i++) {
+      const ok = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'general', spreadType: 'one-card' });
+      expect(ok.status).toBe(200);
+    }
+    const eleventh = await request(app).post('/tarot/readings').set('x-demo-user', user).send({ readingType: 'general', spreadType: 'one-card' });
+    expect(eleventh.status).toBe(403);
+    expect(eleventh.body.code).toBe('DAILY_LIMIT_REACHED');
   });
 });

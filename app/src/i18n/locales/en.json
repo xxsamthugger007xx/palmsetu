@@ -245,7 +245,7 @@
     "categories": {
       "oneCard": {
         "title": "One-card reading",
-        "description": "A quick, focused draw"
+        "description": "Your free daily card"
       },
       "threeCard": {
         "title": "Three-card reading",
@@ -282,7 +282,11 @@
     },
     "personalReadingTitle": "Get a Personal Reading",
     "personalReadingSubtitle": "Explore what the cards may invite you to reflect on today.",
-    "personalReadingCta": "Begin a reading"
+    "personalReadingCta": "Begin a reading",
+    "questionOptional": "Your question (optional)",
+    "questionRequired": "Your yes/no question",
+    "questionPlaceholder": "What's on your mind?",
+    "deckBrowse": "Swipe through all {{count}} cards, then tap to choose"
   },
   "profile": {
     "upgradeTitle": "Upgrade to Premium",
@@ -1253,8 +1257,8 @@
       },
       "tarotSpreads": {
         "label": "Tarot spreads",
-        "free": "One-Card only",
-        "premium": "All spreads"
+        "free": "Daily card only",
+        "premium": "All spreads, 10 a day"
       },
       "tarotFollowups": {
         "label": "Tarot follow-up questions",

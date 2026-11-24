@@ -2,7 +2,7 @@ import { SpreadDefinition, SpreadType } from '../types/tarot';
 
 export const spreadDefinitions: Record<SpreadType, SpreadDefinition> = {
   'one-card': {
-    id: 'one-card', title: 'One-Card Draw', cardCount: 1, premium: false, available: true,
+    id: 'one-card', title: 'One-Card Draw', cardCount: 1, premium: true, available: true,
     description: 'A single card for quick, focused reflection.',
     positions: [{ index: 0, name: 'The Card', description: 'A focused reflection on your question or current moment.' }],
   },
@@ -81,7 +81,7 @@ export const spreadDefinitions: Record<SpreadType, SpreadDefinition> = {
     ],
   },
   'yes-no': {
-    id: 'yes-no', title: 'Yes / No Reading', cardCount: 1, premium: false, available: true,
+    id: 'yes-no', title: 'Yes / No Reading', cardCount: 1, premium: true, available: true,
     description: 'A single card read for a traditional yes/no leaning on a clear, specific question - a quick directional reflection, not a certainty.',
     positions: [
       { index: 0, name: 'The Card', description: 'The single card whose traditional nature and orientation shapes the yes/no leaning.' },

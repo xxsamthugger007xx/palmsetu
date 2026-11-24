@@ -19,17 +19,16 @@ import { TarotCard, TarotReading } from '../../types/tarot';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
-type Stage = 'loading' | 'shuffling' | 'stacked' | 'selecting' | 'error' | 'limited';
+type Stage = 'loading' | 'shuffling' | 'stacked' | 'selecting' | 'error' | 'limited' | 'dailyLimit';
 
-// Enough tiles to feel like fanning out a real deck without rendering all 78
-// (which would hurt scroll performance for no visible benefit, since only
-// a handful are ever interacted with per reading).
-const DECK_VISUAL_SIZE = 21;
+// The whole deck is laid out to choose from: all 78 cards (22 Major + 56 Minor Arcana). Which card each pick turns out to
+// be is decided server-side when the reading is created, so this is the real deck the person is choosing from.
+const DECK_VISUAL_SIZE = 78;
 const TILE_WIDTH = 88;
 const TILE_HEIGHT = 134;
 // Overlap between adjacent cards in the fan - keeps a 21-card deck a
 // reasonable scrollable width while still reading as one continuous fan.
-const TILE_OVERLAP = 46;
+const TILE_OVERLAP = 56;
 const FAN_MAX_ROTATION_DEG = 16;
 const FAN_MAX_LIFT = 18;
 // Pressing a card zooms in on a small cluster around it - itself plus its
@@ -110,7 +109,7 @@ export function TarotDrawScreen() {
         const err = asApiError(__err);
         if (err.status === 403) {
           setErrorMessage(err.message);
-          setStage('limited');
+          setStage(err.code === 'DAILY_LIMIT_REACHED' ? 'dailyLimit' : 'limited');
         } else {
           setErrorMessage(t('ui.TarotDrawScreen.somethingWentWrongStartingYour'));
           setStage('error');
@@ -294,12 +293,12 @@ export function TarotDrawScreen() {
     );
   }
 
-  if (stage === 'limited' || stage === 'error') {
+  if (stage === 'limited' || stage === 'error' || stage === 'dailyLimit') {
     return (
       <PageContainer>
         <EmptyState
           icon={Info}
-          title={stage === 'limited' ? 'Reading limit reached' : 'Something went wrong'}
+          title={stage === 'limited' ? 'Premium reading' : stage === 'dailyLimit' ? 'Daily limit reached' : 'Something went wrong'}
           description={errorMessage ?? undefined}
           actionLabel={stage === 'limited' ? 'View Premium' : 'Go back'}
           onAction={() => (stage === 'limited' ? navigation.navigate('Paywall') : navigation.goBack())}
@@ -429,6 +428,7 @@ export function TarotDrawScreen() {
               );
             })}
           </ScrollView>
+          <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginTop: spacing.xs }}>{t('tarot.deckBrowse', { count: DECK_VISUAL_SIZE })}</Text>
         </LinearGradient>
         </Animated.View>
       )}

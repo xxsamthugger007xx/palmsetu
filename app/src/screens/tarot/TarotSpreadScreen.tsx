@@ -21,7 +21,8 @@ export function TarotSpreadScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TarotSpread'>>();
-  const { category, question } = route.params;
+  const { category, question: presetQuestion, spreadIds, questionMode = 'none' } = route.params;
+  const [question, setQuestion] = useState(presetQuestion ?? '');
 
   const [state, setState] = useState<LoadState>('loading');
   const [spreads, setSpreads] = useState<SpreadDefinition[]>([]);
@@ -35,6 +36,8 @@ export function TarotSpreadScreen() {
     try {
       const [spreadsRes, limitsRes] = await Promise.all([tarotApi.getSpreads(), tarotApi.getLimits()]);
       setSpreads(spreadsRes.spreads);
+      const shown = spreadsRes.spreads.filter((sp) => sp.available && (!spreadIds || spreadIds.includes(sp.id)));
+      if (shown.length === 1) setSelected(shown[0]);
       setTier(limitsRes.tier);
       setState('ready');
     } catch {
@@ -73,7 +76,7 @@ export function TarotSpreadScreen() {
         {t('ui.TarotSpreadScreen.eachPositionHasItsOwn')}
       </Text>
 
-      {spreads.filter((s) => s.available).map((spread) => {
+      {spreads.filter((s) => s.available && (!spreadIds || spreadIds.includes(s.id))).map((spread) => {
         const locked = spread.premium && tier !== 'premium';
         const isSelected = selected?.id === spread.id;
         return (
@@ -108,6 +111,22 @@ export function TarotSpreadScreen() {
         );
       })}
 
+      {questionMode !== 'none' && (
+        <Card style={{ marginTop: spacing.sm }}>
+          <Text variant="label" tone="muted">{questionMode === 'required' ? t('tarot.questionRequired') : t('tarot.questionOptional')}</Text>
+          <TextInput
+            value={question}
+            onChangeText={setQuestion}
+            placeholder={t('tarot.questionPlaceholder')}
+            accessibilityLabel={t('tarot.questionPlaceholder')}
+            placeholderTextColor={color.textMuted}
+            style={[styles.nameInput, { marginTop: spacing.sm, minHeight: 64, textAlignVertical: 'top' }]}
+            multiline
+            maxLength={500}
+          />
+        </Card>
+      )}
+
       {selected?.id === 'relationship-compatibility' && (
         <Card style={{ marginTop: spacing.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -131,7 +150,7 @@ export function TarotSpreadScreen() {
       <Button
         label={selected?.premium && tier !== 'premium' ? 'Upgrade to use this spread' : 'Shuffle and draw'}
         fullWidth
-        disabled={!selected}
+        disabled={!selected || (questionMode === 'required' && question.trim().length < 3 && !(selected.premium && tier !== 'premium'))}
         style={{ marginTop: spacing.lg }}
         onPress={() => {
           if (!selected) return;
@@ -141,7 +160,7 @@ export function TarotSpreadScreen() {
           }
           navigation.navigate('TarotDraw', {
             category,
-            question,
+            question: question.trim() ? question.trim() : null,
             spreadType: selected.id,
             secondPersonName: selected.id === 'relationship-compatibility' ? secondPersonName.trim() || undefined : undefined,
           });

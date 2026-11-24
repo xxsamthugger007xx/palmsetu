@@ -240,7 +240,7 @@
     "categories": {
       "oneCard": {
         "title": "원 카드 리딩",
-        "description": "빠르고 집중된 한 장 뽑기"
+        "description": "무료 오늘의 카드"
       },
       "threeCard": {
         "title": "쓰리 카드 리딩",
@@ -277,7 +277,11 @@
     },
     "personalReadingTitle": "나만의 리딩 받기",
     "personalReadingSubtitle": "오늘 카드가 당신에게 돌아보게 하는 것이 무엇인지 탐색해 보세요.",
-    "personalReadingCta": "리딩 시작하기"
+    "personalReadingCta": "리딩 시작하기",
+    "questionOptional": "질문 (선택)",
+    "questionRequired": "예/아니오 질문",
+    "questionPlaceholder": "무엇이 궁금하세요?",
+    "deckBrowse": "{{count}}장의 카드를 넘겨 보고 탭하여 선택하세요"
   },
   "profile": {
     "upgradeTitle": "프리미엄으로 업그레이드",
@@ -1248,8 +1252,8 @@
       },
       "tarotSpreads": {
         "label": "타로 스프레드",
-        "free": "원카드만",
-        "premium": "모든 스프레드"
+        "free": "오늘의 카드만",
+        "premium": "모든 스프레드, 하루 10회"
       },
       "tarotFollowups": {
         "label": "타로 후속 질문",

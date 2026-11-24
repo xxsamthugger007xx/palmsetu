@@ -4,6 +4,7 @@ import { TAROT_SYSTEM_PROMPT } from '../ai/tarotSystemPrompt';
 import { getCardOrThrow } from './catalogue';
 import { findMatchingCombinations } from './combinations';
 import { computeYesNoTendency } from './yesNo';
+import { getSpread } from './spreads';
 import { buildBirthChartPerspective } from './chartPersonalization';
 import { CardInterpretation, ReadingCategory, SpreadType, TarotDraw, TarotInterpretation, YesNoResult } from '../types/tarot';
 
@@ -83,6 +84,22 @@ export function buildStaticYesNo(draw: TarotDraw): YesNoResult {
 /** Deterministic, AI-free interpretation built entirely from validated card data.
  * This is the guaranteed fallback - it never fails and never fabricates meaning.
  * When spreadType is 'yes-no', also attaches the distinct YesNoResult shape. */
+/** One-line overview that names the spread and walks its first-to-last positions, so a Celtic Cross, a Love spread and a
+ * Past/Present/Future all read differently instead of sharing one generic sentence. */
+function buildOverall(draws: TarotDraw[], spreadType?: SpreadType): string {
+  if (draws.length === 1) {
+    return spreadType === 'yes-no'
+      ? 'This single card gives a traditional yes/no leaning - a quick directional reflection, not a certainty.'
+      : 'This single card offers a focused point of reflection for the question or moment in mind.';
+  }
+  const first = draws[0];
+  const last = draws[draws.length - 1];
+  const nameOf = (d: TarotDraw) => getCardOrThrow(d.cardId).name;
+  const title = spreadType ? getSpread(spreadType).title : 'This spread';
+  return `${title}: it opens with ${nameOf(first)} in "${first.positionName}" and closes with ${nameOf(last)} in "${last.positionName}". ` +
+    'Read together, the cards trace a traditional arc worth sitting with rather than a fixed outcome - notice how each position builds on the last.';
+}
+
 export function buildStaticInterpretation(draws: TarotDraw[], category: ReadingCategory, spreadType?: SpreadType): TarotInterpretation {
   const cardInterpretations: CardInterpretation[] = draws.map((draw) => {
     const card = getCardOrThrow(draw.cardId);
@@ -94,10 +111,7 @@ export function buildStaticInterpretation(draws: TarotDraw[], category: ReadingC
     };
   });
 
-  const overallInterpretation =
-    draws.length === 1
-      ? 'This single card offers a focused point of reflection for the question or moment in mind.'
-      : 'Taken together, these cards trace a traditional arc worth sitting with rather than a fixed outcome - notice how each position builds on the last.';
+  const overallInterpretation = buildOverall(draws, spreadType);
 
   const reflectionPrompts = draws
     .slice(0, 3)
