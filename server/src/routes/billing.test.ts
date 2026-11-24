@@ -6,7 +6,7 @@ import { buildBillingRouter } from './billing';
 import { attachAuthContext } from '../auth/middleware';
 import { signGuestToken } from '../auth/tokens';
 import { getUserTier, transactions, userPlans } from '../data/store';
-import { isOverBudget, addSpend } from '../ai/budget';
+import { isOverBudget, capFor, addSpend } from '../ai/budget';
 
 const app = express();
 app.use(express.json());
@@ -77,7 +77,10 @@ describe('POST /billing/confirm-purchase', () => {
     await request(app).post('/billing/confirm-purchase').set(bearer(id)).send({});
     addSpend(id, 150);
     expect(isOverBudget(id)).toBe(true);
+    expect(capFor(id)).toMatchObject({ limitInr: 100, free: false });
     userPlans.delete(id);
+    expect(capFor(id)).toMatchObject({ limitInr: 25, free: true }); // back to the smaller free allowance
+    addSpend(id, -140); // 10 left in the month: under the free allowance
     expect(isOverBudget(id)).toBe(false);
   });
 });

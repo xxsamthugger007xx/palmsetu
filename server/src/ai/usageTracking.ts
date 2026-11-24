@@ -1,7 +1,7 @@
 import { AiProvider, ChatMessage, GenerationOptions } from './types';
 import { recordAiUsage } from '../data/store';
 import { recordEvent } from '../events/eventTracker';
-import { addSpend, AiBudgetExceededError, budgetConfig, currentAiUserId, estimateCostInr, isOverBudget, providerKeyFromName } from './budget';
+import { addSpend, budgetExceededError, currentAiUserId, estimateCostInr, isOverBudget, providerKeyFromName } from './budget';
 
 /**
  * Shared, feature-agnostic AI usage tracker - wraps the single app-wide
@@ -46,7 +46,7 @@ export class UsageTrackingProvider implements AiProvider {
   /** Backstop for call paths that bypass the request-level gate (e.g. background jobs in a user's context). */
   private assertWithinBudget() {
     const userId = currentAiUserId();
-    if (userId && isOverBudget(userId)) throw new AiBudgetExceededError(budgetConfig().limitInr);
+    if (userId && isOverBudget(userId)) throw budgetExceededError(userId);
   }
 
   async complete(messages: ChatMessage[], options?: GenerationOptions): Promise<string> {

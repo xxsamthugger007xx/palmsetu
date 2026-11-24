@@ -17,8 +17,10 @@ const userCtx = new AsyncLocalStorage<{ userId: string }>();
 
 export class AiBudgetExceededError extends Error {
   readonly code = 'AI_BUDGET_EXCEEDED';
-  constructor(public limitInr: number) {
-    super(`You have reached this month's AI usage limit (Rs ${limitInr}). It resets at the start of next month.`);
+  constructor(public limitInr: number, public free = false) {
+    super(free
+      ? `You've used this month's free AI allowance. It resets at the start of next month, or upgrade to Premium for more.`
+      : `You have reached this month's AI usage limit (Rs ${limitInr}). It resets at the start of next month.`);
   }
 }
 
@@ -95,12 +97,31 @@ export function getBudgetStatus(userId: string) {
 
 /** Free plan: how many AI chat messages per day, and the most AI spend (all features) a free user may reach this month before chat falls back to template answers. */
 export function freeChatLimits() {
-  return { dailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5), monthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10) };
+  return {
+    dailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5),
+    monthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10),
+    // Per network address, across all free accounts: stops one person farming AI by creating many guest accounts.
+    dailyPerIp: num(process.env.AI_FREE_CHAT_DAILY_PER_IP, 60),
+  };
+}
+
+/** Most AI spend (all features together) a free account may reach per month. Keeps the free palm reading and tarot usable but bounded. */
+export const freeMonthlyCapInr = () => num(process.env.AI_MONTHLY_BUDGET_INR_FREE, 25);
+
+/** The cap that applies to this user: Premium's monthly budget, or the smaller free allowance. */
+export function capFor(userId: string): { limitInr: number; free: boolean } {
+  return getUserTier(userId) === 'premium'
+    ? { limitInr: budgetConfig().limitInr, free: false }
+    : { limitInr: freeMonthlyCapInr(), free: true };
 }
 
 export function isOverBudget(userId: string): boolean {
-  if (getUserTier(userId) !== 'premium') return false;
-  return getMonthlySpendInr(userId) >= budgetConfig().limitInr;
+  return getMonthlySpendInr(userId) >= capFor(userId).limitInr;
+}
+
+export function budgetExceededError(userId: string): AiBudgetExceededError {
+  const { limitInr, free } = capFor(userId);
+  return new AiBudgetExceededError(limitInr, free);
 }
 
 export function currentAiUserId(): string | undefined {
@@ -114,11 +135,11 @@ export function runWithAiUser(req: Request, _res: Response, next: NextFunction):
   userCtx.run({ userId }, next);
 }
 
-/** Express middleware: refuses AI-generating requests up front once a premium user is over budget. */
+/** Express middleware: refuses AI-generating requests up front once a user is over their budget (Premium monthly budget, or the smaller free allowance). */
 export function enforceAiBudget(req: Request, res: Response, next: NextFunction): void {
   const userId = req.auth?.userId;
   if (userId && isOverBudget(userId)) {
-    const err = new AiBudgetExceededError(budgetConfig().limitInr);
+    const err = budgetExceededError(userId);
     res.status(429).json({ error: err.message, code: err.code });
     return;
   }

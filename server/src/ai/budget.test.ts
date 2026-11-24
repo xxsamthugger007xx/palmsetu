@@ -17,13 +17,14 @@ describe('AI monthly budget (premium)', () => {
     expect(estimateCostInr(1_000_000, 0)).toBeCloseTo(0.3 * 88, 5);
   });
 
-  it('caps premium users at Rs 100 by default, never free users', () => {
+  it('caps premium users at Rs 100 by default, and free users at the smaller free allowance', () => {
     const p = premium(); const f = `user-${uuid()}`;
     addSpend(p, 99.9); addSpend(f, 1000);
     expect(isOverBudget(p)).toBe(false);
     addSpend(p, 0.2);
     expect(isOverBudget(p)).toBe(true);
-    expect(isOverBudget(f)).toBe(false);
+    expect(isOverBudget(f)).toBe(true); // Rs 1000 is far past the Rs 25 free allowance
+    expect(isOverBudget(`user-${uuid()}`)).toBe(false);
     expect(getBudgetStatus(p)).toMatchObject({ capped: true, limitInr: 100, remainingInr: 0 });
   });
 

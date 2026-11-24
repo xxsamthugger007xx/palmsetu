@@ -122,16 +122,18 @@ function ownedConversationOr404(res: Response, userId: string, id: string): Assi
  * small monthly spend ceiling; past either limit the assistant falls back to answers built without AI.
  */
 function chatPlan(req: Request, userId: string) {
-  if (getUserTier(userId) === 'premium') return { free: false, options: { aiEnabled: true }, countKey: null as string | null };
+  if (getUserTier(userId) === 'premium') return { free: false, options: { aiEnabled: true }, countKey: null as string | null, ipKey: null as string | null };
   const limits = freeChatLimits();
   const localDate = requestLocalDate(req);
   const countKey = `${userId}:${localDate}`;
+  const ipKey = `ip:${req.ip ?? 'unknown'}:${localDate}`;
   const used = assistantFreeChatByKey.get(countKey)?.count ?? 0;
-  const dayDone = used >= limits.dailyMessages;
+  const ipUsed = assistantFreeChatByKey.get(ipKey)?.count ?? 0;
+  const dayDone = used >= limits.dailyMessages || ipUsed >= limits.dailyPerIp;
   const monthDone = getMonthlySpendInr(userId) >= limits.monthlyInr;
   if (dayDone || monthDone) {
     return {
-      free: true, countKey: null as string | null,
+      free: true, countKey: null as string | null, ipKey: null as string | null,
       options: {
         aiEnabled: false,
         noAiNote: dayDone
@@ -140,7 +142,7 @@ function chatPlan(req: Request, userId: string) {
       },
     };
   }
-  return { free: true, countKey, options: { aiEnabled: true, fastOnly: true } };
+  return { free: true, countKey, ipKey, options: { aiEnabled: true, fastOnly: true } };
 }
 
 /** Counts a free user's AI message, only when the reply really used the AI. */
@@ -153,8 +155,13 @@ function freeRemaining(plan: ReturnType<typeof chatPlan>, userId: string, req: R
 
 function recordFreeChat(plan: ReturnType<typeof chatPlan>, userId: string, result: AssistantReplyResult) {
   if (!plan.countKey || result.mode === null || !result.success) return;
+  const localDate = plan.countKey.split(':').pop()!;
   const cur = assistantFreeChatByKey.get(plan.countKey);
-  assistantFreeChatByKey.set(plan.countKey, { userId, localDate: plan.countKey.split(':').pop()!, count: (cur?.count ?? 0) + 1 });
+  assistantFreeChatByKey.set(plan.countKey, { userId, localDate, count: (cur?.count ?? 0) + 1 });
+  if (plan.ipKey) {
+    const ip = assistantFreeChatByKey.get(plan.ipKey);
+    assistantFreeChatByKey.set(plan.ipKey, { userId: plan.ipKey, localDate, count: (ip?.count ?? 0) + 1 });
+  }
 }
 
 export function buildAssistantRouter(aiProvider: AiProvider) {
