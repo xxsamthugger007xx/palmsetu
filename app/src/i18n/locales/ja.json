@@ -1380,5 +1380,11 @@
   },
   "soulmate": {
     "sampleLabel": "スケッチの例"
+  },
+  "share": {
+    "tarotEyebrow": "私のタロットリーディング",
+    "moonEyebrow": "私の月星座",
+    "palmEyebrow": "私の手相リーディング",
+    "tagline": "予言ではなく内省のために"
   }
 }

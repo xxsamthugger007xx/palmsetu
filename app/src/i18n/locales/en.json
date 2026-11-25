@@ -1385,5 +1385,11 @@
   },
   "soulmate": {
     "sampleLabel": "Sample sketches"
+  },
+  "share": {
+    "tarotEyebrow": "MY TAROT READING",
+    "moonEyebrow": "MY MOON SIGN",
+    "palmEyebrow": "MY PALM READING",
+    "tagline": "For reflection, not prediction"
   }
 }

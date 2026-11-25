@@ -1385,5 +1385,11 @@
   },
   "soulmate": {
     "sampleLabel": "Bocetos de ejemplo"
+  },
+  "share": {
+    "tarotEyebrow": "MI LECTURA DE TAROT",
+    "moonEyebrow": "MI SIGNO LUNAR",
+    "palmEyebrow": "MI LECTURA DE PALMA",
+    "tagline": "Para reflexionar, no para predecir"
   }
 }

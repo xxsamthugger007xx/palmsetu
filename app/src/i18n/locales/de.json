@@ -1385,5 +1385,11 @@
   },
   "soulmate": {
     "sampleLabel": "Beispielskizzen"
+  },
+  "share": {
+    "tarotEyebrow": "MEINE TAROT-DEUTUNG",
+    "moonEyebrow": "MEIN MONDZEICHEN",
+    "palmEyebrow": "MEINE HANDLESE-DEUTUNG",
+    "tagline": "Zur Reflexion, nicht zur Vorhersage"
   }
 }

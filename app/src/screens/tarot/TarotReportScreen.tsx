@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, Share, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ShareCard } from '../../components/ShareCard';
+import { shareCardImage } from '../../services/shareCard';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -118,10 +120,11 @@ export function TarotReportScreen() {
     setReading(updated);
   };
 
+  const shareRef = React.useRef<any>(null);
   const handleShare = async () => {
     if (!reading) return;
     const summary = reading.interpretation?.overallInterpretation ?? 'My tarot reading from Palm Setu.';
-    await Share.share({ message: `${summary}\n\n - via Palm Setu (readings are for reflection, not prediction)` });
+    await shareCardImage(shareRef, `${summary}\n\n - via Palm Setu (readings are for reflection, not prediction)`);
   };
 
   const handleSaveJournal = async () => {
@@ -178,8 +181,21 @@ export function TarotReportScreen() {
     );
   }
 
+  const shareDraws = reading.draws.slice(0, 3);
+  const firstCard = cardsById[reading.draws[0]?.cardId];
+  const shareTitle = reading.draws.length === 1 && firstCard ? `${firstCard.name}${reading.draws[0].orientation === 'reversed' ? ' (reversed)' : ''}` : formatSpreadLabel(reading.spreadType);
+  const shareBody = reading.interpretation?.cardInterpretations?.[0]?.text?.split(' - ').slice(1).join(' - ') ?? reading.interpretation?.overallInterpretation ?? null;
+
   return (
     <PageContainer onRefresh={load}>
+      {/* Off-screen picture used by the Share button; never visible. */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: -2000, top: 0 }}>
+        <ShareCard viewRef={shareRef} kind="tarot" eyebrow={t('share.tarotEyebrow')} title={shareTitle} body={shareBody} tagline={t('share.tagline')}>
+          {shareDraws.map((d) => (
+            <TarotCardFace key={d.positionIndex} card={cardsById[d.cardId]} orientation={d.orientation} width={shareDraws.length === 1 ? 120 : 84} height={shareDraws.length === 1 ? 184 : 130} />
+          ))}
+        </ShareCard>
+      </View>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>

@@ -1405,5 +1405,11 @@
   },
   "soulmate": {
     "sampleLabel": "نماذج من الرسومات"
+  },
+  "share": {
+    "tarotEyebrow": "قراءة التاروت الخاصة بي",
+    "moonEyebrow": "برج القمر الخاص بي",
+    "palmEyebrow": "قراءة كفي",
+    "tagline": "للتأمل لا للتنبؤ"
   }
 }

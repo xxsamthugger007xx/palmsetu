@@ -1,8 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Moon, Info } from 'lucide-react-native';
+import { Moon, Info, Share2 } from 'lucide-react-native';
+import { IconButton } from '../../components/Button';
+import { ShareCard } from '../../components/ShareCard';
+import { shareCardImage } from '../../services/shareCard';
 import { PageContainer } from '../../components/PageContainer';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Card } from '../../components/Card';
@@ -33,6 +36,7 @@ export function MoonSignScreen() {
   const [state, setState] = useState<LoadState>('loading');
   const [profile, setProfile] = useState<BirthProfile | null>(null);
   const [dailyHoroscope, setDailyHoroscope] = useState<DailyHoroscope | null>(null);
+  const shareRef = useRef<any>(null);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -93,10 +97,21 @@ export function MoonSignScreen() {
   }
 
   const { natal } = profile;
+  const shareSign = profile.preferredSystem === 'vedic' ? natal.moonSignSidereal : natal.moonSignTropical;
+  const shareTitle = t('home.moonInSign', { sign: shareSign });
+  const shareBody = dailyHoroscope?.dailyTheme ?? null;
 
   return (
     <PageContainer onRefresh={load}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoonSignScreen.moonSign')}</Text>
+      <View pointerEvents="none" style={{ position: 'absolute', left: -2000, top: 0 }}>
+        <ShareCard viewRef={shareRef} kind="astrology" eyebrow={t('share.moonEyebrow')} title={shareTitle} body={shareBody} tagline={t('share.tagline')}>
+          <Moon size={120} color="#E8B85C" strokeWidth={1.2} />
+        </ShareCard>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoonSignScreen.moonSign')}</Text>
+        <IconButton icon={Share2} onPress={() => shareCardImage(shareRef, `${shareTitle}${shareBody ? ' - ' + shareBody : ''} (via Palm Setu)`)} />
+      </View>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 2, marginBottom: spacing.lg }}>
         Based on your birth details, {natal.birthTimeKnown ? 'including birth time' : 'birth date only'}
       </Text>

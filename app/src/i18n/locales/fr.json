@@ -1385,5 +1385,11 @@
   },
   "soulmate": {
     "sampleLabel": "Exemples de croquis"
+  },
+  "share": {
+    "tarotEyebrow": "MA LECTURE DE TAROT",
+    "moonEyebrow": "MON SIGNE LUNAIRE",
+    "palmEyebrow": "MA LECTURE DE PAUME",
+    "tagline": "Pour réfléchir, pas pour prédire"
   }
 }

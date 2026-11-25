@@ -1,5 +1,5 @@
 import { tr } from '../../utils/tr';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { usePalmImageUrl } from '../../hooks/usePalmImageUrl';
 import { StyleSheet, View, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,7 +7,7 @@ import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-naviga
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ChevronLeft, ChevronDown, ChevronUp, MessageCircle, Eye, Lightbulb, AlertTriangle, CheckCircle2, Crown, Sparkles, Lock,
-  Heart, Brain, Activity, TrendingUp, Gem, Hand, Fingerprint, Sparkle, Shapes, Tag, CheckCircle, History, Check,
+  Heart, Brain, Activity, TrendingUp, Gem, Hand, Fingerprint, Sparkle, Shapes, Tag, CheckCircle, History, Check, Share2,
 } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { SignUpPromptCard } from '../../components/SignUpPromptCard';
@@ -15,6 +15,9 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { LockedPreview } from '../../components/LockedPreview';
+import { ShareCard } from '../../components/ShareCard';
+import { shareCardImage } from '../../services/shareCard';
+import { PalmHeroVisual } from '../onboarding/intro/PalmHeroVisual';
 import { useTranslation } from 'react-i18next';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
@@ -48,6 +51,7 @@ export function PalmReportScreen() {
   const [sectionError, setSectionError] = useState<string | null>(null);
   const [generatingComplete, setGeneratingComplete] = useState(false);
   // Full palm detail is a Premium purchase: free users are sent to the paywall instead of unlocking anything here.
+  const shareRef = useRef<any>(null);
   const [isPremium, setIsPremium] = useState(false);
   useEffect(() => { billingApi.getStatus().then((b) => setIsPremium(b.tier === 'premium')).catch(() => {}); }, []);
 
@@ -153,10 +157,17 @@ export function PalmReportScreen() {
 
   return (
     <PageContainer onRefresh={load}>
+      {/* Off-screen picture for the Share button. No photo and no personal details: only a line from the reading. */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: -2000, top: 0 }}>
+        <ShareCard viewRef={shareRef} kind="palm" eyebrow={t('share.palmEyebrow')} title={sections[0]?.title ?? t('ui.PalmReportScreen.palmReading')} body={sections[0]?.freeText ?? null} tagline={t('share.tagline')}>
+          <PalmHeroVisual size={170} />
+        </ShareCard>
+      </View>
       <View style={styles.header}>
         <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />
         <Text variant="bodySm" weight="semibold">{t('ui.PalmReportScreen.palmReading')}</Text>
         <View style={styles.headerActions}>
+          <IconButton icon={Share2} onPress={() => shareCardImage(shareRef, `${sections[0]?.title ?? ''}: ${sections[0]?.freeText ?? ''}\n\n - via Palm Setu (for reflection, not prediction)`)} />
           <IconButton icon={History} onPress={() => navigation.navigate('PalmHistory')} />
           {state === 'ready' && (
             <Button label={t('ui.PalmReportScreen.saveAndContinue')} size="sm" onPress={goHome} style={{ marginLeft: spacing.xs }} />

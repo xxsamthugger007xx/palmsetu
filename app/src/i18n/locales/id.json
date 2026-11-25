@@ -1380,5 +1380,11 @@
   },
   "soulmate": {
     "sampleLabel": "Contoh sketsa"
+  },
+  "share": {
+    "tarotEyebrow": "BACAAN TAROT SAYA",
+    "moonEyebrow": "ZODIAK BULAN SAYA",
+    "palmEyebrow": "BACAAN TELAPAK TANGAN SAYA",
+    "tagline": "Untuk refleksi, bukan ramalan"
   }
 }

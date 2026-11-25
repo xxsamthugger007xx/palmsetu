@@ -1380,5 +1380,11 @@
   },
   "soulmate": {
     "sampleLabel": "샘플 스케치"
+  },
+  "share": {
+    "tarotEyebrow": "나의 타로 리딩",
+    "moonEyebrow": "나의 달 별자리",
+    "palmEyebrow": "나의 손금 리딩",
+    "tagline": "예측이 아닌 성찰을 위해"
   }
 }
