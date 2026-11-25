@@ -9,6 +9,7 @@ import { PageContainer } from '../../components/PageContainer';
 import { Text } from '../../components/Text';
 import { Button } from '../../components/Button';
 import { CornerBrackets } from '../../components/CornerBrackets';
+import { PalmLinesOverlay } from '../../components/PalmLinesOverlay';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
@@ -28,6 +29,12 @@ export function PalmAnalyzingScreen() {
   const [phase, setPhase] = useState<Phase>('running');
   const [rejectionMessage, setRejectionMessage] = useState<string | null>(null);
   const scanY = useRef(new Animated.Value(0)).current;
+  // Which palm line the "finding..." message is about; cycles while the one real request is in flight.
+  const [lineHint, setLineHint] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setLineHint((n) => (n + 1) % 4), 1700);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const scanLoop = Animated.loop(
@@ -127,12 +134,16 @@ export function PalmAnalyzingScreen() {
           ) : (
             <View style={[styles.image, styles.imageFallback]} />
           )}
+          <PalmLinesOverlay activeIndex={lineHint} />
           <Animated.View style={[styles.scanLine, { transform: [{ translateY }] }]} />
           <CornerBrackets />
         </View>
 
         <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.xl }}>
           {t('ui.PalmAnalyzingScreen.analyzingYourPalm')}
+        </Text>
+        <Text variant="bodySm" style={{ marginTop: spacing.xs, color: color.gold }}>
+          {t(`palm.finding.${['heart', 'head', 'life', 'fate'][lineHint]}`)}
         </Text>
         <Text variant="caption" tone="muted" style={{ marginTop: 2, fontVariant: ['tabular-nums'] }}>
           Step {stageIndex + 1} of {STAGES.length}

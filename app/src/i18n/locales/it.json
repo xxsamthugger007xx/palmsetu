@@ -222,7 +222,13 @@
     "scanAnotherConfirmDesc": "Questo sostituisce il tuo profilo del palmo salvato attuale con una nuova scansione - solo la tua scansione più recente viene mantenuta come profilo attivo. Le tue scansioni precedenti restano disponibili nella Cronologia.",
     "viewHistory": "Cronologia",
     "heroNote": "La tua foto è privata e puoi eliminarla quando vuoi.",
-    "buyPremiumToUnlock": "Acquista Premium per sbloccare tutti i dettagli"
+    "buyPremiumToUnlock": "Acquista Premium per sbloccare tutti i dettagli",
+    "finding": {
+      "heart": "Cerco la tua linea del cuore…",
+      "head": "Seguo la tua linea della testa…",
+      "life": "Seguo la tua linea della vita…",
+      "fate": "Cerco la tua linea del destino…"
+    }
   },
   "tarot": {
     "title": "Tarocchi",

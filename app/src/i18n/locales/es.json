@@ -222,7 +222,13 @@
     "scanAnotherConfirmDesc": "Esto reemplaza tu perfil de palma guardado actual con un nuevo escaneo - solo se conserva tu escaneo más reciente como perfil activo. Tus escaneos anteriores siguen disponibles en el Historial.",
     "viewHistory": "Historial",
     "heroNote": "Tu foto es privada y puedes borrarla cuando quieras.",
-    "buyPremiumToUnlock": "Compra Premium para ver todos los detalles"
+    "buyPremiumToUnlock": "Compra Premium para ver todos los detalles",
+    "finding": {
+      "heart": "Buscando tu línea del corazón…",
+      "head": "Siguiendo tu línea de la cabeza…",
+      "life": "Siguiendo tu línea de la vida…",
+      "fate": "Buscando tu línea del destino…"
+    }
   },
   "tarot": {
     "title": "Tarot",

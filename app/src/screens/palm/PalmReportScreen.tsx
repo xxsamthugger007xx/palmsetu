@@ -14,6 +14,7 @@ import { SignUpPromptCard } from '../../components/SignUpPromptCard';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
+import { LockedPreview } from '../../components/LockedPreview';
 import { useTranslation } from 'react-i18next';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
@@ -291,6 +292,7 @@ export function PalmReportScreen() {
                     <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>
                       {t('ui.PalmReportScreen.fullStructureAdditionalDetectedCharacteristics')}
                     </Text>
+                    <LockedPreview />
                     <Button
                       label={isPremium ? `Unlock ${section.title} Analysis` : t('palm.buyPremiumToUnlock')}
                       size="sm"

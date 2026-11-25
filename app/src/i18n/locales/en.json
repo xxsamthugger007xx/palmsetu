@@ -222,7 +222,13 @@
     "scanAnotherConfirmDesc": "This replaces your current saved palm profile with a new scan - only your most recent scan is kept as your active profile. Your previous scans stay available in History.",
     "viewHistory": "History",
     "heroNote": "Your photo is private and you can delete it any time.",
-    "buyPremiumToUnlock": "Buy Premium to unlock full details"
+    "buyPremiumToUnlock": "Buy Premium to unlock full details",
+    "finding": {
+      "heart": "Finding your heart line…",
+      "head": "Tracing your head line…",
+      "life": "Following your life line…",
+      "fate": "Looking for your fate line…"
+    }
   },
   "tarot": {
     "title": "Your Tarot Space",

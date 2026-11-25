@@ -218,7 +218,13 @@
     "scanAnotherConfirmDesc": "Ini akan mengganti profil telapak tangan tersimpan Anda saat ini dengan pemindaian baru - hanya pemindaian terbaru Anda yang disimpan sebagai profil aktif. Pemindaian sebelumnya tetap tersedia di Riwayat.",
     "viewHistory": "Riwayat",
     "heroNote": "Fotomu bersifat pribadi dan bisa dihapus kapan saja.",
-    "buyPremiumToUnlock": "Beli Premium untuk membuka semua detail"
+    "buyPremiumToUnlock": "Beli Premium untuk membuka semua detail",
+    "finding": {
+      "heart": "Mencari garis hati Anda…",
+      "head": "Menelusuri garis kepala Anda…",
+      "life": "Mengikuti garis kehidupan Anda…",
+      "fate": "Mencari garis takdir Anda…"
+    }
   },
   "tarot": {
     "title": "Tarot",

@@ -218,7 +218,13 @@
     "scanAnotherConfirmDesc": "这将用新的扫描替换你当前保存的手相档案，仅保留最新的扫描作为你的当前档案。之前的扫描记录仍可在历史记录中查看。",
     "viewHistory": "历史记录",
     "heroNote": "你的照片完全私密，可随时删除。",
-    "buyPremiumToUnlock": "购买高级版解锁完整详情"
+    "buyPremiumToUnlock": "购买高级版解锁完整详情",
+    "finding": {
+      "heart": "正在寻找你的感情线…",
+      "head": "正在描摹你的智慧线…",
+      "life": "正在追踪你的生命线…",
+      "fate": "正在寻找你的事业线…"
+    }
   },
   "tarot": {
     "title": "塔罗牌",
