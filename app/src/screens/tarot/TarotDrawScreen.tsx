@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, Sparkles, Info, RotateCcw } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Text } from '../../components/Text';
+import { tick, tap, success } from '../../services/haptics';
 import { Button, IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { TarotCardFace } from '../../components/TarotCardFace';
@@ -151,6 +152,9 @@ export function TarotDrawScreen() {
   // Cards remaining to choose - shown explicitly per the "how many cards
   // remain" requirement, distinct from the tray's "N of M selected" count.
   const remaining = Math.max(0, needed - revealedCount);
+  // Everything chosen: a little celebration buzz.
+  const celebrated = useRef(false);
+  useEffect(() => { if (allRevealed && !celebrated.current) { celebrated.current = true; success(); } }, [allRevealed]);
 
   // Pure display substitution only - never changes stored data. The
   // position is always canonically "Them" server-side; this just shows the
@@ -173,6 +177,7 @@ export function TarotDrawScreen() {
     if (zoomedAnchorIndex === null || !withinZoomedCluster(tileIndex, zoomedAnchorIndex)) {
       triggerSpreadLayoutAnimation();
       setZoomedAnchorIndex(tileIndex);
+      tick();
       return;
     }
 
@@ -182,6 +187,7 @@ export function TarotDrawScreen() {
     triggerSpreadLayoutAnimation();
     setZoomedAnchorIndex(null);
     setFlashIndex(tileIndex);
+    tap();
     if (reduceMotion) {
       setFlashIndex(null);
       setTappedTileIndices((prev) => [...prev, tileIndex]);
@@ -387,6 +393,7 @@ export function TarotDrawScreen() {
                   key={tileIndex}
                   style={[
                     styles.deckTile,
+                    isAnchor && styles.anchorGlow,
                     {
                       marginLeft: tileIndex === 0 ? 0 : -TILE_OVERLAP,
                       zIndex,
@@ -487,6 +494,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xxl,
   },
   deckTile: {},
+  // The card under your finger glows gold so you can see exactly which one you are about to pick.
+  anchorGlow: { shadowColor: tarotColor.gold, shadowOpacity: 0.85, shadowRadius: 14, shadowOffset: { width: 0, height: 0 }, elevation: 12 },
   flashOverlay: {
     position: 'absolute',
     top: 0,
