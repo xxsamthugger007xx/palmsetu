@@ -1370,7 +1370,8 @@
     "premiumBody": "Mejora tu plan para chatear con tu asistente sobre tu palma, tu carta y tus lecturas.",
     "premiumAction": "Ver Premium",
     "freeLeft": "Respuestas IA gratis restantes hoy: {{n}}",
-    "freeNone": "Respuestas IA gratis agotadas hoy. Las respuestas básicas siguen funcionando."
+    "freeNone": "Respuestas IA gratis agotadas hoy. Las respuestas básicas siguen funcionando.",
+    "subtitle": "Pregunta sobre tus lecturas o cualquier cosa"
   },
   "authGoogle": {
     "continue": "Continuar con Google",

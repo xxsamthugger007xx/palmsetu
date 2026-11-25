@@ -6,6 +6,9 @@ import { RootStackParamList } from '../../navigation/types';
 import { Send, Sparkles, Copy, RotateCcw, Trash2, ChevronLeft, History, SquarePen } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Text } from '../../components/Text';
+import { AssistantAvatar } from '../../components/AssistantAvatar';
+import { FadeInUp } from '../../components/FadeInUp';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../../components/Card';
 import { IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
@@ -46,7 +49,9 @@ function PremiumCardView({ card }: { card: PremiumCard }) {
 function Bubble({ item, onCopy, onRetry }: { item: ChatItem; onCopy: (t: string) => void; onRetry?: () => void }) {
   const isUser = item.role === 'user';
   return (
-    <View style={{ alignSelf: isUser ? 'flex-end' : 'flex-start', maxWidth: '85%', marginBottom: spacing.sm }}>
+    <View style={{ flexDirection: 'row', alignItems: 'flex-end', alignSelf: isUser ? 'flex-end' : 'flex-start', maxWidth: '92%', marginBottom: spacing.sm }}>
+      {!isUser && <View style={{ marginRight: spacing.xs, marginBottom: 18 }}><AssistantAvatar size={28} /></View>}
+      <View style={{ flexShrink: 1 }}>
       <View
         style={{
           backgroundColor: isUser ? color.accentMuted : color.surfaceElevated,
@@ -80,6 +85,7 @@ function Bubble({ item, onCopy, onRetry }: { item: ChatItem; onCopy: (t: string)
           <Text variant="caption" tone="muted">{formatChatTimestamp(item.createdAt)}</Text>
         </View>
       )}
+      </View>
     </View>
   );
 }
@@ -174,6 +180,9 @@ const CONTEXT_LABELS: Record<string, string> = {
   vastu: 'Vastu',
   palm: 'Palmistry',
 };
+
+// The free plan's daily AI answers (matches the server's AI_FREE_CHAT_DAILY_MESSAGES default).
+const FREE_DAILY_SEGMENTS = 5;
 
 export function AssistantChatScreen() {
   const { t } = useTranslation();
@@ -311,7 +320,13 @@ export function AssistantChatScreen() {
             <IconButton icon={History} onPress={() => navigation.navigate('AssistantHistory')} />
           </View>
         </View>
-        <Text variant="display" weight="semibold" style={{ marginBottom: 4 }}>{t('ui.AssistantChatScreen.aiAstrologer')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
+          <AssistantAvatar size={44} />
+          <View style={{ marginLeft: spacing.md, flexShrink: 1 }}>
+            <Text variant="display" weight="semibold" style={{ fontSize: 26, lineHeight: 30 }}>{t('ui.AssistantChatScreen.aiAstrologer')}</Text>
+            <Text variant="caption" tone="muted">{t('assistant.subtitle')}</Text>
+          </View>
+        </View>
         {screenContext && CONTEXT_LABELS[screenContext] && (
           <Text variant="caption" tone="accent" style={{ marginBottom: spacing.sm }}>
             Asking about: {CONTEXT_LABELS[screenContext]}
@@ -319,9 +334,11 @@ export function AssistantChatScreen() {
         )}
 
         {messages.length === 0 && (
-          <Card style={{ marginBottom: spacing.md }}>
-            <Text variant="bodySm" tone="secondary">{welcome}</Text>
-          </Card>
+          <FadeInUp>
+            <Card style={{ marginBottom: spacing.md, borderColor: color.goldBorder }}>
+              <Text variant="bodySm" tone="secondary">{welcome}</Text>
+            </Card>
+          </FadeInUp>
         )}
 
         <FlatList
@@ -341,9 +358,9 @@ export function AssistantChatScreen() {
               <Pressable accessibilityRole="button"
                 key={q}
                 onPress={() => send(q)}
-                style={{ borderWidth: 1, borderColor: color.border, borderRadius: radius.pill, paddingVertical: 6, paddingHorizontal: 12, marginRight: spacing.sm, marginBottom: spacing.sm }}
+                style={{ borderWidth: 1, borderColor: color.accentBorder, backgroundColor: color.accentMuted, borderRadius: radius.pill, paddingVertical: 8, paddingHorizontal: 14, marginRight: spacing.sm, marginBottom: spacing.sm }}
               >
-                <Text variant="caption" tone="secondary">{q}</Text>
+                <Text variant="caption" style={{ color: color.highlight }}>{q}</Text>
               </Pressable>
             ))}
           </View>
@@ -361,14 +378,23 @@ export function AssistantChatScreen() {
             }}
             onSubmitEditing={() => send(input)}
           />
-          <Pressable accessibilityRole="button" onPress={() => send(input)} style={{ marginLeft: spacing.sm, padding: 10 }}>
-            <Send size={20} color={color.accent} />
+          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.send')} onPress={() => send(input)} style={{ marginLeft: spacing.sm }}>
+            <LinearGradient colors={[color.primary, color.primaryDeep]} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
+              <Send size={18} color={color.onPrimary} />
+            </LinearGradient>
           </Pressable>
         </View>
         {freeLeft !== null && (
-          <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginTop: spacing.xs }}>
-            {freeLeft > 0 ? t('assistant.freeLeft', { n: freeLeft }) : t('assistant.freeNone')}
-          </Text>
+          <View style={{ alignItems: 'center', marginTop: spacing.xs }}>
+            <View style={{ flexDirection: 'row', gap: 4, marginBottom: 4 }}>
+              {Array.from({ length: FREE_DAILY_SEGMENTS }, (_, i) => (
+                <View key={i} style={{ width: 22, height: 4, borderRadius: 2, backgroundColor: i < freeLeft ? color.gold : color.border }} />
+              ))}
+            </View>
+            <Text variant="caption" tone="muted" style={{ textAlign: 'center' }}>
+              {freeLeft > 0 ? t('assistant.freeLeft', { n: freeLeft }) : t('assistant.freeNone')}
+            </Text>
+          </View>
         )}
       </PageContainer>
     </KeyboardAvoidingView>

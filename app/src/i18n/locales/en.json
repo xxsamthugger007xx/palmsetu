@@ -1370,7 +1370,8 @@
     "premiumBody": "Upgrade to chat with your assistant about your palm, chart and readings.",
     "premiumAction": "See Premium",
     "freeLeft": "Free AI answers left today: {{n}}",
-    "freeNone": "Free AI answers used up for today. Basic answers still work."
+    "freeNone": "Free AI answers used up for today. Basic answers still work.",
+    "subtitle": "Ask about your readings, or anything else"
   },
   "authGoogle": {
     "continue": "Continue with Google",

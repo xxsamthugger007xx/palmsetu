@@ -1370,7 +1370,8 @@
     "premiumBody": "Passez à Premium pour discuter avec votre assistant de votre paume, votre thème et vos lectures.",
     "premiumAction": "Voir Premium",
     "freeLeft": "Réponses IA gratuites restantes aujourd’hui : {{n}}",
-    "freeNone": "Réponses IA gratuites épuisées aujourd’hui. Les réponses de base fonctionnent toujours."
+    "freeNone": "Réponses IA gratuites épuisées aujourd’hui. Les réponses de base fonctionnent toujours.",
+    "subtitle": "Posez des questions sur vos lectures ou autre chose"
   },
   "authGoogle": {
     "continue": "Continuer avec Google",

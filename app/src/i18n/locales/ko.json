@@ -1365,7 +1365,8 @@
     "premiumBody": "업그레이드하면 손금, 차트, 리딩에 대해 어시스턴트와 대화할 수 있어요.",
     "premiumAction": "프리미엄 보기",
     "freeLeft": "오늘 남은 무료 AI 답변: {{n}}",
-    "freeNone": "오늘의 무료 AI 답변을 모두 썼어요. 기본 답변은 계속 가능해요."
+    "freeNone": "오늘의 무료 AI 답변을 모두 썼어요. 기본 답변은 계속 가능해요.",
+    "subtitle": "리딩에 대해, 혹은 무엇이든 물어보세요"
   },
   "authGoogle": {
     "continue": "Google로 계속하기",

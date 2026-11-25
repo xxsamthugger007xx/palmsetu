@@ -1365,7 +1365,8 @@
     "premiumBody": "Tingkatkan untuk mengobrol dengan asisten tentang telapak tangan, bagan, dan bacaan Anda.",
     "premiumAction": "Lihat Premium",
     "freeLeft": "Sisa jawaban AI gratis hari ini: {{n}}",
-    "freeNone": "Jawaban AI gratis hari ini habis. Jawaban dasar tetap berfungsi."
+    "freeNone": "Jawaban AI gratis hari ini habis. Jawaban dasar tetap berfungsi.",
+    "subtitle": "Tanyakan tentang bacaan Anda, atau apa saja"
   },
   "authGoogle": {
     "continue": "Lanjutkan dengan Google",
