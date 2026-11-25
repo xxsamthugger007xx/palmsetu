@@ -4,6 +4,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, ChevronRight, Hand, Layers } from 'lucide-react-native';
+import { FadeInUp } from '../../components/FadeInUp';
 import { StreakChip } from '../../components/StreakChip';
 import { HeroActionCard } from '../../components/HeroActionCard';
 import { ErrorBanner } from '../../components/ErrorState';
@@ -151,7 +152,7 @@ export function HomeScreen() {
   if (!profile) return null; // navigator guards this, but keeps TS happy
 
   return (
-    <PageContainer onRefresh={loadHomeData}>
+    <PageContainer onRefresh={loadHomeData} stars>
       {loadFailed && <ErrorBanner message={t('ui.HomeScreen.someContentCouldnTBe')} onRetry={loadHomeData} />}
       <View style={styles.brandRow}>
         <View style={styles.brandMark}>
@@ -173,6 +174,7 @@ export function HomeScreen() {
         {formatLongDate(new Date()).toUpperCase()}
       </Text>
 
+      <FadeInUp delay={80}>
       {latestPalmReading === null ? (
         <HeroActionCard
           icon={Hand}
@@ -191,7 +193,9 @@ export function HomeScreen() {
           onPress={() => navigation.navigate('TarotLanding')}
         />
       ) : null}
+      </FadeInUp>
 
+      <FadeInUp delay={200}>
       <View style={styles.dialSection}>
         <Pressable accessibilityRole="button"
           onPress={() => astroProfile && navigation.navigate('MoonSign')}
@@ -234,9 +238,10 @@ export function HomeScreen() {
           </Text>
         )}
       </View>
+      </FadeInUp>
 
       {streak && (streak.atRisk || streak.milestone) && <StreakCard streak={streak} onRemindersPress={streak.current > 0 && streak.current < 3 ? () => navigation.navigate('NotificationSettings') : undefined} />}
-      {astroProfile && <DailyGuidanceCard dailyHoroscope={dailyHoroscope} />}
+      {astroProfile && <FadeInUp delay={320}><DailyGuidanceCard dailyHoroscope={dailyHoroscope} /></FadeInUp>}
 
       <Card elevated style={{ marginBottom: spacing.sm }}>
         <View style={styles.cardHeaderRow}>

@@ -1335,7 +1335,14 @@
     "intent": {
       "createFirst": "Crea primero una cuenta gratis para que tu Premium funcione en todos tus dispositivos.",
       "logInToRestore": "Inicia sesión para restaurar tu Premium en este dispositivo."
-    }
+    },
+    "sample": {
+      "tag": "EJEMPLO PREMIUM",
+      "title": "Tu línea del corazón, en detalle",
+      "opening": "Una línea del corazón larga y curva se asocia tradicionalmente con una forma abierta y expresiva de amar...",
+      "note": "Texto de ejemplo. Tu informe se escribe a partir de tu palma."
+    },
+    "trust": "Cancela cuando quieras en Google Play · Cobro seguro de Google"
   },
   "streak": {
     "dayStreak": "días seguidos",

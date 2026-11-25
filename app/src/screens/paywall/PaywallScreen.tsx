@@ -20,6 +20,7 @@ import { BillingPeriod, SubscriptionPlan } from '../../types/billing';
 import { PurchasesPackage } from 'react-native-purchases';
 import { BenefitsList } from './BenefitsList';
 import { ComparisonTable } from './ComparisonTable';
+import { ReportSampleCard } from '../../components/ReportSampleCard';
 import { PlanCards } from './PlanCards';
 import { planCtaLabel } from './paywallData';
 import { useTranslation } from 'react-i18next';
@@ -49,7 +50,9 @@ export function PaywallScreen() {
         setPlans(loaded);
         // Default selection is Monthly - only overridden here if, for some
         // reason, the backend didn't return a monthly plan at all.
-        if (!loaded.some((p) => p.id === 'monthly') && loaded[0]) setSelected(loaded[0].id);
+        // Lead with the best-value plan; fall back to whatever exists.
+        const best = loaded.find((p) => p.badge === 'BEST_VALUE') ?? loaded.find((p) => p.id === 'annual') ?? loaded[0];
+        if (best) setSelected(best.id);
       })
       .catch(() => setPlansError(true));
   }, []);
@@ -181,6 +184,9 @@ export function PaywallScreen() {
             </Text>
           </View>
 
+          {/* --- A look at what Premium adds -------------------------------- */}
+          <ReportSampleCard />
+
           {/* --- Benefit categories -------------------------------------- */}
           <Text variant="title" weight="semibold" style={styles.sectionTitle}>{t('ui.PaywallScreen.everythingIncludedInPremium')}</Text>
           <BenefitsList />
@@ -249,7 +255,7 @@ export function PaywallScreen() {
           </Text>
         </Pressable>
         <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginTop: spacing.xs }}>
-          {t('ui.PaywallScreen.secureBillingThroughYourApp')}
+          {t('paywall.trust')}
         </Text>
       </View>
     </View>

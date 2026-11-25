@@ -1335,7 +1335,14 @@
     "intent": {
       "createFirst": "Create a free account first, so your Premium works on all your devices.",
       "logInToRestore": "Log in to restore your Premium on this device."
-    }
+    },
+    "sample": {
+      "tag": "PREMIUM EXAMPLE",
+      "title": "Your heart line, in depth",
+      "opening": "A long, curved heart line traditionally points to an open, expressive way of loving...",
+      "note": "Example wording. Your own report is written from your palm."
+    },
+    "trust": "Cancel anytime in Google Play · Billed securely by Google"
   },
   "streak": {
     "dayStreak": "day streak",

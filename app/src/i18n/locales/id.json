@@ -1330,7 +1330,14 @@
     "intent": {
       "createFirst": "Buat akun gratis dulu agar Premium Anda berfungsi di semua perangkat.",
       "logInToRestore": "Masuk untuk memulihkan Premium Anda di perangkat ini."
-    }
+    },
+    "sample": {
+      "tag": "CONTOH PREMIUM",
+      "title": "Garis hati Anda secara mendalam",
+      "opening": "Garis hati yang panjang dan melengkung secara tradisional menunjukkan cara mencintai yang terbuka dan ekspresif...",
+      "note": "Contoh kalimat. Laporan Anda ditulis dari telapak tangan Anda."
+    },
+    "trust": "Batalkan kapan saja di Google Play · Penagihan aman oleh Google"
   },
   "streak": {
     "dayStreak": "hari beruntun",

@@ -6,12 +6,17 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { StatusBadge } from '../../components/StatusBadge';
-import { color, radius, spacing } from '../../theme/tokens';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { sections, orderSectionsForFocus } from './homeSections';
 import { useUserProfile } from '../../context/UserProfileContext';
 
 /** The "Explore" grid of feature tiles. */
+const TILE_TINT: Record<string, keyof typeof featureTint> = {
+  palm: 'palm', tarot: 'tarot', astrology: 'astrology', western: 'astrology', moonsign: 'astrology', dailyreport: 'astrology',
+  lovetest: 'soulmate', soulmate: 'soulmate', aichat: 'guidance', myreports: 'guidance',
+};
+
 const GROUPS: { key: string; ids: string[] }[] = [
   { key: 'readings', ids: ['palm', 'tarot', 'astrology', 'western'] },
   { key: 'daily', ids: ['dailyreport', 'moonsign'] },
@@ -39,8 +44,8 @@ export function SectionsGrid() {
               {tiles.map((s) => (
                 <Card key={s.id} style={styles.tile} onPress={() => s.navigate(navigation)}>
                   <View style={styles.tileTop}>
-                    <View style={styles.tileIcon}>
-                      <s.icon size={18} color={color.accent} strokeWidth={1.75} />
+                    <View style={[styles.tileIcon, { backgroundColor: featureTint[TILE_TINT[s.id] ?? 'guidance'].soft }]}>
+                      <s.icon size={18} color={featureTint[TILE_TINT[s.id] ?? 'guidance'].solid} strokeWidth={1.75} />
                     </View>
                     {s.comingSoon && <StatusBadge label={t('common.comingSoon')} status="neutral" />}
                   </View>

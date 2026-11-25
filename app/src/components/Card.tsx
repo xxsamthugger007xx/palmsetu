@@ -1,5 +1,5 @@
-import React from 'react';
-import { Pressable, StyleSheet, View, ViewProps } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, View, ViewProps } from 'react-native';
 import { color, radius, spacing } from '../theme/tokens';
 
 type Props = ViewProps & {
@@ -8,23 +8,31 @@ type Props = ViewProps & {
   onPress?: () => void;
 };
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export function Card({ elevated = false, padded = true, style, children, onPress, ...rest }: Props) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const [pressed, setPressed] = useState(false);
+  const press = (to: number) => Animated.spring(scale, { toValue: to, speed: 40, bounciness: 6, useNativeDriver: true }).start();
   if (onPress) {
     return (
-      <Pressable
+      <AnimatedPressable
         onPress={onPress}
+        onPressIn={() => { setPressed(true); press(0.97); }}
+        onPressOut={() => { setPressed(false); press(1); }}
         accessibilityRole="button"
-        style={({ pressed }) => [
+        style={[
           styles.base,
           elevated ? styles.elevated : styles.flat,
           padded && styles.padded,
           pressed && styles.pressed,
           style as any,
+          { transform: [{ scale }] },
         ]}
         {...(rest as any)}
       >
         {children}
-      </Pressable>
+      </AnimatedPressable>
     );
   }
 

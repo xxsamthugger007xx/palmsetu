@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { color, spacing } from '../theme/tokens';
 import { PullRefreshIndicator, RefreshPhase } from './PullRefreshIndicator';
 import { pullOffset } from '../services/pullOffsetTracker';
+import { StarField } from './StarField';
 
 type Props = {
   children: React.ReactNode;
@@ -25,6 +26,8 @@ type Props = {
    * create a duplicate palm profile, or touch auth/guest session state -
    * none of those load() functions do any of that to begin with. */
   onRefresh?: () => void | Promise<void>;
+  /** Draw a softly twinkling night sky behind the content (Home and other "hero" screens). */
+  stars?: boolean;
 };
 
 // Approximate visual threshold for the custom indicator's pull animation -
@@ -41,7 +44,7 @@ const COMPLETED_HOLD_MS = 550;
 /** Standard screen wrapper: solid background, safe-area-aware top inset, consistent
  * side gutters, safe scrolling. Every screen should render inside this instead of
  * padding itself, so top content never draws under the status bar / notch. */
-export function PageContainer({ children, scroll = true, style, onRefresh }: Props) {
+export function PageContainer({ children, scroll = true, style, onRefresh, stars }: Props) {
   const insets = useSafeAreaInsets();
   const [phase, setPhase] = React.useState<RefreshPhase>('idle');
   const refreshingRef = React.useRef(false); // guards against overlapping/duplicate refresh calls, independent of React's async state batching
@@ -125,9 +128,9 @@ export function PageContainer({ children, scroll = true, style, onRefresh }: Pro
   // render on top of each other during the actual refresh itself.
   const indicatorPhase: RefreshPhase = Platform.OS === 'android' && phase === 'refreshing' ? 'idle' : phase;
 
-  return (
+  const scroller = (
     <Animated.ScrollView
-      style={styles.root}
+      style={[styles.root, stars && { backgroundColor: 'transparent' }]}
       contentContainerStyle={[padding, style]}
       showsVerticalScrollIndicator={false}
       bounces
@@ -153,6 +156,13 @@ export function PageContainer({ children, scroll = true, style, onRefresh }: Pro
       {onRefresh && <PullRefreshIndicator progress={pullProgress} phase={indicatorPhase} />}
       {children}
     </Animated.ScrollView>
+  );
+  if (!stars) return scroller;
+  return (
+    <View style={{ flex: 1, backgroundColor: color.bg }}>
+      <StarField />
+      {scroller}
+    </View>
   );
 }
 

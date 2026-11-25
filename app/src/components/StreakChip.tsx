@@ -1,5 +1,6 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 import { Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text } from './Text';
@@ -9,6 +10,17 @@ import { color, radius, spacing } from '../theme/tokens';
 export function StreakChip({ days, atRisk, onPress }: { days: number; atRisk?: boolean; onPress?: () => void }) {
   const { t } = useTranslation();
   const alive = days > 0;
+  const still = useReduceMotion();
+  const flick = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!alive || still) { flick.setValue(0); return; }
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(flick, { toValue: 1, duration: 520, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(flick, { toValue: 0, duration: 640, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [alive, still]);
   const tint = !alive ? color.textMuted : atRisk ? color.warning : color.gold;
   return (
     <View
@@ -18,7 +30,9 @@ export function StreakChip({ days, atRisk, onPress }: { days: number; atRisk?: b
       onTouchEnd={onPress}
       style={[styles.chip, alive && { backgroundColor: color.goldMuted, borderColor: color.goldBorder }]}
     >
-      <Flame size={15} color={tint} strokeWidth={2} fill={alive ? tint : 'transparent'} />
+      <Animated.View style={{ transform: [{ scale: flick.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }, { rotate: flick.interpolate({ inputRange: [0, 1], outputRange: ['-4deg', '5deg'] }) }] }}>
+        <Flame size={15} color={tint} strokeWidth={2} fill={alive ? tint : 'transparent'} />
+      </Animated.View>
       <Text variant="bodySm" weight="semibold" style={{ color: tint, marginLeft: 4 }}>{days}</Text>
     </View>
   );

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, ViewStyle } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { color, radius, spacing } from '../theme/tokens';
@@ -72,6 +72,8 @@ export function IconButton({
   );
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export function Button({
   label,
   onPress,
@@ -83,14 +85,19 @@ export function Button({
   fullWidth,
   style,
 }: Props) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const [pressed, setPressed] = useState(false);
+  const press = (to: number) => Animated.spring(scale, { toValue: to, speed: 40, bounciness: 5, useNativeDriver: true }).start();
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={() => { setPressed(true); press(0.96); }}
+      onPressOut={() => { setPressed(false); press(1); }}
       disabled={disabled || loading}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!(disabled || loading), busy: !!loading }}
-      style={({ pressed }) => [
+      style={[
         styles.base,
         size === 'sm' && styles.sm,
         variant === 'primary' && styles.primary,
@@ -101,6 +108,7 @@ export function Button({
         (disabled || loading) && styles.disabled,
         pressed && !disabled && !loading && styles.pressed,
         style,
+        { transform: [{ scale }] },
       ]}
     >
       {variant === 'primary' && (
@@ -122,7 +130,7 @@ export function Button({
           </Text>
         </>
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

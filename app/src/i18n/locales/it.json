@@ -1335,7 +1335,14 @@
     "intent": {
       "createFirst": "Crea prima un account gratuito, così il tuo Premium funzionerà su tutti i tuoi dispositivi.",
       "logInToRestore": "Accedi per ripristinare il tuo Premium su questo dispositivo."
-    }
+    },
+    "sample": {
+      "tag": "ESEMPIO PREMIUM",
+      "title": "La tua linea del cuore, nel dettaglio",
+      "opening": "Una linea del cuore lunga e curva indica tradizionalmente un modo di amare aperto ed espressivo...",
+      "note": "Testo di esempio. Il tuo report è scritto dal tuo palmo."
+    },
+    "trust": "Annulla quando vuoi su Google Play · Fatturazione sicura di Google"
   },
   "streak": {
     "dayStreak": "giorni di fila",

@@ -1330,7 +1330,14 @@
     "intent": {
       "createFirst": "请先创建免费账户，这样你的高级版可在所有设备上使用。",
       "logInToRestore": "登录以在此设备上恢复你的高级版。"
-    }
+    },
+    "sample": {
+      "tag": "高级版示例",
+      "title": "深入解读你的感情线",
+      "opening": "长而弯的感情线传统上象征开放、善于表达的爱的方式……",
+      "note": "示例文字。你自己的报告会根据你的手相生成。"
+    },
+    "trust": "可随时在 Google Play 取消 · 由 Google 安全结算"
   },
   "streak": {
     "dayStreak": "天连续",

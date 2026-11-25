@@ -31,7 +31,7 @@ export function PlanCards({ plans, selected, onSelect }: Props) {
             onPress={() => onSelect(plan.id)}
             style={({ pressed }) => [pressed && { opacity: 0.9 }]}
           >
-            <View style={[styles.planCard, isSelected && styles.planCardSelected]}>
+            <View style={[styles.planCard, best && styles.planCardBest, isSelected && styles.planCardSelected]}>
               {plan.badge && (
                 <View style={[styles.planBadge, best ? styles.badgeGold : styles.badgeLavender]}>
                   <Text variant="caption" weight="semibold" style={{ color: tarotColor.midnight, fontSize: 10 }}>
@@ -52,7 +52,7 @@ export function PlanCards({ plans, selected, onSelect }: Props) {
                   )}
                 </View>
                 <View style={styles.planRight}>
-                  <Text variant="subtitle" weight="semibold">{formatRupees(plan.priceCents)}</Text>
+                  <Text variant={best ? 'title' : 'subtitle'} weight="semibold" style={best ? { color: tarotColor.gold } : undefined}>{formatRupees(plan.priceCents)}</Text>
                   <Text variant="caption" tone="muted">{periodSuffix(plan.billingPeriod, t)}</Text>
                 </View>
                 <View style={[styles.radio, isSelected && styles.radioSelected]}>
@@ -76,6 +76,16 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     position: 'relative',
     overflow: 'visible',
+  },
+  // The best-value plan is bigger and glows, so it is the obvious choice.
+  planCardBest: {
+    paddingVertical: spacing.lg,
+    borderColor: 'rgba(217, 184, 114, 0.55)',
+    shadowColor: tarotColor.gold,
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
   planCardSelected: {
     borderColor: tarotColor.gold,

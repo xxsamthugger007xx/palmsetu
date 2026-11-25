@@ -1335,7 +1335,14 @@
     "intent": {
       "createFirst": "Erstelle zuerst ein kostenloses Konto, damit dein Premium auf all deinen Geräten funktioniert.",
       "logInToRestore": "Melde dich an, um dein Premium auf diesem Gerät wiederherzustellen."
-    }
+    },
+    "sample": {
+      "tag": "PREMIUM-BEISPIEL",
+      "title": "Deine Herzlinie im Detail",
+      "opening": "Eine lange, geschwungene Herzlinie steht traditionell für eine offene, ausdrucksstarke Art zu lieben...",
+      "note": "Beispieltext. Dein eigener Bericht entsteht aus deiner Handfläche."
+    },
+    "trust": "Jederzeit in Google Play kündbar · Sichere Abrechnung über Google"
   },
   "streak": {
     "dayStreak": "Tage in Folge",

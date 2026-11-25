@@ -1335,7 +1335,14 @@
     "intent": {
       "createFirst": "Créez d’abord un compte gratuit pour que votre Premium fonctionne sur tous vos appareils.",
       "logInToRestore": "Connectez-vous pour restaurer votre Premium sur cet appareil."
-    }
+    },
+    "sample": {
+      "tag": "EXEMPLE PREMIUM",
+      "title": "Votre ligne de cœur, en détail",
+      "opening": "Une ligne de cœur longue et courbe évoque traditionnellement une façon d’aimer ouverte et expressive...",
+      "note": "Texte d’exemple. Votre rapport est rédigé à partir de votre paume."
+    },
+    "trust": "Annulez à tout moment dans Google Play · Facturation sécurisée par Google"
   },
   "streak": {
     "dayStreak": "jours d’affilée",
