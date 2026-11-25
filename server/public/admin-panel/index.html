@@ -252,7 +252,9 @@
       ...options,
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(options && options.headers) },
     });
-    if (res.status === 401 || res.status === 403) {
+    // A 403 means "your role can't open this page": say so, but stay logged in (only a 401 means the session is gone).
+    if (res.status === 403) throw new Error('Your admin role does not have access to this section.');
+    if (res.status === 401) {
       token = '';
       localStorage.removeItem('solune_admin_token');
       showLogin('Session expired, please log in again.');
@@ -416,9 +418,11 @@
         <thead><tr><th>User ID</th><th>Tier</th><th>Last seen</th></tr></thead>
         <tbody>${recentRows || '<tr><td colspan="3" class="unavailable">No activity in range</td></tr>'}</tbody>
       </table>
-      <div class="section-title">Not yet instrumented</div>
+      <div class="section-title">AI usage (estimated)</div>
       <div class="grid">
-        <div class="card"><div class="label">AI cost</div><div class="unavailable">${escapeHtml(data.aiCost.reason)}</div></div>
+        <div class="card"><div class="label">AI calls</div><div class="value">${data.aiUsage && data.aiUsage.available ? data.aiUsage.totalCalls : '-'}</div></div>
+        <div class="card"><div class="label">Estimated AI cost</div><div class="value">${data.aiUsage && data.aiUsage.available ? '\u20B9' + Number(data.aiUsage.totalEstimatedCostInr || 0).toFixed(2) : '-'}</div>
+          <div class="sub">${data.aiUsage && data.aiUsage.note ? escapeHtml(data.aiUsage.note) : ''}</div></div>
       </div>
     `;
   }
@@ -427,7 +431,7 @@
     usersPage = page || usersPage;
     el.innerHTML = `
       <div class="toolbar">
-        <input id="user-search" type="text" placeholder="Search by user ID" />
+        <input id="user-search" type="text" placeholder="Search by name, email or user ID" />
         <button id="user-search-btn" style="width:auto;">Search</button>
         <button id="user-export-btn" class="export-btn">Export CSV</button>
       </div>
@@ -474,8 +478,8 @@
     const data = await api('/admin/users?' + qs.toString());
     const wrap = document.getElementById('users-table-wrap');
     const rows = data.users.map((u) => `
-      <tr>
-        <td>${escapeHtml(u.psuId || '-')}<br/><span style="color:var(--textSecondary);font-size:11px;">${escapeHtml(u.userId)}</span></td>
+      <tr class="user-row" data-user-id="${escapeHtml(u.userId)}" style="cursor:pointer;" title="Click for details">
+        <td>${escapeHtml(u.name || u.email || u.psuId || '-')}${u.email && u.name ? '<br/><span style="color:var(--textSecondary);font-size:11px;">' + escapeHtml(u.email) + '</span>' : ''}<br/><span style="color:var(--textSecondary);font-size:11px;">${escapeHtml(u.psuId ? u.psuId + ' · ' : '')}${escapeHtml(u.userId)}${u.accountType === 'guest' ? ' · guest' : ''}</span></td>
         <td><span class="pill ${u.tier === 'premium' ? 'premium' : ''}">${escapeHtml(u.tier)}</span></td>
         <td>${u.readingCounts.tarot}</td>
         <td>${u.readingCounts.gemstone}</td>
@@ -489,7 +493,7 @@
     const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
     wrap.innerHTML = `
       <table>
-        <thead><tr><th>User ID</th><th>Tier</th><th>Tarot</th><th>Gemstone</th><th>Vastu</th><th>Astrology</th><th>Palm</th><th>Companion</th><th>Last seen</th></tr></thead>
+        <thead><tr><th>User</th><th>Tier</th><th>Tarot</th><th>Gemstone</th><th>Vastu</th><th>Astrology</th><th>Palm</th><th>Companion</th><th>Last seen</th></tr></thead>
         <tbody>${rows || '<tr><td colspan="9" class="unavailable">No users found</td></tr>'}</tbody>
       </table>
       <div class="pager">
@@ -500,10 +504,28 @@
         </div>
       </div>
     `;
+    wrap.querySelectorAll('.user-row').forEach((row) => { row.onclick = () => showUserDetail(row.getAttribute('data-user-id')); });
     const prev = document.getElementById('prev-page');
     const next = document.getElementById('next-page');
     if (prev) prev.onclick = () => loadUsers(search, page - 1);
     if (next) next.onclick = () => loadUsers(search, page + 1);
+  }
+
+  // One user's full picture: profile, payments and what they have used. Read-only; private journal text is never shown here.
+  async function showUserDetail(userId) {
+    let box = document.getElementById('user-detail');
+    if (!box) { box = document.createElement('div'); box.id = 'user-detail'; box.className = 'card'; box.style.marginTop = '16px'; document.getElementById('users-table-wrap').after(box); }
+    box.innerHTML = '<p class="unavailable">Loading user...</p>';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    try {
+      const base = '/admin/users/' + encodeURIComponent(userId);
+      const [profile, payments, tarot, palm, astrology, wellness] = await Promise.all(
+        ['', '/payments', '/tarot', '/palm', '/astrology', '/wellness'].map((x) => api(base + x)));
+      const block = (title, obj) => `<div class="section-title">${title}</div><pre style="white-space:pre-wrap;word-break:break-word;font-size:12px;margin:0;color:var(--textSecondary)">${escapeHtml(JSON.stringify(obj, null, 2))}</pre>`;
+      box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>User ${escapeHtml(userId)}</strong><button id="user-detail-close" style="width:auto;">Close</button></div>`
+        + block('Profile & plan', profile) + block('Payments', payments) + block('Tarot', tarot) + block('Palm', palm) + block('Astrology', astrology) + block('Wellness (counts only)', wellness);
+      document.getElementById('user-detail-close').onclick = () => box.remove();
+    } catch (err) { box.innerHTML = '<p class="unavailable">Failed to load user: ' + escapeHtml(err.message) + '</p>'; }
   }
 
   async function renderFeatures(el) {
@@ -742,17 +764,18 @@
     const rows = data.entries.map((e) => `
       <tr>
         <td>${new Date(e.createdAt).toLocaleString()}</td>
-        <td><span class="pill">${escapeHtml(e.role)}</span></td>
-        <td>${escapeHtml(e.action)}</td>
+        <td>${escapeHtml(e.adminEmail || e.adminId)} <span class="pill">${escapeHtml(e.adminRole || '')}</span></td>
+        <td>${escapeHtml(e.action)}${e.outcome && e.outcome !== 'success' ? ' <span class="pill">' + escapeHtml(e.outcome) + '</span>' : ''}</td>
         <td>${escapeHtml(e.path)}</td>
+        <td>${escapeHtml(e.reason || '')}</td>
       </tr>
     `).join('');
     const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
     el.innerHTML = `
-      <p class="unavailable">In-memory, per-process audit log of every authenticated admin request. Lost on server restart.</p>
+      <p class="unavailable">Audit log of every authenticated admin request. Saved in the database, so it survives restarts.</p>
       <table>
-        <thead><tr><th>Time</th><th>Role</th><th>Method</th><th>Path</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="4" class="unavailable">No entries yet</td></tr>'}</tbody>
+        <thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Path</th><th>Reason</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="5" class="unavailable">No entries yet</td></tr>'}</tbody>
       </table>
       <div class="pager">
         <span>Page ${data.page} of ${totalPages} (${data.total} entries)</span>
@@ -769,21 +792,48 @@
   }
 
   async function renderSystem(el) {
-    const data = await api('/admin/system');
+    const [data, ops] = await Promise.all([api('/admin/system'), api('/admin/ops/status').catch(() => null)]);
+    const mb = (n) => (n / 1048576).toFixed(1) + ' MB';
+    const backups = ops && ops.backups ? ops.backups : [];
+    const errors = ops && ops.recentErrors ? ops.recentErrors : [];
     el.innerHTML = `
       <div class="grid">
         <div class="card"><div class="label">Uptime</div><div class="value">${Math.round(data.uptimeSeconds)}s</div></div>
         <div class="card"><div class="label">Node version</div><div class="value">${escapeHtml(data.nodeVersion)}</div></div>
         <div class="card"><div class="label">AI provider</div><div class="value">${escapeHtml(data.aiProvider)}</div></div>
+        <div class="card"><div class="label">Database</div><div class="value">${escapeHtml(data.persistence.backend)}</div>
+          <div class="sub">${mb(data.persistence.dbFileSizeBytes)}</div></div>
       </div>
-      <div class="section-title">In-memory record counts</div>
+      <div class="section-title">Records stored</div>
       <div class="grid">
         ${Object.entries(data.recordCountsByStore).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('')}
       </div>
-      <p class="unavailable">${escapeHtml(data.note)}</p>
-      <div class="section-title">Not yet instrumented</div>
-      <div class="card"><div class="label">Error monitoring</div><div class="unavailable">${escapeHtml(data.errorMonitoring.reason)}</div></div>
+      ${ops ? `
+      <div class="section-title">Health &amp; backups</div>
+      <div class="grid">
+        <div class="card"><div class="label">Errors in the last hour</div><div class="value">${ops.errorsLastHour}</div></div>
+        <div class="card"><div class="label">Newest backup</div><div class="value">${ops.newestBackupAgeHours === null || ops.newestBackupAgeHours === undefined ? 'none' : ops.newestBackupAgeHours + ' h ago'}</div></div>
+        <div class="card"><div class="label">Error alert webhook</div><div class="value">${ops.alertWebhookConfigured ? 'on' : 'off'}</div>
+          <div class="sub">${ops.alertWebhookConfigured ? '' : 'Set ALERT_WEBHOOK_URL to get pinged on errors'}</div></div>
+      </div>
+      <div class="toolbar" style="margin-top:12px">
+        <button id="ops-backup" style="width:auto;">Run backup now</button>
+        <button id="ops-cleanup" style="width:auto;">Clean up expired guests</button>
+        <span id="ops-msg" class="unavailable"></span>
+      </div>
+      <div class="section-title">Recent backups</div>
+      <table><thead><tr><th>File</th><th>Size</th><th>Created</th></tr></thead><tbody>
+        ${backups.map((b) => `<tr><td>${escapeHtml(b.file)}</td><td>${mb(b.bytes)}</td><td>${new Date(b.createdAt).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="3" class="unavailable">No backups yet</td></tr>'}
+      </tbody></table>
+      <div class="section-title">Recent errors</div>
+      ${errors.length ? '<div class="card" style="font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-word">' + errors.slice(-8).map(escapeHtml).join('\n\n') + '</div>' : '<p class="unavailable">No errors recorded.</p>'}
+      ` : '<p class="unavailable">Health details unavailable.</p>'}
     `;
+    const msg = (t) => { const m = document.getElementById('ops-msg'); if (m) m.textContent = t; };
+    const bb = document.getElementById('ops-backup');
+    if (bb) bb.onclick = async () => { msg('Running backup...'); try { const r = await api('/admin/ops/backup', { method: 'POST' }); msg('Backup saved: ' + r.file); } catch (e) { msg('Backup failed: ' + e.message); } };
+    const cb = document.getElementById('ops-cleanup');
+    if (cb) cb.onclick = async () => { msg('Cleaning up...'); try { const r = await api('/admin/ops/guest-cleanup', { method: 'POST' }); msg('Removed ' + r.deletedGuests + ' expired guest account(s).'); } catch (e) { msg('Cleanup failed: ' + e.message); } };
   }
 
   // --- Live Activity: real events from user_events, via polling ------------

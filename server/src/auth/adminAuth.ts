@@ -395,6 +395,8 @@ export function listAdminAudit(page: number, pageSize: number) {
   const total = (auditStmts.count.get() as { c: number }).c;
   const entries = (auditStmts.list.all(pageSize, (page - 1) * pageSize) as any[]).map((e) => ({
     ...e,
+    adminEmail: findAdminById(e.adminId)?.email ?? null,
+    adminRole: findAdminById(e.adminId)?.role ?? null,
     metadata: e.metadata ? JSON.parse(e.metadata) : null,
   }));
   return { total, entries };

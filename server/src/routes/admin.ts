@@ -308,6 +308,17 @@ function summarizeAiUsage(range: DateRange) {
 export function buildAdminRouter(aiProvider: AiProvider) {
   const router = Router();
 
+  // A date filter the server can't read must be an error, not silently ignored (the admin would think a range was applied).
+  router.use((req, res, next) => {
+    for (const key of ['since', 'until'] as const) {
+      const v = req.query[key];
+      if (v !== undefined && v !== '' && isNaN(new Date(String(v)).getTime())) {
+        return res.status(400).json({ error: `Invalid '${key}' date. Use YYYY-MM-DD or an ISO timestamp.` });
+      }
+    }
+    next();
+  });
+
   router.use(requireAdminRole);
 
   // Ops status: backups on disk, recent server errors. POST /ops/backup triggers a snapshot now.
@@ -413,9 +424,15 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const range = parseDateRange(req);
     const activity = buildUserActivity(range);
 
+    // Same population as the Users list: every registered account plus every user with activity, so a brand-new
+    // account with no usage yet is counted here too (the two screens must agree).
+    const everyone = new Set<string>([
+      ...[...accountsById.values()].filter((a) => inRange(a.createdAt, range)).map((a) => a.id),
+      ...activity.keys(),
+    ]);
     let premium = 0;
     let free = 0;
-    for (const userId of activity.keys()) {
+    for (const userId of everyone) {
       if (getUserTier(userId) === 'premium') premium += 1;
       else free += 1;
     }
@@ -425,7 +442,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
 
     res.json({
       range: { since: range.since?.toISOString() ?? null, until: range.until?.toISOString() ?? null },
-      totalUsers: activity.size,
+      totalUsers: everyone.size,
       usersByTier: { premium, free },
       readingsByFeature: {
         tarot: countInRange(tarotReadingsById as any),
