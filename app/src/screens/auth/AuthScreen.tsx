@@ -38,6 +38,8 @@ export function AuthScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [forgot, setForgot] = useState(false);
+  // Google is the quick way in; the email form stays tucked away until someone asks for it.
+  const [showEmail, setShowEmail] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
   const handleSubmit = async () => {
@@ -158,6 +160,8 @@ export function AuthScreen() {
         <View style={styles.orLine} />
       </View>
 
+      {showEmail || forgot ? (
+        <>
       <View style={styles.fieldWrap}>
         <Mail size={16} color={color.textMuted} strokeWidth={1.75} style={styles.fieldIcon} />
         <TextInput
@@ -205,9 +209,6 @@ export function AuthScreen() {
         <TurnstileWidget onToken={setTurnstileToken} />
       </View>
 
-      {error && (
-        <Text variant="caption" tone="danger" style={{ marginTop: spacing.sm }}>{error}</Text>
-      )}
 
       <Button
         label={forgot ? (resetSent ? 'Send again' : 'Send reset link') : tab === 'signup' ? 'Create account' : 'Log in'}
@@ -222,6 +223,15 @@ export function AuthScreen() {
           accessibilityRole="button" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
           {t('ui.AuthScreen.backToLogIn')}
         </Text>
+      )}
+
+        </>
+      ) : (
+        <Button label={t('authGoogle.useEmail')} variant="secondary" fullWidth onPress={() => setShowEmail(true)} />
+      )}
+
+      {error && (
+        <Text variant="caption" tone="danger" style={{ marginTop: spacing.sm }}>{error}</Text>
       )}
 
       <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>{t('ui.AuthScreen.continueAsGuest')}</Text>

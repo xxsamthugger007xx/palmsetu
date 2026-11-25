@@ -1,4 +1,6 @@
+import { appLocale } from './locale';
 /**
+import { appLocale } from './locale';
  * Parses a `YYYY-MM-DD` local-calendar-date string (as returned by
  * localDate fields across this app, e.g. DailyHoroscope.localDate) into a
  * real local Date object.
@@ -27,5 +29,5 @@ export function parseLocalDateString(localDate: string): Date {
  */
 export function formatLongDate(localDate: string | Date): string {
   const date = typeof localDate === 'string' ? parseLocalDateString(localDate) : localDate;
-  return date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return date.toLocaleDateString(appLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }

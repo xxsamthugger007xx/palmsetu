@@ -25,6 +25,7 @@ import { MoodPulseSelector, MoodMarkBadge, moodLabel } from '../../components/we
 import { HabitJourneyRow } from '../../components/wellness/HabitJourneyRow';
 import { computeDailyResetProgress } from '../../utils/wellnessCompute';
 import { MoodLevel } from '../../services/wellnessApi';
+import { appLocale } from '../../utils/locale';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -239,7 +240,7 @@ export function WellnessScreen() {
         {t(timeOfDayGreetingKey())}{profile?.name ? `, ${profile.name}` : ''}
       </Text>
       <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>
-        {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date().toLocaleDateString(appLocale(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
       <Text variant="bodySm" tone="secondary" numberOfLines={2} style={{ marginBottom: spacing.lg }}>
         {subtitle}

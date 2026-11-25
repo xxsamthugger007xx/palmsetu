@@ -13,6 +13,7 @@ import { wellnessApi, ChallengeSummary, ChallengeProgress } from '../../services
 import { useTranslation } from 'react-i18next';
 
 import { ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function ChallengesScreen() {
@@ -40,7 +41,7 @@ export function ChallengesScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.ChallengesScreen.challenges')}</Text>
-        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

@@ -16,6 +16,7 @@ import { wellnessApi, WellnessGoal } from '../../services/wellnessApi';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'GoalDetail'>;
 
@@ -99,7 +100,7 @@ export function GoalDetailScreen() {
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   if (error && !goal) {
@@ -223,7 +224,7 @@ export function GoalsCompletedScreen() {
   useFocusEffect(React.useCallback(() => { load(); }, [load]));
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   if (error) {

@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
 import { streakApi } from '../../services/streakApi';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type CategoryKey = 'mood' | 'habit' | 'journal' | 'meditation';
 
 const CATEGORY_META: { key: CategoryKey; label: string; description: string; enabledField: keyof WellnessNotificationPreferences; timeField: keyof WellnessNotificationPreferences }[] = [
@@ -112,7 +113,7 @@ export function NotificationSettingsScreen() {
   };
 
   if (loading) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   if (error && !prefs) {

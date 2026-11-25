@@ -15,6 +15,7 @@ import { DailyDeliveryPreference } from '../../types/astrology';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 function ToggleRow({ label, value, onToggle }: { label: string; value: boolean; onToggle: () => void }) {
   return (
     <Card style={styles.toggleRow} onPress={onToggle} accessibilityRole="switch" accessibilityLabel={label} accessibilityState={{ checked: value }}>
@@ -66,7 +67,7 @@ export function AstrologyNotificationSettingsScreen() {
       <PageContainer>
         {loadError
           ? <ErrorState onRetry={load} />
-          : <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+          : <ListSkeleton rows={3} />}
       </PageContainer>
     );
   }

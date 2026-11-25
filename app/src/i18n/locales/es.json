@@ -332,7 +332,9 @@
     "rescanConfirmTitle": "¿Volver a escanear tu palma?",
     "rescanConfirmDesc": "Tu perfil de palma está pensado como una lectura única. Volver a escanear reemplazará permanentemente tu foto e informe actuales con uno nuevo - esto no se puede deshacer.",
     "rescanConfirm": "Volver a escanear",
-    "signInCreateAccount": "Iniciar sesión / Crear cuenta"
+    "signInCreateAccount": "Iniciar sesión / Crear cuenta",
+    "planPremium": "Premium",
+    "planFree": "Plan gratis"
   },
   "discover": {
     "title": "Descubrir",
@@ -1377,7 +1379,8 @@
     "continue": "Continuar con Google",
     "or": "o",
     "notConfigured": "El inicio con Google aún no está configurado. Usa el correo por ahora.",
-    "failed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo."
+    "failed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+    "useEmail": "Usar correo en su lugar"
   },
   "focus": {
     "title": "¿Sobre qué te gustaría recibir orientación?",
@@ -1399,5 +1402,29 @@
     "moonEyebrow": "MI SIGNO LUNAR",
     "palmEyebrow": "MI LECTURA DE PALMA",
     "tagline": "Para reflexionar, no para predecir"
+  },
+  "signs": {
+    "Aries": "Aries",
+    "Taurus": "Tauro",
+    "Gemini": "Géminis",
+    "Cancer": "Cáncer",
+    "Leo": "Leo",
+    "Virgo": "Virgo",
+    "Libra": "Libra",
+    "Scorpio": "Escorpio",
+    "Sagittarius": "Sagitario",
+    "Capricorn": "Capricornio",
+    "Aquarius": "Acuario",
+    "Pisces": "Piscis"
+  },
+  "moonPhases": {
+    "New Moon": "Luna nueva",
+    "Waxing Crescent": "Luna creciente",
+    "First Quarter": "Cuarto creciente",
+    "Waxing Gibbous": "Gibosa creciente",
+    "Full Moon": "Luna llena",
+    "Waning Gibbous": "Gibosa menguante",
+    "Last Quarter": "Cuarto menguante",
+    "Waning Crescent": "Luna menguante"
   }
 }

@@ -327,7 +327,9 @@
     "rescanConfirmTitle": "Pindai ulang telapak tangan Anda?",
     "rescanConfirmDesc": "Profil telapak tangan Anda dirancang sebagai pembacaan satu kali. Memindai ulang akan secara permanen mengganti foto dan laporan Anda saat ini dengan yang baru - ini tidak dapat dibatalkan.",
     "rescanConfirm": "Pindai ulang",
-    "signInCreateAccount": "Masuk / Buat akun"
+    "signInCreateAccount": "Masuk / Buat akun",
+    "planPremium": "Premium",
+    "planFree": "Paket gratis"
   },
   "discover": {
     "title": "Jelajahi",
@@ -1372,7 +1374,8 @@
     "continue": "Lanjutkan dengan Google",
     "or": "atau",
     "notConfigured": "Login Google belum disiapkan. Gunakan email untuk sementara.",
-    "failed": "Login Google gagal. Silakan coba lagi."
+    "failed": "Login Google gagal. Silakan coba lagi.",
+    "useEmail": "Gunakan email saja"
   },
   "focus": {
     "title": "Anda ingin panduan tentang apa?",
@@ -1394,5 +1397,29 @@
     "moonEyebrow": "ZODIAK BULAN SAYA",
     "palmEyebrow": "BACAAN TELAPAK TANGAN SAYA",
     "tagline": "Untuk refleksi, bukan ramalan"
+  },
+  "signs": {
+    "Aries": "Aries",
+    "Taurus": "Taurus",
+    "Gemini": "Gemini",
+    "Cancer": "Cancer",
+    "Leo": "Leo",
+    "Virgo": "Virgo",
+    "Libra": "Libra",
+    "Scorpio": "Scorpio",
+    "Sagittarius": "Sagitarius",
+    "Capricorn": "Capricorn",
+    "Aquarius": "Aquarius",
+    "Pisces": "Pisces"
+  },
+  "moonPhases": {
+    "New Moon": "Bulan baru",
+    "Waxing Crescent": "Sabit awal",
+    "First Quarter": "Kuartal pertama",
+    "Waxing Gibbous": "Cembung awal",
+    "Full Moon": "Bulan purnama",
+    "Waning Gibbous": "Cembung akhir",
+    "Last Quarter": "Kuartal terakhir",
+    "Waning Crescent": "Sabit akhir"
   }
 }

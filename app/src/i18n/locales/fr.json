@@ -332,7 +332,9 @@
     "rescanConfirmTitle": "Rescanner votre paume ?",
     "rescanConfirmDesc": "Votre profil de paume est conçu comme une lecture unique. Le rescanner remplacera définitivement votre photo et rapport actuels par de nouveaux - action irréversible.",
     "rescanConfirm": "Rescanner",
-    "signInCreateAccount": "Se connecter / Créer un compte"
+    "signInCreateAccount": "Se connecter / Créer un compte",
+    "planPremium": "Premium",
+    "planFree": "Offre gratuite"
   },
   "discover": {
     "title": "Découvrir",
@@ -1377,7 +1379,8 @@
     "continue": "Continuer avec Google",
     "or": "ou",
     "notConfigured": "La connexion Google n’est pas encore configurée. Utilisez l’e-mail pour l’instant.",
-    "failed": "La connexion avec Google a échoué. Veuillez réessayer."
+    "failed": "La connexion avec Google a échoué. Veuillez réessayer.",
+    "useEmail": "Utiliser l’e-mail à la place"
   },
   "focus": {
     "title": "Sur quoi souhaitez-vous être guidé(e) ?",
@@ -1399,5 +1402,29 @@
     "moonEyebrow": "MON SIGNE LUNAIRE",
     "palmEyebrow": "MA LECTURE DE PAUME",
     "tagline": "Pour réfléchir, pas pour prédire"
+  },
+  "signs": {
+    "Aries": "Bélier",
+    "Taurus": "Taureau",
+    "Gemini": "Gémeaux",
+    "Cancer": "Cancer",
+    "Leo": "Lion",
+    "Virgo": "Vierge",
+    "Libra": "Balance",
+    "Scorpio": "Scorpion",
+    "Sagittarius": "Sagittaire",
+    "Capricorn": "Capricorne",
+    "Aquarius": "Verseau",
+    "Pisces": "Poissons"
+  },
+  "moonPhases": {
+    "New Moon": "Nouvelle lune",
+    "Waxing Crescent": "Premier croissant",
+    "First Quarter": "Premier quartier",
+    "Waxing Gibbous": "Gibbeuse croissante",
+    "Full Moon": "Pleine lune",
+    "Waning Gibbous": "Gibbeuse décroissante",
+    "Last Quarter": "Dernier quartier",
+    "Waning Crescent": "Dernier croissant"
   }
 }

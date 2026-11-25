@@ -16,6 +16,7 @@ import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
 import { SOULMATE_SKETCH_REGISTRY } from '../../data/soulmateSketchRegistry';
 import { useTranslation } from 'react-i18next';
+import { appLocale } from '../../utils/locale';
 
 const STYLE_LABEL: Record<string, string> = {
   pencil: 'Realistic pencil sketch',
@@ -100,7 +101,7 @@ export function SoulmateResultScreen() {
     <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.SoulmateResultScreen.yourSoulmateSketch')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
-        {new Date(sketch.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date(sketch.createdAt).toLocaleDateString(appLocale(), { year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
 
       {sketch.imageFilename && SOULMATE_SKETCH_REGISTRY[sketch.imageFilename] && (

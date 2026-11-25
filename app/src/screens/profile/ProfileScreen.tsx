@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Alert, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { signName } from '../../utils/signName';
 import {
   User,
   Calendar,
@@ -22,14 +23,20 @@ import {
   LogOut,
   ScanLine,
   UserPlus,
+  Moon,
+  Flame,
+  Crown,
+  Sparkles,
+  LucideIcon,
 } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { PageContainer } from '../../components/PageContainer';
 import { AiUsageMeter } from '../../components/AiUsageMeter';
 import { VerifyEmailCard } from '../../components/VerifyEmailCard';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { AIAvatar } from '../../components/AIAvatar';
-import { spacing } from '../../theme/tokens';
+import { color, radius, spacing } from '../../theme/tokens';
 import { SettingsRow } from './SettingsRow';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { RootStackParamList } from '../../navigation/types';
@@ -44,6 +51,7 @@ import { BirthProfile } from '../../types/astrology';
 import { palmApi } from '../../services/palmApi';
 import { billingApi } from '../../services/billingApi';
 import { wellnessApi } from '../../services/wellnessApi';
+import { appLocale } from '../../utils/locale';
 
 /** The hidden admin gesture only exists in development builds (or when explicitly enabled), so store reviewers and
  * curious users in a release build never find it. Set EXPO_PUBLIC_ENABLE_ADMIN=true to ship it deliberately. */
@@ -51,6 +59,15 @@ const ADMIN_ENTRY_ENABLED = __DEV__ || process.env.EXPO_PUBLIC_ENABLE_ADMIN === 
 
 function GroupLabel({ children }: { children: string }) {
   return <Text variant="label" tone="muted" style={{ marginBottom: spacing.sm, marginTop: spacing.lg }}>{children}</Text>;
+}
+
+function HeaderChip({ icon: Icon, label, tint }: { icon: LucideIcon; label: string; tint: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.sm, paddingVertical: 5, borderRadius: radius.pill, borderWidth: 1, borderColor: color.border, backgroundColor: 'rgba(255,255,255,0.04)' }}>
+      <Icon size={13} color={tint} strokeWidth={2} />
+      <Text variant="caption" weight="semibold" style={{ marginLeft: 5, color: tint }}>{label}</Text>
+    </View>
+  );
 }
 
 export function ProfileScreen() {
@@ -84,12 +101,14 @@ export function ProfileScreen() {
 
   if (!profile) return null;
 
+  const moonSign = birthProfile ? (birthProfile.preferredSystem === 'vedic' ? birthProfile.natal.moonSignSidereal : birthProfile.natal.moonSignTropical) : null;
+
   const birthDetailsSummary = birthProfile
     ? [
       birthProfile.preferredSystem === 'vedic' ? 'Vedic' : 'Western',
-      new Date(`${birthProfile.birthDate}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }),
+      new Date(`${birthProfile.birthDate}T00:00:00`).toLocaleDateString(appLocale(), { year: 'numeric', month: 'short', day: 'numeric' }),
       birthProfile.birthTime
-        ? (() => { const [h, m] = birthProfile.birthTime!.split(':').map(Number); const d = new Date(); d.setHours(h, m, 0, 0); return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }); })()
+        ? (() => { const [h, m] = birthProfile.birthTime!.split(':').map(Number); const d = new Date(); d.setHours(h, m, 0, 0); return d.toLocaleTimeString(appLocale(), { hour: '2-digit', minute: '2-digit' }); })()
         : 'time unknown',
       birthProfile.birthPlace ?? undefined,
     ].filter(Boolean).join(', ')
@@ -97,19 +116,24 @@ export function ProfileScreen() {
 
   return (
     <PageContainer onRefresh={loadProfileData}>
-      <View style={{ alignItems: 'center', marginTop: spacing.lg, marginBottom: spacing.md }}>
+      <LinearGradient
+        colors={[color.surfaceElevated, color.surface]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ alignItems: 'center', marginTop: spacing.lg, marginBottom: spacing.md, paddingVertical: spacing.lg, paddingHorizontal: spacing.md, borderRadius: radius.xl, borderWidth: 1, borderColor: tier === 'premium' ? color.goldBorder : color.border }}
+      >
         {/* Long-press opens the hidden admin panel. Not a documented gesture
             anywhere in the UI - see navigation/RootNavigator.tsx comment. */}
         <Pressable accessibilityRole="button" onLongPress={ADMIN_ENTRY_ENABLED ? () => navigation.navigate('AdminEntry') : undefined} delayLongPress={1200}>
-          <AIAvatar name={profile.name} gender={profile.gender} size={64} />
+          <AIAvatar name={profile.name} gender={profile.gender} size={72} />
         </Pressable>
         <Text variant="title" weight="semibold" style={{ marginTop: spacing.sm }}>{profile.name}</Text>
-        {tier && (
-          <Text variant="caption" tone="muted">
-            {tier === 'premium' ? 'Premium' : 'Free'} plan{streakDays > 0 ? ` · ${streakDays}-day streak` : ''}
-          </Text>
-        )}
-      </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.sm }}>
+          {moonSign && <HeaderChip icon={Moon} label={t('home.moonInSign', { sign: signName(t, moonSign) })} tint={color.accent} />}
+          {streakDays > 0 && <HeaderChip icon={Flame} label={`${streakDays} ${t('streak.dayStreak')}`} tint={color.gold} />}
+          {tier && <HeaderChip icon={tier === 'premium' ? Crown : Sparkles} label={tier === 'premium' ? t('profile.planPremium') : t('profile.planFree')} tint={tier === 'premium' ? color.gold : color.textSecondary} />}
+        </View>
+      </LinearGradient>
 
       {isGuest ? (
         <Card elevated style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

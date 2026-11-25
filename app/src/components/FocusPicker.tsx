@@ -47,6 +47,6 @@ export function FocusPicker({ value, onChange }: { value: FocusArea[]; onChange:
 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  chip: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderWidth: 1, borderColor: color.border },
+  chip: { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderWidth: 1, borderColor: color.border },
   chipOn: { borderColor: color.accent, backgroundColor: color.accentMuted },
 });

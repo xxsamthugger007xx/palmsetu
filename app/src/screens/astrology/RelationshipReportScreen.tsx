@@ -16,6 +16,7 @@ import { parseLocalDateString } from '../../utils/formatDate';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 export function RelationshipReportScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -48,7 +49,7 @@ export function RelationshipReportScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
   if (state === 'blocked') {
     return <PageContainer><EmptyState icon={Info} title={t('ui.RelationshipReportScreen.sharedReadingsAreOff')} description={errorMessage ?? undefined} actionLabel={t('ui.KundliResultScreen.back')} onAction={() => navigation.goBack()} /></PageContainer>;

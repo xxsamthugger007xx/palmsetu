@@ -352,7 +352,9 @@
     "rescanConfirmTitle": "إعادة مسح كفك؟",
     "rescanConfirmDesc": "تم تصميم ملف قراءة الكف ليكون قراءة لمرة واحدة. ستؤدي إعادة المسح إلى استبدال صورتك وتقريرك الحاليين بشكل دائم بآخرين جديدين - لا يمكن التراجع عن هذا.",
     "rescanConfirm": "إعادة المسح",
-    "signInCreateAccount": "تسجيل الدخول / إنشاء حساب"
+    "signInCreateAccount": "تسجيل الدخول / إنشاء حساب",
+    "planPremium": "Premium",
+    "planFree": "الباقة المجانية"
   },
   "discover": {
     "title": "استكشف",
@@ -1397,7 +1399,8 @@
     "continue": "المتابعة باستخدام Google",
     "or": "أو",
     "notConfigured": "تسجيل الدخول عبر Google غير مُعدّ بعد. يرجى استخدام البريد الإلكتروني حاليًا.",
-    "failed": "فشل تسجيل الدخول عبر Google. يرجى المحاولة مرة أخرى."
+    "failed": "فشل تسجيل الدخول عبر Google. يرجى المحاولة مرة أخرى.",
+    "useEmail": "استخدم البريد الإلكتروني بدلًا من ذلك"
   },
   "focus": {
     "title": "في أي مجال تريد التوجيه؟",
@@ -1419,5 +1422,29 @@
     "moonEyebrow": "برج القمر الخاص بي",
     "palmEyebrow": "قراءة كفي",
     "tagline": "للتأمل لا للتنبؤ"
+  },
+  "signs": {
+    "Aries": "الحمل",
+    "Taurus": "الثور",
+    "Gemini": "الجوزاء",
+    "Cancer": "السرطان",
+    "Leo": "الأسد",
+    "Virgo": "العذراء",
+    "Libra": "الميزان",
+    "Scorpio": "العقرب",
+    "Sagittarius": "القوس",
+    "Capricorn": "الجدي",
+    "Aquarius": "الدلو",
+    "Pisces": "الحوت"
+  },
+  "moonPhases": {
+    "New Moon": "المحاق",
+    "Waxing Crescent": "هلال متزايد",
+    "First Quarter": "التربيع الأول",
+    "Waxing Gibbous": "أحدب متزايد",
+    "Full Moon": "بدر",
+    "Waning Gibbous": "أحدب متناقص",
+    "Last Quarter": "التربيع الأخير",
+    "Waning Crescent": "هلال متناقص"
   }
 }

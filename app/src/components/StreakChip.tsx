@@ -27,6 +27,7 @@ export function StreakChip({ days, atRisk, onPress }: { days: number; atRisk?: b
       accessible
       accessibilityRole={onPress ? 'button' : 'text'}
       accessibilityLabel={`${days} ${t('streak.dayStreak')}`}
+      hitSlop={10}
       onTouchEnd={onPress}
       style={[styles.chip, alive && { backgroundColor: color.goldMuted, borderColor: color.goldBorder }]}
     >

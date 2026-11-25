@@ -14,6 +14,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { ReadingCategory, TarotReading, formatSpreadLabel } from '../../types/tarot';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 const PAGE_SIZE = 10;
 
@@ -122,7 +123,7 @@ export function TarotHistoryScreen() {
       </ScrollView>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       )}
 
       {state === 'error' && (

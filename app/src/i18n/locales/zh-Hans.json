@@ -327,7 +327,9 @@
     "rescanConfirmTitle": "要重新扫描你的手掌吗？",
     "rescanConfirmDesc": "你的手相档案设计为一次性解读。重新扫描将永久用新的照片和报告替换当前内容，此操作无法撤销。",
     "rescanConfirm": "重新扫描",
-    "signInCreateAccount": "登录 / 创建账户"
+    "signInCreateAccount": "登录 / 创建账户",
+    "planPremium": "高级版",
+    "planFree": "免费版"
   },
   "discover": {
     "title": "发现",
@@ -1372,7 +1374,8 @@
     "continue": "使用 Google 继续",
     "or": "或",
     "notConfigured": "Google 登录尚未设置，请先使用邮箱。",
-    "failed": "Google 登录失败，请重试。"
+    "failed": "Google 登录失败，请重试。",
+    "useEmail": "改用邮箱"
   },
   "focus": {
     "title": "你想获得哪方面的指引？",
@@ -1394,5 +1397,29 @@
     "moonEyebrow": "我的月亮星座",
     "palmEyebrow": "我的手相解读",
     "tagline": "用于自我反思，而非预测"
+  },
+  "signs": {
+    "Aries": "白羊座",
+    "Taurus": "金牛座",
+    "Gemini": "双子座",
+    "Cancer": "巨蟹座",
+    "Leo": "狮子座",
+    "Virgo": "处女座",
+    "Libra": "天秤座",
+    "Scorpio": "天蝎座",
+    "Sagittarius": "射手座",
+    "Capricorn": "摩羯座",
+    "Aquarius": "水瓶座",
+    "Pisces": "双鱼座"
+  },
+  "moonPhases": {
+    "New Moon": "新月",
+    "Waxing Crescent": "蛾眉月",
+    "First Quarter": "上弦月",
+    "Waxing Gibbous": "盈凸月",
+    "Full Moon": "满月",
+    "Waning Gibbous": "亏凸月",
+    "Last Quarter": "下弦月",
+    "Waning Crescent": "残月"
   }
 }

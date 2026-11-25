@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
+import { signName } from '../../utils/signName';
 import { Sparkles, ChevronRight, Hand, Layers } from 'lucide-react-native';
 import { FadeInUp } from '../../components/FadeInUp';
 import { StreakChip } from '../../components/StreakChip';
@@ -142,7 +143,7 @@ export function HomeScreen() {
     }));
   // "Today for you": the real Moon sign plus the day's own theme, in one line. Nothing is shown until a chart exists.
   const todayForYou = moonTransit && dailyHoroscope?.dailyTheme
-    ? `${t('home.moonInSign', { sign: moonTransit.sign })} \u00B7 ${dailyHoroscope.dailyTheme}`
+    ? `${t('home.moonInSign', { sign: signName(t, moonTransit.sign) })} \u00B7 ${dailyHoroscope.dailyTheme}`
     : null;
 
   const notableTransits = [sunTransit, moonTransit, ...otherTransits].filter(
@@ -205,7 +206,7 @@ export function HomeScreen() {
             <InstrumentDial
               label={t('home.moonTonightLabel')}
               readout={degreeReadout(moonTransit.longitude)}
-              statusLine={`${moonTransit.sign} · ${dailyHoroscope?.transitContext.moonPhase ?? ''}`}
+              statusLine={`${signName(t, moonTransit.sign)} · ${dailyHoroscope?.transitContext.moonPhase ? t(`moonPhases.${dailyHoroscope.transitContext.moonPhase}`, { defaultValue: dailyHoroscope.transitContext.moonPhase }) : ''}`}
               markers={notableTransits.map((p) => ({
                 key: p.body,
                 angleDeg: (p.longitude / 360) * 360,

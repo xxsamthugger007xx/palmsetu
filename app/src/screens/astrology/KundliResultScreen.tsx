@@ -15,6 +15,7 @@ import { kundliApi } from '../../services/kundliApi';
 import { KundliChart } from '../../types/kundli';
 import { degreeReadout } from '../../utils/astrology';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'KundliResult'>;
@@ -47,7 +48,7 @@ export function KundliResultScreen() {
   }
 
   if (!chart) {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   return (

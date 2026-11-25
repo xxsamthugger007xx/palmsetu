@@ -14,6 +14,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 function statusBadge(status: SoulmateSketch['generationStatus']): { label: string; status: 'success' | 'warning' | 'danger' | 'neutral' } {
   if (status === 'completed') return { label: 'Completed', status: 'success' };
@@ -70,7 +71,7 @@ export function SoulmateHistoryScreen() {
       </View>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       )}
 
       {state === 'error' && (

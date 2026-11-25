@@ -18,6 +18,7 @@ import { formatLongDate } from '../../utils/formatDate';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type LoadState = 'loading' | 'ready' | 'failed' | 'error';
 
 export function DailyHoroscopeScreen() {
@@ -76,7 +77,7 @@ export function DailyHoroscopeScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   if (state === 'error' || !daily) {

@@ -15,8 +15,9 @@ import { astrologyApi } from '../../../services/astrologyApi';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../../services/apiRequest';
+import { appLocale } from '../../../utils/locale';
 function formatTime(d: Date): string {
-  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(appLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 function toTimeString(d: Date): string {
   const h = String(d.getHours()).padStart(2, '0');

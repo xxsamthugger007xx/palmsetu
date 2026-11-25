@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps, TextStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { color, typography } from '../theme/tokens';
 
 type Variant = 'display' | 'title' | 'subtitle' | 'body' | 'bodySm' | 'caption' | 'label' | 'mono';
@@ -40,8 +41,13 @@ const fontFamilyForWeight = (w: TextStyle['fontWeight']): string => {
   return typography.fontFamily.regular;
 };
 
+// Devanagari, Arabic and Thai stack marks above and below the line, so they need more vertical room than Latin text.
+const TALL_SCRIPTS = new Set(['hi', 'ar', 'bn', 'th', 'mr']);
+
 export function Text({ variant = 'body', tone = 'primary', weight, style, ...rest }: Props) {
-  const base = variantStyle[variant];
+  const { i18n } = useTranslation();
+  const tall = TALL_SCRIPTS.has((i18n.language ?? 'en').split('-')[0]);
+  const base = tall ? { ...variantStyle[variant], lineHeight: Math.round((variantStyle[variant].lineHeight ?? 20) * 1.18) } : variantStyle[variant];
   const resolvedWeight = weight ? typography.weight[weight] : base.fontWeight;
   // Big titles use the serif; everything else stays Inter.
   const isTitle = variant === 'display' || variant === 'title';

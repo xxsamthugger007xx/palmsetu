@@ -26,6 +26,8 @@ import { palmApi } from '../../services/palmApi';
 import { PalmReading, PalmSectionsResponse } from '../../types/palm';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
+import { appLocale } from '../../utils/locale';
 const SECTION_ICONS: Record<string, typeof Heart> = {
   heartLine: Heart, headLine: Brain, lifeLine: Activity, fateLine: TrendingUp,
   minorLine: Tag, mount: Gem, finger: Hand, thumb: Hand, nail: Fingerprint,
@@ -129,7 +131,7 @@ export function PalmReportScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.PalmReportScreen.loadingYourReading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }
@@ -177,7 +179,7 @@ export function PalmReportScreen() {
 
       <Text variant="title" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.PalmReportScreen.palmReading')}</Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
-        {new Date(reading.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date(reading.createdAt).toLocaleDateString(appLocale(), { year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
 
       {reading.hasStoredImage && !!scanImageUrl && (

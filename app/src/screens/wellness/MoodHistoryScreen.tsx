@@ -15,6 +15,8 @@ import { wellnessApi, MoodEntry, MoodLevel } from '../../services/wellnessApi';
 import { useTranslation } from 'react-i18next';
 
 import { ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
+import { appLocale } from '../../utils/locale';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const MOOD_COLOR: Record<MoodLevel, string> = {
@@ -111,7 +113,7 @@ export function MoodHistoryScreen() {
     return weeks;
   }, [calendarMonth]);
 
-  const monthLabel = new Date(calendarMonth.year, calendarMonth.month, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const monthLabel = new Date(calendarMonth.year, calendarMonth.month, 1).toLocaleDateString(appLocale(), { month: 'long', year: 'numeric' });
   const canGoNextMonth = !(calendarMonth.year > Number(today.slice(0, 4)) || (calendarMonth.year === Number(today.slice(0, 4)) && calendarMonth.month >= Number(today.slice(5, 7)) - 1));
 
   const changeMonth = (delta: number) => {
@@ -131,7 +133,7 @@ export function MoodHistoryScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MoodHistoryScreen.moodHistory')}</Text>
-        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }
@@ -189,7 +191,7 @@ export function MoodHistoryScreen() {
                     }}
                   />
                   <Text variant="caption" tone="muted" style={{ marginTop: 4 }}>
-                    {new Date(`${d.localDate}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2)}
+                    {new Date(`${d.localDate}T00:00:00`).toLocaleDateString(appLocale(), { weekday: 'short' }).slice(0, 2)}
                   </Text>
                 </View>
               ))}
@@ -248,7 +250,7 @@ export function MoodHistoryScreen() {
             {selectedDate && (
               <Card style={{ marginTop: spacing.sm }}>
                 <Text variant="bodySm" weight="semibold">
-                  {new Date(`${selectedDate}T00:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                  {new Date(`${selectedDate}T00:00:00`).toLocaleDateString(appLocale(), { weekday: 'long', month: 'long', day: 'numeric' })}
                 </Text>
                 {selectedEntry ? (
                   <>

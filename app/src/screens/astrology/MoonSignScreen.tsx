@@ -19,6 +19,8 @@ import { astrologyApi } from '../../services/astrologyApi';
 import { degreeReadout } from '../../utils/astrology';
 import { BirthProfile, DailyHoroscope } from '../../types/astrology';
 import { useTranslation } from 'react-i18next';
+import { signName } from '../../utils/signName';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
@@ -68,7 +70,7 @@ export function MoonSignScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.MoonSignScreen.moonSign')}</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }
@@ -98,7 +100,7 @@ export function MoonSignScreen() {
 
   const { natal } = profile;
   const shareSign = profile.preferredSystem === 'vedic' ? natal.moonSignSidereal : natal.moonSignTropical;
-  const shareTitle = t('home.moonInSign', { sign: shareSign });
+  const shareTitle = t('home.moonInSign', { sign: signName(t, shareSign) });
   const shareBody = dailyHoroscope?.dailyTheme ?? null;
 
   return (

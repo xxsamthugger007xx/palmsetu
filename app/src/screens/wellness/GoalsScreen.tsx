@@ -15,6 +15,7 @@ import { wellnessApi, WellnessGoal, WellnessGoalCategory, WELLNESS_GOAL_CATEGORI
 import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const CATEGORY_LABELS: Record<WellnessGoalCategory, string> = {
@@ -75,7 +76,7 @@ export function GoalsScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.GoalsScreen.goals')}</Text>
-        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

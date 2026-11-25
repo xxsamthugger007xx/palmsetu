@@ -14,6 +14,7 @@ import { wellnessApi, MeditationContent, MeditationCategory } from '../../servic
 import { useTranslation } from 'react-i18next';
 
 import { ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const CATEGORY_LABELS: Record<MeditationCategory, string> = {
@@ -67,7 +68,7 @@ export function MeditationScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.MeditationScreen.meditationSleep')}</Text>
-        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

@@ -15,6 +15,7 @@ import { astrologyApi } from '../../services/astrologyApi';
 import { RelationshipDailyReport } from '../../types/astrology';
 import { parseLocalDateString } from '../../utils/formatDate';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 export function AstrologyHistoryScreen() {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export function AstrologyHistoryScreen() {
         <View style={{ width: 36 }} />
       </View>
 
-      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      {state === 'loading' && <ListSkeleton rows={3} />}
       {state === 'error' && <EmptyState icon={Info} title={t('ui.AstrologyHistoryScreen.couldnTLoadHistory')} />}
 
       {state === 'ready' && (

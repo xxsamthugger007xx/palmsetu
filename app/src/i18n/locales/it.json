@@ -332,7 +332,9 @@
     "rescanConfirmTitle": "Riscansionare il tuo palmo?",
     "rescanConfirmDesc": "Il tuo profilo del palmo è pensato come una lettura unica. Riscansionare sostituirà definitivamente la tua foto e report attuali con uno nuovo - non è reversibile.",
     "rescanConfirm": "Riscansiona",
-    "signInCreateAccount": "Accedi / Crea account"
+    "signInCreateAccount": "Accedi / Crea account",
+    "planPremium": "Premium",
+    "planFree": "Piano gratuito"
   },
   "discover": {
     "title": "Scopri",
@@ -1377,7 +1379,8 @@
     "continue": "Continua con Google",
     "or": "oppure",
     "notConfigured": "L’accesso con Google non è ancora configurato. Per ora usa l’e-mail.",
-    "failed": "Accesso con Google non riuscito. Riprova."
+    "failed": "Accesso con Google non riuscito. Riprova.",
+    "useEmail": "Usa l’e-mail"
   },
   "focus": {
     "title": "Su cosa vorresti una guida?",
@@ -1399,5 +1402,29 @@
     "moonEyebrow": "IL MIO SEGNO LUNARE",
     "palmEyebrow": "LA MIA LETTURA DEL PALMO",
     "tagline": "Per riflettere, non per prevedere"
+  },
+  "signs": {
+    "Aries": "Ariete",
+    "Taurus": "Toro",
+    "Gemini": "Gemelli",
+    "Cancer": "Cancro",
+    "Leo": "Leone",
+    "Virgo": "Vergine",
+    "Libra": "Bilancia",
+    "Scorpio": "Scorpione",
+    "Sagittarius": "Sagittario",
+    "Capricorn": "Capricorno",
+    "Aquarius": "Acquario",
+    "Pisces": "Pesci"
+  },
+  "moonPhases": {
+    "New Moon": "Luna nuova",
+    "Waxing Crescent": "Luna crescente",
+    "First Quarter": "Primo quarto",
+    "Waxing Gibbous": "Gibbosa crescente",
+    "Full Moon": "Luna piena",
+    "Waning Gibbous": "Gibbosa calante",
+    "Last Quarter": "Ultimo quarto",
+    "Waning Crescent": "Luna calante"
   }
 }

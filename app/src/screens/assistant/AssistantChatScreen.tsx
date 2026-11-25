@@ -358,7 +358,7 @@ export function AssistantChatScreen() {
               <Pressable accessibilityRole="button"
                 key={q}
                 onPress={() => send(q)}
-                style={{ borderWidth: 1, borderColor: color.accentBorder, backgroundColor: color.accentMuted, borderRadius: radius.pill, paddingVertical: 8, paddingHorizontal: 14, marginRight: spacing.sm, marginBottom: spacing.sm }}
+                style={{ borderWidth: 1, borderColor: color.accentBorder, backgroundColor: color.accentMuted, borderRadius: radius.pill, minHeight: 40, justifyContent: 'center', paddingVertical: 8, paddingHorizontal: 14, marginRight: spacing.sm, marginBottom: spacing.sm }}
               >
                 <Text variant="caption" style={{ color: color.highlight }}>{q}</Text>
               </Pressable>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ListSkeleton } from '../../components/ListSkeleton';
 import { ShareCard } from '../../components/ShareCard';
 import { shareCardImage } from '../../services/shareCard';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -25,6 +26,7 @@ import { TarotCard, TarotReading, formatSpreadLabel } from '../../types/tarot';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { appLocale } from '../../utils/locale';
 type LoadState = 'loading' | 'interpreting' | 'ready' | 'error';
 
 export function TarotReportScreen() {
@@ -166,9 +168,10 @@ export function TarotReportScreen() {
   if (state === 'loading' || state === 'interpreting') {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>
-          {state === 'interpreting' ? 'Interpreting your reading...' : 'Loading...'}
-        </Text>
+        {state === 'interpreting' && (
+          <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center', marginBottom: spacing.md }}>Interpreting your reading...</Text>
+        )}
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }
@@ -209,7 +212,7 @@ export function TarotReportScreen() {
         {formatSpreadLabel(reading.spreadType)}
       </Text>
       <Text variant="caption" tone="muted" style={{ marginTop: 2, marginBottom: spacing.lg }}>
-        {new Date(reading.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date(reading.createdAt).toLocaleDateString(appLocale(), { year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
 
       {reading.interpretation?.personalizedNote && (
@@ -398,7 +401,7 @@ export function TarotReportScreen() {
                       <Text variant="bodySm" tone="primary">{m.question}</Text>
                     </View>
                     <Text variant="caption" tone="muted" style={styles.bubbleTimestamp}>
-                      {new Date(m.createdAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                      {new Date(m.createdAt).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' })}
                     </Text>
                     {m.answer ? (
                       <View style={[styles.bubble, styles.bubbleAnswer]}>

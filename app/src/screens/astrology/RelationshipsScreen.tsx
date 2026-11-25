@@ -15,6 +15,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { ConsentType, Relationship, RelationshipConsent } from '../../types/astrology';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -63,7 +64,7 @@ export function RelationshipsScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
   if (state === 'error') {
     return <PageContainer><EmptyState icon={Info} title={t('ui.RelationshipsScreen.couldnTLoadRelationships')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;

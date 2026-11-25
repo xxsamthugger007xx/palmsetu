@@ -17,6 +17,7 @@ import { BIRTHPLACES, BirthplaceOption } from '../../data/birthplaces';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type RouteT = RouteProp<RootStackParamList, 'KundliStyle'>;
 
@@ -105,7 +106,7 @@ export function KundliStyleScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

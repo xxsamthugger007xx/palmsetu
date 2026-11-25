@@ -332,7 +332,9 @@
     "rescanConfirmTitle": "Rescan your palm?",
     "rescanConfirmDesc": "Your palm profile is meant to be a one-time reading. Rescanning will permanently replace your existing photo and report with a new one - this cannot be undone.",
     "rescanConfirm": "Rescan",
-    "signInCreateAccount": "Sign in / Create account"
+    "signInCreateAccount": "Sign in / Create account",
+    "planPremium": "Premium",
+    "planFree": "Free plan"
   },
   "discover": {
     "title": "Discover",
@@ -1377,7 +1379,8 @@
     "continue": "Continue with Google",
     "or": "or",
     "notConfigured": "Google sign-in isn’t set up yet. Please use email for now.",
-    "failed": "Google sign-in didn’t work. Please try again."
+    "failed": "Google sign-in didn’t work. Please try again.",
+    "useEmail": "Use email instead"
   },
   "focus": {
     "title": "What would you like guidance on?",
@@ -1399,5 +1402,29 @@
     "moonEyebrow": "MY MOON SIGN",
     "palmEyebrow": "MY PALM READING",
     "tagline": "For reflection, not prediction"
+  },
+  "signs": {
+    "Aries": "Aries",
+    "Taurus": "Taurus",
+    "Gemini": "Gemini",
+    "Cancer": "Cancer",
+    "Leo": "Leo",
+    "Virgo": "Virgo",
+    "Libra": "Libra",
+    "Scorpio": "Scorpio",
+    "Sagittarius": "Sagittarius",
+    "Capricorn": "Capricorn",
+    "Aquarius": "Aquarius",
+    "Pisces": "Pisces"
+  },
+  "moonPhases": {
+    "New Moon": "New Moon",
+    "Waxing Crescent": "Waxing Crescent",
+    "First Quarter": "First Quarter",
+    "Waxing Gibbous": "Waxing Gibbous",
+    "Full Moon": "Full Moon",
+    "Waning Gibbous": "Waning Gibbous",
+    "Last Quarter": "Last Quarter",
+    "Waning Crescent": "Waning Crescent"
   }
 }

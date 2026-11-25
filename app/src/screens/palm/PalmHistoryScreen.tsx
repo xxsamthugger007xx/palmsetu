@@ -13,6 +13,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 export function PalmHistoryScreen() {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ export function PalmHistoryScreen() {
       </View>
 
       {state === 'loading' && (
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       )}
 
       {state === 'error' && (

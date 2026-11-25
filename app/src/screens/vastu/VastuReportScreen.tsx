@@ -17,6 +17,7 @@ import { VastuReport } from '../../types/vastu';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card style={{ marginBottom: spacing.sm }}>
@@ -92,7 +93,7 @@ export function VastuReportScreen() {
   };
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
   if (state === 'error' || !report) {
     return <PageContainer><EmptyState icon={Info} title={t('ui.GemstoneReportScreen.couldnTLoadThisReport')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} /></PageContainer>;

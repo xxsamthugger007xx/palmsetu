@@ -19,6 +19,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
 import { PalmHeroVisual } from '../onboarding/intro/PalmHeroVisual';
+import { appLocale } from '../../utils/locale';
 
 const PREVIEW_SECTION_ORDER = ['heartLine', 'headLine', 'lifeLine', 'fateLine'];
 
@@ -107,7 +108,7 @@ export function PalmHubScreen() {
             <View>
               <Text variant="label" tone="muted">{t('palm.scanDateLabel')}</Text>
               <Text variant="bodySm" weight="semibold" style={{ marginTop: 2 }}>
-                {new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                {new Date(profile.createdAt).toLocaleDateString(appLocale(), { year: 'numeric', month: 'short', day: 'numeric' })}
               </Text>
             </View>
             <View>

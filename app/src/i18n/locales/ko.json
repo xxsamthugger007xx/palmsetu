@@ -327,7 +327,9 @@
     "rescanConfirmTitle": "손금을 다시 스캔할까요?",
     "rescanConfirmDesc": "손금 프로필은 한 번만 리딩하도록 설계되었어요. 다시 스캔하면 기존 사진과 리포트가 새 것으로 영구적으로 대체돼요 - 되돌릴 수 없어요.",
     "rescanConfirm": "다시 스캔",
-    "signInCreateAccount": "로그인 / 계정 만들기"
+    "signInCreateAccount": "로그인 / 계정 만들기",
+    "planPremium": "프리미엄",
+    "planFree": "무료 플랜"
   },
   "discover": {
     "title": "탐색",
@@ -1372,7 +1374,8 @@
     "continue": "Google로 계속하기",
     "or": "또는",
     "notConfigured": "Google 로그인이 아직 설정되지 않았어요. 지금은 이메일을 사용해 주세요.",
-    "failed": "Google 로그인에 실패했어요. 다시 시도해 주세요."
+    "failed": "Google 로그인에 실패했어요. 다시 시도해 주세요.",
+    "useEmail": "대신 이메일 사용"
   },
   "focus": {
     "title": "어떤 분야의 안내를 원하세요?",
@@ -1394,5 +1397,29 @@
     "moonEyebrow": "나의 달 별자리",
     "palmEyebrow": "나의 손금 리딩",
     "tagline": "예측이 아닌 성찰을 위해"
+  },
+  "signs": {
+    "Aries": "양자리",
+    "Taurus": "황소자리",
+    "Gemini": "쌍둥이자리",
+    "Cancer": "게자리",
+    "Leo": "사자자리",
+    "Virgo": "처녀자리",
+    "Libra": "천칭자리",
+    "Scorpio": "전갈자리",
+    "Sagittarius": "사수자리",
+    "Capricorn": "염소자리",
+    "Aquarius": "물병자리",
+    "Pisces": "물고기자리"
+  },
+  "moonPhases": {
+    "New Moon": "신월",
+    "Waxing Crescent": "초승달",
+    "First Quarter": "상현달",
+    "Waxing Gibbous": "차오르는 달",
+    "Full Moon": "보름달",
+    "Waning Gibbous": "기우는 달",
+    "Last Quarter": "하현달",
+    "Waning Crescent": "그믐달"
   }
 }

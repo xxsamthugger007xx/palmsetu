@@ -15,6 +15,7 @@ import { wellnessApi, ChallengeDefinition, ChallengeProgress } from '../../servi
 import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'ChallengeDetail'>;
 
@@ -123,7 +124,7 @@ export function ChallengeDetailScreen() {
   if (loading) {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

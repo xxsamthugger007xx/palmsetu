@@ -16,6 +16,7 @@ import { GemstoneReport } from '../../types/gemstone';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
 export function GemstoneLandingScreen() {
@@ -40,7 +41,7 @@ export function GemstoneLandingScreen() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   if (state === 'loading') {
-    return <PageContainer><Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text></PageContainer>;
+    return <PageContainer><ListSkeleton rows={3} /></PageContainer>;
   }
 
   if (state === 'needsProfile') {

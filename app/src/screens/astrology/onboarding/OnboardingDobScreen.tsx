@@ -15,8 +15,9 @@ import { astrologyApi } from '../../../services/astrologyApi';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../../services/apiRequest';
+import { appLocale } from '../../../utils/locale';
 function formatDate(d: Date): string {
-  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  return d.toLocaleDateString(appLocale(), { year: 'numeric', month: 'long', day: 'numeric' });
 }
 function toDateString(d: Date): string {
   const y = d.getFullYear();

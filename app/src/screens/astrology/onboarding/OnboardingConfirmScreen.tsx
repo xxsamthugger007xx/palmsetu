@@ -17,14 +17,15 @@ import { useAstrologyOnboardingStatus } from '../../../context/AstrologyOnboardi
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../../services/apiRequest';
+import { appLocale } from '../../../utils/locale';
 function formatDateLabel(isoDate: string): string {
-  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(appLocale(), { year: 'numeric', month: 'long', day: 'numeric' });
 }
 function formatTimeLabel(hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
   const d = new Date();
   d.setHours(h, m, 0, 0);
-  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(appLocale(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function Row({ label, value, onEdit }: { label: string; value: string; onEdit: () => void }) {

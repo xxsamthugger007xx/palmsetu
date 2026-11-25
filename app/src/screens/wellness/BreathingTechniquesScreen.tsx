@@ -13,6 +13,7 @@ import { wellnessApi, BreathingTechniqueCatalogueEntry } from '../../services/we
 import { useTranslation } from 'react-i18next';
 
 import { ApiError } from '../../services/apiRequest';
+import { ListSkeleton } from '../../components/ListSkeleton';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function BreathingTechniquesScreen() {
@@ -45,7 +46,7 @@ export function BreathingTechniquesScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.BreathingTechniquesScreen.breathing')}</Text>
-        <Text variant="bodySm" tone="muted">{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

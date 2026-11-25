@@ -332,7 +332,9 @@
     "rescanConfirmTitle": "Handfläche erneut scannen?",
     "rescanConfirmDesc": "Dein Handflächen-Profil ist als einmalige Lesung gedacht. Ein erneuter Scan ersetzt dein aktuelles Foto und den Bericht dauerhaft durch einen neuen - das kann nicht rückgängig gemacht werden.",
     "rescanConfirm": "Erneut scannen",
-    "signInCreateAccount": "Anmelden / Konto erstellen"
+    "signInCreateAccount": "Anmelden / Konto erstellen",
+    "planPremium": "Premium",
+    "planFree": "Gratis-Plan"
   },
   "discover": {
     "title": "Entdecken",
@@ -1377,7 +1379,8 @@
     "continue": "Weiter mit Google",
     "or": "oder",
     "notConfigured": "Die Google-Anmeldung ist noch nicht eingerichtet. Bitte nutze vorerst E-Mail.",
-    "failed": "Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut."
+    "failed": "Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut.",
+    "useEmail": "Stattdessen E-Mail verwenden"
   },
   "focus": {
     "title": "Wobei möchtest du Orientierung?",
@@ -1399,5 +1402,29 @@
     "moonEyebrow": "MEIN MONDZEICHEN",
     "palmEyebrow": "MEINE HANDLESE-DEUTUNG",
     "tagline": "Zur Reflexion, nicht zur Vorhersage"
+  },
+  "signs": {
+    "Aries": "Widder",
+    "Taurus": "Stier",
+    "Gemini": "Zwillinge",
+    "Cancer": "Krebs",
+    "Leo": "Löwe",
+    "Virgo": "Jungfrau",
+    "Libra": "Waage",
+    "Scorpio": "Skorpion",
+    "Sagittarius": "Schütze",
+    "Capricorn": "Steinbock",
+    "Aquarius": "Wassermann",
+    "Pisces": "Fische"
+  },
+  "moonPhases": {
+    "New Moon": "Neumond",
+    "Waxing Crescent": "Zunehmende Sichel",
+    "First Quarter": "Erstes Viertel",
+    "Waxing Gibbous": "Zunehmender Mond",
+    "Full Moon": "Vollmond",
+    "Waning Gibbous": "Abnehmender Mond",
+    "Last Quarter": "Letztes Viertel",
+    "Waning Crescent": "Abnehmende Sichel"
   }
 }

@@ -13,6 +13,7 @@ import { wellnessApi, Emotion, EMOTION_OPTIONS, MoodLevel } from '../../services
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
+import { appLocale } from '../../utils/locale';
 const MOOD_LEVELS: { value: MoodLevel; label: string }[] = [
   { value: 'low', label: 'Low' },
   { value: 'down', label: 'Down' },
@@ -110,7 +111,7 @@ export function MoodCheckInScreen() {
         {wasExisting ? 'Edit check-in' : 'How are you feeling?'}
       </Text>
       <Text variant="caption" tone="muted" style={{ marginBottom: 2 }}>
-        {new Date(`${today}T00:00:00`).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date(`${today}T00:00:00`).toLocaleDateString(appLocale(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </Text>
       <Text variant="body" tone="secondary" style={{ marginBottom: spacing.lg }}>
         {wasExisting ? 'You already checked in today - update it below.' : 'Today\'s quick mood check-in. One check-in per day - come back tomorrow for a new one.'}

@@ -13,6 +13,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { vastuApi } from '../../services/vastuApi';
 import { VastuReport } from '../../types/vastu';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 export function VastuHistoryScreen() {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ export function VastuHistoryScreen() {
         <View style={{ width: 36 }} />
       </View>
 
-      {state === 'loading' && <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl, textAlign: 'center' }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>}
+      {state === 'loading' && <ListSkeleton rows={3} />}
       {state === 'error' && <EmptyState icon={Info} title={t('ui.GemstoneHistoryScreen.couldnTLoadReports')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />}
       {state === 'ready' && items.length === 0 && (
         <EmptyState icon={Home} title={t('ui.GemstoneHistoryScreen.noReportsYet')} description={t('ui.VastuHistoryScreen.yourVastuReportsWillAppear')} />

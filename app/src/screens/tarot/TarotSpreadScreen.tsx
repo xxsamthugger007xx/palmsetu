@@ -14,6 +14,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { tarotApi } from '../../services/tarotApi';
 import { SpreadDefinition } from '../../types/tarot';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -52,7 +53,7 @@ export function TarotSpreadScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.xl }}>{t('ui.TarotSpreadScreen.loadingSpreads')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }

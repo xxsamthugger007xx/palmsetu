@@ -13,6 +13,7 @@ import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { BirthProfile, DailyHoroscope } from '../../types/astrology';
 import { useTranslation } from 'react-i18next';
+import { ListSkeleton } from '../../components/ListSkeleton';
 
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
 
@@ -55,7 +56,7 @@ export function WesternAstrologyScreen() {
     return (
       <PageContainer>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.WesternAstrologyScreen.westernAstrology')}</Text>
-        <Text variant="bodySm" tone="muted" style={{ marginTop: spacing.lg }}>{t('ui.AstrologyHistoryScreen.loading')}</Text>
+        <ListSkeleton rows={3} />
       </PageContainer>
     );
   }
