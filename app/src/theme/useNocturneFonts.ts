@@ -1,4 +1,5 @@
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
+import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces';
 
 /**
  * Loads the Nocturne design system's Inter font weights. Returns `true` once
@@ -11,6 +12,7 @@ export function useNocturneFonts() {
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Fraunces_600SemiBold,
   });
   return loaded || !!error;
 }

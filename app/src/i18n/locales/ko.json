@@ -150,7 +150,8 @@
       "daily": "오늘",
       "connection": "인연",
       "tools": "도구"
-    }
+    },
+    "moonInSign": "달이 {{sign}}에"
   },
   "wellness": {
     "defaultSubtitle": "여유가 있을 때 할 수 있는 작은 리셋들이에요.",

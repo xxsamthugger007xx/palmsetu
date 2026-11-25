@@ -150,7 +150,8 @@
       "daily": "Daily",
       "connection": "Connection",
       "tools": "Tools"
-    }
+    },
+    "moonInSign": "Moon in {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "A few small resets, whenever you have a moment.",

@@ -15,10 +15,15 @@ type Props = {
   onAvatarPress?: () => void;
   onNotificationsPress?: () => void;
   hasNotifications?: boolean;
+  /** One line under the name: "today for you". */
+  subtitle?: string | null;
+  /** Small element shown before the bell (e.g. the streak flame). */
+  trailing?: React.ReactNode;
 };
 
-export function AppHeader({ greeting, name, gender, onAvatarPress, onNotificationsPress, hasNotifications }: Props) {
+export function AppHeader({ greeting, name, gender, onAvatarPress, onNotificationsPress, hasNotifications, subtitle, trailing }: Props) {
   return (
+    <View style={{ marginBottom: spacing.lg }}>
     <View style={styles.row}>
       <Pressable accessibilityRole="button" onPress={onAvatarPress} style={styles.identity}>
         <AIAvatar name={name} gender={gender} size={48} />
@@ -27,10 +32,17 @@ export function AppHeader({ greeting, name, gender, onAvatarPress, onNotificatio
           <Text variant="display" weight="semibold">{name}</Text>
         </View>
       </Pressable>
-      <View>
-        <IconButton icon={Bell} onPress={onNotificationsPress} tone={color.textSecondary} />
-        {hasNotifications && <View style={styles.dot} />}
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {trailing}
+        <View>
+          <IconButton icon={Bell} onPress={onNotificationsPress} tone={color.textSecondary} />
+          {hasNotifications && <View style={styles.dot} />}
+        </View>
       </View>
+    </View>
+    {!!subtitle && (
+      <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.sm }} numberOfLines={2}>{subtitle}</Text>
+    )}
     </View>
   );
 }
@@ -40,7 +52,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.lg,
   },
   identity: {
     flexDirection: 'row',

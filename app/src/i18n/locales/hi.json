@@ -150,7 +150,8 @@
       "daily": "दैनिक",
       "connection": "संबंध",
       "tools": "टूल्स"
-    }
+    },
+    "moonInSign": "{{sign}} में चंद्रमा"
   },
   "wellness": {
     "defaultSubtitle": "कुछ छोटे रीसेट, जब भी आपके पास समय हो।",

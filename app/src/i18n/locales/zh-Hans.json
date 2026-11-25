@@ -150,7 +150,8 @@
       "daily": "每日",
       "connection": "缘分",
       "tools": "工具"
-    }
+    },
+    "moonInSign": "月亮在{{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "无论何时有空，都可以做一些小小的重置。",

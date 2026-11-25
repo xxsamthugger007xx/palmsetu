@@ -150,7 +150,8 @@
       "daily": "Au quotidien",
       "connection": "Lien",
       "tools": "Outils"
-    }
+    },
+    "moonInSign": "Lune en {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "Quelques petites remises à zéro, dès que vous avez un moment.",

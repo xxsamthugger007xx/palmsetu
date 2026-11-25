@@ -150,7 +150,8 @@
       "daily": "Giornaliero",
       "connection": "Connessione",
       "tools": "Strumenti"
-    }
+    },
+    "moonInSign": "Luna in {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "Alcuni piccoli reset, ogni volta che hai un momento.",

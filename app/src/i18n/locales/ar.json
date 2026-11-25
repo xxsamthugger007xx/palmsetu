@@ -150,7 +150,8 @@
       "daily": "يوميًا",
       "connection": "التواصل",
       "tools": "الأدوات"
-    }
+    },
+    "moonInSign": "القمر في {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "بعض إعادة الضبط الصغيرة، متى ما توفر لديك وقت.",

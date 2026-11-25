@@ -30,7 +30,7 @@ function buildHtml(params: { keyId: string; orderId: string; amountCents: number
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>html, body { margin: 0; padding: 0; background: #161826; }</style>
+<style>html, body { margin: 0; padding: 0; background: #0E0B1F; }</style>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>

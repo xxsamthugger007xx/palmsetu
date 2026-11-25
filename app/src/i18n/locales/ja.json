@@ -150,7 +150,8 @@
       "daily": "毎日",
       "connection": "つながり",
       "tools": "ツール"
-    }
+    },
+    "moonInSign": "月は{{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "ちょっとした時間ができたときの、小さなリセットです。",

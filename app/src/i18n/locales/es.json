@@ -150,7 +150,8 @@
       "daily": "Diario",
       "connection": "Conexión",
       "tools": "Herramientas"
-    }
+    },
+    "moonInSign": "Luna en {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "Unos pequeños reinicios, cuando tengas un momento.",

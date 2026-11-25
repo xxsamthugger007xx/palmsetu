@@ -43,13 +43,17 @@ const fontFamilyForWeight = (w: TextStyle['fontWeight']): string => {
 export function Text({ variant = 'body', tone = 'primary', weight, style, ...rest }: Props) {
   const base = variantStyle[variant];
   const resolvedWeight = weight ? typography.weight[weight] : base.fontWeight;
+  // Big titles use the serif; everything else stays Inter.
+  const isTitle = variant === 'display' || variant === 'title';
   return (
     <RNText
       accessibilityRole={rest.accessibilityRole ?? (rest.onPress ? 'button' : variant === 'display' || variant === 'title' ? 'header' : undefined)}
       style={[
         base,
-        { color: toneColor[tone], fontFamily: fontFamilyForWeight(resolvedWeight) },
-        weight && { fontWeight: typography.weight[weight] },
+        { color: toneColor[tone], fontFamily: isTitle ? typography.fontFamily.serif : fontFamilyForWeight(resolvedWeight) },
+        // The serif font file is already semibold; asking the OS to embolden it again would double-bold it.
+        weight && !isTitle && { fontWeight: typography.weight[weight] },
+        isTitle && { fontWeight: '400' as const, letterSpacing: 0 },
         style,
       ]}
       {...rest}

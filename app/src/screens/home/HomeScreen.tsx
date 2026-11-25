@@ -4,6 +4,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, ChevronRight, Hand, Layers } from 'lucide-react-native';
+import { StreakChip } from '../../components/StreakChip';
 import { HeroActionCard } from '../../components/HeroActionCard';
 import { ErrorBanner } from '../../components/ErrorState';
 import { isLoadFailure } from '../../utils/loadFailure';
@@ -138,6 +139,11 @@ export function HomeScreen() {
       longitude: isVedic ? p.longitudeSidereal : p.longitude,
       retrograde: p.retrograde,
     }));
+  // "Today for you": the real Moon sign plus the day's own theme, in one line. Nothing is shown until a chart exists.
+  const todayForYou = moonTransit && dailyHoroscope?.dailyTheme
+    ? `${t('home.moonInSign', { sign: moonTransit.sign })} \u00B7 ${dailyHoroscope.dailyTheme}`
+    : null;
+
   const notableTransits = [sunTransit, moonTransit, ...otherTransits].filter(
     (p): p is { body: string; sign: string; longitude: number; retrograde: boolean } => p !== null
   );
@@ -154,7 +160,14 @@ export function HomeScreen() {
         <Text variant="label" tone="accent" style={styles.brandWordmark}>{t('ui.HomeScreen.palmSetu')}</Text>
       </View>
 
-      <AppHeader greeting={t(timeOfDayGreetingKey())} name={profile.name} gender={profile.gender} hasNotifications />
+      <AppHeader
+        greeting={t(timeOfDayGreetingKey())}
+        name={profile.name}
+        gender={profile.gender}
+        hasNotifications
+        subtitle={todayForYou}
+        trailing={streak ? <StreakChip days={streak.current} atRisk={streak.atRisk} onPress={() => navigation.navigate('NotificationSettings')} /> : undefined}
+      />
 
       <Text variant="caption" tone="accent" weight="semibold" style={styles.todayDate}>
         {formatLongDate(new Date()).toUpperCase()}
@@ -222,7 +235,7 @@ export function HomeScreen() {
         )}
       </View>
 
-      {streak && <StreakCard streak={streak} onRemindersPress={streak.current > 0 && streak.current < 3 ? () => navigation.navigate('NotificationSettings') : undefined} />}
+      {streak && (streak.atRisk || streak.milestone) && <StreakCard streak={streak} onRemindersPress={streak.current > 0 && streak.current < 3 ? () => navigation.navigate('NotificationSettings') : undefined} />}
       {astroProfile && <DailyGuidanceCard dailyHoroscope={dailyHoroscope} />}
 
       <Card elevated style={{ marginBottom: spacing.sm }}>

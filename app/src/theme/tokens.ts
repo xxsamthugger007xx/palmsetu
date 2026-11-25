@@ -4,10 +4,11 @@
 
 export const color = {
   // Surfaces
-  bg: '#161826',
-  surface: '#232532',
-  surfaceElevated: '#2B2E3D',
-  surfaceHover: '#323647',
+  // Deep indigo-black (not neutral grey) so the app feels like the night sky its artwork lives in.
+  bg: '#0E0B1F',
+  surface: '#1A1631',
+  surfaceElevated: '#241E40',
+  surfaceHover: '#2E2750',
   border: 'rgba(233, 233, 237, 0.16)',
   borderSubtle: 'rgba(233, 233, 237, 0.1)',
 
@@ -22,6 +23,10 @@ export const color = {
   primary: '#7B6CF0',
   primaryDeep: '#5B4BD6',
   onPrimary: '#ffffff',
+  // Warm gold from the artwork: reserved for special moments (daily card, streak, Premium, rewards).
+  gold: '#E8B85C',
+  goldMuted: 'rgba(232, 184, 92, 0.16)',
+  goldBorder: 'rgba(232, 184, 92, 0.4)',
   accent: '#9184d9',
   accentMuted: 'rgba(145, 132, 217, 0.14)',
   accentBorder: 'rgba(145, 132, 217, 0.35)',
@@ -39,8 +44,8 @@ export const color = {
   dangerMuted: 'rgba(217, 112, 106, 0.14)',
 
   // Overlays
-  overlay: 'rgba(22, 24, 38, 0.72)',
-  scrim: 'rgba(22, 24, 38, 0.4)',
+  overlay: 'rgba(14, 11, 31, 0.72)',
+  scrim: 'rgba(14, 11, 31, 0.4)',
 
   // Divider fade endpoints (for FadeDivider gradient: transparent -> divider -> transparent)
   dividerFadeEdge: 'rgba(233, 233, 237, 0)',
@@ -110,6 +115,8 @@ export const typography = {
     // has resolved; RN silently falls back to the OS system font if the
     // named family isn't registered yet (e.g. a failed/slow font fetch), so
     // this never blocks rendering.
+    // Serif for big titles (Home name, screen titles) - gives the app its mystical voice.
+    serif: 'Fraunces_600SemiBold',
     regular: 'Inter_400Regular',
     medium: 'Inter_500Medium',
     semibold: 'Inter_600SemiBold',
@@ -159,3 +166,13 @@ export const border = {
 export const brand = {
   name: 'PALM SETU',
 };
+
+/** Each feature's own tint, used for icon badges and card glows so features are recognisable at a glance. */
+export const featureTint = {
+  palm: { solid: '#E7A98C', soft: 'rgba(231, 169, 140, 0.16)' },      // rose-gold
+  tarot: { solid: '#A78BFA', soft: 'rgba(167, 139, 250, 0.16)' },     // royal purple
+  astrology: { solid: '#5EC8E5', soft: 'rgba(94, 200, 229, 0.16)' },  // teal-blue
+  wellness: { solid: '#7BD3A1', soft: 'rgba(123, 211, 161, 0.16)' },  // soft green
+  soulmate: { solid: '#F08DB5', soft: 'rgba(240, 141, 181, 0.16)' },  // pink
+  guidance: { solid: '#E8B85C', soft: 'rgba(232, 184, 92, 0.16)' },   // gold
+} as const;

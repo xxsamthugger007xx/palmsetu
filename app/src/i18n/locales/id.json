@@ -150,7 +150,8 @@
       "daily": "Harian",
       "connection": "Hubungan",
       "tools": "Alat"
-    }
+    },
+    "moonInSign": "Bulan di {{sign}}"
   },
   "wellness": {
     "defaultSubtitle": "Beberapa reset kecil, kapan pun Anda punya waktu.",
