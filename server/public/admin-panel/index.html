@@ -187,6 +187,7 @@
         <div class="tab" data-tab="revenue"><span class="icon">&#9679;</span><span class="label-text">Revenue</span></div>
         <div class="tab" data-tab="subscriptions"><span class="icon">&#9679;</span><span class="label-text">Subscriptions</span></div>
         <div class="tab" data-tab="pricing"><span class="icon">&#9679;</span><span class="label-text">Pricing</span></div>
+        <div class="tab" data-tab="coupons"><span class="icon">&#9679;</span><span class="label-text">Coupons</span></div>
         <div class="tab" data-tab="aibudget"><span class="icon">&#9679;</span><span class="label-text">AI Budget</span></div>
         <div class="tab" data-tab="aicost"><span class="icon">&#9679;</span><span class="label-text">AI Cost Centre</span></div>
 
@@ -363,6 +364,7 @@
       if (name === 'live') return renderLiveActivity(el);
       if (name === 'soulmate') return renderSoulmate(el);
       if (name === 'pricing') return renderPricing(el);
+      if (name === 'coupons') return renderCoupons(el);
       if (name === 'aibudget') return renderAiBudget(el);
       if (name === 'flags') return renderFlags(el);
       if (name === 'admins') return renderAdmins(el);
@@ -1397,6 +1399,100 @@
     document.getElementById('exp-users').onclick = () => downloadCsv('/admin/users/export');
     document.getElementById('exp-tx').onclick = () => downloadCsv('/admin/transactions/export');
     document.getElementById('exp-events').onclick = () => downloadCsv('/admin/events/export');
+  }
+
+  async function renderCoupons(el) {
+    const data = await api('/admin/coupons');
+    const rows = data.coupons.map((c) => `
+      <tr>
+        <td><strong>${escapeHtml(c.code)}</strong>${c.description ? '<br/><span class="unavailable">' + escapeHtml(c.description) + '</span>' : ''}</td>
+        <td>${c.discountPercent}%</td>
+        <td>${escapeHtml(c.planRestriction)}</td>
+        <td>${c.redemptionCount}${c.maxRedemptions != null ? ' / ' + c.maxRedemptions : ''}</td>
+        <td>${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" class="coupon-toggle" data-code="${escapeHtml(c.code)}" ${c.active ? 'checked' : ''} />
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td><button class="coupon-delete" data-code="${escapeHtml(c.code)}" style="width:auto;padding:6px 10px;">Delete</button></td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Discounts the price shown and recorded in this app only - the real App Store/Play Billing charge needs a matching promotional price configured on that product too (billing isn't configured on this build yet, see Subscriptions tab). Super_admin only for create/edit/delete.</p>
+      <table>
+        <thead><tr><th>Code</th><th>Discount</th><th>Plan</th><th>Redemptions</th><th>Expires</th><th>Active</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="7" class="unavailable">No coupons yet</td></tr>'}</tbody>
+      </table>
+      <div class="card" style="margin-top:16px;">
+        <div class="label" style="margin-bottom:10px;">Create a coupon</div>
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Code</label>
+        <input id="nc-code" type="text" placeholder="LAUNCH20" style="text-transform:uppercase;" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Description (optional)</label>
+        <input id="nc-desc" type="text" placeholder="Launch week promo" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Discount %</label>
+        <input id="nc-discount" type="number" min="1" max="100" step="1" value="10" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Applies to plan</label>
+        <select id="nc-plan">
+          <option value="all">All plans</option>
+          <option value="monthly">Monthly only</option>
+          <option value="quarterly">Quarterly only</option>
+          <option value="annual">Annual only</option>
+        </select>
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Max redemptions (blank = unlimited)</label>
+        <input id="nc-max" type="number" min="1" step="1" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Expires on (blank = never)</label>
+        <input id="nc-expires" type="date" />
+        <button id="nc-save" style="width:auto;padding:8px 16px;margin-top:6px;">Create coupon</button>
+        <div class="error" id="nc-error"></div>
+      </div>
+    `;
+
+    document.querySelectorAll('.coupon-toggle').forEach((toggle) => {
+      toggle.onchange = async () => {
+        try {
+          await api('/admin/coupons/' + encodeURIComponent(toggle.dataset.code), { method: 'PUT', body: JSON.stringify({ active: toggle.checked }) });
+        } catch (err) {
+          toggle.checked = !toggle.checked;
+          alert(err.message || 'Failed to update coupon');
+        }
+      };
+    });
+
+    document.querySelectorAll('.coupon-delete').forEach((btn) => {
+      btn.onclick = async () => {
+        if (!confirm('Delete coupon ' + btn.dataset.code + '? This cannot be undone.')) return;
+        try {
+          await api('/admin/coupons/' + encodeURIComponent(btn.dataset.code), { method: 'DELETE' });
+          renderCoupons(el);
+        } catch (err) {
+          alert(err.message || 'Failed to delete coupon');
+        }
+      };
+    });
+
+    document.getElementById('nc-save').onclick = async () => {
+      document.getElementById('nc-error').textContent = '';
+      try {
+        const maxVal = document.getElementById('nc-max').value;
+        const expiresVal = document.getElementById('nc-expires').value;
+        await api('/admin/coupons', {
+          method: 'POST',
+          body: JSON.stringify({
+            code: document.getElementById('nc-code').value,
+            description: document.getElementById('nc-desc').value,
+            discountPercent: Number(document.getElementById('nc-discount').value),
+            planRestriction: document.getElementById('nc-plan').value,
+            maxRedemptions: maxVal ? Number(maxVal) : null,
+            expiresAt: expiresVal ? new Date(expiresVal).toISOString() : null,
+          }),
+        });
+        renderCoupons(el);
+      } catch (err) {
+        document.getElementById('nc-error').textContent = err.message || 'Failed to create coupon';
+      }
+    };
   }
 
   let auditPage = 1;

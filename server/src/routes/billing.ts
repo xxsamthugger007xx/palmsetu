@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getSubscriptionPlans, getPlan, addPeriod, BillingPeriod } from '../data/subscriptionPlans';
 import { getUserTier, userPlans, recordTransaction } from '../data/store';
 import { recordEvent } from '../events/eventTracker';
+import { validateCouponForPlan, redeemCoupon } from '../data/coupons';
 
 /**
  * Subscription plan listing, purchase-funnel tracking, and real purchase
@@ -54,6 +55,27 @@ export function buildBillingRouter() {
     res.json({ plans: getSubscriptionPlans() });
   });
 
+  // Validates a coupon code against a specific plan's current price - never mutates redemption state (that
+  // only happens once a purchase is actually confirmed below, so merely checking a code never "uses it up").
+  router.post('/validate-coupon', (req, res) => {
+    const { code, planId } = req.body ?? {};
+    if (typeof code !== 'string' || !code.trim()) return res.json({ valid: false, reason: 'Enter a coupon code.' });
+    let plan;
+    try {
+      plan = getPlan(planId);
+    } catch {
+      return res.json({ valid: false, reason: 'Select a plan first.' });
+    }
+    const result = validateCouponForPlan(code, plan.id, plan.priceCents);
+    if (!result.valid) return res.json({ valid: false, reason: result.reason });
+    res.json({
+      valid: true,
+      discountPercent: result.coupon!.discountPercent,
+      originalPriceCents: result.originalPriceCents,
+      discountedPriceCents: result.discountedPriceCents,
+    });
+  });
+
   // Premium users' monthly AI allowance (estimated spend vs the cap) - see ai/budget.ts.
   router.get('/ai-budget', (req, res) => {
     res.json(getBudgetStatus(currentUserId(req)));
@@ -88,6 +110,7 @@ export function buildBillingRouter() {
   // cannot).
   router.post('/confirm-purchase', async (req, res) => {
     const userId = currentUserId(req);
+    const couponCode = typeof req.body?.couponCode === 'string' ? req.body.couponCode.trim() : undefined;
     const secretKey = revenueCatSecretKey();
     if (!secretKey) {
       return res.status(503).json({ error: 'Billing is not configured on this server yet.', code: 'BILLING_NOT_CONFIGURED' });
@@ -125,12 +148,26 @@ export function buildBillingRouter() {
     const now = new Date().toISOString();
     const wasPremium = getUserTier(userId) === 'premium';
 
+    // A coupon only ever discounts what WE record (see data/coupons.ts's own
+    // comment on why we can't change what the store actually charged) -
+    // re-validated here independently of whatever the client claims, same
+    // precedent as every other price in this app never trusting the client.
+    let recordedPriceCents = plan.priceCents;
+    let appliedCoupon: string | null = null;
+    if (couponCode) {
+      const validation = validateCouponForPlan(couponCode, plan.id, plan.priceCents);
+      if (validation.valid) {
+        recordedPriceCents = validation.discountedPriceCents!;
+        appliedCoupon = validation.coupon!.code;
+      }
+    }
+
     userPlans.set(userId, {
       userId,
       tier: 'premium',
       planId: plan.id,
       productId,
-      priceCents: plan.priceCents,
+      priceCents: recordedPriceCents,
       currency: plan.currency,
       startedAt: entitlement.purchase_date ?? now,
       renewsAt: entitlement.expires_date ?? addPeriod(now, plan.billingPeriod),
@@ -141,11 +178,16 @@ export function buildBillingRouter() {
     // will call this again on every app-open/restore check, which must
     // never re-count as a new purchase.
     if (!wasPremium) {
-      recordTransaction(userId, 'premium_subscription', plan.priceCents);
-      recordEvent({ userId, eventType: 'PURCHASE_SUCCESS', feature: 'subscription', dedupeKey: `revenuecat:${appUserId}:${productId}`, metadata: { planId: plan.id, productId } });
+      recordTransaction(userId, 'premium_subscription', recordedPriceCents);
+      recordEvent({
+        userId, eventType: 'PURCHASE_SUCCESS', feature: 'subscription',
+        dedupeKey: `revenuecat:${appUserId}:${productId}`,
+        metadata: { planId: plan.id, productId, ...(appliedCoupon ? { couponCode: appliedCoupon } : {}) },
+      });
+      if (appliedCoupon) redeemCoupon(appliedCoupon);
     }
 
-    res.json({ tier: 'premium', planId: plan.id, renewsAt: entitlement.expires_date ?? null });
+    res.json({ tier: 'premium', planId: plan.id, renewsAt: entitlement.expires_date ?? null, appliedCoupon });
   });
 
   router.post('/funnel-event', (req, res) => {

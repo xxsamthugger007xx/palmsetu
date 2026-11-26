@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { X, Crown, RefreshCw } from 'lucide-react-native';
+import { X, Crown, RefreshCw, Tag, Check } from 'lucide-react-native';
 import { Text } from '../../components/Text';
 import { IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
@@ -16,7 +16,7 @@ import { ErrorState } from '../../components/ErrorState';
 import { useAuth } from '../../context/AuthContext';
 import { billingApi } from '../../services/billingApi';
 import { isBillingConfigured, getPackagesByPlan, purchasePlan, restorePurchases } from '../../services/purchases';
-import { BillingPeriod, SubscriptionPlan } from '../../types/billing';
+import { BillingPeriod, CouponValidation, SubscriptionPlan } from '../../types/billing';
 import { PurchasesPackage } from 'react-native-purchases';
 import { BenefitsList } from './BenefitsList';
 import { ComparisonTable } from './ComparisonTable';
@@ -39,6 +39,9 @@ export function PaywallScreen() {
   const [checkoutErrorText, setCheckoutErrorText] = useState<string | null>(null);
   const [packagesByPlan, setPackagesByPlan] = useState<Record<string, PurchasesPackage>>({});
   const [restoring, setRestoring] = useState(false);
+  const [couponInput, setCouponInput] = useState('');
+  const [couponChecking, setCouponChecking] = useState(false);
+  const [couponResult, setCouponResult] = useState<CouponValidation | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const billingReady = isBillingConfigured();
 
@@ -73,6 +76,23 @@ export function PaywallScreen() {
     Haptics.selectionAsync().catch(() => {});
     setSelected(planId);
     billingApi.trackFunnelEvent('SUBSCRIPTION_PLAN_SELECTED', planId).catch(() => {});
+    // A coupon's eligibility can be plan-specific - clear any applied
+    // result rather than silently keep showing a discount that may no
+    // longer apply to the newly-selected plan.
+    setCouponResult(null);
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim() || !selected) return;
+    setCouponChecking(true);
+    try {
+      const result = await billingApi.validateCoupon(couponInput.trim(), selected);
+      setCouponResult(result);
+    } catch {
+      setCouponResult({ valid: false, reason: 'Could not check that code right now.' });
+    } finally {
+      setCouponChecking(false);
+    }
   };
 
 
@@ -119,7 +139,7 @@ export function PaywallScreen() {
       // The purchase itself already happened via the native billing sheet -
       // this call only asks the backend to re-verify and record it, never
       // what grants Premium (see routes/billing.ts's confirm-purchase).
-      await billingApi.confirmPurchase(appUserId);
+      await billingApi.confirmPurchase(appUserId, couponResult?.valid ? couponInput.trim() : undefined);
       setCheckoutState('idle');
       navigation.goBack();
     } catch (__err) {
@@ -212,6 +232,45 @@ export function PaywallScreen() {
             <PlanCards plans={plans} selected={selected} onSelect={handleSelectPlan} />
           </View>
 
+          {plans.length > 0 && (
+            <View style={styles.couponSection}>
+              <View style={styles.couponRow}>
+                <Tag size={15} color={color.textSecondary} strokeWidth={1.75} />
+                <TextInput
+                  value={couponInput}
+                  onChangeText={(v) => { setCouponInput(v); setCouponResult(null); }}
+                  placeholder={t('ui.PaywallScreen.couponCode')}
+                  placeholderTextColor={color.textMuted}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  style={styles.couponInput}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={handleApplyCoupon}
+                  disabled={!couponInput.trim() || couponChecking}
+                  style={({ pressed }) => [styles.couponApplyBtn, pressed && { opacity: 0.85 }, (!couponInput.trim() || couponChecking) && { opacity: 0.5 }]}
+                >
+                  <Text variant="caption" weight="semibold" style={{ color: tarotColor.midnight }}>
+                    {couponChecking ? t('ui.PaywallScreen.checking') : t('ui.PaywallScreen.apply')}
+                  </Text>
+                </Pressable>
+              </View>
+              {couponResult && (
+                couponResult.valid ? (
+                  <View style={styles.couponFeedbackRow}>
+                    <Check size={14} color={color.success} strokeWidth={2} />
+                    <Text variant="caption" style={{ color: color.success, marginLeft: spacing.xs }}>
+                      {t('ui.PaywallScreen.couponApplied', { percent: couponResult.discountPercent })}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text variant="caption" style={{ color: color.danger, marginTop: spacing.xs }}>{couponResult.reason}</Text>
+                )
+              )}
+            </View>
+          )}
+
           {!billingReady && (
             <View style={styles.configNotice}>
               <Text variant="caption" style={{ color: color.warning }}>
@@ -251,7 +310,7 @@ export function PaywallScreen() {
           style={({ pressed }) => [styles.ctaButton, pressed && { opacity: 0.9 }]}
         >
           <Text variant="bodySm" weight="semibold" style={{ color: tarotColor.midnight }}>
-            {checkoutState === 'pending' ? t('paywall.processing') : planCtaLabel(selectedPlan, t)}
+            {checkoutState === 'pending' ? t('paywall.processing') : planCtaLabel(selectedPlan, t, couponResult?.valid ? couponResult.discountedPriceCents : undefined)}
           </Text>
         </Pressable>
         <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginTop: spacing.xs }}>
@@ -299,6 +358,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
+  },
+  couponSection: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.md,
+  },
+  couponRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  couponInput: {
+    flex: 1,
+    paddingVertical: spacing.sm + 4,
+    paddingHorizontal: spacing.sm,
+    color: color.textPrimary,
+  },
+  couponApplyBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: radius.pill,
+    backgroundColor: tarotColor.gold,
+  },
+  couponFeedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.xs,
   },
   configNotice: {
     marginHorizontal: spacing.lg,

@@ -36,7 +36,8 @@ export function periodSuffix(period: BillingPeriod, t: TFn): string {
   return t('paywall.period.annual');
 }
 
-export function planCtaLabel(plan: SubscriptionPlan | undefined, t: TFn): string {
+export function planCtaLabel(plan: SubscriptionPlan | undefined, t: TFn, discountedPriceCents?: number): string {
   if (!plan) return t('paywall.cta.unlock');
-  return t('paywall.cta.continueWith', { plan: plan.label, price: formatRupees(plan.priceCents) });
+  const price = discountedPriceCents != null ? discountedPriceCents : plan.priceCents;
+  return t('paywall.cta.continueWith', { plan: plan.label, price: formatRupees(price) });
 }

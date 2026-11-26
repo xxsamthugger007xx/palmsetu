@@ -772,7 +772,11 @@
       "billingIsNotYetConfigured": "Billing is not yet configured for Palm Setu Premium on this build. This screen will never charge you or grant Premium access until it is.",
       "terms": "Terms",
       "privacy": "Privacy",
-      "secureBillingThroughYourApp": "Secure billing through your App Store or Google Play account."
+      "secureBillingThroughYourApp": "Secure billing through your App Store or Google Play account.",
+      "couponCode": "Coupon code",
+      "apply": "Apply",
+      "checking": "Checking...",
+      "couponApplied": "{{percent}}% off applied"
     },
     "EditProfileScreen": {
       "personalInfo": "Personal info",

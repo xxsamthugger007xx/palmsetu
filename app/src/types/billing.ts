@@ -22,6 +22,14 @@ export interface SubscriptionStatus {
   expiresAt: string | null;
 }
 
+export interface CouponValidation {
+  valid: boolean;
+  reason?: string;
+  discountPercent?: number;
+  originalPriceCents?: number;
+  discountedPriceCents?: number;
+}
+
 /** Premium users' monthly AI allowance (estimated spend), from GET /billing/ai-budget. */
 export interface AiBudgetStatus {
   capped: boolean;

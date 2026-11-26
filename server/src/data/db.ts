@@ -90,6 +90,8 @@ export function runMigrations() {
     'appConfig',
     // Manually-logged operational incidents (see ops/alertsEngine.ts).
     'incidents',
+    // Subscription discount coupons (see data/coupons.ts).
+    'coupons',
   ];
   for (const t of kvTables) createKvTable(t);
 

@@ -1,5 +1,5 @@
 import { request as baseRequest } from './apiRequest';
-import { AiBudgetStatus, BillingPeriod, SubscriptionPlan, SubscriptionStatus } from '../types/billing';
+import { AiBudgetStatus, BillingPeriod, CouponValidation, SubscriptionPlan, SubscriptionStatus } from '../types/billing';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -28,8 +28,13 @@ export const billingApi = {
   },
   // Called after the RevenueCat SDK itself reports a successful purchase or
   // restore - the backend re-verifies against RevenueCat's own API before
-  // ever granting Premium, this call is not what grants it.
-  confirmPurchase(appUserId: string): Promise<{ tier: 'free' | 'premium'; planId: BillingPeriod | null; renewsAt: string | null }> {
-    return request('/billing/confirm-purchase', { method: 'POST', body: JSON.stringify({ appUserId }) });
+  // ever granting Premium, this call is not what grants it. couponCode (if
+  // any was applied on the paywall) is re-validated server-side before it
+  // affects what's recorded - never trusted as-is.
+  confirmPurchase(appUserId: string, couponCode?: string): Promise<{ tier: 'free' | 'premium'; planId: BillingPeriod | null; renewsAt: string | null; appliedCoupon: string | null }> {
+    return request('/billing/confirm-purchase', { method: 'POST', body: JSON.stringify({ appUserId, couponCode }) });
+  },
+  validateCoupon(code: string, planId: BillingPeriod): Promise<CouponValidation> {
+    return request('/billing/validate-coupon', { method: 'POST', body: JSON.stringify({ code, planId }) });
   },
 };

@@ -27,6 +27,7 @@ import { listTopAiSpenders } from '../ai/budget';
 import { getApiMonitoringOverview } from '../ops/apiMonitoring';
 import { evaluateAlerts, getAlertThresholds, setAlertThresholds, listIncidents, openIncident, resolveIncident } from '../ops/alertsEngine';
 import { getAcquisitionOverTime, getFunnel, FUNNEL_DEFINITIONS, getRetentionCohorts } from '../analytics/productAnalytics';
+import { listCoupons, createCoupon, updateCoupon, deleteCoupon, getCoupon } from '../data/coupons';
 import { AiProvider } from '../ai/types';
 import { assistantConversationsById, assistantUsageLog, aiUsageEvents } from '../data/store';
 import { assistantConfig, setAssistantConfig, AssistantConfig } from '../data/assistantConfig';
@@ -1423,6 +1424,61 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       cohorts: getRetentionCohorts(),
       note: 'Weekly cohorts by first account-creation event; "retained" means the cohort member produced ANY event during that later week. A cell is blank (null) only for a week that has not happened yet.',
     });
+  });
+
+  // --- Coupons (live, admin-managed subscription discounts) -------------------
+  router.get('/coupons', (_req, res) => {
+    res.json({ coupons: listCoupons() });
+  });
+
+  router.post('/coupons', requireRole('super_admin'), (req, res) => {
+    const { code, description, discountPercent, planRestriction, maxRedemptions, expiresAt } = req.body ?? {};
+    if (typeof code !== 'string' || !code.trim()) return res.status(400).json({ error: 'A coupon code is required.' });
+    if (!/^[A-Za-z0-9_-]{3,32}$/.test(code.trim())) return res.status(400).json({ error: 'Coupon code must be 3-32 letters, numbers, - or _.' });
+    if (typeof discountPercent !== 'number' || discountPercent <= 0 || discountPercent > 100) {
+      return res.status(400).json({ error: 'discountPercent must be between 1 and 100.' });
+    }
+    if (getCoupon(code)) return res.status(409).json({ error: `Coupon ${code.trim().toUpperCase()} already exists.` });
+    if (planRestriction && !['all', 'monthly', 'quarterly', 'annual'].includes(planRestriction)) {
+      return res.status(400).json({ error: 'planRestriction must be all, monthly, quarterly, or annual.' });
+    }
+    const coupon = createCoupon({
+      code,
+      description: typeof description === 'string' ? description : undefined,
+      discountPercent,
+      planRestriction,
+      maxRedemptions: typeof maxRedemptions === 'number' && maxRedemptions > 0 ? Math.round(maxRedemptions) : null,
+      expiresAt: typeof expiresAt === 'string' && expiresAt ? expiresAt : null,
+    });
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'COUPON_CREATED', path: req.originalUrl, targetType: 'coupon', targetId: coupon.code, metadata: { discountPercent } });
+    res.json({ coupon });
+  });
+
+  router.put('/coupons/:code', requireRole('super_admin'), (req, res) => {
+    const existing = getCoupon(req.params.code);
+    if (!existing) return res.status(404).json({ error: 'Coupon not found.' });
+    const body = req.body ?? {};
+    const patch: Record<string, unknown> = {};
+    if (typeof body.description === 'string') patch.description = body.description;
+    if (typeof body.active === 'boolean') patch.active = body.active;
+    if (typeof body.discountPercent === 'number' && body.discountPercent > 0 && body.discountPercent <= 100) patch.discountPercent = body.discountPercent;
+    if (body.planRestriction && ['all', 'monthly', 'quarterly', 'annual'].includes(body.planRestriction)) patch.planRestriction = body.planRestriction;
+    if (body.maxRedemptions === null || typeof body.maxRedemptions === 'number') patch.maxRedemptions = body.maxRedemptions;
+    if (body.expiresAt === null || typeof body.expiresAt === 'string') patch.expiresAt = body.expiresAt;
+    const coupon = updateCoupon(req.params.code, patch);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'COUPON_UPDATED', path: req.originalUrl, targetType: 'coupon', targetId: existing.code, metadata: patch });
+    res.json({ coupon });
+  });
+
+  router.delete('/coupons/:code', requireRole('super_admin'), (req, res) => {
+    const existing = getCoupon(req.params.code);
+    if (!existing) return res.status(404).json({ error: 'Coupon not found.' });
+    deleteCoupon(req.params.code);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'COUPON_DELETED', path: req.originalUrl, targetType: 'coupon', targetId: existing.code });
+    res.json({ ok: true });
   });
 
   return router;
