@@ -181,6 +181,7 @@
         <div class="group-label">Product Intelligence</div>
         <div class="tab" data-tab="features"><span class="icon">&#9679;</span><span class="label-text">Feature Analytics</span></div>
         <div class="tab" data-tab="soulmate"><span class="icon">&#9679;</span><span class="label-text">Soulmate Sketch</span></div>
+        <div class="tab" data-tab="content"><span class="icon">&#9679;</span><span class="label-text">Content Library</span></div>
         <div class="tab" data-tab="assistant"><span class="icon">&#9679;</span><span class="label-text">AI Assistant</span></div>
 
         <div class="group-label">Business Intelligence</div>
@@ -363,6 +364,7 @@
       if (name === 'subscriptions') return renderSubscriptions(el);
       if (name === 'live') return renderLiveActivity(el);
       if (name === 'soulmate') return renderSoulmate(el);
+      if (name === 'content') return renderContentLibrary(el);
       if (name === 'pricing') return renderPricing(el);
       if (name === 'coupons') return renderCoupons(el);
       if (name === 'aibudget') return renderAiBudget(el);
@@ -1401,6 +1403,49 @@
     document.getElementById('exp-events').onclick = () => downloadCsv('/admin/events/export');
   }
 
+  async function renderContentLibrary(el) {
+    const data = await api('/admin/content-library');
+    const arcanaRows = Object.entries(data.tarot.byArcana).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('');
+    const spreadRows = data.tarot.spreads.map((s) => `
+      <tr><td>${escapeHtml(s.title)}</td><td>${s.cardCount}</td><td>${s.premium ? 'Premium' : 'Free'}</td><td>${s.available ? 'Yes' : 'No'}</td></tr>
+    `).join('');
+    const breathingRows = data.wellness.breathingTechniques.map((b) => `<tr><td>${escapeHtml(b.name)}</td><td>${b.defaultCycles} cycles</td></tr>`).join('');
+    const challengeRows = data.wellness.challenges.map((c) => `<tr><td>${escapeHtml(c.title)}</td><td>${c.durationDays} days</td><td>${c.premium ? 'Premium' : 'Free'}</td></tr>`).join('');
+    const meditationRows = Object.entries(data.wellness.meditations.byCategory).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('');
+    const inspirationRows = Object.entries(data.wellness.inspiration.byType).map(([k, v]) => `<div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>`).join('');
+    const soulmateCountryRows = Object.entries(data.soulmateCatalogue.byCountry).map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`).join('');
+
+    el.innerHTML = `
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+
+      <div class="section-title">Tarot deck (${data.tarot.totalCards} cards)</div>
+      <div class="grid">${arcanaRows}</div>
+      <div class="section-title">Tarot spreads</div>
+      <table>
+        <thead><tr><th>Spread</th><th>Cards</th><th>Tier</th><th>Available</th></tr></thead>
+        <tbody>${spreadRows}</tbody>
+      </table>
+
+      <div class="section-title">Breathing techniques</div>
+      <table><thead><tr><th>Name</th><th>Default length</th></tr></thead><tbody>${breathingRows}</tbody></table>
+
+      <div class="section-title">Wellness challenges</div>
+      <table><thead><tr><th>Challenge</th><th>Duration</th><th>Tier</th></tr></thead><tbody>${challengeRows}</tbody></table>
+
+      <div class="section-title">Meditations (${data.wellness.meditations.total} total) by category</div>
+      <div class="grid">${meditationRows}</div>
+
+      <div class="section-title">Inspiration / affirmations (${data.wellness.inspiration.total} total) by type</div>
+      <div class="grid">${inspirationRows}</div>
+
+      <div class="section-title">Predefined habits</div>
+      <div class="grid"><div class="card"><div class="label">Total</div><div class="value">${data.wellness.predefinedHabits}</div></div></div>
+
+      <div class="section-title">Soulmate Sketch portrait catalogue (${data.soulmateCatalogue.total} total)</div>
+      <table><thead><tr><th>Country</th><th>Portraits</th></tr></thead><tbody>${soulmateCountryRows}</tbody></table>
+    `;
+  }
+
   async function renderCoupons(el) {
     const data = await api('/admin/coupons');
     const rows = data.coupons.map((c) => `
@@ -1505,16 +1550,17 @@
         <td>${new Date(e.createdAt).toLocaleString()}</td>
         <td>${escapeHtml(e.adminEmail || e.adminId)} <span class="pill">${escapeHtml(e.adminRole || '')}</span></td>
         <td>${escapeHtml(e.action)}${e.outcome && e.outcome !== 'success' ? ' <span class="pill">' + escapeHtml(e.outcome) + '</span>' : ''}</td>
-        <td>${escapeHtml(e.path)}</td>
+        <td>${escapeHtml(e.path)}${e.targetType ? '<br/><span class="unavailable">' + escapeHtml(e.targetType) + (e.targetId ? ': ' + escapeHtml(e.targetId) : '') + '</span>' : ''}</td>
         <td>${escapeHtml(e.reason || '')}</td>
+        <td>${e.metadata ? '<pre style="white-space:pre-wrap;word-break:break-word;font-size:11px;margin:0;max-width:360px;color:var(--textSecondary)">' + escapeHtml(JSON.stringify(e.metadata, null, 2)) + '</pre>' : ''}</td>
       </tr>
     `).join('');
     const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
     el.innerHTML = `
-      <p class="unavailable">Audit log of every authenticated admin request. Saved in the database, so it survives restarts.</p>
+      <p class="unavailable">Audit log of every authenticated admin request, including exactly what changed (before/after) for config writes - pricing, AI budget, feature flags, coupons, assistant config, and admin-user changes. Saved in the database, so it survives restarts.</p>
       <table>
-        <thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Path</th><th>Reason</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="5" class="unavailable">No entries yet</td></tr>'}</tbody>
+        <thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Path / Target</th><th>Reason</th><th>Change</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="6" class="unavailable">No entries yet</td></tr>'}</tbody>
       </table>
       <div class="pager">
         <span>Page ${data.page} of ${totalPages} (${data.total} entries)</span>

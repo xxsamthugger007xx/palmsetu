@@ -28,6 +28,10 @@ import { getApiMonitoringOverview } from '../ops/apiMonitoring';
 import { evaluateAlerts, getAlertThresholds, setAlertThresholds, listIncidents, openIncident, resolveIncident } from '../ops/alertsEngine';
 import { getAcquisitionOverTime, getFunnel, FUNNEL_DEFINITIONS, getRetentionCohorts } from '../analytics/productAnalytics';
 import { listCoupons, createCoupon, updateCoupon, deleteCoupon, getCoupon } from '../data/coupons';
+import { tarotCatalogue } from '../tarot/catalogue';
+import { spreadDefinitions } from '../tarot/spreads';
+import { BREATHING_TECHNIQUE_CATALOGUE, CHALLENGES, MEDITATION_CATALOGUE, INSPIRATION_LIBRARY, PREDEFINED_HABITS } from '../wellness/content';
+import soulmateCatalogData from '../soulmate/catalogData.json';
 import { AiProvider } from '../ai/types';
 import { assistantConversationsById, assistantUsageLog, aiUsageEvents } from '../data/store';
 import { assistantConfig, setAssistantConfig, AssistantConfig } from '../data/assistantConfig';
@@ -1479,6 +1483,39 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const adminId = (req as any).admin!.adminId;
     logAdminAudit({ adminId, action: 'COUPON_DELETED', path: req.originalUrl, targetType: 'coupon', targetId: existing.code });
     res.json({ ok: true });
+  });
+
+  // --- Content Library (read-only visibility over static product content) ---
+  router.get('/content-library', (_req, res) => {
+    const tarotByArcana: Record<string, number> = {};
+    for (const c of tarotCatalogue) tarotByArcana[c.arcana] = (tarotByArcana[c.arcana] ?? 0) + 1;
+    const spreads = Object.values(spreadDefinitions).map((s) => ({ id: s.id, title: s.title, cardCount: s.cardCount, premium: s.premium, available: s.available }));
+
+    const meditationsByCategory: Record<string, number> = {};
+    for (const m of MEDITATION_CATALOGUE) meditationsByCategory[m.category] = (meditationsByCategory[m.category] ?? 0) + 1;
+
+    const inspirationByType: Record<string, number> = {};
+    for (const i of INSPIRATION_LIBRARY) inspirationByType[i.type] = (inspirationByType[i.type] ?? 0) + 1;
+
+    const soulmateByCountry: Record<string, number> = {};
+    const soulmateByGender: Record<string, number> = {};
+    for (const entry of soulmateCatalogData as { country: string; gender: string }[]) {
+      soulmateByCountry[entry.country] = (soulmateByCountry[entry.country] ?? 0) + 1;
+      soulmateByGender[entry.gender] = (soulmateByGender[entry.gender] ?? 0) + 1;
+    }
+
+    res.json({
+      tarot: { totalCards: tarotCatalogue.length, byArcana: tarotByArcana, spreads },
+      wellness: {
+        breathingTechniques: BREATHING_TECHNIQUE_CATALOGUE.map((b) => ({ id: b.id, name: b.name, defaultCycles: b.defaultCycles })),
+        challenges: CHALLENGES.map((c) => ({ id: c.id, title: c.title, durationDays: c.durationDays, premium: c.premium })),
+        predefinedHabits: PREDEFINED_HABITS.length,
+        meditations: { total: MEDITATION_CATALOGUE.length, byCategory: meditationsByCategory },
+        inspiration: { total: INSPIRATION_LIBRARY.length, byType: inspirationByType },
+      },
+      soulmateCatalogue: { total: soulmateCatalogData.length, byCountry: soulmateByCountry, byGender: soulmateByGender },
+      note: 'All content below is static product content shipped with the app, not DB-backed - this view is read-only visibility, not an editor. Changing it requires a code change and redeploy.',
+    });
   });
 
   return router;
