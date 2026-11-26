@@ -65,6 +65,85 @@ describe('routes/wellness - mood tracker', () => {
     expect(trends.body.moodDistribution.low).toBe(2);
     expect(trends.body.emotionFrequency.sad).toBe(2);
   });
+
+  it('keeps mood trends private to each user, including when another user has check-ins', async () => {
+    const { app } = buildApp();
+    const userA = `test-${uuid()}`;
+    const userB = `test-${uuid()}`;
+    const userWithNoCheckIns = `test-${uuid()}`;
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+    await request(app).post('/wellness/mood').set(userHeader(userA)).send({
+      localDate: yesterday, mood: 'good', emotions: ['calm'], energy: 2, stress: 1, sleepQuality: 2,
+    });
+    await request(app).post('/wellness/mood').set(userHeader(userA)).send({
+      localDate: today, mood: 'great', emotions: ['happy'], energy: 4, stress: 3, sleepQuality: 4,
+    });
+    await request(app).post('/wellness/mood').set(userHeader(userB)).send({
+      localDate: today, mood: 'low', emotions: ['sad'], energy: 1, stress: 5, sleepQuality: 1,
+    });
+
+    const trendsA = await request(app).get('/wellness/mood/trends').set(userHeader(userA));
+    expect(trendsA.body.hasData).toBe(true);
+    expect(trendsA.body.checkInCount).toBe(2);
+    expect(trendsA.body.moodDistribution).toEqual({ good: 1, great: 1 });
+    expect(trendsA.body.emotionFrequency).toEqual({ calm: 1, happy: 1 });
+    expect(trendsA.body.averageEnergy).toBe(3);
+    expect(trendsA.body.averageStress).toBe(2);
+    expect(trendsA.body.averageSleepQuality).toBe(3);
+
+    const trendsB = await request(app).get('/wellness/mood/trends').set(userHeader(userB));
+    expect(trendsB.body.hasData).toBe(true);
+    expect(trendsB.body.checkInCount).toBe(1);
+    expect(trendsB.body.moodDistribution).toEqual({ low: 1 });
+    expect(trendsB.body.emotionFrequency).toEqual({ sad: 1 });
+    expect(trendsB.body.averageEnergy).toBe(1);
+    expect(trendsB.body.averageStress).toBe(5);
+    expect(trendsB.body.averageSleepQuality).toBe(1);
+
+    const emptyTrends = await request(app).get('/wellness/mood/trends').set(userHeader(userWithNoCheckIns));
+    expect(emptyTrends.body.hasData).toBe(false);
+    expect(emptyTrends.body.checkInCount).toBe(0);
+    expect(emptyTrends.body.moodDistribution).toEqual({});
+    expect(emptyTrends.body.averageEnergy).toBeNull();
+    expect(emptyTrends.body.averageStress).toBeNull();
+    expect(emptyTrends.body.averageSleepQuality).toBeNull();
+  });
+
+  it('excludes check-ins older than seven days by default and includes them in monthly trends', async () => {
+    const { app } = buildApp();
+    const userId = `test-${uuid()}`;
+    const dateOffset = (daysAgo: number) => new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
+
+    await request(app).post('/wellness/mood').set(userHeader(userId)).send({
+      localDate: dateOffset(10), mood: 'low', emotions: ['sad'], energy: 1, stress: 1, sleepQuality: 1,
+    });
+    await request(app).post('/wellness/mood').set(userHeader(userId)).send({
+      localDate: dateOffset(2), mood: 'good', emotions: ['calm'], energy: 4, stress: 2, sleepQuality: 5,
+    });
+    await request(app).post('/wellness/mood').set(userHeader(userId)).send({
+      localDate: dateOffset(1), mood: 'great', emotions: ['happy'], energy: 2, stress: 4, sleepQuality: 3,
+    });
+
+    const defaultTrends = await request(app).get('/wellness/mood/trends').set(userHeader(userId));
+    expect(defaultTrends.body.windowDays).toBe(7);
+    expect(defaultTrends.body.checkInCount).toBe(2);
+    expect(defaultTrends.body.moodDistribution).toEqual({ good: 1, great: 1 });
+    expect(defaultTrends.body.emotionFrequency).toEqual({ calm: 1, happy: 1 });
+    expect(defaultTrends.body.averageEnergy).toBe(3);
+    expect(defaultTrends.body.averageStress).toBe(3);
+    expect(defaultTrends.body.averageSleepQuality).toBe(4);
+
+    const monthlyTrends = await request(app).get('/wellness/mood/trends').query({ window: 'month' }).set(userHeader(userId));
+    expect(monthlyTrends.body.windowDays).toBe(30);
+    expect(monthlyTrends.body.checkInCount).toBe(3);
+    expect(monthlyTrends.body.moodDistribution).toEqual({ low: 1, good: 1, great: 1 });
+    expect(monthlyTrends.body.emotionFrequency).toEqual({ sad: 1, calm: 1, happy: 1 });
+    expect(monthlyTrends.body.averageEnergy).toBe(2.33);
+    expect(monthlyTrends.body.averageStress).toBe(2.33);
+    expect(monthlyTrends.body.averageSleepQuality).toBe(3);
+  });
 });
 
 describe('routes/wellness - journal', () => {
