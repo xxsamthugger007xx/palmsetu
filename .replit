@@ -21,12 +21,13 @@ args = "Start Backend"
 name = "Start Backend"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd server && npm run dev"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd server && npm start"
+waitForPort = 4000
 
 [deployment]
 deploymentTarget = "vm"
