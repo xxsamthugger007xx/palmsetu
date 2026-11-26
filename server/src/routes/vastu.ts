@@ -257,6 +257,9 @@ export function buildVastuRouter(aiProvider: AiProvider) {
     if (containsCrisisLanguage(question)) return res.json({ answer: CRISIS_RESPONSE, crisisFlag: true });
 
     const askedSoFar = vastuFollowupCounts.get(report.id) ?? 0;
+    if (getUserTier(userId) !== 'premium') {
+      return res.status(403).json({ error: 'Follow-up questions are a Premium feature. Upgrade to ask more.', code: 'LIMIT_REACHED' });
+    }
 
     let answer: string;
     try {

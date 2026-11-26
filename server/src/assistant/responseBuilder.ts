@@ -14,6 +14,7 @@ import { retrieveUserData, retrieveUserDataForFeature, hasDataFor, UserFeatureDa
 import { evaluateEntitlement, PremiumCard } from './entitlementCheck';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
 import { classifyMode, generationOptionsForMode, AssistantMode } from './modeClassifier';
+import { answerWithoutAi } from './offlineKnowledge';
 import { retrieveRelevantMemories, extractAndStoreFacts } from '../memory/memoryService';
 
 const FEATURES_NOT_IMPLEMENTED = ['numerology', 'moolaank', 'bhagyank'];
@@ -471,7 +472,11 @@ export async function buildAssistantReply(
       if (!reply.trim()) reply = fallbackReply;
     } catch {
       reply = isAiDisabled(aiProvider)
-        ? `I can answer questions about your tarot, astrology, gemstone, vastu and palm readings, and explain cards, signs, houses, gemstones, directions and palm lines. Try asking "What is my moon sign?" or "What does the heart line mean?".${freeNote}`
+        ? answerWithoutAi(message, {
+            moonSign: astroProfile ? (astroProfile.natal.moonSignSidereal ?? astroProfile.natal.moonSignTropical) : null,
+            horoscopeSummary: data.astrology.latestHoroscope?.summary ?? null,
+            focus: focusAreas,
+          }) + (options.noAiNote ?? '')
         : fallbackReply; // honest static fallback, never a fabricated answer
     }
     const generationMs = Date.now() - generationStart;

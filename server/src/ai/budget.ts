@@ -37,7 +37,7 @@ const num = (v: string | undefined, d: number) => (v !== undefined && v !== '' &
 export interface AiBudgetCaps {
   premiumMonthlyBudgetInr: number;
   freeMonthlyBudgetInr: number;
-  freeChatDailyMessages: number;
+  freeChatMonthlyMessages: number;
   freeChatMonthlyInr: number;
   freeChatDailyPerIp: number;
 }
@@ -48,7 +48,7 @@ function defaultCaps(): AiBudgetCaps {
   return {
     premiumMonthlyBudgetInr: num(process.env.AI_MONTHLY_BUDGET_INR_PREMIUM, 100),
     freeMonthlyBudgetInr: num(process.env.AI_MONTHLY_BUDGET_INR_FREE, 25),
-    freeChatDailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5),
+    freeChatMonthlyMessages: num(process.env.AI_FREE_CHAT_MONTHLY_MESSAGES, 0),
     freeChatMonthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10),
     freeChatDailyPerIp: num(process.env.AI_FREE_CHAT_DAILY_PER_IP, 60),
   };
@@ -156,7 +156,7 @@ export function getBudgetStatus(userId: string) {
 export function freeChatLimits() {
   const caps = getAiBudgetCaps();
   return {
-    dailyMessages: caps.freeChatDailyMessages,
+    monthlyMessages: caps.freeChatMonthlyMessages,
     monthlyInr: caps.freeChatMonthlyInr,
     // Per network address, across all free accounts: stops one person farming AI by creating many guest accounts.
     dailyPerIp: caps.freeChatDailyPerIp,

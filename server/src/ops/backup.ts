@@ -16,7 +16,7 @@ import { reportError } from './alerts';
  *
  * Restore: stop the server, copy a snapshot over data/solune.db (delete solune.db-wal/-shm), start the server.
  */
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+import { DATA_DIR } from '../config/dataDir';
 const backupDir = () => process.env.BACKUP_DIR || path.join(DATA_DIR, 'backups');
 const keep = () => Math.max(1, Number(process.env.BACKUP_KEEP) || 14);
 const intervalMs = () => Math.max(1, Number(process.env.BACKUP_INTERVAL_HOURS) || 24) * 3_600_000;

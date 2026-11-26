@@ -421,7 +421,11 @@
       "billingIsNotYetConfigured": "Penagihan Palm Setu Premium belum dikonfigurasi pada versi ini. Layar ini tidak akan menagih atau memberi akses Premium sampai dikonfigurasi.",
       "terms": "Ketentuan",
       "privacy": "Privasi",
-      "secureBillingThroughYourApp": "Penagihan aman melalui akun App Store atau Google Play Anda."
+      "secureBillingThroughYourApp": "Penagihan aman melalui akun App Store atau Google Play Anda.",
+      "couponCode": "Kode kupon",
+      "apply": "Terapkan",
+      "checking": "Memeriksa...",
+      "couponApplied": "Diskon {{percent}}% diterapkan"
     },
     "ProfileScreen": {
       "createAnAccount": "Buat akun",
@@ -1366,8 +1370,8 @@
     "premiumTitle": "Asisten AI adalah fitur Premium",
     "premiumBody": "Tingkatkan untuk mengobrol dengan asisten tentang telapak tangan, bagan, dan bacaan Anda.",
     "premiumAction": "Lihat Premium",
-    "freeLeft": "Sisa jawaban AI gratis hari ini: {{n}}",
-    "freeNone": "Jawaban AI gratis hari ini habis. Jawaban dasar tetap berfungsi.",
+    "freeLeft": "Sisa jawaban AI gratis bulan ini: {{n}}",
+    "freeNone": "Jawaban AI gratis bulan ini habis. Jawaban dasar masih tersedia.",
     "subtitle": "Tanyakan tentang bacaan Anda, atau apa saja"
   },
   "authGoogle": {

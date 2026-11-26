@@ -426,7 +426,11 @@
       "billingIsNotYetConfigured": "La fatturazione di Palm Setu Premium non è ancora configurata in questa versione. Finché non lo sarà, questa schermata non ti addebiterà nulla né concederà l’accesso Premium.",
       "terms": "Termini",
       "privacy": "Privacy",
-      "secureBillingThroughYourApp": "Pagamento sicuro tramite il tuo account App Store o Google Play."
+      "secureBillingThroughYourApp": "Pagamento sicuro tramite il tuo account App Store o Google Play.",
+      "couponCode": "Codice coupon",
+      "apply": "Applica",
+      "checking": "Verifica in corso...",
+      "couponApplied": "Sconto del {{percent}}% applicato"
     },
     "ProfileScreen": {
       "createAnAccount": "Crea un account",
@@ -1371,8 +1375,8 @@
     "premiumTitle": "L’assistente IA è una funzione Premium",
     "premiumBody": "Passa a Premium per chattare con l’assistente su mano, tema e letture.",
     "premiumAction": "Scopri Premium",
-    "freeLeft": "Risposte IA gratuite rimaste oggi: {{n}}",
-    "freeNone": "Risposte IA gratuite esaurite per oggi. Le risposte di base funzionano ancora.",
+    "freeLeft": "Risposte IA gratuite rimaste questo mese: {{n}}",
+    "freeNone": "Risposte IA gratuite di questo mese esaurite. Le risposte di base restano disponibili.",
     "subtitle": "Chiedi delle tue letture o di qualsiasi cosa"
   },
   "authGoogle": {

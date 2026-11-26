@@ -426,7 +426,11 @@
       "billingIsNotYetConfigured": "Die Abrechnung für Palm Setu Premium ist in diesem Build noch nicht eingerichtet. Bis dahin wird dir hier nichts berechnet und kein Premium-Zugang gewährt.",
       "terms": "Bedingungen",
       "privacy": "Datenschutz",
-      "secureBillingThroughYourApp": "Sichere Abrechnung über dein App-Store- oder Google-Play-Konto."
+      "secureBillingThroughYourApp": "Sichere Abrechnung über dein App-Store- oder Google-Play-Konto.",
+      "couponCode": "Gutscheincode",
+      "apply": "Einlösen",
+      "checking": "Wird geprüft...",
+      "couponApplied": "{{percent}} % Rabatt angewendet"
     },
     "ProfileScreen": {
       "createAnAccount": "Konto erstellen",
@@ -1371,8 +1375,8 @@
     "premiumTitle": "Der KI-Assistent ist eine Premium-Funktion",
     "premiumBody": "Upgrade, um mit dem Assistenten über Handlinien, Horoskop und Deutungen zu chatten.",
     "premiumAction": "Premium ansehen",
-    "freeLeft": "Kostenlose KI-Antworten heute übrig: {{n}}",
-    "freeNone": "Kostenlose KI-Antworten für heute aufgebraucht. Basisantworten funktionieren weiter.",
+    "freeLeft": "Kostenlose KI-Antworten übrig diesen Monat: {{n}}",
+    "freeNone": "Kostenlose KI-Antworten für diesen Monat aufgebraucht. Basisantworten funktionieren weiterhin.",
     "subtitle": "Frag nach deinen Deutungen oder allem anderen"
   },
   "authGoogle": {

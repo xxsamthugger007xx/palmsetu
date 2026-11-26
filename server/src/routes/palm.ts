@@ -42,7 +42,7 @@ const localDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 // Full palm detail is a Premium purchase. (Env overrides exist only so a free taste can be re-enabled later.)
 const MAX_FREE_PREMIUM_REPORTS = Number(process.env.PALM_FREE_PREMIUM_REPORTS ?? 0);
-const MAX_FOLLOWUP_FREE = 2;
+const MAX_FOLLOWUP_FREE = 0; // follow-up AI questions are Premium-only
 // Section-wise unlock quota is tracked independently from the whole-bundle
 // quota above (MAX_FREE_PREMIUM_REPORTS) - a free user gets one free single
 // section AND, separately, the existing one free complete-bundle report.
@@ -117,6 +117,20 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     }
     if (existingProfile && parsed.data.allowRescan && !isFeatureEnabled('palmRescan')) {
       return res.status(503).json({ error: 'Palm rescan is temporarily unavailable.', code: 'FEATURE_DISABLED' });
+    }
+
+    // Free plan: a limited number of palm scans per calendar month (rejected photos never create a reading, so they don't count).
+    if (getUserTier(userId) !== 'premium') {
+      const freeScans = Math.max(0, Number(process.env.PALM_FREE_SCANS_PER_MONTH ?? 1) || 0);
+      const month = new Date().toISOString().slice(0, 7);
+      let used = 0;
+      for (const r of readingsById.valuesForUser(userId)) if (r.createdAt.startsWith(month)) used++;
+      if (used >= freeScans) {
+        return res.status(403).json({
+          error: `Free accounts get ${freeScans} palm scan${freeScans === 1 ? '' : 's'} per month. Upgrade to Premium for more.`,
+          code: 'LIMIT_REACHED',
+        });
+      }
     }
 
     const imageBuffer = Buffer.from(parsed.data.image, 'base64');
@@ -373,7 +387,7 @@ export function buildPalmRouter(aiProvider: AiProvider) {
     const tier = getUserTier(userId);
     const askedSoFar = palmFollowupCounts.get(reading.id) ?? 0;
     if (tier !== 'premium' && askedSoFar >= MAX_FOLLOWUP_FREE) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FOLLOWUP_FREE} follow-up questions per reading.`, code: 'LIMIT_REACHED' });
+      return res.status(403).json({ error: 'Follow-up questions are a Premium feature. Upgrade to ask more.', code: 'LIMIT_REACHED' });
     }
 
     const context = reading.freeReading.sections.map((s) => `${s.title}: ${s.text}`).join('\n');

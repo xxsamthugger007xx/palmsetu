@@ -39,7 +39,7 @@ export const JOURNAL_FREE_PROMPT_CATEGORIES: string[] = ['daily', 'gratitude', '
  * reflective-questions/theme-identification/writing-suggestions) per day,
  * regardless of consent - consent gates whether the call can run at all,
  * this gates how many times a free user can run it. */
-export const FREE_JOURNAL_AI_DAILY_LIMIT = 2;
+export const FREE_JOURNAL_AI_DAILY_LIMIT = 0 // AI journal insights are Premium-only;
 
 /** Meditation/sleep catalogue: 2-3 entries per category are free, rest premium.
  * Chosen so every category has at least a taste available for free. */
@@ -52,7 +52,7 @@ export const INSPIRATION_NO_REPEAT_DAYS = 14;
 /** AI Wellness Companion usage caps - same centralized-constant precedent as
  * tarot/entitlements.ts FREE_FOLLOWUP_LIMIT, since no admin-configurable
  * limits infrastructure exists anywhere in this app yet. */
-export const FREE_AI_COMPANION_DAILY_MESSAGES = 15;
+export const FREE_AI_COMPANION_DAILY_MESSAGES = 0 // AI companion is Premium-only;
 export const PREMIUM_AI_COMPANION_DAILY_MESSAGES = 200; // generous ceiling, not truly "unlimited" to bound AI spend
 
 export function isHabitLimitReached(userId: string, activeHabitCount: number): boolean {

@@ -20,7 +20,7 @@ import { asApiError } from '../../services/apiRequest';
 const STAGES = ['Uploading image', 'Detecting palm features', 'Preparing interpretation'];
 
 type Stage = 'uploading' | 'detecting' | 'interpreting' | 'done';
-type Phase = 'running' | 'rejected' | 'error';
+type Phase = 'running' | 'rejected' | 'error' | 'limit';
 
 export function PalmAnalyzingScreen() {
   const { t } = useTranslation();
@@ -73,6 +73,9 @@ export function PalmAnalyzingScreen() {
         if (err?.code === 'IMAGE_REJECTED') {
           setRejectionMessage(err.message ?? t('ui.PalmAnalyzingScreen.thisPhotoCouldNotBe'));
           setPhase('rejected');
+        } else if (err?.code === 'LIMIT_REACHED') {
+          setRejectionMessage(err.message ?? 'Free accounts get 1 palm scan per month. Upgrade to Premium for more.');
+          setPhase('limit');
         } else if (err?.code === 'PROFILE_EXISTS' && err.existingReadingId) {
           // Race with an already-existing profile (e.g. a second device, or
           // this flow reached without the rescan confirmation) - land on
@@ -94,7 +97,7 @@ export function PalmAnalyzingScreen() {
   const translateY = scanY.interpolate({ inputRange: [0, 1], outputRange: [0, 280] });
   const stageIndex = stage === 'uploading' ? 0 : stage === 'detecting' ? 1 : 2;
 
-  if (phase === 'rejected' || phase === 'error') {
+  if (phase === 'rejected' || phase === 'error' || phase === 'limit') {
     return (
       <PageContainer scroll={false}>
         <View style={styles.center}>
@@ -108,20 +111,29 @@ export function PalmAnalyzingScreen() {
 
           <AlertTriangle size={28} color={color.danger} strokeWidth={1.75} style={{ marginTop: spacing.xl }} />
           <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
-            {phase === 'rejected' ? "We couldn't use this photo" : 'Something went wrong'}
+            {phase === 'rejected' ? "We couldn't use this photo" : phase === 'limit' ? 'Monthly free scan used' : 'Something went wrong'}
           </Text>
           <Text variant="caption" tone="secondary" style={{ marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.lg }}>
-            {phase === 'rejected'
+            {phase === 'rejected' || phase === 'limit'
               ? rejectionMessage
               : 'We could not reach the server to analyze your photo. Please check your connection and try again.'}
           </Text>
 
-          <Button
-            label={t('ui.PalmAnalyzingScreen.retakePhoto')}
-            fullWidth
-            style={{ marginTop: spacing.xl, width: '100%' }}
-            onPress={() => navigation.replace('PalmCapture')}
-          />
+          {phase === 'limit' ? (
+            <Button
+              label="Upgrade to Premium"
+              fullWidth
+              style={{ marginTop: spacing.xl, width: '100%' }}
+              onPress={() => navigation.replace('Paywall')}
+            />
+          ) : (
+            <Button
+              label={t('ui.PalmAnalyzingScreen.retakePhoto')}
+              fullWidth
+              style={{ marginTop: spacing.xl, width: '100%' }}
+              onPress={() => navigation.replace('PalmCapture')}
+            />
+          )}
         </View>
       </PageContainer>
     );

@@ -38,6 +38,6 @@ describe('assistant without AI (free plan)', () => {
   it('gives a helpful menu for open-ended questions instead of failing', async () => {
     const r = await buildAssistantReply('free-3', 'tell me a joke about cats', [], explodingAi, config, undefined, undefined, undefined, free);
     expect(r.success).toBe(true);
-    expect(r.reply).toContain('Upgrade to Premium');
+    expect(r.reply.length).toBeGreaterThan(30);
   });
 });

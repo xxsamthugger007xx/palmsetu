@@ -1,3 +1,4 @@
+import { DATA_DIR } from '../config/dataDir';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -17,7 +18,7 @@ import crypto from 'crypto';
  * reimplemented against a bucket client, the route layer would not change.
  */
 
-const STORAGE_DIR = path.join(__dirname, '..', '..', 'data', 'palmImages');
+const STORAGE_DIR = path.join(DATA_DIR, 'palmImages');
 
 function ensureDir(): void {
   if (!fs.existsSync(STORAGE_DIR)) fs.mkdirSync(STORAGE_DIR, { recursive: true });

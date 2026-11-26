@@ -348,7 +348,7 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
       const rec = journalAiDailyCountByUser.get(userId);
       const countToday = rec && rec.date === today ? rec.count : 0;
       if (countToday >= FREE_JOURNAL_AI_DAILY_LIMIT) {
-        return res.status(403).json({ error: `Free plan allows ${FREE_JOURNAL_AI_DAILY_LIMIT} AI journal insights per day. Upgrade for more.` });
+        return res.status(403).json({ error: 'AI journal insights are a Premium feature. Upgrade to unlock.' });
       }
       journalAiDailyCountByUser.set(userId, { date: today, count: countToday + 1 });
     }
@@ -960,15 +960,6 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
     const userId = currentUserId(req);
     const { message } = parsed.data;
 
-    const tier = getUserTier(userId);
-    const dailyLimit = tier === 'premium' ? PREMIUM_AI_COMPANION_DAILY_MESSAGES : FREE_AI_COMPANION_DAILY_MESSAGES;
-    const today = localDateToday(req);
-    const rec = aiCompanionDailyCountByUser.get(userId);
-    const countToday = rec && rec.date === today ? rec.count : 0;
-    if (countToday >= dailyLimit) {
-      return res.status(403).json({ error: `Daily AI companion message limit (${dailyLimit}) reached. ${tier === 'premium' ? 'Try again tomorrow.' : 'Upgrade for a higher daily limit.'}` });
-    }
-
     let conversationId = parsed.data.conversationId;
     let conversation = conversationId ? wellnessAiConversationsById.get(conversationId) : undefined;
     if (!conversation || conversation.userId !== userId) {
@@ -984,6 +975,15 @@ export function buildWellnessRouter(aiProvider: AiProvider) {
       wellnessAiConversationsById.set(conversationId!, conversation);
       recordWellnessEvent(userId, 'ai_companion_crisis_detected', {});
       return res.json({ conversationId, reply: CRISIS_RESPONSE, crisisFlag: true });
+    }
+
+    const tier = getUserTier(userId);
+    const dailyLimit = tier === 'premium' ? PREMIUM_AI_COMPANION_DAILY_MESSAGES : FREE_AI_COMPANION_DAILY_MESSAGES;
+    const today = localDateToday(req);
+    const rec = aiCompanionDailyCountByUser.get(userId);
+    const countToday = rec && rec.date === today ? rec.count : 0;
+    if (countToday >= dailyLimit) {
+      return res.status(403).json({ error: `${tier === 'premium' ? `Daily AI companion message limit (${dailyLimit}) reached. Try again tomorrow.` : 'The AI companion is a Premium feature. Upgrade to chat.'}` });
     }
 
     let journalExcerpt = '';

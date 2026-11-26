@@ -44,7 +44,7 @@ function currentUserId(req: Request): string {
 }
 
 const CONTENT_VERSION = 'solune-astrology-1.0';
-const MAX_FOLLOWUP_FREE = 2;
+const MAX_FOLLOWUP_FREE = 0; // follow-up AI questions are Premium-only
 
 const birthProfileSchema = z.object({
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -368,8 +368,8 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     if (containsCrisisLanguage(question)) return res.json({ answer: CRISIS_RESPONSE, crisisFlag: true });
 
     const askedSoFar = astrologyFollowupCounts.get(horoscope.id) ?? 0;
-    if (askedSoFar >= MAX_FOLLOWUP_FREE) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FOLLOWUP_FREE} follow-up questions per reading.` });
+    if (getUserTier(userId) !== 'premium' && askedSoFar >= MAX_FOLLOWUP_FREE) {
+      return res.status(403).json({ error: 'Follow-up questions are a Premium feature. Upgrade to ask more.', code: 'LIMIT_REACHED' });
     }
 
     let answer: string;

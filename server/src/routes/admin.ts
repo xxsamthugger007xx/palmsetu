@@ -1315,7 +1315,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
 
   router.put('/ai-budget', requireRole('super_admin'), (req, res) => {
     const body = req.body ?? {};
-    const allowedKeys = ['premiumMonthlyBudgetInr', 'freeMonthlyBudgetInr', 'freeChatDailyMessages', 'freeChatMonthlyInr', 'freeChatDailyPerIp'] as const;
+    const allowedKeys = ['premiumMonthlyBudgetInr', 'freeMonthlyBudgetInr', 'freeChatMonthlyMessages', 'freeChatMonthlyInr', 'freeChatDailyPerIp'] as const;
     const before = getAiBudgetCaps();
     const next: Record<string, number> = {};
     for (const k of allowedKeys) {

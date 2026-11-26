@@ -118,26 +118,28 @@ function ownedConversationOr404(res: Response, userId: string, id: string): Assi
 }
 
 /**
- * Premium: full AI, bounded only by the monthly AI budget. Free: real AI too, but fast/short, a few messages a day and a
+ * Premium: full AI, bounded only by the monthly AI budget. Free: real AI too, but fast/short, a few messages a month and a
  * small monthly spend ceiling; past either limit the assistant falls back to answers built without AI.
  */
 function chatPlan(req: Request, userId: string) {
   if (getUserTier(userId) === 'premium') return { free: false, options: { aiEnabled: true }, countKey: null as string | null, ipKey: null as string | null };
   const limits = freeChatLimits();
   const localDate = requestLocalDate(req);
-  const countKey = `${userId}:${localDate}`;
+  const countKey = `${userId}:m:${localDate.slice(0, 7)}`;
   const ipKey = `ip:${req.ip ?? 'unknown'}:${localDate}`;
   const used = assistantFreeChatByKey.get(countKey)?.count ?? 0;
   const ipUsed = assistantFreeChatByKey.get(ipKey)?.count ?? 0;
-  const dayDone = used >= limits.dailyMessages || ipUsed >= limits.dailyPerIp;
+  const dayDone = used >= limits.monthlyMessages || ipUsed >= limits.dailyPerIp;
   const monthDone = getMonthlySpendInr(userId) >= limits.monthlyInr;
   if (dayDone || monthDone) {
     return {
       free: true, countKey: null as string | null, ipKey: null as string | null,
       options: {
         aiEnabled: false,
-        noAiNote: dayDone
-          ? `\n\nYou've used today's ${limits.dailyMessages} free AI messages. They reset tomorrow, or upgrade to Premium to keep chatting.`
+        noAiNote: dayDone && limits.monthlyMessages <= 0
+          ? ''
+          : dayDone
+          ? `\n\nYou've used this month's ${limits.monthlyMessages} free AI messages. They reset next month, or upgrade to Premium to keep chatting.`
           : '\n\nYou\'ve reached this month\'s free AI chat limit. Upgrade to Premium to keep chatting.',
       },
     };
@@ -146,16 +148,16 @@ function chatPlan(req: Request, userId: string) {
 }
 
 /** Counts a free user's AI message, only when the reply really used the AI. */
-/** Free-plan AI messages left today (null for Premium), shown as a small counter in the chat. */
+/** Free-plan AI messages left this month (null for Premium), shown as a small counter in the chat. */
 function freeRemaining(plan: ReturnType<typeof chatPlan>, userId: string, req: Request): number | null {
-  if (!plan.free) return null;
-  const used = assistantFreeChatByKey.get(`${userId}:${requestLocalDate(req)}`)?.count ?? 0;
-  return Math.max(0, freeChatLimits().dailyMessages - used);
+  if (!plan.free || freeChatLimits().monthlyMessages <= 0) return null;
+  const used = assistantFreeChatByKey.get(`${userId}:m:${requestLocalDate(req).slice(0, 7)}`)?.count ?? 0;
+  return Math.max(0, freeChatLimits().monthlyMessages - used);
 }
 
 function recordFreeChat(plan: ReturnType<typeof chatPlan>, userId: string, result: AssistantReplyResult) {
   if (!plan.countKey || result.mode === null || !result.success) return;
-  const localDate = plan.countKey.split(':').pop()!;
+  const localDate = (plan.ipKey ?? plan.countKey).split(':').pop()!;
   const cur = assistantFreeChatByKey.get(plan.countKey);
   assistantFreeChatByKey.set(plan.countKey, { userId, localDate, count: (cur?.count ?? 0) + 1 });
   if (plan.ipKey) {

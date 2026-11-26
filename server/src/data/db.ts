@@ -14,7 +14,7 @@ import Database from 'better-sqlite3';
  * The DB file lives at server/data/solune.db, is created automatically if
  * missing, and is gitignored (see .gitignore `data/`).
  */
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+import { DATA_DIR } from '../config/dataDir';
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 // In tests, default to a private in-memory database per worker process so

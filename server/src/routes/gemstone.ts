@@ -26,7 +26,7 @@ function summarizeGemstoneReport(r: GemstoneReport): string {
   return `Gemstone report on ${r.createdAt.slice(0, 10)}${r.goal ? ` (goal: ${r.goal})` : ''}. ${main}`;
 }
 
-const MAX_FOLLOWUP_FREE = 2;
+const MAX_FOLLOWUP_FREE = 0; // follow-up AI questions are Premium-only
 // Gemstone Guide is a premium-only feature - free-tier users cannot generate
 // any report at all. Premium users get PREMIUM_INCLUDED_REPORTS bundled into
 // their subscription before an additional report charges a separate
@@ -136,7 +136,7 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
     const tier = getUserTier(userId);
     const askedSoFar = gemstoneFollowupCounts.get(report.id) ?? 0;
     if (tier !== 'premium' && askedSoFar >= MAX_FOLLOWUP_FREE) {
-      return res.status(403).json({ error: `Free plan allows ${MAX_FOLLOWUP_FREE} follow-up questions per report.` });
+      return res.status(403).json({ error: 'Follow-up questions are a Premium feature. Upgrade to ask more.' });
     }
 
     let answer: string;

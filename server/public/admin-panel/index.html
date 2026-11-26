@@ -903,8 +903,8 @@
         <input id="ab-premium" type="number" min="0" step="1" value="${c.premiumMonthlyBudgetInr}" />
         <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free monthly AI budget (&#8377;, all features combined)</label>
         <input id="ab-free" type="number" min="0" step="1" value="${c.freeMonthlyBudgetInr}" />
-        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: daily message limit</label>
-        <input id="ab-dailymsg" type="number" min="0" step="1" value="${c.freeChatDailyMessages}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: AI messages per month</label>
+        <input id="ab-dailymsg" type="number" min="0" step="1" value="${c.freeChatMonthlyMessages}" />
         <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: monthly budget (&#8377;)</label>
         <input id="ab-chatmonthly" type="number" min="0" step="1" value="${c.freeChatMonthlyInr}" />
         <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: daily messages per IP (anti-abuse)</label>
@@ -921,7 +921,7 @@
           body: JSON.stringify({
             premiumMonthlyBudgetInr: Number(document.getElementById('ab-premium').value),
             freeMonthlyBudgetInr: Number(document.getElementById('ab-free').value),
-            freeChatDailyMessages: Number(document.getElementById('ab-dailymsg').value),
+            freeChatMonthlyMessages: Number(document.getElementById('ab-dailymsg').value),
             freeChatMonthlyInr: Number(document.getElementById('ab-chatmonthly').value),
             freeChatDailyPerIp: Number(document.getElementById('ab-perip').value),
           }),

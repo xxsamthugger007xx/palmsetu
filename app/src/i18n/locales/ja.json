@@ -421,7 +421,11 @@
       "billingIsNotYetConfigured": "このビルドでは Palm Setu プレミアムの課金がまだ設定されていません。設定されるまで、この画面で請求されたりプレミアムが付与されたりすることはありません。",
       "terms": "利用規約",
       "privacy": "プライバシー",
-      "secureBillingThroughYourApp": "App Store または Google Play アカウントによる安全な課金。"
+      "secureBillingThroughYourApp": "App Store または Google Play アカウントによる安全な課金。",
+      "couponCode": "クーポンコード",
+      "apply": "適用",
+      "checking": "確認中...",
+      "couponApplied": "{{percent}}%オフを適用しました"
     },
     "ProfileScreen": {
       "createAnAccount": "アカウントを作成",
@@ -1366,8 +1370,8 @@
     "premiumTitle": "AIアシスタントはプレミアム機能です",
     "premiumBody": "アップグレードすると、手相・チャート・リーディングについてアシスタントと話せます。",
     "premiumAction": "プレミアムを見る",
-    "freeLeft": "今日の残り無料AI回答：{{n}}",
-    "freeNone": "今日の無料AI回答は終了しました。基本の回答は引き続き利用できます。",
+    "freeLeft": "今月の無料AI回答の残り：{{n}}",
+    "freeNone": "今月の無料AI回答は使い切りました。基本の回答は引き続きご利用いただけます。",
     "subtitle": "リーディングのこと、何でも聞いてください"
   },
   "authGoogle": {

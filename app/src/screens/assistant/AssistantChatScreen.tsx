@@ -181,7 +181,7 @@ const CONTEXT_LABELS: Record<string, string> = {
   palm: 'Palmistry',
 };
 
-// The free plan's daily AI answers (matches the server's AI_FREE_CHAT_DAILY_MESSAGES default).
+// The free plan's monthly AI answers (matches the server's AI_FREE_CHAT_MONTHLY_MESSAGES default).
 const FREE_DAILY_SEGMENTS = 5;
 
 export function AssistantChatScreen() {

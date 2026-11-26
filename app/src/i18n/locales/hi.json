@@ -426,7 +426,11 @@
       "billingIsNotYetConfigured": "इस बिल्ड में Palm Setu प्रीमियम के लिए बिलिंग अभी सेट नहीं है। जब तक यह सेट नहीं होती, यह स्क्रीन न आपसे शुल्क लेगी, न प्रीमियम देगी।",
       "terms": "शर्तें",
       "privacy": "गोपनीयता",
-      "secureBillingThroughYourApp": "आपके App Store या Google Play खाते के माध्यम से सुरक्षित बिलिंग।"
+      "secureBillingThroughYourApp": "आपके App Store या Google Play खाते के माध्यम से सुरक्षित बिलिंग।",
+      "couponCode": "कूपन कोड",
+      "apply": "लागू करें",
+      "checking": "जाँच रहे हैं...",
+      "couponApplied": "{{percent}}% की छूट लागू हुई"
     },
     "ProfileScreen": {
       "createAnAccount": "खाता बनाएँ",
@@ -1371,8 +1375,8 @@
     "premiumTitle": "AI असिस्टेंट प्रीमियम फ़ीचर है",
     "premiumBody": "अपनी हथेली, कुंडली और रीडिंग के बारे में असिस्टेंट से बात करने के लिए अपग्रेड करें।",
     "premiumAction": "प्रीमियम देखें",
-    "freeLeft": "आज के मुफ़्त AI उत्तर बचे: {{n}}",
-    "freeNone": "आज के मुफ़्त AI उत्तर खत्म। बुनियादी उत्तर अब भी काम करते हैं।",
+    "freeLeft": "इस महीने के बचे मुफ़्त AI उत्तर: {{n}}",
+    "freeNone": "इस महीने के मुफ़्त AI उत्तर समाप्त हो गए। सामान्य उत्तर अभी भी उपलब्ध हैं।",
     "subtitle": "अपनी रीडिंग के बारे में या कुछ भी पूछें"
   },
   "authGoogle": {

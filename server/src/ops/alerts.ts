@@ -1,3 +1,4 @@
+import { DATA_DIR } from '../config/dataDir';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,7 +9,7 @@ import path from 'path';
  * message per distinct error per minute. Only the message, a short stack and caller-supplied context are sent:
  * never request bodies, tokens or user content.
  */
-const LOG_DIR = process.env.ERROR_LOG_DIR || path.join(__dirname, '..', '..', 'data', 'logs');
+const LOG_DIR = process.env.ERROR_LOG_DIR || path.join(DATA_DIR, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'errors.log');
 const MAX_LOG_BYTES = 5 * 1024 * 1024;
 const THROTTLE_MS = 60_000;

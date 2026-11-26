@@ -328,8 +328,21 @@ describe('routes/palm - section-wise entitlement', () => {
     spy.mockRestore();
   });
 
+  it('free accounts get 1 palm scan per month; the next is refused with LIMIT_REACHED', async () => {
+    const user = `monthly-${uuid()}`;
+    const spy = vi.spyOn(visionDetector, 'runVisionDetection').mockResolvedValue(fakeRawDetectionAcceptedPartial());
+    const image = await generateNoiseTestImage();
+    const first = await request(app).post('/palm/readings').set('x-demo-user', user).send({ image: image.toString('base64') });
+    expect(first.status).toBe(200);
+    const second = await request(app).post('/palm/readings').set('x-demo-user', user).send({ image: image.toString('base64'), allowRescan: true });
+    expect(second.status).toBe(403);
+    expect(second.body.code).toBe('LIMIT_REACHED');
+    spy.mockRestore();
+  });
+
   it('one-time palm profile: allowRescan:true replaces the primary profile, demoting the old reading', async () => {
     const user = `rescan-${uuid()}`;
+    userPlans.set(user, { userId: user, tier: 'premium' });
     const spy = vi.spyOn(visionDetector, 'runVisionDetection').mockResolvedValue(fakeRawDetectionAcceptedPartial());
 
     const image = await generateNoiseTestImage();

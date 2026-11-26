@@ -33,7 +33,7 @@ describe('routes/admin - live config (pricing, AI budget, feature flags, admin u
     // Reset every config domain back to defaults so tests don't leak state across runs.
     setPricingCents(defaultPricingCents());
     setSubscriptionBasePrices(defaultSubscriptionBasePrices());
-    setAiBudgetCaps({ premiumMonthlyBudgetInr: 100, freeMonthlyBudgetInr: 25, freeChatDailyMessages: 5, freeChatMonthlyInr: 10, freeChatDailyPerIp: 60 });
+    setAiBudgetCaps({ premiumMonthlyBudgetInr: 100, freeMonthlyBudgetInr: 25, freeChatMonthlyMessages: 5, freeChatMonthlyInr: 10, freeChatDailyPerIp: 60 });
     for (const f of getFeatureFlags()) setFeatureFlag(f.key, true);
 
     const superEmail = `super-${Date.now()}@test.solune`;
@@ -88,10 +88,10 @@ describe('routes/admin - live config (pricing, AI budget, feature flags, admin u
     const put = await request(app)
       .put('/admin/ai-budget')
       .set('Authorization', `Bearer ${superToken}`)
-      .send({ premiumMonthlyBudgetInr: 250, freeChatDailyMessages: 10 });
+      .send({ premiumMonthlyBudgetInr: 250, freeChatMonthlyMessages: 10 });
     expect(put.status).toBe(200);
     expect(put.body.caps.premiumMonthlyBudgetInr).toBe(250);
-    expect(put.body.caps.freeChatDailyMessages).toBe(10);
+    expect(put.body.caps.freeChatMonthlyMessages).toBe(10);
 
     const get = await request(app).get('/admin/ai-budget').set('Authorization', `Bearer ${viewerToken}`);
     expect(get.body.caps.premiumMonthlyBudgetInr).toBe(250);

@@ -421,7 +421,11 @@
       "billingIsNotYetConfigured": "此版本尚未配置 Palm Setu 高级版的计费。配置完成前，此页面不会向你收费，也不会授予高级权限。",
       "terms": "条款",
       "privacy": "隐私",
-      "secureBillingThroughYourApp": "通过你的 App Store 或 Google Play 账户安全结算。"
+      "secureBillingThroughYourApp": "通过你的 App Store 或 Google Play 账户安全结算。",
+      "couponCode": "优惠码",
+      "apply": "应用",
+      "checking": "正在检查...",
+      "couponApplied": "已应用 {{percent}}% 折扣"
     },
     "ProfileScreen": {
       "createAnAccount": "创建账户",
@@ -1366,8 +1370,8 @@
     "premiumTitle": "AI 助手是高级会员功能",
     "premiumBody": "升级后即可与助手聊聊你的手相、星盘和解读。",
     "premiumAction": "查看高级版",
-    "freeLeft": "今日剩余免费 AI 回答：{{n}}",
-    "freeNone": "今日的免费 AI 回答已用完，基础回答仍可使用。",
+    "freeLeft": "本月剩余免费 AI 回答：{{n}}",
+    "freeNone": "本月的免费 AI 回答已用完，基础回答仍可使用。",
     "subtitle": "可以问你的解读，或任何问题"
   },
   "authGoogle": {

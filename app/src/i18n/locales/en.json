@@ -1375,8 +1375,8 @@
     "premiumTitle": "AI assistant is a Premium feature",
     "premiumBody": "Upgrade to chat with your assistant about your palm, chart and readings.",
     "premiumAction": "See Premium",
-    "freeLeft": "Free AI answers left today: {{n}}",
-    "freeNone": "Free AI answers used up for today. Basic answers still work.",
+    "freeLeft": "Free AI answers left this month: {{n}}",
+    "freeNone": "Free AI answers used up for this month. Basic answers still work.",
     "subtitle": "Ask about your readings, or anything else"
   },
   "authGoogle": {

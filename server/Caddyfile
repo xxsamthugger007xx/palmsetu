@@ -1,0 +1,9 @@
+# Replace with your real API domain (its DNS A record must point at this server).
+api.example.com {
+	encode gzip
+	reverse_proxy api:4000
+	# Keep the admin panel off the public internet unless you want it there: uncomment to allow only your own IP.
+	# @admin path /admin-panel* /admin/*
+	# @notme not remote_ip 203.0.113.10
+	# respond @admin @notme 403
+}

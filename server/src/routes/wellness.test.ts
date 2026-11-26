@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { buildWellnessRouter } from './wellness';
 import { CountingFakeAiProvider } from '../palmistry/testFixtures';
 import { containsCrisisLanguage, CRISIS_RESPONSE } from '../ai/crisisDetection';
-import { wellnessAnalyticsEvents } from '../data/store';
+import { wellnessAnalyticsEvents, userPlans } from '../data/store';
 
 function buildApp(provider = new CountingFakeAiProvider()) {
   const app = express();
@@ -92,6 +92,7 @@ describe('routes/wellness - journal', () => {
   it('CRITICAL: refuses the AI insight call without explicit consent, and the AI provider sees zero calls', async () => {
     const { app, provider } = buildApp();
     const userId = `test-${uuid()}`;
+    userPlans.set(userId, { userId, tier: 'premium' });
 
     const created = await request(app).post('/wellness/journal').set(userHeader(userId))
       .send({ type: 'free-writing', content: 'Private thoughts that must never reach the AI without consent.' });
@@ -223,6 +224,11 @@ describe('routes/wellness - AI companion crisis handling', () => {
   it('calls the AI provider for an ordinary message', async () => {
     const { app, provider } = buildApp();
     const userId = `test-${uuid()}`;
+    const free = await request(app).post('/wellness/ai-companion/message').set(userHeader(userId))
+      .send({ conversationId: null, message: 'How can I build a better evening routine?' });
+    expect(free.status).toBe(403); // free accounts get no AI companion
+    expect(provider.callCount).toBe(0);
+    userPlans.set(userId, { userId, tier: 'premium' });
     const res = await request(app).post('/wellness/ai-companion/message').set(userHeader(userId))
       .send({ conversationId: null, message: 'How can I build a better evening routine?' });
     expect(res.status).toBe(200);

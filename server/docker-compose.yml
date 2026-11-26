@@ -1,0 +1,35 @@
+# Run the whole backend on a plain Linux server (a VPS):
+#   1. cp .env.production.example .env  and fill it in
+#   2. put your domain in Caddyfile
+#   3. docker compose up -d --build
+# Caddy gets and renews the HTTPS certificate automatically.
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /data
+    volumes:
+      - palmsetu-data:/data
+    expose:
+      - "4000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+
+volumes:
+  palmsetu-data:
+  caddy-data:
+  caddy-config:

@@ -446,7 +446,11 @@
       "billingIsNotYetConfigured": "لم يتم إعداد الفوترة لـ Palm Setu المميز في هذا الإصدار بعد. لن تحاسبك هذه الشاشة ولن تمنحك الوصول المميز حتى يتم ذلك.",
       "terms": "الشروط",
       "privacy": "الخصوصية",
-      "secureBillingThroughYourApp": "فوترة آمنة عبر حسابك في App Store أو Google Play."
+      "secureBillingThroughYourApp": "فوترة آمنة عبر حسابك في App Store أو Google Play.",
+      "couponCode": "رمز القسيمة",
+      "apply": "تطبيق",
+      "checking": "جارٍ التحقق...",
+      "couponApplied": "تم تطبيق خصم {{percent}}%"
     },
     "ProfileScreen": {
       "createAnAccount": "إنشاء حساب",
@@ -1391,8 +1395,8 @@
     "premiumTitle": "مساعد الذكاء الاصطناعي ميزة مميزة",
     "premiumBody": "قم بالترقية للدردشة مع المساعد حول كفك وخريطتك وقراءاتك.",
     "premiumAction": "عرض Premium",
-    "freeLeft": "إجابات الذكاء الاصطناعي المجانية المتبقية اليوم: {{n}}",
-    "freeNone": "انتهت إجابات الذكاء الاصطناعي المجانية اليوم. الإجابات الأساسية ما زالت تعمل.",
+    "freeLeft": "إجابات الذكاء الاصطناعي المجانية المتبقية هذا الشهر: {{n}}",
+    "freeNone": "انتهت إجابات الذكاء الاصطناعي المجانية لهذا الشهر. لا تزال الإجابات الأساسية متاحة.",
     "subtitle": "اسأل عن قراءاتك أو أي شيء آخر"
   },
   "authGoogle": {
