@@ -132,6 +132,12 @@ export function listTopAiSpenders(month = monthKey(), limit = 20): Spend[] {
     .slice(0, limit);
 }
 
+/** The raw per-user monthly spend record (cost + call count), or undefined if they've made no AI calls this
+ * month. Used wherever a per-user "AI usage" figure is shown (User Management list/detail, AI Cost Centre). */
+export function getSpendRecord(userId: string, month = monthKey()): Spend | undefined {
+  return spendByKey.get(key(userId, month));
+}
+
 export function getBudgetStatus(userId: string) {
   const { limitInr } = budgetConfig();
   const capped = getUserTier(userId) === 'premium';

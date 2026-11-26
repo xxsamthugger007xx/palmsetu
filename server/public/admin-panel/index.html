@@ -224,6 +224,7 @@
   const API_BASE = window.location.origin;
   let token = localStorage.getItem('solune_admin_token') || '';
   let usersPage = 1;
+  let usersSortBy = '';
   let currentTab = 'overview';
   let lastUserSearch = '';
 
@@ -438,6 +439,10 @@
       <div class="toolbar">
         <input id="user-search" type="text" placeholder="Search by name, email or user ID" />
         <button id="user-search-btn" style="width:auto;">Search</button>
+        <select id="user-sort" style="width:auto;">
+          <option value="">Sort: User ID</option>
+          <option value="aiUsage">Sort: AI spend (highest first)</option>
+        </select>
         <button id="user-export-btn" class="export-btn">Export CSV</button>
       </div>
       <div id="users-table-wrap"><p class="unavailable">Loading...</p></div>
@@ -447,6 +452,8 @@
     document.getElementById('user-search-btn').onclick = () => loadUsers(search.value, 1);
     search.onkeydown = (e) => { if (e.key === 'Enter') loadUsers(search.value, 1); };
     document.getElementById('user-export-btn').onclick = () => exportUsersCsv(search.value);
+    document.getElementById('user-sort').value = usersSortBy;
+    document.getElementById('user-sort').onchange = (e) => { usersSortBy = e.target.value; loadUsers(search.value, 1); };
     loadUsers(lastUserSearch, usersPage);
   }
 
@@ -480,6 +487,7 @@
     lastUserSearch = search || '';
     const qs = new URLSearchParams({ ...rangeParams(), page: String(page), pageSize: '20' });
     if (search) qs.set('search', search);
+    if (usersSortBy) qs.set('sortBy', usersSortBy);
     const data = await api('/admin/users?' + qs.toString());
     const wrap = document.getElementById('users-table-wrap');
     const rows = data.users.map((u) => `
@@ -492,14 +500,15 @@
         <td>${u.readingCounts.astrology}</td>
         <td>${u.readingCounts.palm}</td>
         <td>${u.readingCounts.companion}</td>
+        <td>${u.aiUsage.costInr > 0 ? formatCents(u.aiUsage.costInr * 100) + ' (' + u.aiUsage.calls + ')' : '-'}</td>
         <td>${u.lastSeen ? new Date(u.lastSeen).toLocaleString() : '-'}</td>
       </tr>
     `).join('');
     const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
     wrap.innerHTML = `
       <table>
-        <thead><tr><th>User</th><th>Tier</th><th>Tarot</th><th>Gemstone</th><th>Vastu</th><th>Astrology</th><th>Palm</th><th>Companion</th><th>Last seen</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="9" class="unavailable">No users found</td></tr>'}</tbody>
+        <thead><tr><th>User</th><th>Tier</th><th>Tarot</th><th>Gemstone</th><th>Vastu</th><th>Astrology</th><th>Palm</th><th>Companion</th><th>AI spend (mo.)</th><th>Last seen</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="10" class="unavailable">No users found</td></tr>'}</tbody>
       </table>
       <div class="pager">
         <span>Page ${data.page} of ${totalPages} (${data.total} users)</span>
@@ -528,7 +537,7 @@
         ['', '/payments', '/tarot', '/palm', '/astrology', '/wellness'].map((x) => api(base + x)));
       const block = (title, obj) => `<div class="section-title">${title}</div><pre style="white-space:pre-wrap;word-break:break-word;font-size:12px;margin:0;color:var(--textSecondary)">${escapeHtml(JSON.stringify(obj, null, 2))}</pre>`;
       box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>User ${escapeHtml(userId)}</strong><button id="user-detail-close" style="width:auto;">Close</button></div>`
-        + block('Profile & plan', profile) + block('Payments', payments) + block('Tarot', tarot) + block('Palm', palm) + block('Astrology', astrology) + block('Wellness (counts only)', wellness);
+        + block('Profile & plan', profile) + block('AI usage (this month)', profile.aiUsage) + block('Payments', payments) + block('Tarot', tarot) + block('Palm', palm) + block('Astrology', astrology) + block('Wellness (counts only)', wellness);
       document.getElementById('user-detail-close').onclick = () => box.remove();
     } catch (err) { box.innerHTML = '<p class="unavailable">Failed to load user: ' + escapeHtml(err.message) + '</p>'; }
   }

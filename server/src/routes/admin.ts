@@ -1,7 +1,7 @@
 import { listBackups, runBackup } from '../ops/backup';
 import { lastGuestCleanup, cleanupExpiredGuests } from '../ops/guestCleanup';
 import { errorsLastHour, readRecentErrors } from '../ops/alerts';
-import { estimateCostInr, providerKeyFromName } from '../ai/budget';
+import { estimateCostInr, providerKeyFromName, getSpendRecord, getBudgetStatus } from '../ai/budget';
 import { Router, Request, Response, NextFunction } from 'express';
 import {
   readingsById,
@@ -510,6 +510,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       const account = accountsById.get(userId);
       const identity = userIdentities.get(userId);
       const deviceInfo = getLatestDeviceInfo(userId);
+      const spend = getSpendRecord(userId);
       return {
         userId,
         psuId: getPsuIdForUuid(userId),
@@ -519,6 +520,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
         tier: getUserTier(userId),
         device: deviceInfo?.device ?? null,
         os: deviceInfo?.os ?? null,
+        aiUsage: { costInr: Math.round((spend?.costInr ?? 0) * 100) / 100, calls: spend?.calls ?? 0 },
         readingCounts: {
           tarot: a?.tarot ?? 0,
           gemstone: a?.gemstone ?? 0,
@@ -545,7 +547,8 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     if (accountTypeFilter) rows = rows.filter((r) => r.accountType === accountTypeFilter);
     if (deviceFilter) rows = rows.filter((r) => r.os?.toLowerCase().includes(deviceFilter) || r.device?.toLowerCase().includes(deviceFilter));
 
-    rows.sort((a, b) => a.userId.localeCompare(b.userId));
+    if (req.query.sortBy === 'aiUsage') rows.sort((a, b) => b.aiUsage.costInr - a.aiUsage.costInr);
+    else rows.sort((a, b) => a.userId.localeCompare(b.userId));
 
     const total = rows.length;
     const start = (page - 1) * pageSize;
@@ -725,6 +728,8 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const revenue = revenueForUser(userId);
     const engagement = getUserEngagementStats(userId);
     const device = getLatestDeviceInfo(userId);
+    const aiBudget = getBudgetStatus(userId);
+    const aiSpend = getSpendRecord(userId);
 
     res.json({
       userId,
@@ -752,6 +757,15 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       revenue: { totalCents: revenue.totalCents, currency: revenue.currency, transactionCount: revenue.count },
       engagement,
       device,
+      aiUsage: {
+        thisMonthCostInr: Math.round((aiSpend?.costInr ?? 0) * 100) / 100,
+        thisMonthCalls: aiSpend?.calls ?? 0,
+        byProviderInr: aiBudget.byProviderInr,
+        capped: aiBudget.capped,
+        limitInr: aiBudget.limitInr,
+        remainingInr: aiBudget.remainingInr,
+        resetsOn: aiBudget.resetsOn,
+      },
     });
   });
 

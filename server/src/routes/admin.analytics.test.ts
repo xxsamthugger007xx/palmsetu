@@ -6,6 +6,8 @@ import { MockProvider } from '../ai/mockProvider';
 import { createAdminUser } from '../auth/adminAuth';
 import { recordEvent } from '../events/eventTracker';
 import { recordApiTiming } from '../ops/apiMonitoring';
+import { addSpend } from '../ai/budget';
+import { accountsById } from '../data/store';
 import { v4 as uuid } from 'uuid';
 
 function buildApp() {
@@ -155,6 +157,32 @@ describe('routes/admin - analytics (alerts, acquisition, funnels, retention, api
     // Query-token auth works for these two export routes, same as /users/export.
     const viaToken = await request(app).get(`/admin/events/export?token=${superToken}`);
     expect(viaToken.status).toBe(200);
+  });
+
+  it('GET /admin/users and /admin/users/:userId both surface real per-user AI usage', async () => {
+    const userId = `user-${uuid()}`;
+    const now = new Date().toISOString();
+    accountsById.set(userId, { id: userId, email: `${userId}@test.solune`, passwordHash: 'x', emailVerified: true, createdAt: now, updatedAt: now });
+    recordEvent({ userId, eventType: 'USER_REGISTERED', feature: 'auth' });
+    addSpend(userId, 12.5, 'gemini');
+    addSpend(userId, 2.25, 'anthropic');
+
+    const list = await request(app).get('/admin/users?sortBy=aiUsage&pageSize=100').set('Authorization', `Bearer ${superToken}`);
+    expect(list.status).toBe(200);
+    const row = list.body.users.find((u: any) => u.userId === userId);
+    expect(row).toBeTruthy();
+    expect(row.aiUsage.costInr).toBeCloseTo(14.75, 1);
+    expect(row.aiUsage.calls).toBe(2);
+    // Sorted by AI spend descending - this user (14.75) should rank above anyone with less spend.
+    const costs = list.body.users.map((u: any) => u.aiUsage.costInr);
+    expect(costs).toEqual([...costs].sort((a: number, b: number) => b - a));
+
+    const detail = await request(app).get(`/admin/users/${userId}`).set('Authorization', `Bearer ${superToken}`);
+    expect(detail.status).toBe(200);
+    expect(detail.body.aiUsage.thisMonthCostInr).toBeCloseTo(14.75, 1);
+    expect(detail.body.aiUsage.thisMonthCalls).toBe(2);
+    expect(detail.body.aiUsage.byProviderInr.gemini).toBeCloseTo(12.5, 1);
+    expect(detail.body.aiUsage.byProviderInr.anthropic).toBeCloseTo(2.25, 1);
   });
 
   it('a non-super_admin/analyst (viewer) is forbidden from exporting transactions', async () => {
