@@ -7,7 +7,7 @@ import { createAdminUser } from '../auth/adminAuth';
 import { recordEvent } from '../events/eventTracker';
 import { recordApiTiming } from '../ops/apiMonitoring';
 import { addSpend } from '../ai/budget';
-import { accountsById } from '../data/store';
+import { accountsById, recordTransaction } from '../data/store';
 import { v4 as uuid } from 'uuid';
 
 function buildApp() {
@@ -157,6 +157,40 @@ describe('routes/admin - analytics (alerts, acquisition, funnels, retention, api
     // Query-token auth works for these two export routes, same as /users/export.
     const viaToken = await request(app).get(`/admin/events/export?token=${superToken}`);
     expect(viaToken.status).toBe(200);
+  });
+
+  it('GET /admin/payments: lists real transactions across users, filters by feature and search, and totals correctly', async () => {
+    const userId = `user-${uuid()}`;
+    const now = new Date().toISOString();
+    accountsById.set(userId, { id: userId, email: `${userId}@test.solune`, passwordHash: 'x', emailVerified: true, createdAt: now, updatedAt: now });
+    recordTransaction(userId, 'gemstone_premium_report', 9900);
+    recordTransaction(userId, 'premium_subscription', 49900);
+
+    const all = await request(app).get('/admin/payments?pageSize=200').set('Authorization', `Bearer ${superToken}`);
+    expect(all.status).toBe(200);
+    const rowsForUser = all.body.payments.filter((p: any) => p.userId === userId);
+    expect(rowsForUser.length).toBe(2);
+    expect(rowsForUser.some((p: any) => p.feature === 'gemstone_premium_report' && p.amountCents === 9900)).toBe(true);
+
+    const byFeature = await request(app).get('/admin/payments?feature=premium_subscription&pageSize=200').set('Authorization', `Bearer ${superToken}`);
+    expect(byFeature.body.payments.every((p: any) => p.feature === 'premium_subscription')).toBe(true);
+
+    const bySearch = await request(app).get(`/admin/payments?search=${userId}&pageSize=200`).set('Authorization', `Bearer ${superToken}`);
+    expect(bySearch.body.payments.length).toBe(2);
+    expect(bySearch.body.totalCents).toBe(9900 + 49900);
+  });
+
+  it('GET /admin/users/:userId/payments surfaces every transaction, not just Soulmate Sketch', async () => {
+    const userId = `user-${uuid()}`;
+    const now = new Date().toISOString();
+    accountsById.set(userId, { id: userId, email: `${userId}@test.solune`, passwordHash: 'x', emailVerified: true, createdAt: now, updatedAt: now });
+    recordTransaction(userId, 'tarot_detailed_report', 4900);
+
+    const res = await request(app).get(`/admin/users/${userId}/payments`).set('Authorization', `Bearer ${superToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.payments.some((p: any) => p.feature === 'tarot_detailed_report' && p.amountCents === 4900)).toBe(true);
+    expect(res.body.soulmateCheckouts).toEqual([]);
+    expect(res.body.revenue.totalCents).toBe(4900);
   });
 
   it('GET /admin/users and /admin/users/:userId both surface real per-user AI usage', async () => {

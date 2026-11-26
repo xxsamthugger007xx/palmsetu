@@ -694,10 +694,21 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     return { totalCents, currency: 'INR', count: rows.length, transactions: rows };
   }
 
-  /** Every soulmate sketch this user has ever created, oldest-first, as the
-   * closest thing this app has to a payment-history table (the only real
-   * payment gateway integration is Soulmate Sketch's Razorpay flow). */
+  /** Every real transaction this user has ever made, across every feature
+   * (subscription, gemstone, palm, tarot, vastu, soulmate), newest-first -
+   * this app's real payment-history table (data/store.ts's `transactions`). */
   function paymentsForUser(userId: string) {
+    return transactions
+      .filter((t) => t.userId === userId)
+      .map((t) => ({ id: t.id, feature: t.feature, amountCents: t.amountCents, currency: t.currency, createdAt: t.createdAt }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  /** Soulmate-specific checkout detail (Razorpay order/payment ids, sketch
+   * generation status) - the only feature with its own payment gateway
+   * integration, so this is additive detail alongside paymentsForUser above,
+   * not a replacement for it. */
+  function soulmateCheckoutsForUser(userId: string) {
     return soulmateSketchesById.valuesForUser(userId)
       .map((s) => ({
         sketchId: s.id,
@@ -798,7 +809,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
   router.get('/users/:userId/payments', (req, res) => {
     const userId = resolveUserParam(req.params.userId);
     if (!userId) return res.status(404).json({ error: 'No user found for this ID' });
-    res.json({ payments: paymentsForUser(userId), revenue: revenueForUser(userId) });
+    res.json({ payments: paymentsForUser(userId), soulmateCheckouts: soulmateCheckoutsForUser(userId), revenue: revenueForUser(userId) });
   });
 
   // --- User 360: feature-wise history (metadata/status only, never full
@@ -1206,6 +1217,48 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       dbFileSizeBytes: dbFileSizeBytes(),
       note: 'Counts/aggregates only - no conversation or report content is ever exposed through this endpoint.',
     });
+  });
+
+  // --- Payments: every real transaction across every user, flat and
+  // searchable - distinct from the Revenue tab's aggregates and from a
+  // single user's own payment history in User 360. ----------------------------
+  router.get('/payments', (req, res) => {
+    const range = parseDateRange(req);
+    const search = (req.query.search as string | undefined)?.toLowerCase();
+    const featureFilter = req.query.feature as string | undefined;
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(100, Math.max(1, parseInt(String(req.query.pageSize ?? '25'), 10) || 25));
+
+    let rows = transactions
+      .filter((t) => inRange(t.createdAt, range))
+      .map((t) => ({
+        id: t.id,
+        userId: t.userId,
+        psuId: getPsuIdForUuid(t.userId),
+        email: accountsById.get(t.userId)?.email ?? null,
+        feature: t.feature,
+        amountCents: t.amountCents,
+        currency: t.currency,
+        createdAt: t.createdAt,
+      }));
+
+    if (featureFilter) rows = rows.filter((r) => r.feature === featureFilter);
+    if (search) {
+      rows = rows.filter((r) =>
+        r.userId.toLowerCase().includes(search) ||
+        r.psuId?.toLowerCase().includes(search) ||
+        r.email?.toLowerCase().includes(search),
+      );
+    }
+
+    rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+    const total = rows.length;
+    const totalCents = rows.reduce((sum, r) => sum + r.amountCents, 0);
+    const start = (page - 1) * pageSize;
+    const pageRows = rows.slice(start, start + pageSize);
+
+    res.json({ total, totalCents, currency: 'INR', page, pageSize, payments: pageRows });
   });
 
   // --- Pricing (live, admin-editable; no redeploy needed) -------------------

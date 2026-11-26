@@ -186,6 +186,7 @@
 
         <div class="group-label">Business Intelligence</div>
         <div class="tab" data-tab="revenue"><span class="icon">&#9679;</span><span class="label-text">Revenue</span></div>
+        <div class="tab" data-tab="payments"><span class="icon">&#9679;</span><span class="label-text">Payments</span></div>
         <div class="tab" data-tab="subscriptions"><span class="icon">&#9679;</span><span class="label-text">Subscriptions</span></div>
         <div class="tab" data-tab="pricing"><span class="icon">&#9679;</span><span class="label-text">Pricing</span></div>
         <div class="tab" data-tab="coupons"><span class="icon">&#9679;</span><span class="label-text">Coupons</span></div>
@@ -358,6 +359,7 @@
       if (name === 'users') return renderUsers(el);
       if (name === 'features') return renderFeatures(el);
       if (name === 'revenue') return renderRevenue(el);
+      if (name === 'payments') return renderPayments(el);
       if (name === 'assistant') return renderAssistant(el);
       if (name === 'audit') return renderAudit(el);
       if (name === 'system') return renderSystem(el);
@@ -541,7 +543,7 @@
         ['', '/payments', '/tarot', '/palm', '/astrology', '/wellness'].map((x) => api(base + x)));
       const block = (title, obj) => `<div class="section-title">${title}</div><pre style="white-space:pre-wrap;word-break:break-word;font-size:12px;margin:0;color:var(--textSecondary)">${escapeHtml(JSON.stringify(obj, null, 2))}</pre>`;
       box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>User ${escapeHtml(userId)}</strong><button id="user-detail-close" style="width:auto;">Close</button></div>`
-        + block('Profile & plan', profile) + block('AI usage (this month)', profile.aiUsage) + block('Payments', payments) + block('Tarot', tarot) + block('Palm', palm) + block('Astrology', astrology) + block('Wellness (counts only)', wellness);
+        + block('Profile & plan', profile) + block('AI usage (this month)', profile.aiUsage) + block('Payments (all features)', payments.payments) + block('Soulmate checkouts', payments.soulmateCheckouts) + block('Tarot', tarot) + block('Palm', palm) + block('Astrology', astrology) + block('Wellness (counts only)', wellness);
       document.getElementById('user-detail-close').onclick = () => box.remove();
     } catch (err) { box.innerHTML = '<p class="unavailable">Failed to load user: ' + escapeHtml(err.message) + '</p>'; }
   }
@@ -1401,6 +1403,72 @@
     document.getElementById('exp-users').onclick = () => downloadCsv('/admin/users/export');
     document.getElementById('exp-tx').onclick = () => downloadCsv('/admin/transactions/export');
     document.getElementById('exp-events').onclick = () => downloadCsv('/admin/events/export');
+  }
+
+  let paymentsPage = 1;
+  let paymentsSearch = '';
+  let paymentsFeature = '';
+
+  async function renderPayments(el, page) {
+    paymentsPage = page || paymentsPage;
+    const qs = new URLSearchParams({ ...rangeParams(), page: String(paymentsPage), pageSize: '25' });
+    if (paymentsSearch) qs.set('search', paymentsSearch);
+    if (paymentsFeature) qs.set('feature', paymentsFeature);
+    const data = await api('/admin/payments?' + qs.toString());
+    const rows = data.payments.map((p) => `
+      <tr>
+        <td>${new Date(p.createdAt).toLocaleString()}</td>
+        <td>${escapeHtml(p.email || p.psuId || p.userId)}</td>
+        <td><span class="pill">${escapeHtml(p.feature)}</span></td>
+        <td>${formatCents(p.amountCents)}</td>
+      </tr>
+    `).join('');
+    const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
+    el.innerHTML = `
+      <p class="unavailable">Every real recorded transaction, across every user and feature (test pricing - see Revenue tab). Not a real payment gateway except Soulmate Sketch's Razorpay checkout.</p>
+      <div class="grid">
+        <div class="card"><div class="label">Total in range</div><div class="value">${formatCents(data.totalCents)}</div><div class="sub">${data.total} payment(s)</div></div>
+      </div>
+      <div class="toolbar">
+        <input id="pay-search" type="text" placeholder="Search by email, PSU id or user ID" value="${escapeHtml(paymentsSearch)}" />
+        <select id="pay-feature" style="width:auto;">
+          <option value="">All features</option>
+          <option value="premium_subscription">Subscription</option>
+          <option value="tarot_detailed_report">Tarot</option>
+          <option value="gemstone_premium_report">Gemstone</option>
+          <option value="vastu_premium_report">Vastu</option>
+          <option value="astrology_premium_report">Astrology</option>
+          <option value="palm_premium_report">Palm (bundle)</option>
+          <option value="palm_section_unlock">Palm (section)</option>
+          <option value="soulmate_sketch">Soulmate Sketch</option>
+        </select>
+        <button id="pay-search-btn" style="width:auto;">Search</button>
+        <button id="pay-export-btn" class="export-btn">Export CSV</button>
+      </div>
+      <table>
+        <thead><tr><th>Time</th><th>User</th><th>Feature</th><th>Amount</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" class="unavailable">No payments found</td></tr>'}</tbody>
+      </table>
+      <div class="pager">
+        <span>Page ${data.page} of ${totalPages} (${data.total} payments)</span>
+        <div>
+          <button ${data.page <= 1 ? 'disabled' : ''} id="pay-prev">Prev</button>
+          <button ${data.page >= totalPages ? 'disabled' : ''} id="pay-next">Next</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('pay-feature').value = paymentsFeature;
+    document.getElementById('pay-search-btn').onclick = () => {
+      paymentsSearch = document.getElementById('pay-search').value;
+      paymentsFeature = document.getElementById('pay-feature').value;
+      renderPayments(el, 1);
+    };
+    document.getElementById('pay-search').onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('pay-search-btn').click(); };
+    document.getElementById('pay-export-btn').onclick = () => downloadCsv('/admin/transactions/export');
+    const prev = document.getElementById('pay-prev');
+    const next = document.getElementById('pay-next');
+    if (prev) prev.onclick = () => renderPayments(el, paymentsPage - 1);
+    if (next) next.onclick = () => renderPayments(el, paymentsPage + 1);
   }
 
   async function renderContentLibrary(el) {
