@@ -193,7 +193,7 @@
         <div class="group-label">Infrastructure</div>
         <div class="tab" data-tab="system"><span class="icon">&#9679;</span><span class="label-text">System Health</span></div>
         <div class="tab stub" data-tab="stub:apm"><span class="icon">&#9679;</span><span class="label-text">API Monitoring</span></div>
-        <div class="tab stub" data-tab="stub:errors"><span class="icon">&#9679;</span><span class="label-text">Errors &amp; Crashes</span></div>
+        <div class="tab" data-tab="errors"><span class="icon">&#9679;</span><span class="label-text">Errors &amp; Crashes</span></div>
 
         <div class="group-label">Administration</div>
         <div class="tab" data-tab="audit"><span class="icon">&#9679;</span><span class="label-text">Audit Logs</span></div>
@@ -354,7 +354,6 @@
     'stub:retention': ['Retention & Cohorts', ['Cohort bucketing (by signup date/first feature/etc.) over user_events', 'A derived daily-aggregation job - currently every metric is computed live, which works at this scale but will not forever']],
     'stub:aicost': ['AI Cost Centre', ['Real per-user AI cost attribution (GenerationOptions does not carry a userId yet, see ai/usageTracking.ts)', 'Real provider-reported cost - every figure today is a ~4-chars/token estimate, see the existing AI Chat tab']],
     'stub:apm': ['API Monitoring', ['Request-level instrumentation (p50/p95/p99 latency, per-endpoint error rate) - no middleware captures this yet']],
-    'stub:errors': ['Errors & Crashes', ['A structured server error log (today errors only go to stdout)', 'Mobile crash reporting - no crash reporter is integrated in the Expo app']],
     'stub:export': ['Export Centre', ['Export jobs for the other data types (payments, AI usage, events) beyond the Users CSV export that already exists']],
   };
 
@@ -378,6 +377,7 @@
       if (name === 'aibudget') return renderAiBudget(el);
       if (name === 'flags') return renderFlags(el);
       if (name === 'admins') return renderAdmins(el);
+      if (name === 'errors') return renderErrors(el);
       if (STUB_PAGES[name]) {
         const [title, bullets] = STUB_PAGES[name];
         return renderComingSoon(el, title, bullets);
@@ -1059,6 +1059,23 @@
         document.getElementById('na-error').textContent = err.message || 'Failed to create admin';
       }
     };
+  }
+
+  async function renderErrors(el) {
+    const data = await api('/admin/errors?lines=150');
+    const lines = [...data.recentErrors].reverse();
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Errors in the last hour</div><div class="value">${data.errorsLastHour}</div></div>
+        <div class="card"><div class="label">Alert webhook</div><div class="value">${data.alertWebhookConfigured ? 'Configured' : 'Not set'}</div></div>
+      </div>
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+      <div class="section-title">Recent errors (newest first)</div>
+      <table>
+        <thead><tr><th>Log line</th></tr></thead>
+        <tbody>${lines.length ? lines.map((l) => `<tr><td style="font-family:monospace;font-size:12px;white-space:pre-wrap;">${escapeHtml(l)}</td></tr>`).join('') : '<tr><td class="unavailable">No errors logged yet.</td></tr>'}</tbody>
+      </table>
+    `;
   }
 
   let auditPage = 1;

@@ -337,6 +337,15 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       guestCleanup: lastGuestCleanup(),
     });
   });
+  router.get('/errors', (req, res) => {
+    const lines = Math.min(500, Math.max(1, Number(req.query.lines) || 100));
+    res.json({
+      errorsLastHour: errorsLastHour(),
+      alertWebhookConfigured: !!process.env.ALERT_WEBHOOK_URL,
+      recentErrors: readRecentErrors(lines),
+      note: 'Every reportError() call (see ops/alerts.ts) is logged here - server/data/logs/errors.log, size-capped at 5MB. There is no mobile crash reporter wired in, so this covers backend errors only.',
+    });
+  });
   router.post('/ops/guest-cleanup', (_req, res) => res.json(cleanupExpiredGuests()));
   router.post('/ops/backup', async (_req, res) => {
     try { res.json(await runBackup()); } catch (err: any) { res.status(500).json({ error: err?.message ?? 'Backup failed' }); }
@@ -1113,7 +1122,7 @@ export function buildAdminRouter(aiProvider: AiProvider) {
         dbFileSizeBytes: dbFileSizeBytes(),
         note: 'All stores above are now backed by a real SQLite file (server/data/solune.db) and genuinely survive a server restart - see memory-system section below for the newer structured memory tables specifically.',
       },
-      errorMonitoring: { available: false, reason: 'No Sentry or other APM/error-monitoring integration exists in this codebase.' },
+      errorMonitoring: { available: true, errorsLastHour: errorsLastHour(), note: 'File-backed error log + optional webhook alert (see /admin/errors) - not a full APM/Sentry integration.' },
     });
   });
 
