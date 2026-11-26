@@ -44,6 +44,7 @@ import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { InfoModal } from '../../components/InfoModal';
 import { RootStackParamList } from '../../navigation/types';
 import { useUserProfile } from '../../context/UserProfileContext';
+import { useFeatureFlags } from '../../context/FeatureFlagsContext';
 import { useAuth } from '../../context/AuthContext';
 import { authApi } from '../../services/authApi';
 import { useLanguage } from '../../context/LanguageContext';
@@ -82,6 +83,7 @@ export function ProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, clearProfile, setAvatarKey } = useUserProfile();
+  const { isEnabled } = useFeatureFlags();
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const { isGuest, account, logOut, deleteAccount } = useAuth();
   const { languageCode } = useLanguage();
@@ -246,7 +248,7 @@ export function ProfileScreen() {
         />
       </Card>
 
-      {hasPalmProfile && (
+      {hasPalmProfile && isEnabled('palmRescan') && (
         <>
           <GroupLabel>{t('profile.palmProfileGroup')}</GroupLabel>
           <Card padded={false}>

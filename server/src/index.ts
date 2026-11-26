@@ -29,6 +29,7 @@ import { buildSoulmateRouter } from './routes/soulmate';
 import { buildAppSessionRouter } from './routes/appSession';
 import { buildStreakRouter } from './routes/streak';
 import { buildBillingRouter } from './routes/billing';
+import { buildConfigRouter } from './routes/config';
 import { migrateVastuPropertiesIfNeeded } from './vastu/migratePropertyProfiles';
 import { attachAuthContext } from './auth/middleware';
 import { accountsById, vastuPropertiesById, revokedTokens, passwordResetsByHash } from './data/store';
@@ -62,6 +63,7 @@ app.use(attachAuthContext);
 // Carries the caller's id into the AI provider layer so spend can be attributed per user.
 app.use(runWithAiUser);
 app.use('/auth', buildAuthRouter());
+app.use('/config', buildConfigRouter());
 
 // Per-user cap on write/AI requests to the routes that call the (paid) AI provider.
 const aiLimiter = rateLimit({ name: 'ai', windowMs: 60_000, max: 30 });

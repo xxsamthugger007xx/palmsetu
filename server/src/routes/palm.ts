@@ -21,6 +21,7 @@ import { PalmReading } from '../types/palm';
 import { isAccepted } from '../palmistry/validation';
 import { buildPremiumSectionsByCategory } from '../palmistry/premiumPalmistryEngine';
 import { saveReadingImage, readReadingImage, deleteReadingImage } from '../palmistry/imageStorage';
+import { isFeatureEnabled } from '../data/featureFlags';
 
 const analyzer = new VisionAssistedPalmAnalyzer();
 
@@ -113,6 +114,9 @@ export function buildPalmRouter(aiProvider: AiProvider) {
         code: 'PROFILE_EXISTS',
         existingReadingId: existingProfile.id,
       });
+    }
+    if (existingProfile && parsed.data.allowRescan && !isFeatureEnabled('palmRescan')) {
+      return res.status(503).json({ error: 'Palm rescan is temporarily unavailable.', code: 'FEATURE_DISABLED' });
     }
 
     const imageBuffer = Buffer.from(parsed.data.image, 'base64');

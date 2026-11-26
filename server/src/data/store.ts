@@ -11,7 +11,7 @@ import { GemstoneReport } from '../types/gemstone';
 import { KundliChart } from '../types/kundli';
 import { SoulEnergyReading } from '../types/soulEnergy';
 import { PropertyProfile, VastuReport } from '../types/vastu';
-import { PRICING_CENTS, CURRENCY, PricedFeature } from './pricing';
+import { getPrice, CURRENCY, PricedFeature } from './pricing';
 import { SqliteMap, persistentArray } from './sqliteCollections';
 
 /** Real, file-based SQLite persistence (server/data/solune.db) - see db.ts
@@ -250,7 +250,7 @@ export function recordTransaction(userId: string, feature: PricedFeature, amount
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
     userId,
     feature,
-    amountCents: amountCentsOverride ?? PRICING_CENTS[feature],
+    amountCents: amountCentsOverride ?? getPrice(feature),
     currency: CURRENCY,
     createdAt: new Date().toISOString(),
   };

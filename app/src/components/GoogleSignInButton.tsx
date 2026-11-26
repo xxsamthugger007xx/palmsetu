@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Svg, { Path } from 'react-native-svg';
 import { Text } from './Text';
 import { color, radius, spacing } from '../theme/tokens';
+import { useFeatureFlags } from '../context/FeatureFlagsContext';
 
 // Lets the browser tab that finished the Google sign-in hand control back to the app.
 WebBrowser.maybeCompleteAuthSession();
@@ -82,8 +83,12 @@ function ConfiguredButton({ onIdToken, onProblem, busy }: Props) {
   return <Face busy={busy} onPress={() => { if (request) promptAsync().catch(() => onProblem('failed')); }} />;
 }
 
-/** "Continue with Google". Always visible; if this build has no Google client ID, tapping explains that instead of failing silently. */
+/** "Continue with Google". Hidden entirely when the admin panel has switched
+ * the feature off remotely; otherwise always visible, and if this build has
+ * no Google client ID, tapping explains that instead of failing silently. */
 export function GoogleSignInButton(props: Props) {
+  const { isEnabled } = useFeatureFlags();
+  if (!isEnabled('googleSignIn')) return null;
   if (!googleSignInConfigured) return <Face busy={props.busy} onPress={() => props.onProblem('not-configured')} />;
   return <ConfiguredButton {...props} />;
 }

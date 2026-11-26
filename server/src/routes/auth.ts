@@ -20,6 +20,7 @@ import { getOrCreatePsuId } from '../auth/psuId';
 import { recordEvent } from '../events/eventTracker';
 import { verifyGoogleIdToken, googleConfigured, GoogleIdentity } from '../auth/googleVerify';
 import { randomBytes } from 'crypto';
+import { isFeatureEnabled } from '../data/featureFlags';
 
 const credentialsSchema = z.object({
   email: z.string().trim().email().max(255),
@@ -151,6 +152,9 @@ export function buildAuthRouter(verifyGoogle: (idToken: string) => Promise<Googl
     if (!parsed.success) return res.status(400).json({ error: 'Invalid input', code: 'INVALID_INPUT' });
     if (!googleConfigured()) {
       return res.status(503).json({ error: 'Google sign-in is not set up yet.', code: 'GOOGLE_NOT_CONFIGURED' });
+    }
+    if (!isFeatureEnabled('googleSignIn')) {
+      return res.status(503).json({ error: 'Google sign-in is temporarily unavailable.', code: 'GOOGLE_NOT_CONFIGURED' });
     }
     const ip = clientIp(req);
     if (!checkAuthRateLimit(ip, 'google')) {

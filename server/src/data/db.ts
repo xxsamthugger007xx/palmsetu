@@ -85,6 +85,9 @@ export function runMigrations() {
     'accounts', 'guestSessions', 'authAttempts', 'emailVerifications',
     // Soulmate Sketch (see data/store.ts and routes/soulmate.ts).
     'soulmateSketches',
+    // Durable runtime config (pricing, AI budget, feature flags, assistant
+    // config) - see data/runtimeConfig.ts. Live-editable via admin panel.
+    'appConfig',
   ];
   for (const t of kvTables) createKvTable(t);
 

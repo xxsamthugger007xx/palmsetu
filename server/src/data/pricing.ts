@@ -1,3 +1,5 @@
+import { getConfig, setConfig } from './runtimeConfig';
+
 /**
  * ASSUMED / TEST PRICING TABLE - NOT REAL MONEY.
  *
@@ -22,6 +24,12 @@
  * admin reporting code built on top of `transactions` does not need to
  * change at all.
  *
+ * Prices are now durable, admin-editable runtime config (see
+ * data/runtimeConfig.ts) rather than a hardcoded constant - edit them live
+ * from the admin panel's Pricing tab (GET/PUT /admin/pricing, super_admin
+ * only for the write) with no redeploy needed. The values below remain only
+ * as the fallback used until an admin first overrides them.
+ *
  * PRICING_TABLE_VERSION is stamped onto every transaction so that if these
  * assumed prices are revised later, historical transactions still show which
  * price list produced them.
@@ -41,8 +49,10 @@ export type PricedFeature =
 
 export const CURRENCY = 'INR';
 
-/** Prices in cents (paise). All ASSUMED/TEST values, not real prices. */
-export const PRICING_CENTS: Record<PricedFeature, number> = {
+const CONFIG_KEY = 'pricingCents';
+
+/** Prices in cents (paise). All ASSUMED/TEST values, not real prices, until an admin overrides them. */
+const DEFAULT_PRICING_CENTS: Record<PricedFeature, number> = {
   // General tier upgrade fallback price - /dev/set-tier now records the
   // real per-plan price from data/subscriptionPlans.ts via its
   // amountCentsOverride param instead of this value for every real call;
@@ -52,26 +62,24 @@ export const PRICING_CENTS: Record<PricedFeature, number> = {
   gemstone_premium_report: 9900, // ~ INR 99.00 per report beyond the free quota
   vastu_premium_report: 14900, // ~ INR 149.00 per property/report beyond the free quota
   astrology_premium_report: 9900, // ~ INR 99.00, reserved: no astrology route is premium-gated yet
-  // `palm_premium_report` is now the "complete reading" bundle price
-  // (unlocks every detected section at once) rather than the only premium
-  // palm price point - kept as its own entry, same amount, for backward
-  // compatibility with historical transaction rows that already used it.
   palm_premium_report: 7900, // ~ INR 79.00, complete-reading bundle (all detected sections).
-  // One flat price for unlocking any single line/section (Heart Line,
-  // Head Line, a mount, etc), rather than a separate SKU per section.
-  // Reasoning: sections vary in how much content they contain (a mount
-  // section may be much shorter than a Heart Line section with several
-  // matched characteristics), and pricing each differently would require
-  // fabricating a "value" distinction between lines that this app has no
-  // honest basis for. A single flat per-section price, cheaper than the
-  // complete bundle, keeps the bundle the obviously better deal without
-  // inventing per-line price tiers.
   palm_section_unlock: 2900, // ~ INR 29.00 per individual section unlock.
-  // Illustrative launch price per spec: one AI-generated soulmate portrait.
-  // Unlike every other price above, this one is actually charged through a
-  // real payment flow (see payments/razorpay.ts) rather than only logged
-  // at the moment free content is granted - see that file's own comment
-  // for exactly what "real" means here given no live gateway keys exist
-  // yet in this environment.
   soulmate_sketch: 9900, // ~ INR 99.00 per generated sketch.
 };
+
+export function getPricingCents(): Record<PricedFeature, number> {
+  return getConfig(CONFIG_KEY, DEFAULT_PRICING_CENTS);
+}
+
+export function getPrice(feature: PricedFeature): number {
+  return getPricingCents()[feature];
+}
+
+export function setPricingCents(overrides: Partial<Record<PricedFeature, number>>): Record<PricedFeature, number> {
+  const merged = { ...getPricingCents(), ...overrides };
+  return setConfig(CONFIG_KEY, merged);
+}
+
+export function defaultPricingCents(): Record<PricedFeature, number> {
+  return { ...DEFAULT_PRICING_CENTS };
+}

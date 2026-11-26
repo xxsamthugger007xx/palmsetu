@@ -10,6 +10,17 @@ import { color, featureTint, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { sections, orderSectionsForFocus } from './homeSections';
 import { useUserProfile } from '../../context/UserProfileContext';
+import { useFeatureFlags } from '../../context/FeatureFlagsContext';
+
+/** Maps a home section id to the server feature flag that gates it (see
+ * server/src/data/featureFlags.ts) - sections with no entry here are never
+ * hidden by a flag. */
+const SECTION_FLAG: Record<string, string> = {
+  soulmate: 'soulmateSketch',
+  lovetest: 'relationships',
+  moonsign: 'moonSign',
+  western: 'moonSign',
+};
 
 /** The "Explore" grid of feature tiles. */
 const TILE_TINT: Record<string, keyof typeof featureTint> = {
@@ -29,7 +40,9 @@ export function SectionsGrid() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile } = useUserProfile();
-  const ordered = orderSectionsForFocus(sections, profile?.focus);
+  const { isEnabled } = useFeatureFlags();
+  const visibleSections = sections.filter((s) => !SECTION_FLAG[s.id] || isEnabled(SECTION_FLAG[s.id]));
+  const ordered = orderSectionsForFocus(visibleSections, profile?.focus);
   const rank = (ids: string[]) => Math.min(...ids.map((id) => ordered.findIndex((s) => s.id === id)).filter((i) => i >= 0), 999);
   const groups = [...GROUPS].sort((x, y) => rank(x.ids) - rank(y.ids));
   return (

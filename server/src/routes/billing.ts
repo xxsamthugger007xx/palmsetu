@@ -1,7 +1,7 @@
 import { getBudgetStatus } from '../ai/budget';
 import { Router, Request } from 'express';
 import { z } from 'zod';
-import { SUBSCRIPTION_PLANS, getPlan, addPeriod, BillingPeriod } from '../data/subscriptionPlans';
+import { getSubscriptionPlans, getPlan, addPeriod, BillingPeriod } from '../data/subscriptionPlans';
 import { getUserTier, userPlans, recordTransaction } from '../data/store';
 import { recordEvent } from '../events/eventTracker';
 
@@ -28,7 +28,7 @@ function revenueCatSecretKey(): string | null {
  * purchase was actually for - map it to our own plan id rather than
  * trusting whatever planId the client claims to have bought. */
 function planIdForProductId(productId: string): BillingPeriod | null {
-  const plan = SUBSCRIPTION_PLANS.find((p) => p.storeProductId.android === productId || p.storeProductId.ios === productId);
+  const plan = getSubscriptionPlans().find((p) => p.storeProductId.android === productId || p.storeProductId.ios === productId);
   return plan?.id ?? null;
 }
 
@@ -51,7 +51,7 @@ export function buildBillingRouter() {
   const router = Router();
 
   router.get('/plans', (_req, res) => {
-    res.json({ plans: SUBSCRIPTION_PLANS });
+    res.json({ plans: getSubscriptionPlans() });
   });
 
   // Premium users' monthly AI allowance (estimated spend vs the cap) - see ai/budget.ts.

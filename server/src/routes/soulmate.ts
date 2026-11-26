@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { SoulmateSketch } from '../types/soulmate';
 import { soulmateSketchesById, isPaymentIdUsed, recordTransaction } from '../data/store';
-import { PRICING_CENTS, CURRENCY } from '../data/pricing';
+import { getPrice, CURRENCY } from '../data/pricing';
 import { createOrder, verifyPaymentSignature, verifyWebhookSignature, getPublicKeyId } from '../payments/razorpay';
 import { pickSoulmateImage } from '../soulmate/catalogMatcher';
 import { generateSoulmatePersonality } from '../soulmate/personality';
@@ -11,6 +11,7 @@ import { isReadableSoulmateCatalogImage, readSoulmateCatalogImage } from '../sou
 import { addWatermark } from '../soulmate/watermark';
 import { recordSoulmateEvent } from '../soulmate/analytics';
 import { recordEvent } from '../events/eventTracker';
+import { isFeatureEnabled } from '../data/featureFlags';
 
 /**
  * Soulmate Sketch backend. NO AI image-generation or AI text-generation
@@ -71,6 +72,9 @@ export function buildSoulmateRouter() {
   // order, generationStatus starts at 'pending_payment', nothing is
   // selected until that payment is verified (see /verify-payment below).
   router.post('/sketches', async (req, res) => {
+    if (!isFeatureEnabled('soulmateSketch')) {
+      return res.status(503).json({ error: 'Soulmate Sketch is temporarily unavailable.', code: 'FEATURE_DISABLED' });
+    }
     const parsed = questionnaireSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Invalid input', code: 'INVALID_INPUT' });
 
@@ -83,7 +87,7 @@ export function buildSoulmateRouter() {
       country: parsed.data.preferredCountry, style: parsed.data.style,
     });
 
-    const priceCents = PRICING_CENTS.soulmate_sketch;
+    const priceCents = getPrice('soulmate_sketch');
     recordSoulmateEvent(userId, 'payment_attempted', { priceCents });
 
     let orderId: string;

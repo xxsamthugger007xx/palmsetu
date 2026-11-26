@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from 'async_hooks';
 import type { Request, Response, NextFunction } from 'express';
 import { SqliteMap } from '../data/sqliteCollections';
 import { getUserTier } from '../data/store';
+import { getConfig, setConfig } from '../data/runtimeConfig';
 
 /**
  * Per-user monthly AI spend cap for PREMIUM users (default Rs 100/month).
@@ -26,6 +27,46 @@ export class AiBudgetExceededError extends Error {
 
 const num = (v: string | undefined, d: number) => (v !== undefined && v !== '' && Number.isFinite(Number(v)) ? Number(v) : d);
 
+/**
+ * Admin-editable AI budget caps (see data/runtimeConfig.ts) - the live
+ * values used everywhere below. Falls back to env vars, then hardcoded
+ * defaults, until an admin overrides them from the panel's AI Budget tab
+ * (GET/PUT /admin/ai-budget, super_admin only for the write). No redeploy
+ * needed to change a cap.
+ */
+export interface AiBudgetCaps {
+  premiumMonthlyBudgetInr: number;
+  freeMonthlyBudgetInr: number;
+  freeChatDailyMessages: number;
+  freeChatMonthlyInr: number;
+  freeChatDailyPerIp: number;
+}
+
+const CAPS_CONFIG_KEY = 'aiBudgetCaps';
+
+function defaultCaps(): AiBudgetCaps {
+  return {
+    premiumMonthlyBudgetInr: num(process.env.AI_MONTHLY_BUDGET_INR_PREMIUM, 100),
+    freeMonthlyBudgetInr: num(process.env.AI_MONTHLY_BUDGET_INR_FREE, 25),
+    freeChatDailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5),
+    freeChatMonthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10),
+    freeChatDailyPerIp: num(process.env.AI_FREE_CHAT_DAILY_PER_IP, 60),
+  };
+}
+
+export function getAiBudgetCaps(): AiBudgetCaps {
+  return getConfig(CAPS_CONFIG_KEY, defaultCaps());
+}
+
+export function setAiBudgetCaps(overrides: Partial<AiBudgetCaps>): AiBudgetCaps {
+  const merged = { ...getAiBudgetCaps(), ...overrides };
+  return setConfig(CAPS_CONFIG_KEY, merged);
+}
+
+export function defaultAiBudgetCaps(): AiBudgetCaps {
+  return defaultCaps();
+}
+
 export type ProviderKey = 'gemini' | 'anthropic' | 'mock';
 // USD per 1M tokens (thinking tokens bill as output). Gemini 3.5 Flash-Lite standard tier; Claude Haiku 5.5 (prompts <= 100K).
 const PROVIDER_PRICES: Record<ProviderKey, { in: number; out: number }> = {
@@ -45,7 +86,7 @@ export function providerKeyFromName(name: string | undefined): ProviderKey {
 export function budgetConfig(provider: ProviderKey = activeProvider) {
   const P = provider.toUpperCase();
   return {
-    limitInr: num(process.env.AI_MONTHLY_BUDGET_INR_PREMIUM, 100),
+    limitInr: getAiBudgetCaps().premiumMonthlyBudgetInr,
     inputUsdPerMTok: num(process.env[`AI_${P}_INPUT_USD_PER_MTOK`], PROVIDER_PRICES[provider].in),
     outputUsdPerMTok: num(process.env[`AI_${P}_OUTPUT_USD_PER_MTOK`], PROVIDER_PRICES[provider].out),
     usdToInr: num(process.env.AI_USD_INR, 88),
@@ -97,16 +138,17 @@ export function getBudgetStatus(userId: string) {
 
 /** Free plan: how many AI chat messages per day, and the most AI spend (all features) a free user may reach this month before chat falls back to template answers. */
 export function freeChatLimits() {
+  const caps = getAiBudgetCaps();
   return {
-    dailyMessages: num(process.env.AI_FREE_CHAT_DAILY_MESSAGES, 5),
-    monthlyInr: num(process.env.AI_FREE_CHAT_MONTHLY_INR, 10),
+    dailyMessages: caps.freeChatDailyMessages,
+    monthlyInr: caps.freeChatMonthlyInr,
     // Per network address, across all free accounts: stops one person farming AI by creating many guest accounts.
-    dailyPerIp: num(process.env.AI_FREE_CHAT_DAILY_PER_IP, 60),
+    dailyPerIp: caps.freeChatDailyPerIp,
   };
 }
 
 /** Most AI spend (all features together) a free account may reach per month. Keeps the free palm reading and tarot usable but bounded. */
-export const freeMonthlyCapInr = () => num(process.env.AI_MONTHLY_BUDGET_INR_FREE, 25);
+export const freeMonthlyCapInr = () => getAiBudgetCaps().freeMonthlyBudgetInr;
 
 /** The cap that applies to this user: Premium's monthly budget, or the smaller free allowance. */
 export function capFor(userId: string): { limitInr: number; free: boolean } {

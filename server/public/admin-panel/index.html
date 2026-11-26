@@ -118,6 +118,12 @@
   th { color: var(--textSecondary); font-weight: 500; }
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: var(--surface); border: 1px solid var(--border); }
   .pill.premium { color: var(--secondary); border-color: var(--secondary); }
+  .switch { position: relative; display: inline-block; width: 40px; height: 22px; vertical-align: middle; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; transition: 0.15s; }
+  .switch .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background: var(--textSecondary); border-radius: 50%; transition: 0.15s; }
+  .switch input:checked + .slider { background: var(--accentMuted, var(--surface)); border-color: var(--accent); }
+  .switch input:checked + .slider:before { transform: translateX(18px); background: var(--accent); }
   .toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
   .toolbar input { flex: 1; margin-bottom: 0; }
   .toolbar button { width: auto; padding: 8px 16px; }
@@ -174,11 +180,14 @@
 
         <div class="group-label">Product Intelligence</div>
         <div class="tab" data-tab="features"><span class="icon">&#9679;</span><span class="label-text">Feature Analytics</span></div>
+        <div class="tab" data-tab="soulmate"><span class="icon">&#9679;</span><span class="label-text">Soulmate Sketch</span></div>
         <div class="tab" data-tab="assistant"><span class="icon">&#9679;</span><span class="label-text">AI Assistant</span></div>
 
         <div class="group-label">Business Intelligence</div>
         <div class="tab" data-tab="revenue"><span class="icon">&#9679;</span><span class="label-text">Revenue</span></div>
         <div class="tab" data-tab="subscriptions"><span class="icon">&#9679;</span><span class="label-text">Subscriptions</span></div>
+        <div class="tab" data-tab="pricing"><span class="icon">&#9679;</span><span class="label-text">Pricing</span></div>
+        <div class="tab" data-tab="aibudget"><span class="icon">&#9679;</span><span class="label-text">AI Budget</span></div>
         <div class="tab stub" data-tab="stub:aicost"><span class="icon">&#9679;</span><span class="label-text">AI Cost Centre</span></div>
 
         <div class="group-label">Infrastructure</div>
@@ -188,9 +197,9 @@
 
         <div class="group-label">Administration</div>
         <div class="tab" data-tab="audit"><span class="icon">&#9679;</span><span class="label-text">Audit Logs</span></div>
-        <div class="tab stub" data-tab="stub:flags"><span class="icon">&#9679;</span><span class="label-text">Feature Flags</span></div>
+        <div class="tab" data-tab="flags"><span class="icon">&#9679;</span><span class="label-text">Feature Flags</span></div>
+        <div class="tab" data-tab="admins"><span class="icon">&#9679;</span><span class="label-text">Admin Users</span></div>
         <div class="tab stub" data-tab="stub:export"><span class="icon">&#9679;</span><span class="label-text">Export Centre</span></div>
-        <div class="tab stub" data-tab="stub:security"><span class="icon">&#9679;</span><span class="label-text">Security</span></div>
       </div>
     </nav>
     <div class="main-area">
@@ -346,9 +355,7 @@
     'stub:aicost': ['AI Cost Centre', ['Real per-user AI cost attribution (GenerationOptions does not carry a userId yet, see ai/usageTracking.ts)', 'Real provider-reported cost - every figure today is a ~4-chars/token estimate, see the existing AI Chat tab']],
     'stub:apm': ['API Monitoring', ['Request-level instrumentation (p50/p95/p99 latency, per-endpoint error rate) - no middleware captures this yet']],
     'stub:errors': ['Errors & Crashes', ['A structured server error log (today errors only go to stdout)', 'Mobile crash reporting - no crash reporter is integrated in the Expo app']],
-    'stub:flags': ['Feature Flags', ['A feature-flag store and an app-side check - today features are enabled by code, not by configuration']],
     'stub:export': ['Export Centre', ['Export jobs for the other data types (payments, AI usage, events) beyond the Users CSV export that already exists']],
-    'stub:security': ['Security', ['A dedicated security page is redundant with the existing Audit Logs + Sessions + MFA settings - consider this folded into Audit Logs rather than a true gap']],
   };
 
   async function renderTab(name) {
@@ -366,6 +373,11 @@
       if (name === 'system') return renderSystem(el);
       if (name === 'subscriptions') return renderSubscriptions(el);
       if (name === 'live') return renderLiveActivity(el);
+      if (name === 'soulmate') return renderSoulmate(el);
+      if (name === 'pricing') return renderPricing(el);
+      if (name === 'aibudget') return renderAiBudget(el);
+      if (name === 'flags') return renderFlags(el);
+      if (name === 'admins') return renderAdmins(el);
       if (STUB_PAGES[name]) {
         const [title, bullets] = STUB_PAGES[name];
         return renderComingSoon(el, title, bullets);
@@ -752,6 +764,299 @@
         });
       } catch (err) {
         document.getElementById('cfg-error').textContent = err.message || 'Failed to save';
+      }
+    };
+  }
+
+  async function renderSoulmate(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/soulmate?' + qs.toString());
+    const statusRows = Object.entries(data.byGenerationStatus).map(([k, v]) => `
+      <div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>
+    `).join('');
+    const styleRows = Object.entries(data.byStyle).map(([k, v]) => `
+      <div class="card"><div class="label">${escapeHtml(k)}</div><div class="value">${v}</div></div>
+    `).join('');
+    const eventRows = Object.entries(data.eventCounts).map(([k, v]) => `
+      <tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>
+    `).join('');
+    el.innerHTML = `
+      <div class="grid">
+        <div class="card"><div class="label">Total sketches</div><div class="value">${data.total}</div></div>
+        <div class="card"><div class="label">Revenue (real transactions)</div><div class="value">${formatCents(data.revenue.totalCents)}</div><div class="sub">${data.revenue.count} transaction(s)</div></div>
+      </div>
+      <div class="section-title">By generation status</div>
+      <div class="grid">${statusRows || '<p class="unavailable">No sketches in range</p>'}</div>
+      <div class="section-title">By art style</div>
+      <div class="grid">${styleRows || '<p class="unavailable">No sketches in range</p>'}</div>
+      <div class="section-title">Funnel events</div>
+      <table>
+        <thead><tr><th>Event</th><th>Count</th></tr></thead>
+        <tbody>${eventRows || '<tr><td colspan="2" class="unavailable">No events in range</td></tr>'}</tbody>
+      </table>
+      <p class="unavailable">Soulmate Sketch is premium-only - every sketch here is a real, paid Razorpay order (no free-trial path exists). The on/off switch for this whole feature lives in the Feature Flags tab.</p>
+    `;
+  }
+
+  async function renderPricing(el) {
+    const data = await api('/admin/pricing');
+    const FEATURE_LABELS = {
+      tarot_detailed_report: 'Tarot detailed report',
+      gemstone_premium_report: 'Gemstone premium report',
+      vastu_premium_report: 'Vastu premium report',
+      astrology_premium_report: 'Astrology premium report',
+      palm_premium_report: 'Palm complete-reading bundle',
+      palm_section_unlock: 'Palm single section unlock',
+      soulmate_sketch: 'Soulmate sketch',
+    };
+    const planRows = data.subscriptionPlans.map((p) => `
+      <tr>
+        <td>${escapeHtml(p.label)}</td>
+        <td>${formatCents(p.priceCents)}</td>
+        <td>${formatCents(p.effectiveMonthlyCents)}/mo</td>
+        <td>${p.savingsPercentVsMonthly}%</td>
+      </tr>
+    `).join('');
+    const featureInputs = Object.entries(data.featurePricingCents)
+      .filter(([k]) => k !== 'premium_subscription')
+      .map(([k, v]) => `
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">${escapeHtml(FEATURE_LABELS[k] || k)} (paise)</label>
+          <input class="fp-input" data-key="${escapeHtml(k)}" type="number" min="0" step="1" value="${v}" />
+        </div>
+      `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Pricing table version: ${escapeHtml(data.pricingTableVersion)}. Not yet backed by a real App Store/Play Billing product - see the Subscriptions tab. Changes here apply immediately, no redeploy needed.</p>
+      <div class="section-title">Subscription plans</div>
+      <table>
+        <thead><tr><th>Plan</th><th>Price</th><th>Effective monthly</th><th>Savings vs monthly</th></tr></thead>
+        <tbody>${planRows}</tbody>
+      </table>
+      <div class="card" style="margin-top:16px;">
+        <div class="label" style="margin-bottom:10px;">Edit base subscription prices (rupees, super_admin only)</div>
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Monthly (&#8377;)</label>
+        <input id="sp-monthly" type="number" min="1" step="1" value="${(data.subscriptionBasePrices.monthlyCents / 100).toFixed(2)}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Quarterly (&#8377;)</label>
+        <input id="sp-quarterly" type="number" min="1" step="1" value="${(data.subscriptionBasePrices.quarterlyCents / 100).toFixed(2)}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Annual (&#8377;)</label>
+        <input id="sp-annual" type="number" min="1" step="1" value="${(data.subscriptionBasePrices.annualCents / 100).toFixed(2)}" />
+        <button id="sp-save" style="width:auto;padding:8px 16px;margin-top:6px;">Save subscription prices</button>
+        <div class="error" id="sp-error"></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="label" style="margin-bottom:10px;">Edit per-feature unlock prices (paise, super_admin only)</div>
+        ${featureInputs}
+        <button id="fp-save" style="width:auto;padding:8px 16px;">Save feature prices</button>
+        <div class="error" id="fp-error"></div>
+      </div>
+    `;
+
+    document.getElementById('sp-save').onclick = async () => {
+      document.getElementById('sp-error').textContent = '';
+      try {
+        await api('/admin/pricing', {
+          method: 'PUT',
+          body: JSON.stringify({
+            subscriptionBasePrices: {
+              monthlyCents: Math.round(Number(document.getElementById('sp-monthly').value) * 100),
+              quarterlyCents: Math.round(Number(document.getElementById('sp-quarterly').value) * 100),
+              annualCents: Math.round(Number(document.getElementById('sp-annual').value) * 100),
+            },
+          }),
+        });
+        renderPricing(el);
+      } catch (err) {
+        document.getElementById('sp-error').textContent = err.message || 'Failed to save';
+      }
+    };
+
+    document.getElementById('fp-save').onclick = async () => {
+      document.getElementById('fp-error').textContent = '';
+      try {
+        const featurePricingCents = {};
+        document.querySelectorAll('.fp-input').forEach((input) => {
+          featurePricingCents[input.dataset.key] = Math.round(Number(input.value));
+        });
+        await api('/admin/pricing', { method: 'PUT', body: JSON.stringify({ featurePricingCents }) });
+        renderPricing(el);
+      } catch (err) {
+        document.getElementById('fp-error').textContent = err.message || 'Failed to save';
+      }
+    };
+  }
+
+  async function renderAiBudget(el) {
+    const data = await api('/admin/ai-budget');
+    const c = data.caps;
+    el.innerHTML = `
+      <p class="unavailable">Monthly AI spend caps (estimated cost, not a message count) and the free-tier chat message limits. Changes apply immediately to every user's running monthly total, no redeploy needed.</p>
+      <div class="card">
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Premium monthly AI budget (&#8377;)</label>
+        <input id="ab-premium" type="number" min="0" step="1" value="${c.premiumMonthlyBudgetInr}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free monthly AI budget (&#8377;, all features combined)</label>
+        <input id="ab-free" type="number" min="0" step="1" value="${c.freeMonthlyBudgetInr}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: daily message limit</label>
+        <input id="ab-dailymsg" type="number" min="0" step="1" value="${c.freeChatDailyMessages}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: monthly budget (&#8377;)</label>
+        <input id="ab-chatmonthly" type="number" min="0" step="1" value="${c.freeChatMonthlyInr}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Free chat: daily messages per IP (anti-abuse)</label>
+        <input id="ab-perip" type="number" min="0" step="1" value="${c.freeChatDailyPerIp}" />
+        <button id="ab-save" style="width:auto;padding:8px 16px;margin-top:6px;">Save (super_admin only)</button>
+        <div class="error" id="ab-error"></div>
+      </div>
+    `;
+    document.getElementById('ab-save').onclick = async () => {
+      document.getElementById('ab-error').textContent = '';
+      try {
+        await api('/admin/ai-budget', {
+          method: 'PUT',
+          body: JSON.stringify({
+            premiumMonthlyBudgetInr: Number(document.getElementById('ab-premium').value),
+            freeMonthlyBudgetInr: Number(document.getElementById('ab-free').value),
+            freeChatDailyMessages: Number(document.getElementById('ab-dailymsg').value),
+            freeChatMonthlyInr: Number(document.getElementById('ab-chatmonthly').value),
+            freeChatDailyPerIp: Number(document.getElementById('ab-perip').value),
+          }),
+        });
+        renderAiBudget(el);
+      } catch (err) {
+        document.getElementById('ab-error').textContent = err.message || 'Failed to save';
+      }
+    };
+  }
+
+  async function renderFlags(el) {
+    const data = await api('/admin/feature-flags');
+    const rows = data.flags.map((f) => `
+      <tr>
+        <td>${escapeHtml(f.label)}</td>
+        <td class="unavailable" style="max-width:360px;">${escapeHtml(f.description)}</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" class="flag-toggle" data-key="${escapeHtml(f.key)}" ${f.enabled ? 'checked' : ''} />
+            <span class="slider"></span>
+          </label>
+        </td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Toggled here, read by the app once at startup (GET /config/feature-flags) and enforced server-side wherever a route checks isFeatureEnabled(). Super_admin only. Takes effect immediately for any app session that re-fetches config (app restart or next cold start).</p>
+      <table>
+        <thead><tr><th>Feature</th><th>Description</th><th>Enabled</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="error" id="flag-error"></div>
+    `;
+    document.querySelectorAll('.flag-toggle').forEach((toggle) => {
+      toggle.onchange = async () => {
+        document.getElementById('flag-error').textContent = '';
+        try {
+          await api('/admin/feature-flags/' + encodeURIComponent(toggle.dataset.key), {
+            method: 'PUT',
+            body: JSON.stringify({ enabled: toggle.checked }),
+          });
+        } catch (err) {
+          toggle.checked = !toggle.checked;
+          document.getElementById('flag-error').textContent = err.message || 'Failed to save';
+        }
+      };
+    });
+  }
+
+  async function renderAdmins(el) {
+    let data;
+    try {
+      data = await api('/admin/admins');
+    } catch (err) {
+      el.innerHTML = '<p class="unavailable">' + escapeHtml(err.message) + '</p>';
+      return;
+    }
+    const rows = data.admins.map((a) => `
+      <tr>
+        <td>${escapeHtml(a.email)}</td>
+        <td>
+          <select class="admin-role" data-id="${escapeHtml(a.id)}">
+            <option value="super_admin" ${a.role === 'super_admin' ? 'selected' : ''}>super_admin</option>
+            <option value="analyst" ${a.role === 'analyst' ? 'selected' : ''}>analyst</option>
+            <option value="viewer" ${a.role === 'viewer' ? 'selected' : ''}>viewer</option>
+          </select>
+        </td>
+        <td><span class="pill ${a.status === 'active' ? 'premium' : ''}">${escapeHtml(a.status)}</span></td>
+        <td>${a.mfaEnabled ? 'Yes' : 'No'}</td>
+        <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button class="admin-toggle-status" data-id="${escapeHtml(a.id)}" data-next="${a.status === 'active' ? 'disabled' : 'active'}" style="width:auto;padding:6px 10px;">
+            ${a.status === 'active' ? 'Disable' : 'Enable'}
+          </button>
+        </td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Invite staff, change roles, and disable access - super_admin only. There is no self-service invite email yet: communicate the password to the new admin directly, then ask them to set up MFA on first login.</p>
+      <table>
+        <thead><tr><th>Email</th><th>Role</th><th>Status</th><th>MFA</th><th>Created</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="card" style="margin-top:16px;">
+        <div class="label" style="margin-bottom:10px;">Invite a new admin</div>
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Email</label>
+        <input id="na-email" type="email" placeholder="name@palmsetu.com" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Temporary password (min 12 characters)</label>
+        <input id="na-password" type="text" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Role</label>
+        <select id="na-role">
+          <option value="viewer">viewer</option>
+          <option value="analyst">analyst</option>
+          <option value="super_admin">super_admin</option>
+        </select>
+        <button id="na-save" style="width:auto;padding:8px 16px;margin-top:6px;">Create admin</button>
+        <div class="error" id="na-error"></div>
+      </div>
+    `;
+
+    document.querySelectorAll('.admin-role').forEach((select) => {
+      const original = select.value;
+      select.onchange = async () => {
+        try {
+          await api('/admin/admins/' + encodeURIComponent(select.dataset.id) + '/role', {
+            method: 'PUT',
+            body: JSON.stringify({ role: select.value }),
+          });
+        } catch (err) {
+          select.value = original;
+          alert(err.message || 'Failed to change role');
+        }
+      };
+    });
+
+    document.querySelectorAll('.admin-toggle-status').forEach((btn) => {
+      btn.onclick = async () => {
+        try {
+          await api('/admin/admins/' + encodeURIComponent(btn.dataset.id) + '/status', {
+            method: 'PUT',
+            body: JSON.stringify({ status: btn.dataset.next }),
+          });
+          renderAdmins(el);
+        } catch (err) {
+          alert(err.message || 'Failed to update status');
+        }
+      };
+    });
+
+    document.getElementById('na-save').onclick = async () => {
+      document.getElementById('na-error').textContent = '';
+      try {
+        await api('/admin/admins', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: document.getElementById('na-email').value,
+            password: document.getElementById('na-password').value,
+            role: document.getElementById('na-role').value,
+          }),
+        });
+        renderAdmins(el);
+      } catch (err) {
+        document.getElementById('na-error').textContent = err.message || 'Failed to create admin';
       }
     };
   }

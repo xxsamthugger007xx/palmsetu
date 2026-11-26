@@ -54,6 +54,8 @@ const userStmts = {
   `),
   setMfa: db.prepare('UPDATE admin_users SET mfaSecret = ?, mfaEnabled = ?, updatedAt = ? WHERE id = ?'),
   all: db.prepare('SELECT id, email, role, status, mfaEnabled, createdAt, updatedAt FROM admin_users ORDER BY createdAt ASC'),
+  setRole: db.prepare('UPDATE admin_users SET role = ?, updatedAt = ? WHERE id = ?'),
+  setStatus: db.prepare('UPDATE admin_users SET status = ?, updatedAt = ? WHERE id = ?'),
 };
 
 function rowToAdminUser(row: any): AdminUser {
@@ -116,6 +118,40 @@ export async function bootstrapSuperAdminIfNeeded(): Promise<{ created: boolean;
   // eslint-disable-next-line no-console
   console.log(`[adminAuth] Provisioned first Super Admin: ${admin.email}`);
   return { created: true, email: admin.email };
+}
+
+/**
+ * Invites a new staff admin (analyst/viewer, or another super_admin) -
+ * called only from an authenticated super_admin admin route. The invited
+ * admin's first password is set here directly (no email-invite flow exists
+ * yet); the admin panel should ask the inviter to communicate it
+ * out-of-band and prompt the new admin to log in once.
+ */
+export async function createAdminUser(email: string, password: string, role: AdminRole): Promise<AdminUser> {
+  if (findAdminByEmail(email)) throw new Error('An admin with that email already exists.');
+  const now = nowIso();
+  const admin: AdminUser = {
+    id: `admin-${crypto.randomUUID()}`,
+    email: email.toLowerCase(),
+    passwordHash: await bcrypt.hash(password, SALT_ROUNDS),
+    role,
+    status: 'active',
+    mfaSecret: null,
+    mfaEnabled: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+  userStmts.insert.run({ ...admin, mfaEnabled: 0 });
+  return admin;
+}
+
+export function setAdminRole(adminId: string, role: AdminRole): void {
+  userStmts.setRole.run(role, nowIso(), adminId);
+}
+
+export function setAdminStatus(adminId: string, status: 'active' | 'disabled'): void {
+  userStmts.setStatus.run(status, nowIso(), adminId);
+  if (status === 'disabled') revokeAllSessionsForAdmin(adminId);
 }
 
 // --- password verification ---------------------------------------------------

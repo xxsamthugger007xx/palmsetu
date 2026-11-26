@@ -14,6 +14,16 @@ import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { color, radius, spacing } from '../../theme/tokens';
 import { discoverModules } from '../../data/mock';
 import { RootStackParamList } from '../../navigation/types';
+import { useFeatureFlags } from '../../context/FeatureFlagsContext';
+
+/** Maps a discover-module id to the server feature flag that gates it (see
+ * server/src/data/featureFlags.ts) - modules with no entry here are never
+ * hidden by a flag. */
+const MODULE_FLAG: Record<string, string> = {
+  vastu: 'vastu',
+  gemstone: 'gemstone',
+  compatibility: 'soulmateSketch',
+};
 
 const MODULE_I18N_KEY: Record<string, string> = {
   horoscope: 'horoscope',
@@ -49,7 +59,8 @@ const TINT: Record<string, { solid: string; soft: string; gradient: [string, str
 export function DiscoverScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [tarot, astrology, ...rest] = discoverModules;
+  const { isEnabled } = useFeatureFlags();
+  const [tarot, astrology, ...rest] = discoverModules.filter((m) => !MODULE_FLAG[m.id] || isEnabled(MODULE_FLAG[m.id]));
   const mediums = rest.filter((m) => m.size === 'medium');
   const smalls = rest.filter((m) => m.size === 'small');
 

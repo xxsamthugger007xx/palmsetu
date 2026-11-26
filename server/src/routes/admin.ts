@@ -19,7 +19,10 @@ import {
   soulmateSketchesById, soulmateAnalyticsEvents,
   accountsById, userIdentities, birthProfiles, guestSessionsById,
 } from '../data/store';
-import { PRICING_TABLE_VERSION } from '../data/pricing';
+import { PRICING_TABLE_VERSION, getPricingCents, setPricingCents, defaultPricingCents, PricedFeature } from '../data/pricing';
+import { getSubscriptionBasePrices, setSubscriptionBasePrices, defaultSubscriptionBasePrices, getSubscriptionPlans } from '../data/subscriptionPlans';
+import { getAiBudgetCaps, setAiBudgetCaps, defaultAiBudgetCaps } from '../ai/budget';
+import { getFeatureFlags, setFeatureFlag } from '../data/featureFlags';
 import { AiProvider } from '../ai/types';
 import { assistantConversationsById, assistantUsageLog, aiUsageEvents } from '../data/store';
 import { assistantConfig, setAssistantConfig, AssistantConfig } from '../data/assistantConfig';
@@ -33,6 +36,7 @@ import {
   listSessionsForAdmin, revokeSession, revokeAllSessionsForAdmin, listLoginHistory,
   logAdminAudit, listAdminAudit, findAdminById, generateTotpSecret, totpOtpauthUrl,
   verifyTotpCode, setAdminMfa,
+  listAdminUsers, createAdminUser, setAdminRole, setAdminStatus, findAdminByEmail,
 } from '../auth/adminAuth';
 
 /**
@@ -1131,6 +1135,131 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       dbFileSizeBytes: dbFileSizeBytes(),
       note: 'Counts/aggregates only - no conversation or report content is ever exposed through this endpoint.',
     });
+  });
+
+  // --- Pricing (live, admin-editable; no redeploy needed) -------------------
+  router.get('/pricing', (_req, res) => {
+    res.json({
+      pricingTableVersion: PRICING_TABLE_VERSION,
+      subscriptionBasePrices: getSubscriptionBasePrices(),
+      subscriptionPlans: getSubscriptionPlans(),
+      featurePricingCents: getPricingCents(),
+      defaults: {
+        subscriptionBasePrices: defaultSubscriptionBasePrices(),
+        featurePricingCents: defaultPricingCents(),
+      },
+    });
+  });
+
+  router.put('/pricing', requireRole('super_admin'), (req, res) => {
+    const body = req.body ?? {};
+    const before = { subscriptionBasePrices: getSubscriptionBasePrices(), featurePricingCents: getPricingCents() };
+    if (body.subscriptionBasePrices && typeof body.subscriptionBasePrices === 'object') {
+      const allowed: Record<string, number> = {};
+      for (const k of ['monthlyCents', 'quarterlyCents', 'annualCents']) {
+        const v = body.subscriptionBasePrices[k];
+        if (typeof v === 'number' && Number.isFinite(v) && v > 0) allowed[k] = Math.round(v);
+      }
+      setSubscriptionBasePrices(allowed);
+    }
+    if (body.featurePricingCents && typeof body.featurePricingCents === 'object') {
+      const allowedKeys: PricedFeature[] = [
+        'premium_subscription', 'tarot_detailed_report', 'gemstone_premium_report',
+        'vastu_premium_report', 'astrology_premium_report', 'palm_premium_report',
+        'palm_section_unlock', 'soulmate_sketch',
+      ];
+      const allowed: Partial<Record<PricedFeature, number>> = {};
+      for (const k of allowedKeys) {
+        const v = body.featurePricingCents[k];
+        if (typeof v === 'number' && Number.isFinite(v) && v >= 0) allowed[k] = Math.round(v);
+      }
+      setPricingCents(allowed);
+    }
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'PRICING_UPDATED', path: req.originalUrl, targetType: 'pricing', metadata: { before, after: { subscriptionBasePrices: getSubscriptionBasePrices(), featurePricingCents: getPricingCents() } } });
+    res.json({
+      subscriptionBasePrices: getSubscriptionBasePrices(),
+      subscriptionPlans: getSubscriptionPlans(),
+      featurePricingCents: getPricingCents(),
+    });
+  });
+
+  // --- AI budget (live, admin-editable) --------------------------------------
+  router.get('/ai-budget', (_req, res) => {
+    res.json({ caps: getAiBudgetCaps(), defaults: defaultAiBudgetCaps() });
+  });
+
+  router.put('/ai-budget', requireRole('super_admin'), (req, res) => {
+    const body = req.body ?? {};
+    const allowedKeys = ['premiumMonthlyBudgetInr', 'freeMonthlyBudgetInr', 'freeChatDailyMessages', 'freeChatMonthlyInr', 'freeChatDailyPerIp'] as const;
+    const before = getAiBudgetCaps();
+    const next: Record<string, number> = {};
+    for (const k of allowedKeys) {
+      const v = body[k];
+      if (typeof v === 'number' && Number.isFinite(v) && v >= 0) next[k] = v;
+    }
+    const caps = setAiBudgetCaps(next);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'AI_BUDGET_UPDATED', path: req.originalUrl, targetType: 'aiBudget', metadata: { before, after: caps } });
+    res.json({ caps });
+  });
+
+  // --- Feature flags (live, admin-editable) ----------------------------------
+  router.get('/feature-flags', (_req, res) => {
+    res.json({ flags: getFeatureFlags() });
+  });
+
+  router.put('/feature-flags/:key', requireRole('super_admin'), (req, res) => {
+    const { key } = req.params;
+    const { enabled } = req.body ?? {};
+    if (typeof enabled !== 'boolean') return res.status(400).json({ error: 'enabled must be a boolean.' });
+    const flags = setFeatureFlag(key, enabled);
+    if (!flags.some((f) => f.key === key)) return res.status(404).json({ error: `Unknown feature flag: ${key}` });
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'FEATURE_FLAG_UPDATED', path: req.originalUrl, targetType: 'featureFlag', targetId: key, metadata: { enabled } });
+    res.json({ flags });
+  });
+
+  // --- Admin user (staff) management, super_admin only -----------------------
+  router.get('/admins', requireRole('super_admin'), (_req, res) => {
+    res.json({ admins: listAdminUsers() });
+  });
+
+  router.post('/admins', requireRole('super_admin'), async (req, res) => {
+    const { email, password, role } = req.body ?? {};
+    if (typeof email !== 'string' || !email.includes('@')) return res.status(400).json({ error: 'A valid email is required.' });
+    if (typeof password !== 'string' || password.length < 12) return res.status(400).json({ error: 'Password must be at least 12 characters.' });
+    if (!['super_admin', 'analyst', 'viewer'].includes(role)) return res.status(400).json({ error: 'role must be super_admin, analyst, or viewer.' });
+    if (findAdminByEmail(email)) return res.status(409).json({ error: 'An admin with that email already exists.' });
+    const admin = await createAdminUser(email, password, role);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'ADMIN_CREATED', path: req.originalUrl, targetType: 'adminUser', targetId: admin.id, metadata: { email: admin.email, role: admin.role } });
+    res.json({ id: admin.id, email: admin.email, role: admin.role, status: admin.status });
+  });
+
+  router.put('/admins/:id/role', requireRole('super_admin'), (req, res) => {
+    const { role } = req.body ?? {};
+    if (!['super_admin', 'analyst', 'viewer'].includes(role)) return res.status(400).json({ error: 'role must be super_admin, analyst, or viewer.' });
+    const target = findAdminById(req.params.id);
+    if (!target) return res.status(404).json({ error: 'Admin not found.' });
+    setAdminRole(target.id, role);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'ADMIN_ROLE_CHANGED', path: req.originalUrl, targetType: 'adminUser', targetId: target.id, metadata: { from: target.role, to: role } });
+    res.json({ ok: true });
+  });
+
+  router.put('/admins/:id/status', requireRole('super_admin'), (req, res) => {
+    const { status } = req.body ?? {};
+    if (!['active', 'disabled'].includes(status)) return res.status(400).json({ error: 'status must be active or disabled.' });
+    const target = findAdminById(req.params.id);
+    if (!target) return res.status(404).json({ error: 'Admin not found.' });
+    if (target.id === (req as any).admin!.adminId && status === 'disabled') {
+      return res.status(400).json({ error: 'You cannot disable your own admin account.' });
+    }
+    setAdminStatus(target.id, status);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'ADMIN_STATUS_CHANGED', path: req.originalUrl, targetType: 'adminUser', targetId: target.id, metadata: { status } });
+    res.json({ ok: true });
   });
 
   return router;
