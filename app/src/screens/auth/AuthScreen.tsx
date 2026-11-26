@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Linking } from 'react-native';
+import { StyleSheet, View, TextInput, Linking, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Sparkles, Mail, Lock, ChevronLeft, ShieldCheck } from 'lucide-react-native';
+import { Mail, Lock, ChevronLeft, ShieldCheck } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -124,7 +124,9 @@ export function AuthScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.hero}
       >
-        <Sparkles size={28} color={color.accent} strokeWidth={1.5} />
+        <View style={styles.logoBadge}>
+          <Image source={require('../../../assets/palm-setu-mark.png')} style={styles.logoImage} resizeMode="cover" />
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
           {tab === 'signup' ? 'Create your free account' : 'Welcome back'}
         </Text>
@@ -264,6 +266,21 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginTop: spacing.sm,
     alignItems: 'center',
+  },
+  logoBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: color.surfaceElevated,
+    borderWidth: 1,
+    borderColor: color.accentBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  logoImage: {
+    width: 44,
+    height: 44,
   },
   benefitRow: {
     flexDirection: 'row',

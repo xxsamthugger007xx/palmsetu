@@ -27,7 +27,11 @@ function summarizeGemstoneReport(r: GemstoneReport): string {
 }
 
 const MAX_FOLLOWUP_FREE = 2;
-const MAX_REPORTS_FREE = 1;
+// Gemstone Guide is a premium-only feature - free-tier users cannot generate
+// any report at all. Premium users get PREMIUM_INCLUDED_REPORTS bundled into
+// their subscription before an additional report charges a separate
+// per-report unlock (see the recordTransaction call below).
+const PREMIUM_INCLUDED_REPORTS = 1;
 
 const createReportSchema = z.object({
   goals: z.array(z.enum(['career', 'relationships', 'confidence', 'education', 'finances', 'general'])).max(6).optional(),
@@ -43,9 +47,9 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
     const reportCount = gemstoneReportsById.valuesForUser(userId).length;
     res.json({
       tier,
-      canCreateReport: tier === 'premium' || reportCount < MAX_REPORTS_FREE,
+      canCreateReport: tier === 'premium',
       reportsUsed: reportCount,
-      freeLimit: MAX_REPORTS_FREE,
+      freeLimit: 0,
     });
   });
 
@@ -63,10 +67,10 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
     const tier = getUserTier(userId);
-    const existingCount = gemstoneReportsById.valuesForUser(userId).length;
-    if (tier !== 'premium' && existingCount >= MAX_REPORTS_FREE) {
-      return res.status(403).json({ error: 'Free plan allows 1 gemstone report. Upgrade for additional reports.', code: 'LIMIT_REACHED' });
+    if (tier !== 'premium') {
+      return res.status(403).json({ error: 'Gemstone Guide is a Premium feature. Upgrade to generate your personalized guide.', code: 'LIMIT_REACHED' });
     }
+    const existingCount = gemstoneReportsById.valuesForUser(userId).length;
 
     const goalText = parsed.data.goals && parsed.data.goals.length > 0 ? parsed.data.goals.join(', ') : null;
     const content = await buildGemstoneReportContent(profile, goalText, aiProvider);
@@ -80,11 +84,10 @@ export function buildGemstoneRouter(aiProvider: AiProvider) {
       ...content,
     };
     gemstoneReportsById.set(report.id, report);
-    // This report only exists because the user is premium and had already
-    // used up the free quota, so it represents one real premium unlock.
-    // Reports beyond the free limit are each a distinct new record (not an
+    // The first PREMIUM_INCLUDED_REPORTS reports are bundled into the
+    // subscription; each one beyond that is a distinct new record (not an
     // idempotent retry), so charging once per creation here is correct.
-    if (tier === 'premium' && existingCount >= MAX_REPORTS_FREE) {
+    if (existingCount >= PREMIUM_INCLUDED_REPORTS) {
       recordTransaction(userId, 'gemstone_premium_report');
     }
     recordCompletedReading(userId, 'gemstone', report.id, tier, summarizeGemstoneReport(report));

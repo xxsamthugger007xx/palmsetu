@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Gem, History, ChevronRight, Info, Sparkles } from 'lucide-react-native';
+import { Gem, History, ChevronRight, Info, Sparkles, Crown } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -80,8 +80,14 @@ export function GemstoneLandingScreen() {
 
       <FadeInUp delay={100}>
       <Card elevated style={{ borderColor: tint.soft }}>
-        <View style={[styles.iconWrap, { backgroundColor: tint.soft }]}>
-          <Gem size={22} color={tint.solid} strokeWidth={1.75} />
+        <View style={styles.cardHeader}>
+          <View style={[styles.iconWrap, { backgroundColor: tint.soft }]}>
+            <Gem size={22} color={tint.solid} strokeWidth={1.75} />
+          </View>
+          <View style={styles.premiumBadge}>
+            <Crown size={12} color={color.gold} strokeWidth={2} />
+            <Text variant="caption" weight="semibold" style={{ color: color.gold, marginLeft: 4 }}>{t('common.premium')}</Text>
+          </View>
         </View>
         <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.GemstoneLandingScreen.yourPersonalGemstoneGuide')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.md }}>
@@ -122,9 +128,16 @@ export function GemstoneLandingScreen() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconWrap: {
     width: 44, height: 44, borderRadius: radius.md,
     alignItems: 'center', justifyContent: 'center',
+  },
+  premiumBadge: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: spacing.sm, paddingVertical: 4,
+    borderRadius: radius.pill, backgroundColor: 'rgba(232, 184, 92, 0.12)',
+    borderWidth: 1, borderColor: 'rgba(232, 184, 92, 0.3)',
   },
   row: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
 });

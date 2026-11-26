@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { PageContainer } from '../../components/PageContainer';
 import { Text } from '../../components/Text';
@@ -77,7 +76,9 @@ export function WelcomeAuthScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.hero}
       >
-        <Sparkles size={28} color={color.accent} strokeWidth={1.5} />
+        <View style={styles.logoBadge}>
+          <Image source={require('../../../assets/palm-setu-mark.png')} style={styles.logoImage} resizeMode="cover" />
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, textAlign: 'center' }}>
           Sign in to save your journey
         </Text>
@@ -127,5 +128,20 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: spacing.xl,
     marginTop: spacing.lg,
+  },
+  logoBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: color.surfaceElevated,
+    borderWidth: 1,
+    borderColor: color.accentBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  logoImage: {
+    width: 44,
+    height: 44,
   },
 });
