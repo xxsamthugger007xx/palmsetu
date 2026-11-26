@@ -208,3 +208,56 @@ export function getLatestDeviceInfo(userId: string): { device: string | null; os
   const row = db.prepare('SELECT device, os, appVersion FROM user_sessions WHERE userId = ? ORDER BY startedAt DESC LIMIT 1').get(userId) as any;
   return row ?? null;
 }
+
+export interface SessionsOverview {
+  totalSessions: number;
+  distinctUsers: number;
+  averageSessionDurationMs: number | null;
+  measuredSessionCount: number;
+  estimatedSessionCount: number;
+  topEntryScreens: { screen: string; count: number }[];
+  topExitScreens: { screen: string; count: number }[];
+  topFeaturesVisited: { feature: string; count: number }[];
+  topDevices: { device: string; count: number }[];
+  sessionsWithErrors: number;
+}
+
+/** Admin-panel aggregate over every session in range - only ever computed
+ * from real user_sessions rows, never invented. See getUserEngagementStats
+ * for the equivalent per-user stat used in the User 360 detail panel. */
+export function getSessionsOverview(since?: Date, until?: Date): SessionsOverview {
+  sweepStaleSessions();
+  const clauses: string[] = [];
+  const params: string[] = [];
+  if (since) { clauses.push('createdAt >= ?'); params.push(since.toISOString()); }
+  if (until) { clauses.push('createdAt <= ?'); params.push(until.toISOString()); }
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  const rows = db.prepare(`SELECT * FROM user_sessions ${where}`).all(...params) as any[];
+
+  const withDuration = rows.filter((r) => r.durationMs != null);
+  const totalDuration = withDuration.reduce((sum, r) => sum + r.durationMs, 0);
+
+  const tally = (values: string[]): { key: string; count: number }[] => {
+    const counts = new Map<string, number>();
+    for (const v of values) { if (!v) continue; counts.set(v, (counts.get(v) ?? 0) + 1); }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([key, count]) => ({ key, count }));
+  };
+
+  const topEntryScreens = tally(rows.map((r) => r.entryScreen)).map(({ key, count }) => ({ screen: key, count }));
+  const topExitScreens = tally(rows.map((r) => r.exitScreen)).map(({ key, count }) => ({ screen: key, count }));
+  const topFeaturesVisited = tally(rows.flatMap((r) => JSON.parse(r.featuresVisited || '[]'))).map(({ key, count }) => ({ feature: key, count }));
+  const topDevices = tally(rows.map((r) => r.device)).map(({ key, count }) => ({ device: key, count }));
+
+  return {
+    totalSessions: rows.length,
+    distinctUsers: new Set(rows.map((r) => r.userId).filter(Boolean)).size,
+    averageSessionDurationMs: withDuration.length ? Math.round(totalDuration / withDuration.length) : null,
+    measuredSessionCount: rows.filter((r) => r.durationMeasured).length,
+    estimatedSessionCount: rows.filter((r) => r.durationMs != null && !r.durationMeasured).length,
+    topEntryScreens,
+    topExitScreens,
+    topFeaturesVisited,
+    topDevices,
+    sessionsWithErrors: rows.filter((r) => r.errorCount > 0).length,
+  };
+}

@@ -173,7 +173,7 @@
         <div class="group-label">Users &amp; Growth</div>
         <div class="tab" data-tab="users"><span class="icon">&#9679;</span><span class="label-text">User Management</span></div>
         <div class="tab stub" data-tab="stub:journey"><span class="icon">&#9679;</span><span class="label-text">User Journey</span></div>
-        <div class="tab stub" data-tab="stub:sessions"><span class="icon">&#9679;</span><span class="label-text">Sessions</span></div>
+        <div class="tab" data-tab="sessions"><span class="icon">&#9679;</span><span class="label-text">Sessions</span></div>
         <div class="tab stub" data-tab="stub:acquisition"><span class="icon">&#9679;</span><span class="label-text">Acquisition</span></div>
         <div class="tab stub" data-tab="stub:funnels"><span class="icon">&#9679;</span><span class="label-text">Funnels</span></div>
         <div class="tab stub" data-tab="stub:retention"><span class="icon">&#9679;</span><span class="label-text">Retention &amp; Cohorts</span></div>
@@ -348,7 +348,6 @@
   const STUB_PAGES = {
     'stub:alerts': ['Alerts & Incidents', ['An alert-rule engine (thresholds on payment failures, AI spend, latency, etc.)', 'An incidents table (status, assignment, resolution notes)', 'A notification channel to actually page someone']],
     'stub:journey': ['User Journey', ['Per-user event timeline UI built on the new user_events table (data already flows in - see Live Activity)', 'Screen-level navigation tracking from the mobile app, which does not exist yet']],
-    'stub:sessions': ['Sessions', ['A session table with start/end/duration', 'Client-side session start/end instrumentation in the Expo app - does not exist yet']],
     'stub:acquisition': ['Acquisition', ['Install/attribution tracking (referral, campaign, deep link) - no attribution SDK is wired into the app yet']],
     'stub:funnels': ['Funnels', ['A funnel-builder UI over user_events', 'More event coverage across features before funnel steps are meaningful (only auth/tarot/palm/AI/payments emit events so far)']],
     'stub:retention': ['Retention & Cohorts', ['Cohort bucketing (by signup date/first feature/etc.) over user_events', 'A derived daily-aggregation job - currently every metric is computed live, which works at this scale but will not forever']],
@@ -378,6 +377,7 @@
       if (name === 'flags') return renderFlags(el);
       if (name === 'admins') return renderAdmins(el);
       if (name === 'errors') return renderErrors(el);
+      if (name === 'sessions') return renderSessions(el);
       if (STUB_PAGES[name]) {
         const [title, bullets] = STUB_PAGES[name];
         return renderComingSoon(el, title, bullets);
@@ -1075,6 +1075,37 @@
         <thead><tr><th>Log line</th></tr></thead>
         <tbody>${lines.length ? lines.map((l) => `<tr><td style="font-family:monospace;font-size:12px;white-space:pre-wrap;">${escapeHtml(l)}</td></tr>`).join('') : '<tr><td class="unavailable">No errors logged yet.</td></tr>'}</tbody>
       </table>
+    `;
+  }
+
+  function msOrDashLocal(ms) {
+    if (ms == null) return '-';
+    const s = Math.round(ms / 1000);
+    if (s < 60) return s + 's';
+    return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+  }
+
+  async function renderSessions(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/sessions-overview?' + qs.toString());
+    const tallyRows = (items, keyField) => items.map((i) => `<tr><td>${escapeHtml(i[keyField])}</td><td>${i.count}</td></tr>`).join('');
+    el.innerHTML = `
+      <p class="unavailable">Real client-reported app sessions (see app's AppState lifecycle instrumentation) - not derived from logins. A session with no explicit end (e.g. the OS force-killed the app) is inferred closed after 30 minutes of inactivity; its duration is then an estimate, not a measurement (see "measured vs estimated" below).</p>
+      <div class="grid">
+        <div class="card"><div class="label">Total sessions</div><div class="value">${data.totalSessions}</div></div>
+        <div class="card"><div class="label">Distinct users</div><div class="value">${data.distinctUsers}</div></div>
+        <div class="card"><div class="label">Avg session length</div><div class="value">${msOrDashLocal(data.averageSessionDurationMs)}</div></div>
+        <div class="card"><div class="label">Measured / estimated</div><div class="value">${data.measuredSessionCount} / ${data.estimatedSessionCount}</div></div>
+        <div class="card"><div class="label">Sessions with an error</div><div class="value">${data.sessionsWithErrors}</div></div>
+      </div>
+      <div class="section-title">Top entry screens</div>
+      <table><thead><tr><th>Screen</th><th>Count</th></tr></thead><tbody>${tallyRows(data.topEntryScreens, 'screen') || '<tr><td colspan="2" class="unavailable">No data in range</td></tr>'}</tbody></table>
+      <div class="section-title">Top exit screens</div>
+      <table><thead><tr><th>Screen</th><th>Count</th></tr></thead><tbody>${tallyRows(data.topExitScreens, 'screen') || '<tr><td colspan="2" class="unavailable">No data in range</td></tr>'}</tbody></table>
+      <div class="section-title">Top features visited</div>
+      <table><thead><tr><th>Feature</th><th>Count</th></tr></thead><tbody>${tallyRows(data.topFeaturesVisited, 'feature') || '<tr><td colspan="2" class="unavailable">No data in range</td></tr>'}</tbody></table>
+      <div class="section-title">Top devices</div>
+      <table><thead><tr><th>Device</th><th>Count</th></tr></thead><tbody>${tallyRows(data.topDevices, 'device') || '<tr><td colspan="2" class="unavailable">No data in range</td></tr>'}</tbody></table>
     `;
   }
 

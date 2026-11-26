@@ -30,7 +30,7 @@ import { DB_PATH, dbFileSizeBytes } from '../data/db';
 import { memoryAdminStats } from '../memory/memoryService';
 import { getPsuIdForUuid, getUuidForPsuId } from '../auth/psuId';
 import { listEvents, listEventsSince } from '../events/eventTracker';
-import { listSessionsForUser, getUserEngagementStats, getLatestDeviceInfo } from '../events/sessionTracker';
+import { listSessionsForUser, getUserEngagementStats, getLatestDeviceInfo, getSessionsOverview } from '../events/sessionTracker';
 import {
   AdminRole, performAdminLogin, resolveAdminSession,
   listSessionsForAdmin, revokeSession, revokeAllSessionsForAdmin, listLoginHistory,
@@ -337,6 +337,11 @@ export function buildAdminRouter(aiProvider: AiProvider) {
       guestCleanup: lastGuestCleanup(),
     });
   });
+  router.get('/sessions-overview', (req, res) => {
+    const range = parseDateRange(req);
+    res.json(getSessionsOverview(range.since, range.until));
+  });
+
   router.get('/errors', (req, res) => {
     const lines = Math.min(500, Math.max(1, Number(req.query.lines) || 100));
     res.json({
