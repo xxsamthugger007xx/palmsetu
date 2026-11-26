@@ -15,6 +15,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { discoverModules } from '../../data/mock';
 import { RootStackParamList } from '../../navigation/types';
 import { useFeatureFlags } from '../../context/FeatureFlagsContext';
+import { astrologyApi } from '../../services/astrologyApi';
 
 /** Maps a discover-module id to the server feature flag that gates it (see
  * server/src/data/featureFlags.ts) - modules with no entry here are never
@@ -100,7 +101,10 @@ export function DiscoverScreen() {
                 description: t(`discover.modules.${MODULE_I18N_KEY[m.id]}.description`),
               }}
               style={{ flex: 1 }}
-              onPress={() => (m.id === 'vastu' ? navigation.navigate('VastuLanding') : undefined)}
+              onPress={() => {
+                if (m.id === 'vastu') navigation.navigate('VastuLanding');
+                else if (m.id === 'self-discovery') navigation.navigate('SoulEnergyReading');
+              }}
             />
           ))}
         </View>
@@ -121,6 +125,7 @@ export function DiscoverScreen() {
               onPress={() => {
                 if (m.id === 'compatibility') navigation.navigate('SoulmateIntro');
                 else if (m.id === 'gemstone') navigation.navigate('GemstoneLanding');
+                else if (m.id === 'horoscope') navigation.navigate('DailyHoroscope', { localDate: astrologyApi.todayLocalDate() });
               }}
             />
           ))}
