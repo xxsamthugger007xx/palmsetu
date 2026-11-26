@@ -3,6 +3,7 @@ import { ReadingCategory, SpreadType } from '../types/tarot';
 export type RootStackParamList = {
   LanguageSelect: undefined;
   OnboardingIntro: undefined;
+  WelcomeAuth: undefined;
   Onboarding: undefined;
   MainTabs: undefined;
   PalmIntro: { allowRescan?: boolean } | undefined;
@@ -63,6 +64,10 @@ export type RootStackParamList = {
   SoulEnergyReading: undefined;
   Language: undefined;
   EditProfile: undefined;
+  AccountManagement: undefined;
+  Appearance: undefined;
+  SavedReadings: undefined;
+  Help: undefined;
   SoulmateIntro: undefined;
   SoulmateQuestionnaire: { intent: 'free' | 'paid' };
   SoulmatePayment: {

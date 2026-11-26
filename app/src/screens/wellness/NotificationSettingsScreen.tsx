@@ -14,7 +14,7 @@ import {
   getNotificationPermissionState, requestNotificationPermission,
   rescheduleWellnessNotifications, PermissionState,
   EngagementPrefs, DEFAULT_ENGAGEMENT_PREFS, loadEngagementPrefs, saveEngagementPrefs, applyEngagementReminders,
-  isNotificationsAvailable, isValidTime as isValidEngagementTime,
+  isNotificationsAvailable, isValidTime as isValidEngagementTime, sendTestNotification,
 } from '../../services/notificationScheduler';
 import { useTranslation } from 'react-i18next';
 
@@ -43,6 +43,7 @@ export function NotificationSettingsScreen() {
   const [engagement, setEngagement] = React.useState<EngagementPrefs>(DEFAULT_ENGAGEMENT_PREFS);
   const [saving, setSaving] = React.useState(false);
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
+  const [testResult, setTestResult] = React.useState<{ ok: boolean; message: string } | null>(null);
 
   const load = React.useCallback(() => {
     setLoading(true);
@@ -58,6 +59,18 @@ export function NotificationSettingsScreen() {
   const askPermission = async () => {
     const status = await requestNotificationPermission();
     setPermission(status);
+  };
+
+  const sendTest = async () => {
+    setTestResult(null);
+    const ok = await sendTestNotification();
+    setPermission(await getNotificationPermissionState());
+    setTestResult({
+      ok,
+      message: ok
+        ? 'Test notification sent - check your notification tray now.'
+        : 'Could not send a test notification (permission denied, or not available in this build).',
+    });
   };
 
   const update = <K extends keyof WellnessNotificationPreferences>(field: K, value: WellnessNotificationPreferences[K]) => {
@@ -125,9 +138,16 @@ export function NotificationSettingsScreen() {
   return (
     <PageContainer onRefresh={load}>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}>{t('ui.NotificationSettingsScreen.notifications')}</Text>
-      <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
+      <Text variant="bodySm" tone="secondary" style={{ marginBottom: spacing.sm }}>
         {t('ui.NotificationSettingsScreen.localRemindersScheduledOnThis')}
       </Text>
+
+      <Button label="Send test notification now" icon={Bell} variant="secondary" size="sm" onPress={sendTest} style={{ alignSelf: 'flex-start', marginBottom: spacing.sm }} />
+      {testResult && (
+        <Text variant="bodySm" tone={testResult.ok ? 'success' : 'danger'} style={{ marginBottom: spacing.lg }}>
+          {testResult.message}
+        </Text>
+      )}
 
       {permission !== 'granted' && (
         <Card style={{ marginBottom: spacing.lg, flexDirection: 'row', alignItems: 'center' }}>

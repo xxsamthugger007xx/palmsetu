@@ -13,6 +13,7 @@ import { color } from '../theme/tokens';
 import { useUserProfile } from '../context/UserProfileContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useOnboardingIntro } from '../context/OnboardingIntroContext';
+import { useWelcomeAuth } from '../context/WelcomeAuthContext';
 import { useAstrologyOnboardingStatus } from '../context/AstrologyOnboardingStatus';
 import { FloatingAIButton } from '../components/FloatingAIButton';
 import { UpgradeButton } from '../components/UpgradeButton';
@@ -21,6 +22,7 @@ import { initSessionTracking, trackScreenChange } from '../services/sessionTrack
 
 import { LanguageSelectScreen } from '../screens/onboarding/LanguageSelectScreen';
 import { IntroScreen } from '../screens/onboarding/IntroScreen';
+import { WelcomeAuthScreen } from '../screens/onboarding/WelcomeAuthScreen';
 import { OnboardingScreen } from '../screens/onboarding/OnboardingScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { PalmHubScreen } from '../screens/palm/PalmHubScreen';
@@ -55,6 +57,10 @@ import { KundliResultScreen } from '../screens/astrology/KundliResultScreen';
 import { SoulEnergyReadingScreen } from '../screens/astrology/SoulEnergyReadingScreen';
 import { LanguageScreen } from '../screens/profile/LanguageScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
+import { AccountManagementScreen } from '../screens/profile/AccountManagementScreen';
+import { AppearanceScreen } from '../screens/profile/AppearanceScreen';
+import { SavedReadingsScreen } from '../screens/profile/SavedReadingsScreen';
+import { HelpScreen } from '../screens/profile/HelpScreen';
 import { SoulmateIntroScreen } from '../screens/soulmate/SoulmateIntroScreen';
 import { SoulmateQuestionnaireScreen } from '../screens/soulmate/SoulmateQuestionnaireScreen';
 import { SoulmatePaymentScreen } from '../screens/soulmate/SoulmatePaymentScreen';
@@ -192,6 +198,7 @@ export function RootNavigator() {
   const { profile, loading: profileLoading } = useUserProfile();
   const { hasSelectedLanguage, loading: languageLoading } = useLanguage();
   const { hasSeenIntro, loading: introLoading } = useOnboardingIntro();
+  const { hasSeenWelcomeAuth, loading: welcomeAuthLoading } = useWelcomeAuth();
   // Astrology-onboarding status (system/DOB/TOB/place/confirm) is derived
   // from the real BirthProfile + OnboardingDraft records, not a separate
   // flag - see context/AstrologyOnboardingStatus.tsx. `profile` above is
@@ -208,7 +215,7 @@ export function RootNavigator() {
 
   const needsAstrologyOnboarding = !!profile && astrologyStep !== null && astrologyStep !== 'done';
 
-  if (profileLoading || languageLoading || introLoading || (!!profile && astrologyStepLoading)) {
+  if (profileLoading || languageLoading || introLoading || welcomeAuthLoading || (!!profile && astrologyStepLoading)) {
     return (
       <View style={{ flex: 1, backgroundColor: color.bg, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={color.accent} />
@@ -252,6 +259,8 @@ export function RootNavigator() {
           <Stack.Screen name="LanguageSelect" component={LanguageSelectScreen} />
         ) : !hasSeenIntro ? (
           <Stack.Screen name="OnboardingIntro" component={IntroScreen} />
+        ) : !hasSeenWelcomeAuth && !profile ? (
+          <Stack.Screen name="WelcomeAuth" component={WelcomeAuthScreen} />
         ) : !profile ? (
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         ) : needsAstrologyOnboarding ? (
@@ -298,6 +307,10 @@ export function RootNavigator() {
             <Stack.Screen name="MyReports" component={MyReportsScreen} />
             <Stack.Screen name="Language" component={LanguageScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="AccountManagement" component={AccountManagementScreen} />
+            <Stack.Screen name="Appearance" component={AppearanceScreen} />
+            <Stack.Screen name="SavedReadings" component={SavedReadingsScreen} />
+            <Stack.Screen name="Help" component={HelpScreen} />
             <Stack.Screen name="SoulmateIntro" component={SoulmateIntroScreen} />
             <Stack.Screen name="SoulmateQuestionnaire" component={SoulmateQuestionnaireScreen} />
             <Stack.Screen name="SoulmatePayment" component={SoulmatePaymentScreen} />

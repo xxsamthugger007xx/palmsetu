@@ -13,6 +13,13 @@ export interface UserIdentity {
   name: string;
   gender: Gender | null;
   focus?: FocusArea[];
+  /** Which illustrated avatar to show, within the array for this gender -
+   * see theme/avatars.ts. Assigned once server-side, never re-randomized. */
+  avatarIndex?: number | null;
+  /** An explicit user choice overriding avatarIndex - a stable key like
+   * 'male1'/'female3' (see theme/avatars.ts's AVATAR_CHOICES), picked from
+   * the full set regardless of the account's own gender. */
+  avatarKey?: string | null;
   updatedAt: string;
 }
 

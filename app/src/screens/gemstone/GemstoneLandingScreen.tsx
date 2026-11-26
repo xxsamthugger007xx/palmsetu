@@ -8,7 +8,8 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
-import { color, radius, spacing } from '../../theme/tokens';
+import { FadeInUp } from '../../components/FadeInUp';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { gemstoneApi } from '../../services/gemstoneApi';
@@ -18,6 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { asApiError } from '../../services/apiRequest';
 import { ListSkeleton } from '../../components/ListSkeleton';
 type LoadState = 'loading' | 'needsProfile' | 'ready' | 'error';
+
+const tint = featureTint.palm; // shared rose-gold identity for gemstone across the app (see DiscoverScreen's own module tints)
 
 export function GemstoneLandingScreen() {
   const { t } = useTranslation();
@@ -65,6 +68,7 @@ export function GemstoneLandingScreen() {
 
   return (
     <PageContainer>
+      <FadeInUp>
       <View style={styles.header}>
         <Text variant="display" weight="semibold">{t('ui.GemstoneLandingScreen.gemstoneGuide')}</Text>
         <IconButton icon={History} onPress={() => navigation.navigate('GemstoneHistory')} />
@@ -72,10 +76,12 @@ export function GemstoneLandingScreen() {
       <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
         {t('ui.GemstoneLandingScreen.traditionalVedicGemstoneGuidanceBased')}
       </Text>
+      </FadeInUp>
 
-      <Card elevated>
-        <View style={styles.iconWrap}>
-          <Gem size={22} color={color.accent} strokeWidth={1.75} />
+      <FadeInUp delay={100}>
+      <Card elevated style={{ borderColor: tint.soft }}>
+        <View style={[styles.iconWrap, { backgroundColor: tint.soft }]}>
+          <Gem size={22} color={tint.solid} strokeWidth={1.75} />
         </View>
         <Text variant="subtitle" weight="semibold" style={{ marginTop: spacing.md }}>{t('ui.GemstoneLandingScreen.yourPersonalGemstoneGuide')}</Text>
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.md }}>
@@ -83,8 +89,10 @@ export function GemstoneLandingScreen() {
         </Text>
         <Button label={t('ui.GemstoneLandingScreen.getMyGemstoneGuide')} icon={Sparkles} onPress={() => navigation.navigate('GemstoneGoal')} />
       </Card>
+      </FadeInUp>
 
       {recent.length > 0 && (
+        <FadeInUp delay={200}>
         <View style={{ marginTop: spacing.xl }}>
           <Text variant="subtitle" weight="semibold" style={{ marginBottom: spacing.sm }}>{t('ui.GemstoneLandingScreen.recentReports')}</Text>
           {recent.map((r) => (
@@ -97,14 +105,17 @@ export function GemstoneLandingScreen() {
             </Card>
           ))}
         </View>
+        </FadeInUp>
       )}
 
+      <FadeInUp delay={260}>
       <Card style={{ marginTop: spacing.xl, flexDirection: 'row', alignItems: 'flex-start' }}>
         <Info size={14} color={color.textMuted} strokeWidth={1.75} style={{ marginTop: 2 }} />
         <Text variant="caption" tone="muted" style={{ marginLeft: spacing.sm, flex: 1 }}>
           {t('ui.GemstoneLandingScreen.basedOnTheRashiMoon')}
         </Text>
       </Card>
+      </FadeInUp>
     </PageContainer>
   );
 }
@@ -113,7 +124,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconWrap: {
     width: 44, height: 44, borderRadius: radius.md,
-    backgroundColor: color.accentMuted, alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
   row: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
 });

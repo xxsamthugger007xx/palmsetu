@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, ChevronRight, Info, Pencil, Trash2, Clock } from 'lucide-react-native';
@@ -15,6 +15,8 @@ import { soulmateApi } from '../../services/soulmateApi';
 import { SoulmateSketch } from '../../types/soulmate';
 import { useTranslation } from 'react-i18next';
 import { ListSkeleton } from '../../components/ListSkeleton';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
+import { InfoModal } from '../../components/InfoModal';
 
 function statusBadge(status: SoulmateSketch['generationStatus']): { label: string; status: 'success' | 'warning' | 'danger' | 'neutral' } {
   if (status === 'completed') return { label: 'Completed', status: 'success' };
@@ -28,6 +30,8 @@ export function SoulmateHistoryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<SoulmateSketch[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteFailed, setDeleteFailed] = useState(false);
 
   const load = React.useCallback(async () => {
     setState('loading');
@@ -44,22 +48,18 @@ export function SoulmateHistoryScreen() {
     load();
   }, [load]);
 
-  const handleDelete = (id: string) => {
-    Alert.alert(t('ui.SoulmateHistoryScreen.deleteSketch'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      {
-        text: t('ui.AssistantHistoryScreen.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await soulmateApi.deleteSketch(id);
-            setItems((prev) => prev.filter((s) => s.id !== id));
-          } catch {
-            Alert.alert(t('ui.SoulmateHistoryScreen.couldNotDeleteThisSketch'));
-          }
-        },
-      },
-    ]);
+  const handleDelete = (id: string) => setPendingDeleteId(id);
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    if (!id) return;
+    try {
+      await soulmateApi.deleteSketch(id);
+      setItems((prev) => prev.filter((s) => s.id !== id));
+    } catch {
+      setDeleteFailed(true);
+    }
   };
 
   return (
@@ -108,6 +108,22 @@ export function SoulmateHistoryScreen() {
           </Card>
         );
       })}
+
+      <ConfirmationModal
+        visible={!!pendingDeleteId}
+        title={t('ui.SoulmateHistoryScreen.deleteSketch')}
+        description={t('ui.AssistantHistoryScreen.thisCannotBeUndone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
+      <InfoModal
+        visible={deleteFailed}
+        title={t('ui.SoulmateHistoryScreen.couldNotDeleteThisSketch')}
+        description={t('ui.ProfileScreen.pleaseTryAgain')}
+        onClose={() => setDeleteFailed(false)}
+      />
     </PageContainer>
   );
 }

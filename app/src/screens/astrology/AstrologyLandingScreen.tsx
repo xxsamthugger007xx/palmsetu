@@ -1,13 +1,15 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Sparkles, Info, Compass, Orbit } from 'lucide-react-native';
+import { Sparkles, Info, Compass, Orbit, ChevronRight, ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
+import { IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
-import { color, spacing } from '../../theme/tokens';
+import { FadeInUp } from '../../components/FadeInUp';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { astrologyApi } from '../../services/astrologyApi';
 import { BirthProfile } from '../../types/astrology';
@@ -45,6 +47,9 @@ export function AstrologyLandingScreen() {
   if (state === 'loading') {
     return (
       <PageContainer>
+        <View style={styles.header2}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.AstrologyLandingScreen.astrology')}</Text>
         <ListSkeleton rows={3} />
       </PageContainer>
@@ -54,6 +59,9 @@ export function AstrologyLandingScreen() {
   if (state === 'needsProfile') {
     return (
       <PageContainer>
+        <View style={styles.header2}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.AstrologyLandingScreen.astrology')}</Text>
         <EmptyState
           icon={Sparkles}
@@ -69,6 +77,9 @@ export function AstrologyLandingScreen() {
   if (state === 'error') {
     return (
       <PageContainer>
+        <View style={styles.header2}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <EmptyState icon={Info} title={t('ui.AstrologyLandingScreen.couldnTLoadThisSection')} actionLabel={t('ui.AstrologyLandingScreen.retry')} onAction={load} />
       </PageContainer>
     );
@@ -76,34 +87,93 @@ export function AstrologyLandingScreen() {
 
   return (
     <PageContainer onRefresh={load}>
-      <View style={styles.header}>
-        <Text variant="display" weight="semibold">{t('ui.AstrologyLandingScreen.astrology')}</Text>
-        <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
-          {profile?.preferredSystem === 'vedic' ? 'Vedic' : 'Western'} astrology
-        </Text>
+      <View style={styles.header2}>
+        {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
       </View>
+      <FadeInUp>
+        <View style={styles.heroWrap}>
+          <View style={styles.heroGlow} />
+          <View style={styles.heroCircle}>
+            <Image source={require('../../../assets/astrology/zodiac-wheel.png')} style={styles.heroImage} resizeMode="contain" />
+          </View>
+        </View>
+        <View style={styles.header}>
+          <Text variant="display" weight="semibold">{t('ui.AstrologyLandingScreen.astrology')}</Text>
+          <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
+            {profile?.preferredSystem === 'vedic' ? 'Vedic' : 'Western'} astrology
+          </Text>
+        </View>
+      </FadeInUp>
 
+      <FadeInUp delay={120}>
       <View style={{ marginTop: spacing.lg }}>
-        <Card onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'vedic' })}>
+        <Card elevated onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'vedic' })} style={{ borderColor: featureTint.astrology.soft }}>
           <View style={styles.row}>
-            <Compass size={18} color={color.accent} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.AstrologyLandingScreen.vedicAstrology')}</Text>
+            <View style={[styles.iconWrap, { backgroundColor: featureTint.astrology.soft }]}>
+              <Compass size={18} color={featureTint.astrology.solid} strokeWidth={1.75} />
+            </View>
+            <View style={{ flex: 1, marginLeft: spacing.sm }}>
+              <Text variant="bodySm" weight="semibold">{t('ui.AstrologyLandingScreen.vedicAstrology')}</Text>
+              <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.AstrologyLandingScreen.generateYourKundliNorthIndia')}</Text>
+            </View>
+            <ChevronRight size={16} color={color.textMuted} />
           </View>
-          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.AstrologyLandingScreen.generateYourKundliNorthIndia')}</Text>
         </Card>
-        <Card onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'soulEnergy' })} style={{ marginTop: spacing.sm }}>
+        <Card elevated onPress={() => navigation.navigate('SelectAstrologyProfile', { path: 'soulEnergy' })} style={{ marginTop: spacing.sm, borderColor: featureTint.astrology.soft }}>
           <View style={styles.row}>
-            <Orbit size={18} color={color.accent} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" style={{ marginLeft: spacing.sm }}>{t('ui.AstrologyLandingScreen.soulEnergyReading')}</Text>
+            <View style={[styles.iconWrap, { backgroundColor: featureTint.astrology.soft }]}>
+              <Orbit size={18} color={featureTint.astrology.solid} strokeWidth={1.75} />
+            </View>
+            <View style={{ flex: 1, marginLeft: spacing.sm }}>
+              <Text variant="bodySm" weight="semibold">{t('ui.AstrologyLandingScreen.soulEnergyReading')}</Text>
+              <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>{t('ui.AstrologyLandingScreen.anAiGeneratedPersonalityReading')}</Text>
+            </View>
+            <ChevronRight size={16} color={color.textMuted} />
           </View>
-          <Text variant="caption" tone="muted" style={{ marginTop: spacing.xs }}>{t('ui.AstrologyLandingScreen.anAiGeneratedPersonalityReading')}</Text>
         </Card>
       </View>
+      </FadeInUp>
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
   header: { alignItems: 'flex-start' },
+  header2: { flexDirection: 'row' },
   row: { flexDirection: 'row', alignItems: 'center' },
+  heroWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  heroGlow: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: featureTint.astrology.soft,
+  },
+  heroCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: color.surfaceElevated,
+    borderWidth: 1,
+    borderColor: featureTint.astrology.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  heroImage: {
+    width: 52,
+    height: 52,
+  },
+  iconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

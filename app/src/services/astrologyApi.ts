@@ -30,6 +30,11 @@ export const astrologyApi = {
   saveIdentity: (payload: { name: string; gender?: Gender | null; focus?: FocusArea[] }) =>
     request<UserIdentity>(BASE_URL, '/astrology/identity', { method: 'PUT', body: JSON.stringify(payload) }),
 
+  /** Explicit "pick any avatar" choice from the Profile screen's picker -
+   * pass null to clear back to the automatic default. */
+  setAvatarKey: (avatarKey: string | null) =>
+    request<UserIdentity>(BASE_URL, '/astrology/identity/avatar', { method: 'PUT', body: JSON.stringify({ avatarKey }) }),
+
   // Step-by-step astrology onboarding draft - see OnboardingDraft. 404 from
   // getOnboardingDraft means nothing has been saved yet (brand-new user).
   getOnboardingDraft: () => request<OnboardingDraft>(BASE_URL, '/astrology/onboarding-draft'),

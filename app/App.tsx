@@ -10,6 +10,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { UserProfileProvider } from './src/context/UserProfileContext';
 import { LanguageProvider } from './src/context/LanguageContext';
 import { OnboardingIntroProvider } from './src/context/OnboardingIntroContext';
+import { WelcomeAuthProvider } from './src/context/WelcomeAuthContext';
 import { AdminRoleProvider } from './src/context/AdminRoleContext';
 import { AstrologyOnboardingStatusProvider } from './src/context/AstrologyOnboardingStatus';
 import { useNocturneFonts } from './src/theme/useNocturneFonts';
@@ -62,11 +63,13 @@ function App() {
             <UserProfileProvider>
               <LanguageProvider>
                 <OnboardingIntroProvider>
-                  <AdminRoleProvider>
-                    <AstrologyOnboardingStatusProvider>
-                      <RootNavigator />
-                    </AstrologyOnboardingStatusProvider>
-                  </AdminRoleProvider>
+                  <WelcomeAuthProvider>
+                    <AdminRoleProvider>
+                      <AstrologyOnboardingStatusProvider>
+                        <RootNavigator />
+                      </AstrologyOnboardingStatusProvider>
+                    </AdminRoleProvider>
+                  </WelcomeAuthProvider>
                 </OnboardingIntroProvider>
               </LanguageProvider>
             </UserProfileProvider>

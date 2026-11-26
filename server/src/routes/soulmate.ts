@@ -2,7 +2,7 @@ import { Router, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 import { SoulmateSketch } from '../types/soulmate';
-import { soulmateSketchesById, isPaymentIdUsed, recordTransaction, freeTrialSketchFor } from '../data/store';
+import { soulmateSketchesById, isPaymentIdUsed, recordTransaction } from '../data/store';
 import { PRICING_CENTS, CURRENCY } from '../data/pricing';
 import { createOrder, verifyPaymentSignature, verifyWebhookSignature, getPublicKeyId } from '../payments/razorpay';
 import { pickSoulmateImage } from '../soulmate/catalogMatcher';
@@ -33,11 +33,6 @@ const questionnaireSchema = z.object({
   preferredAgeRange: z.enum(['18-24', '25-30', '31-35', '36-40', '40+']),
   preferredCountry: z.string().min(1).max(60),
   style: z.enum(['pencil', 'charcoal', 'soft-portrait']),
-  // Client's stated intent - never trusted on its own. The server
-  // independently re-checks real eligibility via freeTrialSketchFor()
-  // before ever honoring this, so a tampered/forged true here can't grant
-  // an extra free sketch.
-  requestFreeTrial: z.boolean().optional(),
 });
 
 const verifyPaymentSchema = z.object({
@@ -65,23 +60,16 @@ export function buildSoulmateRouter() {
     res.json({ ok: true });
   });
 
-  // Real eligibility check - the client uses this to decide whether to
-  // show "Create My Free Sketch" or route straight to premium pricing,
-  // but it is only ever a UI hint. The actual enforcement happens again,
-  // independently, in POST /sketches below.
+  // Soulmate Sketch is a premium-only feature - there is no free trial.
+  // Kept so any pre-existing client build asking for trial status gets a
+  // clean "not eligible" response instead of a 404.
   router.get('/trial-status', (req, res) => {
-    const userId = currentUserId(req);
-    const existing = freeTrialSketchFor(userId);
-    res.json({ eligible: !existing, freeSketch: existing ?? null });
+    res.json({ eligible: false, freeSketch: null });
   });
 
-  // Starts a new sketch. Two paths:
-  // - requestFreeTrial: true, and the user genuinely has no free sketch
-  //   yet -> skip payment entirely, generationStatus starts at
-  //   'payment_verified' so /generate below runs immediately, priceCents 0.
-  // - otherwise -> the paid path: creates a real Razorpay order,
-  //   generationStatus starts at 'pending_payment', nothing is selected
-  //   until that payment is verified (see /verify-payment below).
+  // Starts a new sketch. Always the paid path: creates a real Razorpay
+  // order, generationStatus starts at 'pending_payment', nothing is
+  // selected until that payment is verified (see /verify-payment below).
   router.post('/sketches', async (req, res) => {
     const parsed = questionnaireSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Invalid input', code: 'INVALID_INPUT' });
@@ -94,39 +82,6 @@ export function buildSoulmateRouter() {
       gender: parsed.data.preferredGender, ageRange: parsed.data.preferredAgeRange,
       country: parsed.data.preferredCountry, style: parsed.data.style,
     });
-
-    if (parsed.data.requestFreeTrial) {
-      const existing = freeTrialSketchFor(userId);
-      if (existing) {
-        recordSoulmateEvent(userId, 'free_trial_already_used', { existingSketchId: existing.id });
-        return res.status(409).json({ error: 'Your free sketch has already been used.', code: 'TRIAL_ALREADY_USED', sketch: existing });
-      }
-
-      const sketch: SoulmateSketch = {
-        id,
-        userId,
-        preferredGender: parsed.data.preferredGender,
-        preferredAgeRange: parsed.data.preferredAgeRange,
-        preferredCountry: parsed.data.preferredCountry,
-        style: parsed.data.style,
-        generationStatus: 'payment_verified', // skips payment entirely - this is the free trial
-        isFreeTrial: true,
-        orderId: null,
-        paymentId: null,
-        priceCents: 0,
-        currency: CURRENCY,
-        imageFilename: null,
-        personalityDescription: null,
-        compatibilityInsights: null,
-        failureReason: null,
-        createdAt: now,
-        updatedAt: now,
-      };
-      soulmateSketchesById.set(id, sketch);
-      recordSoulmateEvent(userId, 'free_trial_started', { sketchId: id });
-
-      return res.json({ sketch, orderId: null, amountCents: 0, currency: CURRENCY, razorpayKeyId: null });
-    }
 
     const priceCents = PRICING_CENTS.soulmate_sketch;
     recordSoulmateEvent(userId, 'payment_attempted', { priceCents });

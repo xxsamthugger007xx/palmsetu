@@ -13,6 +13,7 @@ import { PalmLinesOverlay } from '../../components/PalmLinesOverlay';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
+import { success } from '../../services/haptics';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
@@ -64,6 +65,7 @@ export function PalmAnalyzingScreen() {
 
         setStage('interpreting');
         setStage('done');
+        success();
         navigation.replace('PalmReport', { readingId: reading.id, justCompleted: true, selectedHand: route.params.hand });
       } catch (__err) {
         const err = asApiError(__err);

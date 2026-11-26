@@ -272,3 +272,30 @@ export async function applyEngagementReminders(prefs: EngagementPrefs, streakCur
 }
 
 export const supportsNotifications = Platform.OS === 'ios' || Platform.OS === 'android';
+
+/**
+ * Fires a real local notification immediately (trigger: null), for the
+ * Notification Settings screen's "send test notification" action - lets
+ * someone verify local notifications actually work in their current
+ * runtime (Expo Go or a real build) without waiting for a scheduled time.
+ * Requests permission first if not yet granted. Returns false (never
+ * throws) if notifications aren't available or permission is refused.
+ */
+export async function sendTestNotification(): Promise<boolean> {
+  const mod = loadNotifications();
+  if (!mod) return false;
+  ensureHandlerRegistered(mod);
+  try {
+    let perm = await getNotificationPermissionState();
+    if (perm !== 'granted') perm = await requestNotificationPermission();
+    if (perm !== 'granted') return false;
+
+    await mod.scheduleNotificationAsync({
+      content: { title: 'Test notification', body: 'If you can see this, local notifications are working.' },
+      trigger: null,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}

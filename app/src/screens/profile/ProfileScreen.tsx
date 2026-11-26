@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Alert, Pressable, View } from 'react-native';
+import { Linking, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { signName } from '../../utils/signName';
 import {
@@ -36,9 +36,12 @@ import { VerifyEmailCard } from '../../components/VerifyEmailCard';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { AIAvatar } from '../../components/AIAvatar';
-import { color, radius, spacing } from '../../theme/tokens';
+import { AvatarPickerModal } from '../../components/AvatarPickerModal';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
+import { FadeInUp } from '../../components/FadeInUp';
 import { SettingsRow } from './SettingsRow';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
+import { InfoModal } from '../../components/InfoModal';
 import { RootStackParamList } from '../../navigation/types';
 import { useUserProfile } from '../../context/UserProfileContext';
 import { useAuth } from '../../context/AuthContext';
@@ -52,6 +55,11 @@ import { palmApi } from '../../services/palmApi';
 import { billingApi } from '../../services/billingApi';
 import { wellnessApi } from '../../services/wellnessApi';
 import { appLocale } from '../../utils/locale';
+import { restorePurchases } from '../../services/purchases';
+import { asApiError } from '../../services/apiRequest';
+
+const LEGAL_BASE = (process.env.EXPO_PUBLIC_LEGAL_BASE_URL ?? process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
+const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? 'support@palmsetu.com';
 
 /** The hidden admin gesture only exists in development builds (or when explicitly enabled), so store reviewers and
  * curious users in a release build never find it. Set EXPO_PUBLIC_ENABLE_ADMIN=true to ship it deliberately. */
@@ -73,11 +81,14 @@ function HeaderChip({ icon: Icon, label, tint }: { icon: LucideIcon; label: stri
 export function ProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { profile, clearProfile } = useUserProfile();
+  const { profile, clearProfile, setAvatarKey } = useUserProfile();
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const { isGuest, account, logOut, deleteAccount } = useAuth();
   const { languageCode } = useLanguage();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmRescan, setConfirmRescan] = useState(false);
+  const [infoModal, setInfoModal] = useState<{ title: string; description: string } | null>(null);
+  const [restoring, setRestoring] = useState(false);
   const [hasPalmProfile, setHasPalmProfile] = useState(false);
   const [birthProfile, setBirthProfile] = useState<BirthProfile | null>(null);
   // Real plan + journal streak from the backend (null until loaded; the plan line stays hidden rather than guessing).
@@ -116,6 +127,7 @@ export function ProfileScreen() {
 
   return (
     <PageContainer onRefresh={loadProfileData}>
+      <FadeInUp>
       <LinearGradient
         colors={[color.surfaceElevated, color.surface]}
         start={{ x: 0, y: 0 }}
@@ -124,9 +136,18 @@ export function ProfileScreen() {
       >
         {/* Long-press opens the hidden admin panel. Not a documented gesture
             anywhere in the UI - see navigation/RootNavigator.tsx comment. */}
-        <Pressable accessibilityRole="button" onLongPress={ADMIN_ENTRY_ENABLED ? () => navigation.navigate('AdminEntry') : undefined} delayLongPress={1200}>
-          <AIAvatar name={profile.name} gender={profile.gender} size={72} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Change avatar"
+          onPress={() => setShowAvatarPicker(true)}
+          onLongPress={ADMIN_ENTRY_ENABLED ? () => navigation.navigate('AdminEntry') : undefined}
+          delayLongPress={1200}
+        >
+          <AIAvatar name={profile.name} gender={profile.gender} avatarIndex={profile.avatarIndex} avatarKey={profile.avatarKey} size={72} />
         </Pressable>
+        <Text variant="caption" tone="accent" weight="semibold" style={{ marginTop: spacing.xs }} onPress={() => setShowAvatarPicker(true)}>
+          Change avatar
+        </Text>
         <Text variant="title" weight="semibold" style={{ marginTop: spacing.sm }}>{profile.name}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.sm }}>
           {moonSign && <HeaderChip icon={Moon} label={t('home.moonInSign', { sign: signName(t, moonSign) })} tint={color.accent} />}
@@ -134,7 +155,9 @@ export function ProfileScreen() {
           {tier && <HeaderChip icon={tier === 'premium' ? Crown : Sparkles} label={tier === 'premium' ? t('profile.planPremium') : t('profile.planFree')} tint={tier === 'premium' ? color.gold : color.textSecondary} />}
         </View>
       </LinearGradient>
+      </FadeInUp>
 
+      <FadeInUp delay={80}>
       {isGuest ? (
         <Card elevated style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flex: 1 }}>
@@ -172,46 +195,79 @@ export function ProfileScreen() {
       )}
 
       <AiUsageMeter style={{ marginTop: spacing.md }} />
+      </FadeInUp>
 
+      <FadeInUp delay={160}>
       <GroupLabel>{t('profile.account')}</GroupLabel>
       <Card padded={false}>
-        <SettingsRow icon={User} label={t('profile.personalInfo')} onPress={() => navigation.navigate('EditProfile')} />
-        <SettingsRow icon={Calendar} label={t('profile.birthDetails')} description={birthDetailsSummary} onPress={() => navigation.navigate('AstrologyProfileSetup', { returnTo: 'profile' })} />
-        <SettingsRow icon={Shield} label={t('profile.accountManagement')} onPress={() => {}} />
+        <SettingsRow icon={User} label={t('profile.personalInfo')} tint={featureTint.astrology} onPress={() => navigation.navigate('EditProfile')} />
+        <SettingsRow icon={Calendar} label={t('profile.birthDetails')} description={birthDetailsSummary} tint={featureTint.astrology} onPress={() => navigation.navigate('AstrologyProfileSetup', { returnTo: 'profile' })} />
+        <SettingsRow icon={Shield} label={t('profile.accountManagement')} tint={featureTint.astrology} onPress={() => navigation.navigate('AccountManagement')} />
       </Card>
 
       <GroupLabel>{t('profile.preferences')}</GroupLabel>
       <Card padded={false}>
-        <SettingsRow icon={Bell} label={t('profile.notifications')} onPress={() => {}} />
-        <SettingsRow icon={Palette} label={t('profile.appearance')} onPress={() => {}} />
-        <SettingsRow icon={Globe} label={t('profile.language')} description={currentLanguageName} onPress={() => navigation.navigate('Language')} />
+        <SettingsRow icon={Bell} label={t('profile.notifications')} tint={featureTint.wellness} onPress={() => navigation.navigate('NotificationSettings')} />
+        <SettingsRow icon={Palette} label={t('profile.appearance')} tint={featureTint.wellness} onPress={() => navigation.navigate('Appearance')} />
+        <SettingsRow icon={Globe} label={t('profile.language')} description={currentLanguageName} tint={featureTint.wellness} onPress={() => navigation.navigate('Language')} />
       </Card>
+      </FadeInUp>
 
+      <FadeInUp delay={240}>
       <GroupLabel>{t('profile.subscription')}</GroupLabel>
       <Card padded={false}>
-        <SettingsRow icon={CreditCard} label={t('profile.currentPlan')} description={tier === 'premium' ? 'Premium' : tier === 'free' ? 'Free' : undefined} onPress={() => navigation.navigate('Paywall')} />
-        <SettingsRow icon={RefreshCw} label={t('profile.restorePurchases')} onPress={() => {}} />
+        <SettingsRow icon={CreditCard} label={t('profile.currentPlan')} description={tier === 'premium' ? 'Premium' : tier === 'free' ? 'Free' : undefined} tint={featureTint.guidance} onPress={() => navigation.navigate('Paywall')} />
+        <SettingsRow
+          icon={RefreshCw}
+          label={restoring ? 'Restoring...' : t('profile.restorePurchases')}
+          tint={featureTint.guidance}
+          onPress={() => {
+            if (isGuest) {
+              setInfoModal({ title: t('ui.ProfileScreen.createAnAccount'), description: 'Sign in first so a restored purchase can be matched to your account.' });
+              return;
+            }
+            setRestoring(true);
+            restorePurchases()
+              .then(async ({ appUserId, entitlementActive }) => {
+                if (!entitlementActive) {
+                  setInfoModal({ title: 'Nothing to restore', description: 'No active purchase was found for this account.' });
+                  return;
+                }
+                await billingApi.confirmPurchase(appUserId);
+                await loadProfileData();
+                setInfoModal({ title: 'Purchase restored', description: 'Your premium access has been restored.' });
+              })
+              .catch((__err) => {
+                const err = asApiError(__err);
+                setInfoModal({ title: 'Could not restore purchases', description: err.message ?? t('ui.ProfileScreen.pleaseTryAgain') });
+              })
+              .finally(() => setRestoring(false));
+          }}
+        />
       </Card>
 
       {hasPalmProfile && (
         <>
           <GroupLabel>{t('profile.palmProfileGroup')}</GroupLabel>
           <Card padded={false}>
-            <SettingsRow icon={ScanLine} label={t('profile.rescanPalm')} description={t('profile.rescanPalmDesc')} onPress={() => setConfirmRescan(true)} />
+            <SettingsRow icon={ScanLine} label={t('profile.rescanPalm')} description={t('profile.rescanPalmDesc')} tint={featureTint.palm} onPress={() => setConfirmRescan(true)} />
           </Card>
         </>
       )}
+      </FadeInUp>
 
+      <FadeInUp delay={320}>
       <GroupLabel>{t('profile.privacy')}</GroupLabel>
       <Card padded={false}>
-        <SettingsRow icon={FileText} label={t('profile.savedReadings')} onPress={() => {}} />
-        <SettingsRow icon={NotebookPen} label={t('profile.journalData')} onPress={() => {}} />
+        <SettingsRow icon={FileText} label={t('profile.savedReadings')} tint={featureTint.tarot} onPress={() => navigation.navigate('SavedReadings')} />
+        <SettingsRow icon={NotebookPen} label={t('profile.journalData')} tint={featureTint.tarot} onPress={() => navigation.navigate('Journal')} />
         <SettingsRow
           icon={FileDown}
           label={t('profile.exportData')}
+          tint={featureTint.tarot}
           onPress={() => {
             if (isGuest) {
-              Alert.alert(t('ui.ProfileScreen.createAnAccount'), t('ui.ProfileScreen.signUpFirstToExport'));
+              setInfoModal({ title: t('ui.ProfileScreen.createAnAccount'), description: t('ui.ProfileScreen.signUpFirstToExport') });
               return;
             }
             authApi.exportData()
@@ -220,9 +276,9 @@ export function ProfileScreen() {
                   .filter(([, v]) => Array.isArray(v))
                   .map(([k, v]) => `${k}: ${(v as unknown[]).length}`)
                   .join('\n');
-                Alert.alert(t('ui.ProfileScreen.yourData'), counts || 'No saved data yet.');
+                setInfoModal({ title: t('ui.ProfileScreen.yourData'), description: counts || 'No saved data yet.' });
               })
-              .catch(() => Alert.alert(t('ui.ProfileScreen.couldNotExportData'), t('ui.ProfileScreen.pleaseTryAgain')));
+              .catch(() => setInfoModal({ title: t('ui.ProfileScreen.couldNotExportData'), description: t('ui.ProfileScreen.pleaseTryAgain') }));
           }}
         />
         <SettingsRow
@@ -231,25 +287,38 @@ export function ProfileScreen() {
           destructive
           onPress={() => {
             if (isGuest) {
-              Alert.alert(t('ui.ProfileScreen.noAccountYet'), t('ui.ProfileScreen.youAreBrowsingAsA'));
+              setInfoModal({ title: t('ui.ProfileScreen.noAccountYet'), description: t('ui.ProfileScreen.youAreBrowsingAsA') });
               return;
             }
             setConfirmDelete(true);
           }}
         />
       </Card>
+      </FadeInUp>
 
+      <FadeInUp delay={400}>
       <GroupLabel>{t('profile.support')}</GroupLabel>
       <Card padded={false}>
-        <SettingsRow icon={HelpCircle} label={t('profile.help')} onPress={() => {}} />
-        <SettingsRow icon={MessageSquare} label={t('profile.feedback')} onPress={() => {}} />
-        <SettingsRow icon={Lock} label={t('profile.privacyPolicy')} onPress={() => {}} />
+        <SettingsRow icon={HelpCircle} label={t('profile.help')} tint={featureTint.soulmate} onPress={() => navigation.navigate('Help')} />
+        <SettingsRow
+          icon={MessageSquare}
+          label={t('profile.feedback')}
+          tint={featureTint.soulmate}
+          onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Solune app feedback')}`)}
+        />
+        <SettingsRow
+          icon={Lock}
+          label={t('profile.privacyPolicy')}
+          tint={featureTint.soulmate}
+          onPress={() => Linking.openURL(`${LEGAL_BASE}/privacy`)}
+        />
         {isGuest ? (
-          <SettingsRow icon={UserPlus} label={t('profile.signInCreateAccount')} onPress={() => navigation.navigate('Auth')} />
+          <SettingsRow icon={UserPlus} label={t('profile.signInCreateAccount')} tint={featureTint.soulmate} onPress={() => navigation.navigate('Auth')} />
         ) : (
           <SettingsRow
             icon={LogOut}
             label={t('profile.signOut')}
+            tint={featureTint.soulmate}
             onPress={() => {
               logOut();
               clearProfile();
@@ -257,6 +326,7 @@ export function ProfileScreen() {
           />
         )}
       </Card>
+      </FadeInUp>
 
       <ConfirmationModal
         visible={confirmDelete}
@@ -268,7 +338,7 @@ export function ProfileScreen() {
           setConfirmDelete(false);
           deleteAccount()
             .then(() => clearProfile())
-            .catch(() => Alert.alert(t('ui.ProfileScreen.couldNotDeleteAccount'), t('ui.ProfileScreen.pleaseTryAgain')));
+            .catch(() => setInfoModal({ title: t('ui.ProfileScreen.couldNotDeleteAccount'), description: t('ui.ProfileScreen.pleaseTryAgain') }));
         }}
         onCancel={() => setConfirmDelete(false)}
       />
@@ -284,6 +354,22 @@ export function ProfileScreen() {
           navigation.navigate('PalmIntro', { allowRescan: true });
         }}
         onCancel={() => setConfirmRescan(false)}
+      />
+
+      {infoModal && (
+        <InfoModal
+          visible
+          title={infoModal.title}
+          description={infoModal.description}
+          onClose={() => setInfoModal(null)}
+        />
+      )}
+
+      <AvatarPickerModal
+        visible={showAvatarPicker}
+        selectedKey={profile.avatarKey}
+        onSelect={(key) => { setAvatarKey(key).catch(() => {}); }}
+        onClose={() => setShowAvatarPicker(false)}
       />
     </PageContainer>
   );

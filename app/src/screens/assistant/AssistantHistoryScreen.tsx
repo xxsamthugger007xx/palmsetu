@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MessageCircle, Trash2 } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
@@ -8,6 +8,7 @@ import { Card } from '../../components/Card';
 import { EmptyState } from '../../components/EmptyState';
 import { ErrorBanner, ErrorState } from '../../components/ErrorState';
 import { ListSkeleton } from '../../components/ListSkeleton';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { IconButton } from '../../components/Button';
 import { color, spacing } from '../../theme/tokens';
 import { assistantApi, AssistantConversationSummary } from '../../services/assistantApi';
@@ -21,6 +22,7 @@ export function AssistantHistoryScreen() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -33,20 +35,18 @@ export function AssistantHistoryScreen() {
 
   useEffect(() => { load(); }, [load]);
 
-  const remove = useCallback((id: string) => {
-    Alert.alert(t('ui.AssistantHistoryScreen.deleteConversation'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      { text: t('ui.AssistantHistoryScreen.delete'), style: 'destructive', onPress: async () => {
-        setDeleteError(null);
-        try {
-          await assistantApi.deleteConversation(id);
-        } catch {
-          setDeleteError(t('ui.AssistantHistoryScreen.couldnTDeleteThatConversation'));
-        }
-        load();
-      } },
-    ]);
-  }, [load]);
+  const confirmRemove = useCallback(async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    if (!id) return;
+    setDeleteError(null);
+    try {
+      await assistantApi.deleteConversation(id);
+    } catch {
+      setDeleteError(t('ui.AssistantHistoryScreen.couldnTDeleteThatConversation'));
+    }
+    load();
+  }, [load, pendingDeleteId]);
 
   if (loading && items.length === 0) {
     return (
@@ -97,10 +97,20 @@ export function AssistantHistoryScreen() {
                 <Text variant="caption" tone="muted" numberOfLines={1} style={{ marginTop: 2 }}>{c.lastMessage}</Text>
               )}
             </View>
-            <IconButton icon={Trash2} onPress={() => remove(c.id)} tone={color.danger} />
+            <IconButton icon={Trash2} onPress={() => setPendingDeleteId(c.id)} tone={color.danger} />
           </View>
         </Card>
       ))}
+
+      <ConfirmationModal
+        visible={!!pendingDeleteId}
+        title={t('ui.AssistantHistoryScreen.deleteConversation')}
+        description={t('ui.AssistantHistoryScreen.thisCannotBeUndone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
+        destructive
+        onConfirm={confirmRemove}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </PageContainer>
   );
 }

@@ -28,6 +28,22 @@ const validAnswers = {
   style: 'pencil',
 };
 
+/** Creates a sketch and takes it all the way through to 'payment_verified'
+ * via the real (mocked) Razorpay flow, since the feature has no free-trial
+ * path any more - every sketch must be paid for. */
+async function createPaidSketch(app: express.Express, user: string, answers: Record<string, unknown> = validAnswers) {
+  vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: `order_${uuid()}`, amount: 9900, currency: 'INR', receipt: 'r1', status: 'created' });
+  vi.spyOn(razorpay, 'verifyPaymentSignature').mockReturnValue(true);
+
+  const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send(answers);
+  const sketchId = create.body.sketch.id;
+  await request(app)
+    .post(`/soulmate/sketches/${sketchId}/verify-payment`)
+    .set('x-demo-user', user)
+    .send({ razorpayOrderId: create.body.orderId, razorpayPaymentId: `pay_${uuid()}`, razorpaySignature: 'sig_whatever_since_mocked' });
+  return create;
+}
+
 describe('routes/soulmate', () => {
   let app: express.Express;
 
@@ -116,8 +132,7 @@ describe('routes/soulmate', () => {
 
   it('serves a completed sketch share image as valid PNG bytes', async () => {
     const user = `share-image-${uuid()}`;
-    const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user)
-      .send({ ...validAnswers, requestFreeTrial: true });
+    const create = await createPaidSketch(app, user);
     expect(create.status).toBe(200);
     const sketchId = create.body.sketch.id;
 
@@ -137,8 +152,7 @@ describe('routes/soulmate', () => {
 
   it('serves readable original image bytes when watermarking the share image fails', async () => {
     const user = `share-image-fallback-${uuid()}`;
-    const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user)
-      .send({ ...validAnswers, requestFreeTrial: true });
+    const create = await createPaidSketch(app, user);
     expect(create.status).toBe(200);
     const sketchId = create.body.sketch.id;
     const generate = await request(app).post(`/soulmate/sketches/${sketchId}/generate`).set('x-demo-user', user);
@@ -253,58 +267,24 @@ describe('routes/soulmate', () => {
     expect(generateAttempt.status).toBe(404);
   });
 
-  describe('free trial', () => {
-    it('a new user is eligible, and requesting the free trial skips payment entirely, with ZERO AI/network calls', async () => {
-      const razorpaySpy = vi.spyOn(razorpay, 'createOrder');
-      const fetchSpy = vi.spyOn(global, 'fetch');
-
-      const user = `trial-user-${uuid()}`;
+  describe('premium-only (no free trial)', () => {
+    it('always reports ineligible for a free trial, since the feature is premium-only', async () => {
+      const user = `premium-user-${uuid()}`;
       const status = await request(app).get('/soulmate/trial-status').set('x-demo-user', user);
       expect(status.status).toBe(200);
-      expect(status.body.eligible).toBe(true);
+      expect(status.body.eligible).toBe(false);
       expect(status.body.freeSketch).toBeNull();
+    });
 
-      const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send({ ...validAnswers, requestFreeTrial: true });
+    it('always creates a real paid order, even on a user\'s very first sketch', async () => {
+      const createOrderSpy = vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: 'order_first', amount: 9900, currency: 'INR', receipt: 'r1', status: 'created' });
+      const user = `premium-user-${uuid()}`;
+      const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send(validAnswers);
       expect(create.status).toBe(200);
-      expect(create.body.sketch.isFreeTrial).toBe(true);
-      expect(create.body.sketch.priceCents).toBe(0);
-      expect(create.body.sketch.generationStatus).toBe('payment_verified');
-      expect(create.body.razorpayKeyId).toBeNull();
-      expect(razorpaySpy).not.toHaveBeenCalled();
-
-      const generate = await request(app).post(`/soulmate/sketches/${create.body.sketch.id}/generate`).set('x-demo-user', user);
-      expect(generate.status).toBe(200);
-      expect(generate.body.sketch.generationStatus).toBe('completed');
-      expect(generate.body.sketch.imageFilename).toBeTruthy();
-
-      const statusAfter = await request(app).get('/soulmate/trial-status').set('x-demo-user', user);
-      expect(statusAfter.body.eligible).toBe(false);
-      expect(statusAfter.body.freeSketch.id).toBe(create.body.sketch.id);
-
-      expect(fetchSpy).not.toHaveBeenCalled();
-    });
-
-    it('rejects a second free trial for a user who already has one, regardless of its status', async () => {
-      const user = `trial-user-${uuid()}`;
-      const first = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send({ ...validAnswers, requestFreeTrial: true });
-      expect(first.status).toBe(200);
-
-      const second = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send({ ...validAnswers, requestFreeTrial: true });
-      expect(second.status).toBe(409);
-      expect(second.body.code).toBe('TRIAL_ALREADY_USED');
-      expect(second.body.sketch.id).toBe(first.body.sketch.id);
-    });
-
-    it('a paid sketch is unaffected by trial state and still requires real payment verification', async () => {
-      vi.spyOn(razorpay, 'createOrder').mockResolvedValue({ id: 'order_paid', amount: 9900, currency: 'INR', receipt: 'rpaid', status: 'created' });
-      const user = `trial-user-${uuid()}`;
-      await request(app).post('/soulmate/sketches').set('x-demo-user', user).send({ ...validAnswers, requestFreeTrial: true });
-
-      const paid = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send(validAnswers);
-      expect(paid.status).toBe(200);
-      expect(paid.body.sketch.isFreeTrial).toBe(false);
-      expect(paid.body.sketch.priceCents).toBe(9900);
-      expect(paid.body.sketch.generationStatus).toBe('pending_payment');
+      expect(create.body.sketch.isFreeTrial).toBe(false);
+      expect(create.body.sketch.priceCents).toBe(9900);
+      expect(create.body.sketch.generationStatus).toBe('pending_payment');
+      expect(createOrderSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -325,8 +305,7 @@ describe('routes/soulmate', () => {
       const seen = new Set<string>();
       for (let i = 0; i < 30; i++) {
         const user = `catalog-user-${uuid()}`;
-        const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user)
-          .send({ ...validAnswers, preferredGender: 'no-preference', preferredCountry: 'no-preference', requestFreeTrial: true });
+        const create = await createPaidSketch(app, user, { ...validAnswers, preferredGender: 'no-preference', preferredCountry: 'no-preference' });
         const generate = await request(app).post(`/soulmate/sketches/${create.body.sketch.id}/generate`).set('x-demo-user', user);
         seen.add(generate.body.sketch.imageFilename);
       }
@@ -335,7 +314,7 @@ describe('routes/soulmate', () => {
 
     it('honors a "no preference" gender by not restricting to a single gender pool', async () => {
       const user = `catalog-nopref-${uuid()}`;
-      const create = await request(app).post('/soulmate/sketches').set('x-demo-user', user).send({ ...validAnswers, preferredGender: 'no-preference', requestFreeTrial: true });
+      const create = await createPaidSketch(app, user, { ...validAnswers, preferredGender: 'no-preference' });
       const generate = await request(app).post(`/soulmate/sketches/${create.body.sketch.id}/generate`).set('x-demo-user', user);
       expect(generate.status).toBe(200);
       expect(generate.body.sketch.imageFilename).toBeTruthy();

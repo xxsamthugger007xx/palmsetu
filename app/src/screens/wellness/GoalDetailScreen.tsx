@@ -1,6 +1,6 @@
 import { tr } from '../../utils/tr';
 import React from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CheckCircle2, Trash2, RefreshCw, Target, Pencil } from 'lucide-react-native';
@@ -13,10 +13,12 @@ import { EmptyState } from '../../components/EmptyState';
 import { color, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, WellnessGoal } from '../../services/wellnessApi';
+import { tick, success } from '../../services/haptics';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
 import { ListSkeleton } from '../../components/ListSkeleton';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'GoalDetail'>;
 
@@ -30,6 +32,7 @@ export function GoalDetailScreen() {
   const [note, setNote] = React.useState('');
   const [busy, setBusy] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
   const [editTitle, setEditTitle] = React.useState('');
   const [editFrequency, setEditFrequency] = React.useState('');
 
@@ -57,6 +60,7 @@ export function GoalDetailScreen() {
       const res = await wellnessApi.addGoalProgress(goal.id, note.trim() || undefined);
       setGoal(res.goal);
       setNote('');
+      tick();
     } catch (__err) {
       const err = asApiError(__err);
       setError(err?.message ?? t('ui.GoalDetailScreen.couldNotLogProgress'));
@@ -71,6 +75,7 @@ export function GoalDetailScreen() {
     try {
       const res = await wellnessApi.completeGoal(goal.id);
       setGoal(res.goal);
+      success();
     } catch (__err) {
       const err = asApiError(__err);
       setError(err?.message ?? t('ui.GoalDetailScreen.couldNotMarkGoalComplete'));
@@ -81,22 +86,19 @@ export function GoalDetailScreen() {
 
   const remove = () => {
     if (!goal) return;
-    Alert.alert(t('ui.GoalDetailScreen.deleteThisGoal'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      {
-        text: t('ui.AssistantHistoryScreen.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await wellnessApi.deleteGoal(goal.id);
-            navigation.goBack();
-          } catch (__err) {
-            const err = asApiError(__err);
-            setError(err?.message ?? t('ui.GoalDetailScreen.couldNotDeleteThisGoal'));
-          }
-        },
-      },
-    ]);
+    setConfirmDelete(true);
+  };
+
+  const doDelete = async () => {
+    setConfirmDelete(false);
+    if (!goal) return;
+    try {
+      await wellnessApi.deleteGoal(goal.id);
+      navigation.goBack();
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.GoalDetailScreen.couldNotDeleteThisGoal'));
+    }
   };
 
   if (loading) {
@@ -201,6 +203,16 @@ export function GoalDetailScreen() {
       {goal.status !== 'completed' && (
         <Button label={t('ui.GoalDetailScreen.deleteGoal')} icon={Trash2} variant="danger" onPress={remove} style={{ marginTop: spacing.lg }} />
       )}
+
+      <ConfirmationModal
+        visible={confirmDelete}
+        title={t('ui.GoalDetailScreen.deleteThisGoal')}
+        description={t('ui.AssistantHistoryScreen.thisCannotBeUndone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
+        destructive
+        onConfirm={doDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
     </PageContainer>
   );
 }

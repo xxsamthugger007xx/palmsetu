@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Sparkles, ChevronLeft, Pencil, Heart, Wand2, History, Gift } from 'lucide-react-native';
+import { Sparkles, ChevronLeft, Heart, Wand2, History } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -11,7 +11,6 @@ import { Button, IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { soulmateApi } from '../../services/soulmateApi';
-import { SoulmateSketch } from '../../types/soulmate';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import { SOULMATE_SKETCH_REGISTRY } from '../../data/soulmateSketchRegistry';
@@ -27,25 +26,8 @@ const STEPS = [
 export function SoulmateIntroScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [loaded, setLoaded] = useState(false);
-  const [eligible, setEligible] = useState(true);
-  const [freeSketch, setFreeSketch] = useState<SoulmateSketch | null>(null);
-
   const load = React.useCallback(async () => {
     soulmateApi.recordPageView();
-    try {
-      const status = await soulmateApi.getTrialStatus();
-      setEligible(status.eligible);
-      setFreeSketch(status.freeSketch);
-    } catch {
-      // If the check itself fails, default to eligible rather than blocking
-      // a brand-new user from ever seeing the free-trial CTA - the real
-      // enforcement happens again server-side on creation regardless.
-      setEligible(true);
-      setFreeSketch(null);
-    } finally {
-      setLoaded(true);
-    }
   }, []);
 
   useFocusEffect(
@@ -55,24 +37,8 @@ export function SoulmateIntroScreen() {
   );
 
   const handlePrimaryCta = () => {
-    if (eligible) {
-      navigation.navigate('SoulmateQuestionnaire', { intent: 'free' });
-      return;
-    }
-    if (freeSketch && freeSketch.generationStatus !== 'completed') {
-      // An existing free sketch that never finished (still generating, or
-      // failed) - resume/retry it directly rather than starting over.
-      navigation.navigate('SoulmateGenerating', { sketchId: freeSketch.id });
-      return;
-    }
     navigation.navigate('SoulmateQuestionnaire', { intent: 'paid' });
   };
-
-  const ctaLabel = eligible
-    ? 'Create My Free Sketch'
-    : freeSketch && freeSketch.generationStatus !== 'completed'
-      ? 'Continue your sketch'
-      : 'Explore Premium Sketches';
 
   return (
     <PageContainer onRefresh={load}>
@@ -120,49 +86,17 @@ export function SoulmateIntroScreen() {
         ))}
       </View>
 
-      <Card style={{ marginTop: spacing.md }}>
-        <Text variant="caption" tone="muted">
-          {t('ui.SoulmateIntroScreen.soulmateSketchIsEntertainmentAnd')}
-        </Text>
-      </Card>
-
-      {loaded && (
-        eligible ? (
-          <Card elevated style={styles.trialBanner}>
-            <Gift size={16} color={color.success} strokeWidth={1.75} />
-            <Text variant="bodySm" weight="semibold" tone="success" style={{ marginLeft: spacing.sm }}>
-              {t('ui.SoulmateIntroScreen.yourFirstSoulmateSketchIs')}
-            </Text>
-          </Card>
-        ) : (
-          freeSketch?.generationStatus === 'completed' && (
-            <Card style={styles.usedBanner}>
-              <Text variant="bodySm" tone="secondary">
-                {t('ui.SoulmateIntroScreen.yourFreeSketchHasBeen')}
-              </Text>
-            </Card>
-          )
-        )
-      )}
-
       <Button
-        label={ctaLabel}
-        icon={eligible ? Gift : Sparkles}
+        label="Explore Premium Sketches"
+        icon={Sparkles}
         fullWidth
-        disabled={!loaded}
-        style={{ marginTop: spacing.md }}
+        style={{ marginTop: spacing.lg }}
         onPress={handlePrimaryCta}
       />
 
-      {!eligible && freeSketch?.generationStatus === 'completed' && (
-        <Button
-          label={t('ui.SoulmateIntroScreen.viewMyFreeSketch')}
-          variant="secondary"
-          fullWidth
-          style={{ marginTop: spacing.sm }}
-          onPress={() => navigation.navigate('SoulmateResult', { sketchId: freeSketch.id })}
-        />
-      )}
+      <Text variant="caption" tone="muted" style={styles.finePrint}>
+        {t('ui.SoulmateIntroScreen.soulmateSketchIsEntertainmentAnd')}
+      </Text>
     </PageContainer>
   );
 }
@@ -207,14 +141,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  trialBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.lg,
-    borderColor: color.successMuted,
-  },
-  usedBanner: {
-    marginTop: spacing.lg,
+  finePrint: {
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    lineHeight: 16,
   },
 });

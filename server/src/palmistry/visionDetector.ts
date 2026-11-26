@@ -100,13 +100,13 @@ FIRST, and most importantly, determine whether this image is actually usable for
 - handSide: "left" | "right" | "unknown" - which hand is shown.
 - handSideConfidence: your honest confidence from 0 to 1 in that handSide judgment (1 = very confident, 0 = pure guess). This is used to compare against the user's own manual left/right selection, so do not inflate it - genuinely unclear framing (e.g. hand angled, only partial view) should get a low confidence here.
 - multipleHandsDetected: true if more than one hand appears in the frame.
-- isFullyFramed: true only if the whole palm AND the wrist are within the frame, not cropped off.
+- isFullyFramed: true as long as the full palm (from the base of the fingers down to the base of the palm/heel of the hand) is visible and not cropped or obscured - the wrist itself does NOT need to be visible, since it carries no palmistry content. Only false if part of the palm itself (not just the wrist) is cut off, covered, or folded out of view.
 - validationStatus: one of "accepted" | "accepted_partial" | "rejected_no_hand" | "rejected_back_of_hand" | "rejected_not_a_body_part" | "rejected_multiple_hands" | "rejected_quality". Pick:
   - "rejected_no_hand" if no hand is visible at all (e.g. a face, a random object, a screenshot, blank wall).
   - "rejected_not_a_body_part" if a body part other than a hand (e.g. a face, foot, arm without visible palm) is shown.
   - "rejected_back_of_hand" if a hand is visible but it is the back of the hand, not the palm.
   - "rejected_multiple_hands" if more than one hand/palm is in frame, making a single clean reading impossible.
-  - "accepted_partial" if a single palm is visible but notably cropped/obscured (e.g. missing the wrist, part of the palm cut off, fingers folded over covering lines) - still usable but with limited visibility.
+  - "accepted_partial" if a single palm is visible but the palm itself (not just the wrist, which does not matter) is notably cropped or obscured (e.g. part of the palm cut off at the frame edge, fingers folded over covering lines) - still usable but with limited visibility.
   - "accepted" if a single palm is clearly, fully visible.
   - "rejected_quality" only if the image is so dark/blurry you genuinely cannot tell if it's even a hand (prefer "accepted_partial" or another status whenever you can still make out a hand).
 - rejectionReason: if validationStatus is not "accepted" or "accepted_partial", a short, genuinely explanatory, user-facing sentence explaining what's wrong and how to fix it (e.g. "This looks like the back of your hand - turn your palm to face the camera." or "We couldn't detect a hand in this photo - please photograph your open palm."). Otherwise null.

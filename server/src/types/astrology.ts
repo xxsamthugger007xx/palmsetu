@@ -20,6 +20,19 @@ export interface UserIdentity {
   name: string;
   gender: Gender | null;
   focus?: FocusArea[];
+  /** Which illustrated avatar image to show for this user, within the set
+   * for their gender (see app/src/theme/avatars.ts for the actual image
+   * list). Assigned once, randomly, the first time gender becomes known -
+   * never re-randomized afterward, so a user's avatar stays stable across
+   * sessions/devices. Null until gender is set (no avatar set to pick
+   * from), or for genders with no dedicated avatar set. */
+  avatarIndex?: number | null;
+  /** An explicit user choice overriding the automatic avatarIndex above -
+   * a stable key like 'male1'..'male5'/'female1'..'female5' (see
+   * app/src/theme/avatars.ts's AVATAR_CHOICES) identifying one specific
+   * image out of the full set, regardless of the account's own gender.
+   * Null/unset = no manual choice made, fall back to avatarIndex. */
+  avatarKey?: string | null;
   updatedAt: string;
 }
 

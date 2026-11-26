@@ -61,23 +61,30 @@ function score(entry: CatalogEntry, params: SoulmateMatchParams): number {
   // everything else is equal.
   if (entry.assetType === 'standalone_original') s += 5;
   if (params.preferredAgeRange && entry.ageRange === params.preferredAgeRange) s += 3;
-  if (params.preferredCountry !== 'no-preference' && entry.country === params.preferredCountry) s += 2;
   return s;
 }
 
 /**
- * Deterministic, local-only portrait selection. Hard-filters on gender when
- * one is requested (an eligible pool with zero gender matches should not
- * happen given the catalogue's even split, but 'no-preference' always
- * falls through to the full library regardless). Among the highest-scoring
- * candidates, picks one at random so different users with identical
- * preferences don't always receive the exact same portrait.
+ * Deterministic, local-only portrait selection. Hard-filters on gender AND
+ * country when requested (every gender x country combination has at least
+ * 4 catalogue entries, so this never needs to fall back for a real
+ * preference pair) - country used to be only a +2 scoring nudge, which a
+ * single style or age match could easily outweigh, so a requested
+ * nationality was effectively ignored most of the time. 'no-preference' on
+ * either axis always falls through to the full library regardless. Among
+ * the highest-scoring remaining candidates, picks one at random so
+ * different users with identical preferences don't always receive the
+ * exact same portrait.
  */
 export function pickSoulmateImage(params: SoulmateMatchParams): { filename: string } {
   let pool = CATALOG;
   if (params.preferredGender !== 'no-preference') {
-    const genderMatches = CATALOG.filter((e) => e.gender === params.preferredGender);
+    const genderMatches = pool.filter((e) => e.gender === params.preferredGender);
     if (genderMatches.length > 0) pool = genderMatches;
+  }
+  if (params.preferredCountry !== 'no-preference') {
+    const countryMatches = pool.filter((e) => e.country === params.preferredCountry);
+    if (countryMatches.length > 0) pool = countryMatches;
   }
 
   const scored = pool.map((entry) => ({ entry, s: score(entry, params) }));

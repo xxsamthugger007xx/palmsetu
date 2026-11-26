@@ -1,6 +1,6 @@
 import { tr } from '../../utils/tr';
 import React, { useState } from 'react';
-import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
@@ -10,6 +10,8 @@ import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button, IconButton } from '../../components/Button';
 import { DirectionSelectorModal, DIRECTION_LABELS } from '../../components/DirectionSelectorModal';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
+import { InfoModal } from '../../components/InfoModal';
 import { color, radius, spacing } from '../../theme/tokens';
 import { roomCategoryColor, roomCategoryMutedBg, roomCategoryBorder } from '../../theme/vastuTheme';
 import { RootStackParamList } from '../../navigation/types';
@@ -40,6 +42,8 @@ export function VastuPropertyFormScreen() {
   const [customRoomName, setCustomRoomName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingCountChange, setPendingCountChange] = useState<{ category: 'bedroom' | 'bathroom'; newCount: number } | null>(null);
+  const [infoModal, setInfoModal] = useState<{ title: string; description: string } | null>(null);
 
   const completedCount = rooms.filter((r) => r.direction).length;
 
@@ -53,17 +57,21 @@ export function VastuPropertyFormScreen() {
     };
 
     if (countedRoomsLoseData(rooms, category, newCount)) {
-      Alert.alert(
-        t('ui.VastuPropertyFormScreen.removeRoomDirection'),
-        `Reducing the number of ${category}s will remove the direction you already set for one of them. Continue?`,
-        [
-          { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-          { text: t('ui.VastuPropertyFormScreen.remove'), style: 'destructive', onPress: doResize },
-        ],
-      );
+      setPendingCountChange({ category, newCount });
     } else {
       doResize();
     }
+  };
+
+  const confirmCountChange = () => {
+    if (!pendingCountChange) return;
+    const { category, newCount } = pendingCountChange;
+    const defaultName = category === 'bedroom' ? defaultBedroomName : defaultBathroomName;
+    setPendingCountChange(null);
+    Haptics.selectionAsync().catch(() => {});
+    setRooms((prev) => resizeCountedRooms(prev, category, newCount, defaultName));
+    if (category === 'bedroom') setBedroomCount(newCount);
+    else setBathroomCount(newCount);
   };
 
   const toggleCommonRoom = (def: typeof COMMON_ROOMS[number]) => {
@@ -80,7 +88,7 @@ export function VastuPropertyFormScreen() {
     if (!name) return;
     const alreadyExists = rooms.some((r) => r.category === 'custom' && r.name.toLowerCase() === name.toLowerCase());
     if (alreadyExists) {
-      Alert.alert(t('ui.VastuPropertyFormScreen.alreadyAdded'), `You already have a room named "${name}".`);
+      setInfoModal({ title: t('ui.VastuPropertyFormScreen.alreadyAdded'), description: `You already have a room named "${name}".` });
       return;
     }
     const roomId = `custom-${Date.now()}-${Math.round(Math.random() * 1000)}`;
@@ -326,6 +334,25 @@ export function VastuPropertyFormScreen() {
             setActiveDirectionRoomId(null);
           }}
           onClose={() => setActiveDirectionRoomId(null)}
+        />
+      )}
+
+      <ConfirmationModal
+        visible={!!pendingCountChange}
+        title={t('ui.VastuPropertyFormScreen.removeRoomDirection')}
+        description={`Reducing the number of ${pendingCountChange?.category}s will remove the direction you already set for one of them. Continue?`}
+        confirmLabel={t('ui.VastuPropertyFormScreen.remove')}
+        destructive
+        onConfirm={confirmCountChange}
+        onCancel={() => setPendingCountChange(null)}
+      />
+
+      {infoModal && (
+        <InfoModal
+          visible
+          title={infoModal.title}
+          description={infoModal.description}
+          onClose={() => setInfoModal(null)}
         />
       )}
     </PageContainer>

@@ -14,6 +14,7 @@ import { Button, IconButton } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { TarotCardFace } from '../../components/TarotCardFace';
 import { TarotInfoModal } from '../../components/TarotInfoModal';
+import { FadeInUp } from '../../components/FadeInUp';
 import { color, radius, spacing } from '../../theme/tokens';
 import { tarotColor, heroGradient } from '../../theme/tarotTheme';
 import { RootStackParamList } from '../../navigation/types';
@@ -138,6 +139,7 @@ export function TarotLandingScreen() {
 
   return (
     <PageContainer onRefresh={load}>
+      <FadeInUp>
       <LinearGradient
         colors={heroGradient}
         start={{ x: 0, y: 0 }}
@@ -189,7 +191,9 @@ export function TarotLandingScreen() {
           ) : null}
         </View>
       </LinearGradient>
+      </FadeInUp>
 
+      <FadeInUp delay={100}>
       <Card
         elevated
         style={styles.personalReadingCard}
@@ -204,7 +208,9 @@ export function TarotLandingScreen() {
         </View>
         <ChevronRight size={18} color={color.textMuted} />
       </Card>
+      </FadeInUp>
 
+      <FadeInUp delay={180}>
       <View style={{ marginTop: spacing.xl }}>
         <SectionHeader title={t('tarot.categoriesTitle')} />
         <View style={styles.grid}>
@@ -241,7 +247,9 @@ export function TarotLandingScreen() {
           ))}
         </View>
       </View>
+      </FadeInUp>
 
+      <FadeInUp delay={260}>
       <View style={{ marginTop: spacing.xl }}>
         <SectionHeader title={t('tarot.recentReadingsTitle')} action={history.length > 0 ? t('common.viewAll') : undefined} onActionPress={() => navigation.navigate('TarotHistory')} />
         {history.length === 0 ? (
@@ -266,6 +274,7 @@ export function TarotLandingScreen() {
           ))
         )}
       </View>
+      </FadeInUp>
 
       <TarotInfoModal visible={infoVisible} onClose={() => setInfoVisible(false)} />
     </PageContainer>

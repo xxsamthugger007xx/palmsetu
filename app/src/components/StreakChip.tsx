@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet } from 'react-native';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -23,19 +23,19 @@ export function StreakChip({ days, atRisk, onPress }: { days: number; atRisk?: b
   }, [alive, still]);
   const tint = !alive ? color.textMuted : atRisk ? color.warning : color.gold;
   return (
-    <View
+    <Pressable
       accessible
       accessibilityRole={onPress ? 'button' : 'text'}
       accessibilityLabel={`${days} ${t('streak.dayStreak')}`}
       hitSlop={10}
-      onTouchEnd={onPress}
+      onPress={onPress}
       style={[styles.chip, alive && { backgroundColor: color.goldMuted, borderColor: color.goldBorder }]}
     >
       <Animated.View style={{ transform: [{ scale: flick.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }, { rotate: flick.interpolate({ inputRange: [0, 1], outputRange: ['-4deg', '5deg'] }) }] }}>
         <Flame size={15} color={tint} strokeWidth={2} fill={alive ? tint : 'transparent'} />
       </Animated.View>
       <Text variant="bodySm" weight="semibold" style={{ color: tint, marginLeft: 4 }}>{days}</Text>
-    </View>
+    </Pressable>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Check, Trophy, RefreshCw, RotateCcw, LogOut } from 'lucide-react-native';
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import { asApiError, ApiError } from '../../services/apiRequest';
 import { ListSkeleton } from '../../components/ListSkeleton';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'ChallengeDetail'>;
 
@@ -29,6 +30,7 @@ export function ChallengeDetailScreen() {
   const [allowed, setAllowed] = React.useState(true);
   const [progress, setProgress] = React.useState<ChallengeProgress | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const [confirmAction, setConfirmAction] = React.useState<'restart' | 'leave' | null>(null);
 
   const load = React.useCallback(() => {
     setLoading(true);
@@ -73,52 +75,35 @@ export function ChallengeDetailScreen() {
     }
   };
 
-  const restart = () => {
-    Alert.alert(
-      t('ui.ChallengeDetailScreen.restartThisChallenge'),
-      t('ui.ChallengeDetailScreen.thisWipesAllYourProgress'),
-      [
-        { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-        {
-          text: t('ui.ChallengeDetailScreen.restart'),
-          style: 'destructive',
-          onPress: async () => {
-            setBusy(true);
-            try {
-              const res = await wellnessApi.restartChallenge(params.id);
-              setProgress(res.progress);
-            } catch (__err) {
-              const err = asApiError(__err);
-              setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotRestartThisChallenge'));
-            } finally {
-              setBusy(false);
-            }
-          },
-        },
-      ],
-    );
+  const restart = () => setConfirmAction('restart');
+  const leave = () => setConfirmAction('leave');
+
+  const doRestart = async () => {
+    setConfirmAction(null);
+    setBusy(true);
+    try {
+      const res = await wellnessApi.restartChallenge(params.id);
+      setProgress(res.progress);
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotRestartThisChallenge'));
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const leave = () => {
-    Alert.alert(t('ui.ChallengeDetailScreen.leaveThisChallenge'), t('ui.ChallengeDetailScreen.yourProgressIsKeptBut'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      {
-        text: t('ui.ChallengeDetailScreen.leave'),
-        style: 'destructive',
-        onPress: async () => {
-          setBusy(true);
-          try {
-            const res = await wellnessApi.leaveChallenge(params.id);
-            setProgress(res.progress);
-          } catch (__err) {
-            const err = asApiError(__err);
-            setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotLeaveThisChallenge'));
-          } finally {
-            setBusy(false);
-          }
-        },
-      },
-    ]);
+  const doLeave = async () => {
+    setConfirmAction(null);
+    setBusy(true);
+    try {
+      const res = await wellnessApi.leaveChallenge(params.id);
+      setProgress(res.progress);
+    } catch (__err) {
+      const err = asApiError(__err);
+      setError(err?.message ?? t('ui.ChallengeDetailScreen.couldNotLeaveThisChallenge'));
+    } finally {
+      setBusy(false);
+    }
   };
 
   if (loading) {
@@ -223,6 +208,25 @@ export function ChallengeDetailScreen() {
           </Card>
         );
       })}
+
+      <ConfirmationModal
+        visible={confirmAction === 'restart'}
+        title={t('ui.ChallengeDetailScreen.restartThisChallenge')}
+        description={t('ui.ChallengeDetailScreen.thisWipesAllYourProgress')}
+        confirmLabel={t('ui.ChallengeDetailScreen.restart')}
+        destructive
+        onConfirm={doRestart}
+        onCancel={() => setConfirmAction(null)}
+      />
+      <ConfirmationModal
+        visible={confirmAction === 'leave'}
+        title={t('ui.ChallengeDetailScreen.leaveThisChallenge')}
+        description={t('ui.ChallengeDetailScreen.yourProgressIsKeptBut')}
+        confirmLabel={t('ui.ChallengeDetailScreen.leave')}
+        destructive
+        onConfirm={doLeave}
+        onCancel={() => setConfirmAction(null)}
+      />
     </PageContainer>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, Globe2, Pencil, Brush, Feather } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
@@ -15,7 +15,6 @@ import {
 } from '../../types/soulmate';
 import { useTranslation } from 'react-i18next';
 
-import { asApiError } from '../../services/apiRequest';
 const SHORTLIST_COUNTRIES = [
   { id: 'india', label: 'India' },
   { id: 'united-states', label: 'United States' },
@@ -65,16 +64,13 @@ const STEP_COUNT = 4;
 export function SoulmateQuestionnaireScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'SoulmateQuestionnaire'>>();
-  const isFreeTrial = route.params.intent === 'free';
   const [step, setStep] = useState(0);
   const [gender, setGender] = useState<SoulmateGender | null>(null);
   const [ageRange, setAgeRange] = useState<SoulmateAgeRange | null>(null);
   const [country, setCountry] = useState<string | null>(null);
   const [showMoreCountries, setShowMoreCountries] = useState(false);
   const [style, setStyle] = useState<SoulmateStyle | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     soulmateApi.recordQuestionnaireStarted();
@@ -95,30 +91,7 @@ export function SoulmateQuestionnaireScreen() {
     }
     if (!gender || !ageRange || !country || !style) return;
     const answers = { preferredGender: gender, preferredAgeRange: ageRange, preferredCountry: country, style };
-
-    if (!isFreeTrial) {
-      navigation.navigate('SoulmatePayment', answers);
-      return;
-    }
-
-    // Free-trial path: no payment screen at all. Create the free sketch
-    // directly (server independently re-verifies real eligibility - see
-    // routes/soulmate.ts) and go straight into selection.
-    setError(null);
-    setSubmitting(true);
-    try {
-      const res = await soulmateApi.createSketch(answers, true);
-      navigation.replace('SoulmateGenerating', { sketchId: res.sketch.id });
-    } catch (__err) {
-      const err = asApiError(__err);
-      if (err.code === 'TRIAL_ALREADY_USED' && err.sketch) {
-        navigation.replace('SoulmateGenerating', { sketchId: err.sketch.id });
-      } else {
-        setError(err.message ?? t('ui.SoulmateQuestionnaireScreen.couldNotStartYourFree'));
-      }
-    } finally {
-      setSubmitting(false);
-    }
+    navigation.navigate('SoulmatePayment', answers);
   };
 
   return (
@@ -202,15 +175,10 @@ export function SoulmateQuestionnaireScreen() {
         </>
       )}
 
-      {error && (
-        <Text variant="caption" tone="danger" style={{ marginTop: spacing.md }}>{error}</Text>
-      )}
-
       <Button
-        label={step === STEP_COUNT - 1 ? (isFreeTrial ? 'Create my free sketch' : 'Continue to payment') : 'Continue'}
+        label={step === STEP_COUNT - 1 ? 'Continue to payment' : 'Continue'}
         fullWidth
-        disabled={!selected || submitting}
-        loading={submitting}
+        disabled={!selected}
         style={{ marginTop: spacing.lg }}
         onPress={handleContinue}
       />

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { FlatList, Modal, StyleSheet, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Diamond, Grid3x3, CircleDot, Crown, MapPin, Search, X, Check, UserCog } from 'lucide-react-native';
+import { Diamond, Grid3x3, CircleDot, Crown, MapPin, Search, X, Check, UserCog, ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
@@ -105,6 +105,9 @@ export function KundliStyleScreen() {
   if (profileReady === 'loading') {
     return (
       <PageContainer>
+        <View style={styles.header}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
         <ListSkeleton rows={3} />
       </PageContainer>
@@ -114,6 +117,9 @@ export function KundliStyleScreen() {
   if (profileReady === 'incomplete') {
     return (
       <PageContainer>
+        <View style={styles.header}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
         <EmptyState
           icon={UserCog}
@@ -129,6 +135,9 @@ export function KundliStyleScreen() {
   if (gated) {
     return (
       <PageContainer>
+        <View style={styles.header}>
+          {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+        </View>
         <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: spacing.lg }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
         <EmptyState
           icon={Crown}
@@ -145,6 +154,9 @@ export function KundliStyleScreen() {
 
   return (
     <PageContainer onRefresh={async () => {}}>
+      <View style={styles.header}>
+        {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+      </View>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.KundliStyleScreen.styleChart')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         {t('ui.KundliStyleScreen.chooseAChartStyleAnd')}
@@ -253,6 +265,7 @@ export function KundliStyleScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: { flexDirection: 'row' },
   row: { flexDirection: 'row', alignItems: 'center' },
   styleCard: { marginBottom: spacing.sm },
   styleCardActive: { borderColor: color.accentBorder },

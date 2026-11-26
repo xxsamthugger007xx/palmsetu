@@ -18,15 +18,10 @@ export const soulmateApi = {
   recordPageView: () => request<{ ok: true }>('/soulmate/events/page-view', { method: 'POST' }).catch(() => {}),
   recordQuestionnaireStarted: () => request<{ ok: true }>('/soulmate/events/questionnaire-started', { method: 'POST' }).catch(() => {}),
 
-  /** Real server-side check - never decided locally/offline. Used by the
-   * intro screen to decide whether to show the free CTA or route straight
-   * to premium pricing. */
-  getTrialStatus: () => request<{ eligible: boolean; freeSketch: SoulmateSketch | null }>('/soulmate/trial-status'),
-
-  createSketch: (answers: SoulmateQuestionnaireAnswers, requestFreeTrial?: boolean) =>
+  createSketch: (answers: SoulmateQuestionnaireAnswers) =>
     request<{ sketch: SoulmateSketch; orderId: string | null; amountCents: number; currency: string; razorpayKeyId: string | null }>(
       '/soulmate/sketches',
-      { method: 'POST', body: JSON.stringify({ ...answers, requestFreeTrial }) }
+      { method: 'POST', body: JSON.stringify(answers) }
     ),
 
   verifyPayment: (sketchId: string, payload: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }) =>

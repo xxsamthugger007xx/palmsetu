@@ -52,8 +52,8 @@ function NorthIndiaChart({ data, size }: { data: KundliChartData; size: number }
       <Polygon points={`${s / 2},0 ${s},${s / 2} ${s / 2},${s} 0,${s / 2}`} stroke={color.border} strokeWidth={1.5} fill="none" />
       {anchors.map(({ house, x, y }) => (
         <G key={house}>
-          <SvgText x={x} y={y - 6} fontSize={9} fill={color.textMuted} textAnchor="middle">{house}</SvgText>
-          <SvgText x={x} y={y + 8} fontSize={9} fill={color.accent} textAnchor="middle">
+          <SvgText x={x} y={y - 6} fontSize={10} fill={color.textSecondary} textAnchor="middle">{house}</SvgText>
+          <SvgText x={x} y={y + 8} fontSize={10} fontWeight="700" fill={color.accent2} textAnchor="middle">
             {(houses[house] ?? []).join(' ')}
           </SvgText>
         </G>
@@ -97,9 +97,9 @@ function SouthIndiaChart({ data, size }: { data: KundliChartData; size: number }
           <G key={`${r}-${c}`}>
             <Rect x={c * cell} y={r * cell} width={cell} height={cell} stroke={color.border} strokeWidth={1} fill={color.surface} />
             {signIndex >= 0 && (
-              <SvgText x={c * cell + 4} y={r * cell + 12} fontSize={8} fill={color.textMuted}>{SIGN_ABBR[signIndex]}</SvgText>
+              <SvgText x={c * cell + 4} y={r * cell + 12} fontSize={9} fill={color.textSecondary}>{SIGN_ABBR[signIndex]}</SvgText>
             )}
-            <SvgText x={c * cell + cell / 2} y={r * cell + cell / 2 + 10} fontSize={9} fill={color.accent} textAnchor="middle">
+            <SvgText x={c * cell + cell / 2} y={r * cell + cell / 2 + 10} fontSize={10} fontWeight="700" fill={color.accent2} textAnchor="middle">
               {labels.join(' ')}
             </SvgText>
           </G>
@@ -135,7 +135,7 @@ function WesternChart({ data, size }: { data: KundliChartData; size: number }) {
               x2={r + outerR * Math.cos(lineRad)} y2={r + outerR * Math.sin(lineRad)}
               stroke={color.borderSubtle} strokeWidth={1}
             />
-            <SvgText x={r + signRingR * Math.cos(labelRad)} y={r + signRingR * Math.sin(labelRad) + 3} fontSize={8} fill={color.textMuted} textAnchor="middle">
+            <SvgText x={r + signRingR * Math.cos(labelRad)} y={r + signRingR * Math.sin(labelRad) + 3} fontSize={9} fill={color.textSecondary} textAnchor="middle">
               {abbr}
             </SvgText>
           </G>
@@ -146,7 +146,7 @@ function WesternChart({ data, size }: { data: KundliChartData; size: number }) {
         const x = r + planetR * Math.cos(rad);
         const y = r + planetR * Math.sin(rad);
         return (
-          <SvgText key={p.planet} x={x} y={y} fontSize={9} fill={color.accent} textAnchor="middle">
+          <SvgText key={p.planet} x={x} y={y} fontSize={10} fontWeight="700" fill={color.accent2} textAnchor="middle">
             {PLANET_ABBR[p.planet] ?? p.planet.slice(0, 2)}
           </SvgText>
         );

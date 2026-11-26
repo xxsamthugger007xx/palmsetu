@@ -12,6 +12,8 @@ type Props = {
   greeting: string;
   name: string;
   gender: Gender;
+  avatarIndex?: number | null;
+  avatarKey?: string | null;
   onAvatarPress?: () => void;
   onNotificationsPress?: () => void;
   hasNotifications?: boolean;
@@ -21,12 +23,12 @@ type Props = {
   trailing?: React.ReactNode;
 };
 
-export function AppHeader({ greeting, name, gender, onAvatarPress, onNotificationsPress, hasNotifications, subtitle, trailing }: Props) {
+export function AppHeader({ greeting, name, gender, avatarIndex, avatarKey, onAvatarPress, onNotificationsPress, hasNotifications, subtitle, trailing }: Props) {
   return (
     <View style={{ marginBottom: spacing.lg }}>
     <View style={styles.row}>
       <Pressable accessibilityRole="button" onPress={onAvatarPress} style={styles.identity}>
-        <AIAvatar name={name} gender={gender} size={48} />
+        <AIAvatar name={name} gender={gender} avatarIndex={avatarIndex} avatarKey={avatarKey} size={48} />
         <View style={{ marginLeft: spacing.md }}>
           <Text variant="bodySm" tone="secondary">{greeting}</Text>
           <Text variant="display" weight="semibold">{name}</Text>

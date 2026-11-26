@@ -13,7 +13,9 @@ import { PageContainer } from '../../components/PageContainer';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
-import { color, radius, spacing } from '../../theme/tokens';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
+import { FadeInUp } from '../../components/FadeInUp';
+import { tick, success } from '../../services/haptics';
 import { useUserProfile } from '../../context/UserProfileContext';
 import { RootStackParamList } from '../../navigation/types';
 import {
@@ -47,10 +49,10 @@ const MOOD_COLOR: Record<MoodLevel, string> = {
 };
 
 const RESET_TILES = [
-  { id: 'breathing', icon: Wind, navigate: (nav: Nav) => nav.navigate('BreathingTechniques') },
-  { id: 'meditation', icon: Moon, navigate: (nav: Nav) => nav.navigate('Meditation') },
-  { id: 'journal', icon: NotebookPen, navigate: (nav: Nav) => nav.navigate('Journal') },
-  { id: 'challenges', icon: Trophy, navigate: (nav: Nav) => nav.navigate('Challenges') },
+  { id: 'breathing', icon: Wind, tint: featureTint.wellness, navigate: (nav: Nav) => nav.navigate('BreathingTechniques') },
+  { id: 'meditation', icon: Moon, tint: featureTint.astrology, navigate: (nav: Nav) => nav.navigate('Meditation') },
+  { id: 'journal', icon: NotebookPen, tint: featureTint.guidance, navigate: (nav: Nav) => nav.navigate('Journal') },
+  { id: 'challenges', icon: Trophy, tint: featureTint.soulmate, navigate: (nav: Nav) => nav.navigate('Challenges') },
 ];
 
 export function WellnessScreen() {
@@ -161,9 +163,11 @@ export function WellnessScreen() {
       if (already) {
         await wellnessApi.uncompleteHabit(habit.id, today);
         setCompletedToday((prev) => { const next = new Set(prev); next.delete(habit.id); return next; });
+        tick();
       } else {
         await wellnessApi.completeHabit(habit.id, today);
         setCompletedToday((prev) => new Set(prev).add(habit.id));
+        success();
         wellnessApi.sendAnalyticsEvent('habit_completed', { habitId: habit.id }).catch(() => {});
       }
       wellnessApi.getHabitStreak(habit.id)
@@ -175,6 +179,7 @@ export function WellnessScreen() {
   };
 
   const quickSaveMood = async (mood: MoodLevel) => {
+    tick();
     setQuickMood(mood);
     setSavingMood(true);
     try {
@@ -194,6 +199,7 @@ export function WellnessScreen() {
     try {
       const res = await wellnessApi.completeChallengeDay(activeChallengeProgress.challengeId, activeChallengeProgress.currentDay);
       setChallengeProgressList((prev) => prev.map((p) => (p.challengeId === res.progress.challengeId ? res.progress : p)));
+      success();
     } catch {
       // Honest failure: no optimistic completion kept.
     } finally {
@@ -236,20 +242,25 @@ export function WellnessScreen() {
     <PageContainer style={{ paddingBottom: spacing.xxl + 96 }} onRefresh={loadWellnessData}>
       {loadFailed && <ErrorBanner message={t('ui.WellnessScreen.someOfYourWellnessData')} onRetry={loadWellnessData} />}
       {/* A. Header */}
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: 2 }}>
-        {t(timeOfDayGreetingKey())}{profile?.name ? `, ${profile.name}` : ''}
-      </Text>
-      <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>
-        {new Date().toLocaleDateString(appLocale(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-      </Text>
-      <Text variant="bodySm" tone="secondary" numberOfLines={2} style={{ marginBottom: spacing.lg }}>
-        {subtitle}
-      </Text>
+      <FadeInUp>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm, marginBottom: 2 }}>
+          {t(timeOfDayGreetingKey())}{profile?.name ? `, ${profile.name}` : ''}
+        </Text>
+        <Text variant="caption" tone="muted" style={{ marginBottom: 4 }}>
+          {new Date().toLocaleDateString(appLocale(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </Text>
+        <Text variant="bodySm" tone="secondary" numberOfLines={2} style={{ marginBottom: spacing.lg }}>
+          {subtitle}
+        </Text>
+      </FadeInUp>
 
       {/* B. Daily Reset hero */}
-      <DailyResetHero progress={dailyReset} name={profile?.name} />
+      <FadeInUp delay={80}>
+        <DailyResetHero progress={dailyReset} name={profile?.name} />
+      </FadeInUp>
 
       {/* C. Mood check-in */}
+      <FadeInUp delay={150}>
       <View style={{ marginTop: spacing.lg }}>
         <SectionHeader title={t('wellness.moodSectionTitle')} action={t('wellness.historyAction')} onActionPress={() => navigation.navigate('MoodHistory')} />
         <Card elevated>
@@ -271,9 +282,11 @@ export function WellnessScreen() {
           )}
         </Card>
       </View>
+      </FadeInUp>
 
       {/* D. Daily affirmation */}
       {inspiration && (
+        <FadeInUp delay={210}>
         <View style={{ marginTop: spacing.lg }}>
           <SectionHeader title={t('wellness.affirmationSectionTitle')} />
           <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AffirmationDetail', { content: inspiration })}>
@@ -290,10 +303,12 @@ export function WellnessScreen() {
             </LinearGradient>
           </Pressable>
         </View>
+        </FadeInUp>
       )}
 
       {/* E. Daily challenge */}
       {activeChallengeProgress && activeChallengeSummary && (
+        <FadeInUp delay={260}>
         <View style={{ marginTop: spacing.lg }}>
           <SectionHeader title={t('wellness.challengeSectionTitle')} action={t('wellness.challengeView')} onActionPress={() => navigation.navigate('ChallengeDetail', { id: activeChallengeProgress.challengeId })} />
           <Card elevated style={{ borderColor: challengeCompletedToday ? color.success : color.border }}>
@@ -323,10 +338,12 @@ export function WellnessScreen() {
             </Pressable>
           </Card>
         </View>
+        </FadeInUp>
       )}
 
       {/* F. Habit journey */}
       {habits.length > 0 && (
+        <FadeInUp delay={310}>
         <View style={{ marginTop: spacing.lg }}>
           <SectionHeader title={t('wellness.habitJourneyTitle')} action={t('common.viewAll')} onActionPress={() => navigation.navigate('Habits')} />
           <Card>
@@ -343,15 +360,19 @@ export function WellnessScreen() {
             ))}
           </Card>
         </View>
+        </FadeInUp>
       )}
 
       {/* G. Quick reset activities */}
+      <FadeInUp delay={360}>
       <View style={{ marginTop: spacing.lg }}>
         <SectionHeader title={t('wellness.quickResetsTitle')} />
         <View style={styles.tileGrid}>
           {RESET_TILES.map((tile) => (
-            <Pressable accessibilityRole="button" key={tile.id} onPress={() => tile.navigate(navigation)} style={styles.tile}>
-              <tile.icon size={20} color={color.accent} strokeWidth={1.75} />
+            <Pressable accessibilityRole="button" key={tile.id} onPress={() => tile.navigate(navigation)} style={[styles.tile, { borderColor: tile.tint.soft }]}>
+              <View style={[styles.tileIconWrap, { backgroundColor: tile.tint.soft }]}>
+                <tile.icon size={18} color={tile.tint.solid} strokeWidth={1.75} />
+              </View>
               <Text variant="bodySm" weight="semibold" style={{ marginTop: spacing.sm }}>{t(`wellness.tiles.${tile.id}`)}</Text>
               <Text variant="caption" tone="muted" style={{ marginTop: 2 }}>
                 {tile.id === 'breathing' && breathingCount != null ? t('wellness.breathingCount', { count: breathingCount }) : null}
@@ -363,8 +384,10 @@ export function WellnessScreen() {
           ))}
         </View>
       </View>
+      </FadeInUp>
 
       {/* H. Personal progress */}
+      <FadeInUp delay={410}>
       <View style={{ marginTop: spacing.lg }}>
         <SectionHeader title={t('wellness.thisWeekTitle')} />
         {moodTrend?.hasData ? (
@@ -413,9 +436,11 @@ export function WellnessScreen() {
           </Card>
         )}
       </View>
+      </FadeInUp>
 
       {/* I. Goals snippet */}
       {goals.length > 0 && (
+        <FadeInUp delay={460}>
         <View style={{ marginTop: spacing.lg }}>
           <SectionHeader title={t('wellness.activeGoalsTitle')} action={t('common.viewAll')} onActionPress={() => navigation.navigate('Goals')} />
           <Card>
@@ -437,8 +462,10 @@ export function WellnessScreen() {
             ))}
           </Card>
         </View>
+        </FadeInUp>
       )}
 
+      <FadeInUp delay={500}>
       <View style={{ marginTop: spacing.lg, flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text variant="caption" tone="accent" onPress={() => navigation.navigate('InspirationBrowse')}>
           {t('wellness.inspirationLibrary')}
@@ -454,6 +481,7 @@ export function WellnessScreen() {
           {t('wellness.disclaimer')}
         </Text>
       </Card>
+      </FadeInUp>
     </PageContainer>
   );
 }
@@ -498,6 +526,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
+  },
+  tileIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   goalRow: {
     flexDirection: 'row',

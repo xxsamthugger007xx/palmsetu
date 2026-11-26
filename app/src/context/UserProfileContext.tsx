@@ -11,6 +11,14 @@ export interface UserProfile {
   gender: Gender;
   /** What they want guidance on. Omitted when saving = keep what is stored. */
   focus?: FocusArea[];
+  /** Which illustrated avatar to show, within the array for this gender
+   * (see theme/avatars.ts). Assigned once server-side the first time
+   * gender becomes known - never re-randomized. Null/undefined = no
+   * avatar assigned yet (falls back to initials in AIAvatar.tsx). */
+  avatarIndex?: number | null;
+  /** An explicit user choice overriding avatarIndex (see theme/avatars.ts's
+   * AVATAR_CHOICES) - picked from the full set regardless of gender. */
+  avatarKey?: string | null;
 }
 
 /**
@@ -31,6 +39,9 @@ interface UserProfileContextValue {
   profile: UserProfile | null;
   loading: boolean;
   setProfile: (profile: UserProfile) => Promise<void>;
+  /** Explicit "pick any avatar" choice (see theme/avatars.ts's
+   * AVATAR_CHOICES) - pass null to clear back to the automatic default. */
+  setAvatarKey: (avatarKey: string | null) => Promise<void>;
   clearProfile: () => Promise<void>;
 }
 
@@ -72,7 +83,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     astrologyApi.getIdentity()
       .then((identity) => {
         if (cancelled) return;
-        const next: UserProfile = { name: identity.name, gender: identity.gender ?? 'prefer-not-to-say', focus: identity.focus ?? [] };
+        const next: UserProfile = { name: identity.name, gender: identity.gender ?? 'prefer-not-to-say', focus: identity.focus ?? [], avatarIndex: identity.avatarIndex, avatarKey: identity.avatarKey };
         setProfileState(next);
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
       })
@@ -97,7 +108,24 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
     next = { ...next, focus: next.focus ?? profile?.focus ?? [] };
     setProfileState(next);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    await astrologyApi.saveIdentity({ name: next.name, gender: next.gender, focus: next.focus });
+    const saved = await astrologyApi.saveIdentity({ name: next.name, gender: next.gender, focus: next.focus });
+    // The server (not the client) assigns avatarIndex the first time
+    // gender becomes known - merge its real response back in rather than
+    // keeping the optimistic value above, which never had an avatarIndex
+    // at all on a first save.
+    const withAvatar: UserProfile = { ...next, avatarIndex: saved.avatarIndex, avatarKey: saved.avatarKey };
+    setProfileState(withAvatar);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(withAvatar));
+  };
+
+  const setAvatarKey = async (avatarKey: string | null) => {
+    const saved = await astrologyApi.setAvatarKey(avatarKey);
+    setProfileState((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, avatarKey: saved.avatarKey };
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
   };
 
   const clearProfile = async () => {
@@ -110,7 +138,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <UserProfileContext.Provider value={{ profile, loading, setProfile, clearProfile }}>
+    <UserProfileContext.Provider value={{ profile, loading, setProfile, setAvatarKey, clearProfile }}>
       {children}
     </UserProfileContext.Provider>
   );

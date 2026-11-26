@@ -1,12 +1,15 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { tick } from '../../services/haptics';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { signName } from '../../utils/signName';
-import { Sparkles, ChevronRight, Hand, Layers } from 'lucide-react-native';
+import { ChevronRight, Hand, Layers } from 'lucide-react-native';
 import { FadeInUp } from '../../components/FadeInUp';
 import { StreakChip } from '../../components/StreakChip';
+import { StreakDetailModal } from '../../components/StreakDetailModal';
 import { HeroActionCard } from '../../components/HeroActionCard';
 import { ErrorBanner } from '../../components/ErrorState';
 import { isLoadFailure } from '../../utils/loadFailure';
@@ -15,15 +18,16 @@ import { AppHeader } from '../../components/AppHeader';
 import { SectionHeader } from '../../components/SectionHeader';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
-import { StatusBadge } from '../../components/StatusBadge';
 import { FadeDivider } from '../../components/FadeDivider';
 import { InstrumentDial } from '../../components/InstrumentDial';
 import { MoodPulseSelector, MoodMarkBadge, moodLabel } from '../../components/wellness/MoodPulse';
-import { color, spacing } from '../../theme/tokens';
+import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { useUserProfile } from '../../context/UserProfileContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { astrologyApi } from '../../services/astrologyApi';
 import { palmApi } from '../../services/palmApi';
+import { tarotApi } from '../../services/tarotApi';
 import { wellnessApi, MoodLevel, MoodEntry } from '../../services/wellnessApi';
 import { BirthProfile, DailyHoroscope } from '../../types/astrology';
 import { PalmReading } from '../../types/palm';
@@ -48,8 +52,10 @@ export function HomeScreen() {
   const [dailyHoroscope, setDailyHoroscope] = React.useState<DailyHoroscope | null>(null);
   const [todayMood, setTodayMood] = React.useState<MoodEntry | null>(null);
   const [quickMood, setQuickMood] = React.useState<MoodLevel | null>(null);
+  const [showStreakModal, setShowStreakModal] = React.useState(false);
   const [savingMood, setSavingMood] = React.useState(false);
   const [latestPalmReading, setLatestPalmReading] = React.useState<PalmReading | null | undefined>(undefined); // undefined = still loading, null = none exist
+  const [dailyCardRevealedToday, setDailyCardRevealedToday] = React.useState<boolean | undefined>(undefined); // undefined = still loading
 
   const [loadFailed, setLoadFailed] = React.useState(false);
 
@@ -83,6 +89,20 @@ export function HomeScreen() {
     await palmApi.listReadings()
       .then((res) => setLatestPalmReading(res.items[0] ?? null))
       .catch((err) => { setLatestPalmReading(null); noteFailure(err); });
+
+    // Whether today's daily tarot card has already been flipped/revealed -
+    // mirrors TarotLandingScreen's own AsyncStorage key exactly, so the two
+    // screens always agree on "already drawn today" without a second
+    // source of truth. getDailyCard() is idempotent per local day (it
+    // creates/returns the same record all day), so calling it here has no
+    // side effect beyond what TarotLandingScreen already does on its own
+    // mount.
+    await tarotApi.getDailyCard()
+      .then(async (res) => {
+        const revealed = await AsyncStorage.getItem(`tarot_daily_revealed:${res.daily.readingId}`);
+        setDailyCardRevealedToday(revealed === 'true');
+      })
+      .catch(() => setDailyCardRevealedToday(false)); // honest fallback: never block the hero card on this failing
   }, []);
 
   useFocusEffect(
@@ -92,6 +112,7 @@ export function HomeScreen() {
   );
 
   const quickSaveMood = async (mood: MoodLevel) => {
+    tick();
     setQuickMood(mood);
     setSavingMood(true);
     try {
@@ -157,19 +178,43 @@ export function HomeScreen() {
       {loadFailed && <ErrorBanner message={t('ui.HomeScreen.someContentCouldnTBe')} onRetry={loadHomeData} />}
       <View style={styles.brandRow}>
         <View style={styles.brandMark}>
-          <Sparkles size={13} color={color.accent} strokeWidth={2} />
+          <Image source={require('../../../assets/palm-setu-mark.png')} style={styles.brandMarkImage} resizeMode="cover" />
         </View>
-        <Text variant="label" tone="accent" style={styles.brandWordmark}>{t('ui.HomeScreen.palmSetu')}</Text>
+        <Text variant="label" tone="accent" style={styles.brandWordmark} numberOfLines={1}>{t('ui.HomeScreen.palmSetu')}</Text>
       </View>
 
       <AppHeader
         greeting={t(timeOfDayGreetingKey())}
         name={profile.name}
         gender={profile.gender}
+        avatarIndex={profile.avatarIndex}
+        avatarKey={profile.avatarKey}
         hasNotifications
+        onNotificationsPress={() => navigation.navigate('NotificationSettings')}
         subtitle={todayForYou}
-        trailing={streak ? <StreakChip days={streak.current} atRisk={streak.atRisk} onPress={() => navigation.navigate('NotificationSettings')} /> : undefined}
+        trailing={
+          streak ? (
+            <StreakChip
+              days={streak.current}
+              atRisk={streak.atRisk}
+              onPress={() => setShowStreakModal(true)}
+            />
+          ) : undefined
+        }
       />
+
+      {streak && (
+        <StreakDetailModal
+          visible={showStreakModal}
+          streak={streak}
+          onClose={() => setShowStreakModal(false)}
+          onRemindersPress={
+            streak.current > 0 && streak.current < 3
+              ? () => { setShowStreakModal(false); navigation.navigate('NotificationSettings'); }
+              : undefined
+          }
+        />
+      )}
 
       <Text variant="caption" tone="accent" weight="semibold" style={styles.todayDate}>
         {formatLongDate(new Date()).toUpperCase()}
@@ -178,6 +223,7 @@ export function HomeScreen() {
       <FadeInUp delay={80}>
       {latestPalmReading === null ? (
         <HeroActionCard
+          compact
           icon={Hand}
           colors={['#8A5CD6', '#3A2A6B']}
           title={t('home.hero.palmTitle')}
@@ -185,8 +231,9 @@ export function HomeScreen() {
           cta={t('home.hero.palmCta')}
           onPress={() => navigation.navigate('PalmIntro')}
         />
-      ) : latestPalmReading ? (
+      ) : latestPalmReading && dailyCardRevealedToday === false ? (
         <HeroActionCard
+          compact
           icon={Layers}
           title={t('home.hero.cardTitle')}
           description={t('home.hero.cardDesc')}
@@ -244,6 +291,7 @@ export function HomeScreen() {
       {streak && (streak.atRisk || streak.milestone) && <StreakCard streak={streak} onRemindersPress={streak.current > 0 && streak.current < 3 ? () => navigation.navigate('NotificationSettings') : undefined} />}
       {astroProfile && <FadeInUp delay={320}><DailyGuidanceCard dailyHoroscope={dailyHoroscope} /></FadeInUp>}
 
+      <FadeInUp delay={380}>
       <Card elevated style={{ marginBottom: spacing.sm }}>
         <View style={styles.cardHeaderRow}>
           <Text variant="label" tone="accent">{t('home.feelingTitle')}</Text>
@@ -275,29 +323,38 @@ export function HomeScreen() {
           {t('home.goToWellness')}
         </Text>
       </Card>
+      </FadeInUp>
 
-      <PalmInsightCard latestPalmReading={latestPalmReading} />
+      <FadeInUp delay={440}><PalmInsightCard latestPalmReading={latestPalmReading} /></FadeInUp>
 
-      <TransitsCard transits={notableTransits} />
+      <FadeInUp delay={500}><TransitsCard transits={notableTransits} /></FadeInUp>
 
       <FadeDivider style={{ marginVertical: spacing.lg }} />
 
       {!isPremium && (
-      <Card elevated onPress={() => navigation.navigate('Paywall')} style={styles.upgradeCard}>
-        <View style={{ flex: 1 }}>
-          <Text variant="label" tone="accent">{t('home.premiumTitle')}</Text>
-          <Text variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
-            {t('home.premiumDesc')}
-          </Text>
-        </View>
-        <StatusBadge label={t('common.upgrade')} status="accent" />
-      </Card>
+      <FadeInUp delay={560}>
+      <Pressable onPress={() => navigation.navigate('Paywall')} style={({ pressed }) => [pressed && { opacity: 0.92 }]}>
+        <LinearGradient colors={['#E8B85C', '#5A451C']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.upgradeCard}>
+          <View style={{ flex: 1 }}>
+            <Text variant="label" weight="semibold" style={{ color: '#2B2741' }}>{t('home.premiumTitle')}</Text>
+            <Text variant="bodySm" style={{ marginTop: 2, color: 'rgba(43,39,65,0.75)' }}>
+              {t('home.premiumDesc')}
+            </Text>
+          </View>
+          <View style={styles.upgradeBadge}>
+            <Text variant="bodySm" weight="semibold" style={{ color: '#2B2741' }}>{t('common.upgrade')}</Text>
+          </View>
+        </LinearGradient>
+      </Pressable>
+      </FadeInUp>
       )}
 
+      <FadeInUp delay={620}>
       <View style={{ marginTop: spacing.lg }}>
         <SectionHeader title={t('home.exploreTitle')} />
         <SectionsGrid />
       </View>
+      </FadeInUp>
     </PageContainer>
   );
 }
@@ -312,6 +369,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.md,
+    paddingRight: 96,
   },
   brandMark: {
     width: 22,
@@ -322,10 +380,16 @@ const styles = StyleSheet.create({
     backgroundColor: color.accentMuted,
     borderWidth: 1,
     borderColor: color.accentBorder,
-    marginRight: spacing.xs,
+    marginRight: spacing.sm,
+    overflow: 'hidden',
+  },
+  brandMarkImage: {
+    width: '100%',
+    height: '100%',
   },
   brandWordmark: {
     letterSpacing: 2.5,
+    lineHeight: 16,
   },
   todayDate: {
     letterSpacing: 1,
@@ -340,5 +404,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.14)',
+  },
+  upgradeBadge: {
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    borderRadius: radius.pill,
+    paddingVertical: 6,
+    paddingHorizontal: spacing.sm,
   },
 });

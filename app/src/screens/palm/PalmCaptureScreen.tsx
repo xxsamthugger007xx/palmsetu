@@ -1,6 +1,6 @@
 import { tr } from '../../utils/tr';
 import React, { useState } from 'react';
-import { Alert, Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,6 +17,7 @@ import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { assessImageQuality } from '../../services/palmAnalysis';
 import { CornerBrackets } from '../../components/CornerBrackets';
+import { InfoModal } from '../../components/InfoModal';
 import { useTranslation } from 'react-i18next';
 
 type Hand = 'left' | 'right';
@@ -39,6 +40,7 @@ export function PalmCaptureScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [qualityWarning, setQualityWarning] = useState<string | null>(null);
   const [hand, setHand] = useState<Hand>('right');
+  const [permissionDenied, setPermissionDenied] = useState<'camera' | 'photo library' | null>(null);
 
   const handlePick = async (useCamera: boolean) => {
     const permission = useCamera
@@ -46,7 +48,7 @@ export function PalmCaptureScreen() {
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert(t('ui.PalmCaptureScreen.permissionNeeded'), `Please allow ${useCamera ? 'camera' : 'photo library'} access to continue.`);
+      setPermissionDenied(useCamera ? 'camera' : 'photo library');
       return;
     }
 
@@ -202,6 +204,13 @@ export function PalmCaptureScreen() {
           {t('ui.PalmCaptureScreen.yourPhotoIsUploadedSecurely')}
         </Text>
       </Card>
+
+      <InfoModal
+        visible={!!permissionDenied}
+        title={t('ui.PalmCaptureScreen.permissionNeeded')}
+        description={`Please allow ${permissionDenied} access to continue.`}
+        onClose={() => setPermissionDenied(null)}
+      />
     </PageContainer>
   );
 }

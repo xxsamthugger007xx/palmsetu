@@ -2,10 +2,11 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { User, Crown, ChevronRight } from 'lucide-react-native';
+import { User, Crown, ChevronRight, ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
+import { IconButton } from '../../components/Button';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,10 @@ export function SelectAstrologyProfileScreen() {
 
   return (
     <PageContainer onRefresh={async () => {}}>
+      <View style={styles.header}>
+        {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+      </View>
+
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('ui.SelectAstrologyProfileScreen.selectProfile')}</Text>
       <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.lg }}>
         {path === 'vedic'
@@ -74,6 +79,7 @@ export function SelectAstrologyProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: { flexDirection: 'row' },
   row: { flexDirection: 'row', alignItems: 'center' },
   iconWrap: {
     width: 36, height: 36, borderRadius: radius.md,

@@ -2,10 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Info } from 'lucide-react-native';
+import { Info, ChevronLeft } from 'lucide-react-native';
 import { PageContainer } from '../../components/PageContainer';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
+import { Button, IconButton } from '../../components/Button';
 import { FadeDivider } from '../../components/FadeDivider';
 import { EmptyState } from '../../components/EmptyState';
 import { KundliChartSvg } from '../../components/kundli/KundliChartSvg';
@@ -53,6 +54,9 @@ export function KundliResultScreen() {
 
   return (
     <PageContainer onRefresh={load}>
+      <View style={styles.header}>
+        {navigation.canGoBack() && <IconButton icon={ChevronLeft} onPress={() => navigation.goBack()} />}
+      </View>
       <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{STYLE_TITLE[chart.style]}</Text>
       {chart.subject === 'other' && chart.subjectName && (
         <Text variant="bodySm" tone="secondary" style={{ marginTop: spacing.xs }}>{chart.subjectName}'s chart</Text>
@@ -90,11 +94,22 @@ export function KundliResultScreen() {
           {t('ui.KundliResultScreen.wholeSignHousesLahiriApproximation')}
         </Text>
       </View>
+
+      {navigation.canGoBack() && (
+        <Button
+          label={t('ui.KundliResultScreen.back')}
+          variant="secondary"
+          onPress={() => navigation.goBack()}
+          fullWidth
+          style={{ marginTop: spacing.xl }}
+        />
+      )}
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  header: { flexDirection: 'row' },
   pillWrap: {
     marginTop: spacing.md, alignSelf: 'center',
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,

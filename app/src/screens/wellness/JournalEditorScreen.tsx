@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, TextInput, View } from 'react-native';
-import { Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Star, Sparkles } from 'lucide-react-native';
@@ -9,6 +8,7 @@ import { SectionHeader } from '../../components/SectionHeader';
 import { Card } from '../../components/Card';
 import { Text } from '../../components/Text';
 import { Button } from '../../components/Button';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { color, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { wellnessApi, JournalEntry, JOURNAL_ENTRY_TYPES, JournalEntryType } from '../../services/wellnessApi';
@@ -35,6 +35,7 @@ export function JournalEditorScreen() {
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [favorite, setFavorite] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [tagsText, setTagsText] = React.useState('');
   const [prompts, setPrompts] = React.useState<{ type: JournalEntryType; text: string }[]>([]);
   const [saving, setSaving] = React.useState(false);
@@ -105,13 +106,14 @@ export function JournalEditorScreen() {
 
   const confirmDelete = () => {
     if (!entry) return;
-    Alert.alert(t('ui.JournalEditorScreen.deleteEntry'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      { text: t('ui.AssistantHistoryScreen.delete'), style: 'destructive', onPress: async () => {
-        await wellnessApi.deleteJournalEntry(entry.id).catch(() => {});
-        navigation.goBack();
-      } },
-    ]);
+    setShowDeleteConfirm(true);
+  };
+
+  const doDelete = async () => {
+    setShowDeleteConfirm(false);
+    if (!entry) return;
+    await wellnessApi.deleteJournalEntry(entry.id).catch(() => {});
+    navigation.goBack();
   };
 
   return (
@@ -255,6 +257,16 @@ export function JournalEditorScreen() {
           <Button label={t('ui.JournalEditorScreen.deleteEntry')} variant="danger" onPress={confirmDelete} fullWidth />
         </>
       )}
+
+      <ConfirmationModal
+        visible={showDeleteConfirm}
+        title={t('ui.JournalEditorScreen.deleteEntry')}
+        description={t('ui.AssistantHistoryScreen.thisCannotBeUndone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
+        destructive
+        onConfirm={doDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </PageContainer>
   );
 }

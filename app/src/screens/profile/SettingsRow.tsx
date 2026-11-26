@@ -11,14 +11,18 @@ type Props = {
   description?: string;
   destructive?: boolean;
   onPress?: () => void;
+  /** This row's own color identity (e.g. each settings group gets a
+   * distinct tint), so a long flat list of gray icons reads as categorized
+   * at a glance. Ignored when `destructive` is set. */
+  tint?: { solid: string; soft: string };
 };
 
-export function SettingsRow({ icon: Icon, label, description, destructive, onPress }: Props) {
+export function SettingsRow({ icon: Icon, label, description, destructive, onPress, tint }: Props) {
   return (
     <Card onPress={onPress} style={styles.row} padded={false}>
       <View style={styles.inner}>
-        <View style={[styles.iconWrap, destructive && styles.iconWrapDanger]}>
-          <Icon size={16} color={destructive ? color.danger : color.textSecondary} strokeWidth={1.75} />
+        <View style={[styles.iconWrap, destructive && styles.iconWrapDanger, tint && !destructive && { backgroundColor: tint.soft }]}>
+          <Icon size={16} color={destructive ? color.danger : tint ? tint.solid : color.textSecondary} strokeWidth={1.75} />
         </View>
         <View style={{ flex: 1, marginLeft: spacing.md }}>
           <Text variant="bodySm" weight="medium" tone={destructive ? 'danger' : 'primary'}>{label}</Text>

@@ -84,6 +84,12 @@ const userIdentitySchema = z.object({
   focus: z.array(z.enum(FOCUS_AREAS)).max(FOCUS_AREAS.length).optional(),
 });
 
+/** Wide range so this never needs to stay in sync with how many avatar
+ * images actually exist per gender - the client takes `avatarIndex % (its
+ * own array length)` when rendering, so the server never needs to know
+ * that count. */
+const AVATAR_INDEX_RANGE = 1000;
+
 // Step-by-step astrology onboarding: every field optional, since this
 // record is saved incrementally (system first, then date, then time/place).
 // A PATCH here merges the provided fields onto whatever is already stored
@@ -175,13 +181,46 @@ export function buildAstrologyRouter(aiProvider: AiProvider) {
     const parsed = userIdentitySchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
 
+    const existing = userIdentities.get(userId);
+    const gender = parsed.data.gender ?? null;
+    // Assign an avatar index the first time gender becomes known (and only
+    // then - genders with no dedicated avatar set, like 'non-binary' or
+    // 'prefer-not-to-say', just get the initials fallback client-side).
+    // Never re-rolled once set, even if gender later changes, so a user's
+    // avatar never changes out from under them on an unrelated edit.
+    const avatarIndex = existing?.avatarIndex != null
+      ? existing.avatarIndex
+      : gender
+        ? Math.floor(Math.random() * AVATAR_INDEX_RANGE)
+        : null;
+
     const identity: UserIdentity = {
       userId,
       name: parsed.data.name,
-      gender: parsed.data.gender ?? null,
-      focus: parsed.data.focus ? [...new Set(parsed.data.focus)] : userIdentities.get(userId)?.focus ?? [],
+      gender,
+      focus: parsed.data.focus ? [...new Set(parsed.data.focus)] : existing?.focus ?? [],
+      avatarIndex,
+      avatarKey: existing?.avatarKey ?? null,
       updatedAt: new Date().toISOString(),
     };
+    userIdentities.set(userId, identity);
+    res.json(identity);
+  });
+
+  // Explicit "pick any avatar" choice from the Profile screen's picker -
+  // separate from the main identity save above so changing the avatar
+  // never requires resending name/gender/focus, and so it can be set even
+  // before a birth profile/full identity exists.
+  const avatarKeySchema = z.object({ avatarKey: z.string().min(1).max(40).nullable() });
+  router.put('/identity/avatar', (req, res) => {
+    const userId = currentUserId(req);
+    const parsed = avatarKeySchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
+
+    const existing = userIdentities.get(userId);
+    if (!existing) return res.status(404).json({ error: 'No identity set up yet.' });
+
+    const identity: UserIdentity = { ...existing, avatarKey: parsed.data.avatarKey, updatedAt: new Date().toISOString() };
     userIdentities.set(userId, identity);
     res.json(identity);
   });

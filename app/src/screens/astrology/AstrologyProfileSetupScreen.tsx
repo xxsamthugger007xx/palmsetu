@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -14,6 +14,7 @@ import { astrologyApi } from '../../services/astrologyApi';
 import { AstrologySystem } from '../../types/astrology';
 import { BirthplaceOption } from '../../data/birthplaces';
 import { BirthplacePickerModal } from './onboarding/BirthplacePickerModal';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { useTranslation } from 'react-i18next';
 
 import { asApiError } from '../../services/apiRequest';
@@ -53,6 +54,7 @@ export function AstrologyProfileSetupScreen() {
   const [originalSystem, setOriginalSystem] = useState<AstrologySystem | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmSystemChange, setConfirmSystemChange] = useState(false);
   const [loadingExisting, setLoadingExisting] = useState(true);
 
   // Populate the form with the saved profile when one already exists, so
@@ -109,14 +111,7 @@ export function AstrologyProfileSetupScreen() {
     // saving, matching the existing destructive-confirmation pattern (e.g.
     // PalmHistoryScreen's delete confirmation).
     if (returnTo === 'profile' && originalSystem && originalSystem !== system) {
-      Alert.alert(
-        t('ui.AstrologyProfileSetupScreen.changeAstrologySystem'),
-        t('ui.AstrologyProfileSetupScreen.switchingBetweenVedicAndWestern'),
-        [
-          { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-          { text: t('ui.AstrologyProfileSetupScreen.changeSystem'), style: 'destructive', onPress: () => void doSave() },
-        ],
-      );
+      setConfirmSystemChange(true);
       return;
     }
     await doSave();
@@ -267,6 +262,16 @@ export function AstrologyProfileSetupScreen() {
           setBirthplace(place);
           setShowPlacePicker(false);
         }}
+      />
+
+      <ConfirmationModal
+        visible={confirmSystemChange}
+        title={t('ui.AstrologyProfileSetupScreen.changeAstrologySystem')}
+        description={t('ui.AstrologyProfileSetupScreen.switchingBetweenVedicAndWestern')}
+        confirmLabel={t('ui.AstrologyProfileSetupScreen.changeSystem')}
+        destructive
+        onConfirm={() => { setConfirmSystemChange(false); void doSave(); }}
+        onCancel={() => setConfirmSystemChange(false)}
       />
     </PageContainer>
   );

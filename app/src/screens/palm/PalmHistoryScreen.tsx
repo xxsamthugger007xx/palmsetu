@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronLeft, ChevronRight, Info, ScanLine, Trash2 } from 'lucide-react-native';
@@ -14,11 +14,15 @@ import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
 import { useTranslation } from 'react-i18next';
 import { ListSkeleton } from '../../components/ListSkeleton';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
+import { InfoModal } from '../../components/InfoModal';
 
 export function PalmHistoryScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<PalmReading[]>([]);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteFailed, setDeleteFailed] = useState(false);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
 
   const load = React.useCallback(async () => {
@@ -36,22 +40,18 @@ export function PalmHistoryScreen() {
     load();
   }, [load]);
 
-  const handleDelete = (id: string) => {
-    Alert.alert(t('ui.PalmHistoryScreen.deleteReading'), t('ui.AssistantHistoryScreen.thisCannotBeUndone'), [
-      { text: t('ui.AssistantHistoryScreen.cancel'), style: 'cancel' },
-      {
-        text: t('ui.AssistantHistoryScreen.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await palmApi.deleteReading(id);
-            setItems((prev) => prev.filter((r) => r.id !== id));
-          } catch {
-            Alert.alert(t('ui.PalmHistoryScreen.couldNotDeleteThisReading'));
-          }
-        },
-      },
-    ]);
+  const handleDelete = (id: string) => setPendingDeleteId(id);
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    if (!id) return;
+    try {
+      await palmApi.deleteReading(id);
+      setItems((prev) => prev.filter((r) => r.id !== id));
+    } catch {
+      setDeleteFailed(true);
+    }
   };
 
   return (
@@ -104,6 +104,22 @@ export function PalmHistoryScreen() {
           </Card>
         );
       })}
+
+      <ConfirmationModal
+        visible={!!pendingDeleteId}
+        title={t('ui.PalmHistoryScreen.deleteReading')}
+        description={t('ui.AssistantHistoryScreen.thisCannotBeUndone')}
+        confirmLabel={t('ui.AssistantHistoryScreen.delete')}
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
+      <InfoModal
+        visible={deleteFailed}
+        title={t('ui.PalmHistoryScreen.couldNotDeleteThisReading')}
+        description={t('ui.ProfileScreen.pleaseTryAgain')}
+        onClose={() => setDeleteFailed(false)}
+      />
     </PageContainer>
   );
 }

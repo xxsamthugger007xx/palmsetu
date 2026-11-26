@@ -14,7 +14,8 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { StatusBadge } from '../../components/StatusBadge';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
-import { color, radius, spacing } from '../../theme/tokens';
+import { FadeInUp } from '../../components/FadeInUp';
+import { color, featureTint, radius, spacing } from '../../theme/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { palmApi } from '../../services/palmApi';
 import { PalmReading } from '../../types/palm';
@@ -70,11 +71,14 @@ export function PalmHubScreen() {
             overlay pinned to that exact spot on every screen, so anything
             else rendered there collides with it. The History action lives
             on the "Analysis sections" header below instead. */}
-        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('palm.profileTitle')}</Text>
-        <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
-          {t('palm.profileSubtitle')}
-        </Text>
+        <FadeInUp>
+          <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('palm.profileTitle')}</Text>
+          <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
+            {t('palm.profileSubtitle')}
+          </Text>
+        </FadeInUp>
 
+        <FadeInUp delay={80}>
         {profile.hasStoredImage && !imageFailed && !!heroImageUrl ? (
           <Image
             source={{ uri: heroImageUrl }}
@@ -96,8 +100,10 @@ export function PalmHubScreen() {
             </Text>
           </View>
         )}
+        </FadeInUp>
 
-        <Card elevated style={{ marginTop: spacing.md }}>
+        <FadeInUp delay={150}>
+        <Card elevated style={{ marginTop: spacing.md, borderColor: featureTint.palm.soft }}>
           <View style={styles.metaRow}>
             <View>
               <Text variant="label" tone="muted">{t('palm.handLabel')}</Text>
@@ -119,7 +125,9 @@ export function PalmHubScreen() {
             </View>
           </View>
         </Card>
+        </FadeInUp>
 
+        <FadeInUp delay={220}>
         <View style={{ marginTop: spacing.xl }}>
           <SectionHeader
             title={t('palm.analysisSectionsTitle')}
@@ -131,7 +139,8 @@ export function PalmHubScreen() {
           ) : (
             sections.map((s) => (
               <Card key={s.sectionKey ?? s.title} style={styles.sectionRow}>
-                <View style={{ flex: 1 }}>
+                <View style={[styles.sectionAccent, { backgroundColor: featureTint.palm.solid }]} />
+                <View style={{ flex: 1, marginLeft: spacing.sm }}>
                   <Text variant="bodySm" weight="semibold">{s.title}</Text>
                   <Text variant="caption" tone="muted" style={{ marginTop: 2 }} numberOfLines={2}>{s.text}</Text>
                 </View>
@@ -139,7 +148,9 @@ export function PalmHubScreen() {
             ))
           )}
         </View>
+        </FadeInUp>
 
+        <FadeInUp delay={280}>
         <Button
           label={t('palm.viewCompleteReport')}
           icon={FileText}
@@ -156,6 +167,7 @@ export function PalmHubScreen() {
           style={{ marginTop: spacing.sm }}
           onPress={() => setConfirmRescan(true)}
         />
+        </FadeInUp>
 
         <ConfirmationModal
           visible={confirmRescan}
@@ -178,20 +190,25 @@ export function PalmHubScreen() {
   // screen's confirmed-rescan flow.
   return (
     <PageContainer onRefresh={loadProfile}>
-      <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('palm.scanTitle')}</Text>
-      <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
-        {t('palm.scanSubtitle')}
-      </Text>
+      <FadeInUp>
+        <Text variant="display" weight="semibold" style={{ marginTop: spacing.sm }}>{t('palm.scanTitle')}</Text>
+        <Text variant="bodySm" tone="secondary" style={{ marginTop: 4, marginBottom: spacing.lg }}>
+          {t('palm.scanSubtitle')}
+        </Text>
+      </FadeInUp>
 
-      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-        <PalmHeroVisual size={200} />
-        <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>{t('palm.heroNote')}</Text>
-      </View>
+      <FadeInUp delay={100}>
+        <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+          <PalmHeroVisual size={200} />
+          <Text variant="caption" tone="muted" style={{ marginTop: spacing.sm, textAlign: 'center' }}>{t('palm.heroNote')}</Text>
+        </View>
+      </FadeInUp>
 
-      <Card elevated>
+      <FadeInUp delay={180}>
+      <Card elevated style={{ borderColor: featureTint.palm.soft }}>
         <View style={styles.row}>
-          <View style={styles.iconWrap}>
-            <ScanLine size={20} color={color.accent} strokeWidth={1.75} />
+          <View style={[styles.iconWrap, { backgroundColor: featureTint.palm.soft }]}>
+            <ScanLine size={20} color={featureTint.palm.solid} strokeWidth={1.75} />
           </View>
           <View style={{ flex: 1, marginLeft: spacing.md }}>
             <Text variant="bodySm" weight="semibold">{t('palm.newReadingTitle')}</Text>
@@ -202,10 +219,13 @@ export function PalmHubScreen() {
         </View>
         <Button label={t('palm.scanMyPalm')} icon={ScanLine} fullWidth style={{ marginTop: spacing.md }} onPress={() => navigation.navigate('PalmIntro')} />
       </Card>
+      </FadeInUp>
 
-      <View style={{ marginTop: spacing.xl }}>
-        <EmptyState icon={FileText} title={t('palm.emptyTitle')} description={t('palm.emptyDesc')} />
-      </View>
+      <FadeInUp delay={260}>
+        <View style={{ marginTop: spacing.xl }}>
+          <EmptyState icon={FileText} title={t('palm.emptyTitle')} description={t('palm.emptyDesc')} />
+        </View>
+      </FadeInUp>
     </PageContainer>
   );
 }
@@ -245,5 +265,11 @@ const styles = StyleSheet.create({
   },
   sectionRow: {
     marginBottom: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  sectionAccent: {
+    width: 3,
+    borderRadius: 2,
   },
 });

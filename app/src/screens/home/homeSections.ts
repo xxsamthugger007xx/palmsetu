@@ -36,7 +36,16 @@ export const sections: SectionCard[] = [
   {
     id: 'palm',
     icon: ScanLine,
-    navigate: (nav) => nav.navigate('PalmIntro'),
+    // Routes through the Palm hub, not straight to the intro flow - the hub
+    // already knows whether a profile exists and branches correctly (view
+    // the existing report + confirmed "scan another" vs. a genuine
+    // first-time intro). Going straight to PalmIntro here used to skip that
+    // check entirely: tapping this tile with an existing profile would run
+    // the whole capture/analyze flow only to have the backend reject the
+    // duplicate and silently fall back to the OLD reading (see
+    // PalmAnalyzingScreen's PROFILE_EXISTS handling) - this looked like
+    // "my new scan did nothing, the old one came back."
+    navigate: (nav) => nav.navigate('PalmScan' as never),
   },
   {
     id: 'tarot',
