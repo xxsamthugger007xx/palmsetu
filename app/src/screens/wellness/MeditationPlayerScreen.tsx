@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import type { AVPlaybackStatus } from 'expo-av';
 import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Play, Pause, Heart, Clock3, Moon, RefreshCw } from 'lucide-react-native';
@@ -66,7 +65,7 @@ export function MeditationPlayerScreen() {
 
   React.useEffect(() => {
     return () => {
-      soundRef.current?.unloadAsync().catch(() => {});
+      soundRef.current?.unloadAsync?.().catch(() => {});
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
     };
@@ -85,38 +84,10 @@ export function MeditationPlayerScreen() {
       setSession(res.session);
       wellnessApi.sendAnalyticsEvent('meditation_session_started', { contentId: content.id }).catch(() => {});
 
-      if (res.audioUrl) {
-        // Real expo-av wiring, exercised once an asset exists. Loaded lazily
-        // (require, not a top-level import) so this native module is never
-        // touched unless a real audioUrl is actually played - expo-av's
-        // native module may not be present in every runtime this screen can
-        // be reached from (e.g. Expo Go without a custom dev build), and
-        // this screen is statically reachable from RootNavigator, so a
-        // top-level import here would risk crashing the whole app on
-        // launch for every user, not just the one playing this session.
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const { Audio } = require('expo-av');
-          const { sound } = await Audio.Sound.createAsync({ uri: res.audioUrl }, { shouldPlay: true });
-          soundRef.current = sound;
-          sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
-            if (!status.isLoaded) return;
-            setPositionSeconds(Math.floor(status.positionMillis / 1000));
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-              saveProgress(Math.floor((status.durationMillis ?? 0) / 1000), true);
-            }
-          });
-          setIsPlaying(true);
-        } catch {
-          // Audio playback is not available in this runtime - the session
-          // is still tracked server-side, same as the no-audio-yet case.
-          setIsPlaying(false);
-        }
-      } else {
-        // Honest state: no real audio asset exists yet for this content.
-        setIsPlaying(false);
-      }
+      // No audio asset exists yet for any meditation (audioUrl is always null server-side), and the old expo-av
+      // player was removed (it breaks release builds on SDK 58). Sessions are still tracked on the backend; when real
+      // audio is uploaded, wire expo-audio in here.
+      setIsPlaying(false);
     } catch (__err) {
       const err = asApiError(__err);
       setError(err?.status === 403 ? t('ui.MeditationPlayerScreen.thisSessionRequiresPalmSetu') : (err?.message ?? t('ui.MeditationPlayerScreen.couldNotStartThisSession')));
