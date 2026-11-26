@@ -23,6 +23,10 @@ import { PRICING_TABLE_VERSION, getPricingCents, setPricingCents, defaultPricing
 import { getSubscriptionBasePrices, setSubscriptionBasePrices, defaultSubscriptionBasePrices, getSubscriptionPlans } from '../data/subscriptionPlans';
 import { getAiBudgetCaps, setAiBudgetCaps, defaultAiBudgetCaps } from '../ai/budget';
 import { getFeatureFlags, setFeatureFlag } from '../data/featureFlags';
+import { listTopAiSpenders } from '../ai/budget';
+import { getApiMonitoringOverview } from '../ops/apiMonitoring';
+import { evaluateAlerts, getAlertThresholds, setAlertThresholds, listIncidents, openIncident, resolveIncident } from '../ops/alertsEngine';
+import { getAcquisitionOverTime, getFunnel, FUNNEL_DEFINITIONS, getRetentionCohorts } from '../analytics/productAnalytics';
 import { AiProvider } from '../ai/types';
 import { assistantConversationsById, assistantUsageLog, aiUsageEvents } from '../data/store';
 import { assistantConfig, setAssistantConfig, AssistantConfig } from '../data/assistantConfig';
@@ -88,7 +92,16 @@ export function handleAdminLogout(req: Request, res: Response) {
  * only for the one row-count edge case the task calls out: narrowly scoping
  * it to a single documented route keeps the tradeoff contained.
  */
-const QUERY_TOKEN_ROUTES = new Set(['/users/export']);
+const QUERY_TOKEN_ROUTES = new Set(['/users/export', '/transactions/export', '/events/export']);
+
+function csvEscape(v: string): string {
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+}
+
+function toCsv(header: string[], rows: (string | number)[][]): string {
+  const lines = rows.map((r) => r.map((v) => csvEscape(String(v))).join(','));
+  return [header.join(','), ...lines].join('\n');
+}
 
 function requireAdminRole(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'] as string | undefined;
@@ -586,6 +599,31 @@ export function buildAdminRouter(aiProvider: AiProvider) {
 
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="solune-users.csv"');
+    res.send(csv);
+  });
+
+  router.get('/transactions/export', requireRole('super_admin', 'analyst'), (req, res) => {
+    const range = parseDateRange(req);
+    const rows = transactions
+      .filter((t) => inRange(t.createdAt, range))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .map((t) => [t.id, getPsuIdForUuid(t.userId) ?? t.userId, t.feature, t.amountCents, t.currency, t.createdAt]);
+    const csv = toCsv(['id', 'psuId', 'feature', 'amountCents', 'currency', 'createdAt'], rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="solune-transactions.csv"');
+    res.send(csv);
+  });
+
+  router.get('/events/export', requireRole('super_admin', 'analyst'), (req, res) => {
+    const range = parseDateRange(req);
+    const feature = typeof req.query.feature === 'string' ? req.query.feature : undefined;
+    const { entries } = listEvents({ feature, since: range.since, until: range.until }, 1, 50_000);
+    const rows = entries
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .map((e) => [e.id, e.userId ? (getPsuIdForUuid(e.userId) ?? e.userId) : '', e.eventType, e.feature, e.status, e.createdAt]);
+    const csv = toCsv(['id', 'psuId', 'eventType', 'feature', 'status', 'createdAt'], rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="solune-events.csv"');
     res.send(csv);
   });
 
@@ -1274,6 +1312,103 @@ export function buildAdminRouter(aiProvider: AiProvider) {
     const adminId = (req as any).admin!.adminId;
     logAdminAudit({ adminId, action: 'ADMIN_STATUS_CHANGED', path: req.originalUrl, targetType: 'adminUser', targetId: target.id, metadata: { status } });
     res.json({ ok: true });
+  });
+
+  // --- AI Cost Centre --------------------------------------------------------
+  router.get('/ai-cost-centre', (req, res) => {
+    const qs = req.query;
+    const month = typeof qs.month === 'string' ? qs.month : undefined;
+    const events = aiUsageEvents.filter((e) => (month ? e.createdAt.slice(0, 7) === month : true));
+    const byFeature: Record<string, { calls: number; estimatedInputTokens: number; estimatedOutputTokens: number }> = {};
+    const byDay: Record<string, number> = {};
+    for (const e of events) {
+      const f = byFeature[e.feature] ?? { calls: 0, estimatedInputTokens: 0, estimatedOutputTokens: 0 };
+      f.calls += 1;
+      f.estimatedInputTokens += e.estimatedInputTokens;
+      f.estimatedOutputTokens += e.estimatedOutputTokens;
+      byFeature[e.feature] = f;
+      const day = e.createdAt.slice(0, 10);
+      byDay[day] = (byDay[day] ?? 0) + estimateCostInr(e.estimatedInputTokens, e.estimatedOutputTokens, e.tokenSource === 'actual', providerKeyFromName(e.model));
+    }
+    const byFeatureWithCost = Object.fromEntries(
+      Object.entries(byFeature).map(([feature, v]) => [
+        feature,
+        { ...v, estimatedCostInr: Math.round(estimateCostInr(v.estimatedInputTokens, v.estimatedOutputTokens) * 100) / 100 },
+      ]),
+    );
+    const topSpenders = listTopAiSpenders(month).map((s) => ({ ...s, costInr: Math.round(s.costInr * 100) / 100 }));
+    res.json({
+      totalCalls: events.length,
+      byFeature: byFeatureWithCost,
+      dailyEstimatedCostInr: Object.fromEntries(Object.entries(byDay).map(([d, v]) => [d, Math.round(v * 100) / 100])),
+      topSpenders,
+      note: 'Cost is estimated (~4 chars/token heuristic unless the provider reported real usage) - never a real bill. Per-user cost comes from the live monthly budget tracker (ai/budget.ts), which is genuinely per-user; the feature/day breakdown above is not (aiUsageEvents carries no userId).',
+    });
+  });
+
+  // --- API Monitoring ----------------------------------------------------------
+  router.get('/api-monitoring', (req, res) => {
+    const range = parseDateRange(req);
+    res.json(getApiMonitoringOverview(range.since, range.until));
+  });
+
+  // --- Alerts & Incidents -------------------------------------------------------
+  router.get('/alerts', (_req, res) => {
+    res.json({ checks: evaluateAlerts(), thresholds: getAlertThresholds(), incidents: listIncidents() });
+  });
+
+  router.put('/alerts/thresholds', requireRole('super_admin'), (req, res) => {
+    const body = req.body ?? {};
+    const allowed: Record<string, number> = {};
+    for (const k of ['errorsPerHour', 'paymentFailureRatePercent', 'soulmateGenerationFailureRatePercent']) {
+      if (typeof body[k] === 'number' && Number.isFinite(body[k]) && body[k] >= 0) allowed[k] = body[k];
+    }
+    const thresholds = setAlertThresholds(allowed);
+    const adminId = (req as any).admin!.adminId;
+    logAdminAudit({ adminId, action: 'ALERT_THRESHOLDS_UPDATED', path: req.originalUrl, metadata: { thresholds } });
+    res.json({ thresholds });
+  });
+
+  router.post('/incidents', (req, res) => {
+    const { alertKey, label, note } = req.body ?? {};
+    if (typeof alertKey !== 'string' || typeof label !== 'string') return res.status(400).json({ error: 'alertKey and label are required.' });
+    const adminId = (req as any).admin!.adminId;
+    const incident = openIncident(alertKey, label, findAdminById(adminId)?.email ?? adminId, typeof note === 'string' ? note : '');
+    logAdminAudit({ adminId, action: 'INCIDENT_OPENED', path: req.originalUrl, targetType: 'incident', targetId: incident.id });
+    res.json({ incident });
+  });
+
+  router.put('/incidents/:id/resolve', (req, res) => {
+    const { note } = req.body ?? {};
+    const adminId = (req as any).admin!.adminId;
+    const incident = resolveIncident(req.params.id, findAdminById(adminId)?.email ?? adminId, typeof note === 'string' ? note : undefined);
+    if (!incident) return res.status(404).json({ error: 'Incident not found.' });
+    logAdminAudit({ adminId, action: 'INCIDENT_RESOLVED', path: req.originalUrl, targetType: 'incident', targetId: incident.id });
+    res.json({ incident });
+  });
+
+  // --- Acquisition, Funnels, Retention (real, event-based) ----------------------
+  router.get('/acquisition', (req, res) => {
+    const range = parseDateRange(req);
+    res.json({
+      days: getAcquisitionOverTime(range.since, range.until),
+      note: 'New accounts per day (guest vs registered), from real account-creation events. No channel/campaign attribution exists - this app has no referrer/UTM capture.',
+    });
+  });
+
+  router.get('/funnels', (req, res) => {
+    const range = parseDateRange(req);
+    const key = typeof req.query.funnel === 'string' ? req.query.funnel : FUNNEL_DEFINITIONS[0].key;
+    const steps = getFunnel(key, range.since, range.until);
+    if (!steps) return res.status(404).json({ error: `Unknown funnel: ${key}` });
+    res.json({ funnels: FUNNEL_DEFINITIONS.map((f) => ({ key: f.key, label: f.label })), selected: key, steps });
+  });
+
+  router.get('/retention', (_req, res) => {
+    res.json({
+      cohorts: getRetentionCohorts(),
+      note: 'Weekly cohorts by first account-creation event; "retained" means the cohort member produced ANY event during that later week. A cell is blank (null) only for a week that has not happened yet.',
+    });
   });
 
   return router;

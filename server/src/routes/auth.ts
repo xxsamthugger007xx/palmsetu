@@ -65,6 +65,7 @@ export function buildAuthRouter(verifyGoogle: (idToken: string) => Promise<Googl
   router.post('/guest', (req, res) => {
     const guestId = `guest-${uuid()}`;
     createGuestSession(guestId);
+    recordEvent({ userId: guestId, eventType: 'GUEST_CREATED', feature: 'auth' });
     res.json({ token: signGuestToken(guestId), guestId });
   });
 

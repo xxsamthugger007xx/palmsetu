@@ -103,7 +103,7 @@ export function estimateCostInr(inputTokens: number, outputTokens: number, actua
   return usd * c.usdToInr;
 }
 
-type Spend = { userId: string; month: string; costInr: number; calls: number; byProvider?: Partial<Record<ProviderKey, number>> };
+export type Spend = { userId: string; month: string; costInr: number; calls: number; byProvider?: Partial<Record<ProviderKey, number>> };
 const spendByKey = new SqliteMap<string, Spend>('aiMonthlySpend', { userId: (v) => v.userId });
 
 export const monthKey = (d = new Date()) => d.toISOString().slice(0, 7);
@@ -120,6 +120,16 @@ export function addSpend(userId: string, costInr: number, provider: ProviderKey 
   const cur = spendByKey.get(k) ?? { userId, month, costInr: 0, calls: 0 };
   const byProvider = { ...(cur.byProvider ?? {}), [provider]: (cur.byProvider?.[provider] ?? 0) + costInr };
   spendByKey.set(k, { ...cur, costInr: cur.costInr + costInr, calls: cur.calls + 1, byProvider });
+}
+
+/** Top AI spenders for a given month, by real tracked cost (see addSpend above) - a genuine per-user cost
+ * breakdown, unlike aiUsageEvents (data/store.ts) which has no userId. Used by the admin panel's AI Cost Centre. */
+export function listTopAiSpenders(month = monthKey(), limit = 20): Spend[] {
+  return spendByKey
+    .values()
+    .filter((s) => s.month === month)
+    .sort((a, b) => b.costInr - a.costInr)
+    .slice(0, limit);
 }
 
 export function getBudgetStatus(userId: string) {

@@ -88,10 +88,12 @@ export function runMigrations() {
     // Durable runtime config (pricing, AI budget, feature flags, assistant
     // config) - see data/runtimeConfig.ts. Live-editable via admin panel.
     'appConfig',
+    // Manually-logged operational incidents (see ops/alertsEngine.ts).
+    'incidents',
   ];
   for (const t of kvTables) createKvTable(t);
 
-  const logTables = ['moodCheckIns', 'transactions', 'assistantUsageLog', 'adminAuditLog', 'wellnessAnalyticsEvents', 'soulmateAnalyticsEvents', 'aiUsageEvents', 'tarotFollowupEvents'];
+  const logTables = ['moodCheckIns', 'transactions', 'assistantUsageLog', 'adminAuditLog', 'wellnessAnalyticsEvents', 'soulmateAnalyticsEvents', 'aiUsageEvents', 'tarotFollowupEvents', 'apiRequests'];
   for (const t of logTables) createLogTable(t);
 
   // New structured memory tables (Priority 2).

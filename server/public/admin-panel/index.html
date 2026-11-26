@@ -168,15 +168,15 @@
         <div class="group-label">Command Centre</div>
         <div class="tab active" data-tab="overview"><span class="icon">&#9679;</span><span class="label-text">Overview</span></div>
         <div class="tab" data-tab="live"><span class="icon">&#9679;</span><span class="label-text">Live Activity</span></div>
-        <div class="tab stub" data-tab="stub:alerts"><span class="icon">&#9679;</span><span class="label-text">Alerts &amp; Incidents</span></div>
+        <div class="tab" data-tab="alerts"><span class="icon">&#9679;</span><span class="label-text">Alerts &amp; Incidents</span></div>
 
         <div class="group-label">Users &amp; Growth</div>
         <div class="tab" data-tab="users"><span class="icon">&#9679;</span><span class="label-text">User Management</span></div>
-        <div class="tab stub" data-tab="stub:journey"><span class="icon">&#9679;</span><span class="label-text">User Journey</span></div>
+        <div class="tab" data-tab="journey"><span class="icon">&#9679;</span><span class="label-text">User Journey</span></div>
         <div class="tab" data-tab="sessions"><span class="icon">&#9679;</span><span class="label-text">Sessions</span></div>
-        <div class="tab stub" data-tab="stub:acquisition"><span class="icon">&#9679;</span><span class="label-text">Acquisition</span></div>
-        <div class="tab stub" data-tab="stub:funnels"><span class="icon">&#9679;</span><span class="label-text">Funnels</span></div>
-        <div class="tab stub" data-tab="stub:retention"><span class="icon">&#9679;</span><span class="label-text">Retention &amp; Cohorts</span></div>
+        <div class="tab" data-tab="acquisition"><span class="icon">&#9679;</span><span class="label-text">Acquisition</span></div>
+        <div class="tab" data-tab="funnels"><span class="icon">&#9679;</span><span class="label-text">Funnels</span></div>
+        <div class="tab" data-tab="retention"><span class="icon">&#9679;</span><span class="label-text">Retention &amp; Cohorts</span></div>
 
         <div class="group-label">Product Intelligence</div>
         <div class="tab" data-tab="features"><span class="icon">&#9679;</span><span class="label-text">Feature Analytics</span></div>
@@ -188,18 +188,18 @@
         <div class="tab" data-tab="subscriptions"><span class="icon">&#9679;</span><span class="label-text">Subscriptions</span></div>
         <div class="tab" data-tab="pricing"><span class="icon">&#9679;</span><span class="label-text">Pricing</span></div>
         <div class="tab" data-tab="aibudget"><span class="icon">&#9679;</span><span class="label-text">AI Budget</span></div>
-        <div class="tab stub" data-tab="stub:aicost"><span class="icon">&#9679;</span><span class="label-text">AI Cost Centre</span></div>
+        <div class="tab" data-tab="aicost"><span class="icon">&#9679;</span><span class="label-text">AI Cost Centre</span></div>
 
         <div class="group-label">Infrastructure</div>
         <div class="tab" data-tab="system"><span class="icon">&#9679;</span><span class="label-text">System Health</span></div>
-        <div class="tab stub" data-tab="stub:apm"><span class="icon">&#9679;</span><span class="label-text">API Monitoring</span></div>
+        <div class="tab" data-tab="apm"><span class="icon">&#9679;</span><span class="label-text">API Monitoring</span></div>
         <div class="tab" data-tab="errors"><span class="icon">&#9679;</span><span class="label-text">Errors &amp; Crashes</span></div>
 
         <div class="group-label">Administration</div>
         <div class="tab" data-tab="audit"><span class="icon">&#9679;</span><span class="label-text">Audit Logs</span></div>
         <div class="tab" data-tab="flags"><span class="icon">&#9679;</span><span class="label-text">Feature Flags</span></div>
         <div class="tab" data-tab="admins"><span class="icon">&#9679;</span><span class="label-text">Admin Users</span></div>
-        <div class="tab stub" data-tab="stub:export"><span class="icon">&#9679;</span><span class="label-text">Export Centre</span></div>
+        <div class="tab" data-tab="export"><span class="icon">&#9679;</span><span class="label-text">Export Centre</span></div>
       </div>
     </nav>
     <div class="main-area">
@@ -345,17 +345,6 @@
       '<ul>' + bullets.map((b) => '<li>' + escapeHtml(b) + '</li>').join('') + '</ul></div>';
   }
 
-  const STUB_PAGES = {
-    'stub:alerts': ['Alerts & Incidents', ['An alert-rule engine (thresholds on payment failures, AI spend, latency, etc.)', 'An incidents table (status, assignment, resolution notes)', 'A notification channel to actually page someone']],
-    'stub:journey': ['User Journey', ['Per-user event timeline UI built on the new user_events table (data already flows in - see Live Activity)', 'Screen-level navigation tracking from the mobile app, which does not exist yet']],
-    'stub:acquisition': ['Acquisition', ['Install/attribution tracking (referral, campaign, deep link) - no attribution SDK is wired into the app yet']],
-    'stub:funnels': ['Funnels', ['A funnel-builder UI over user_events', 'More event coverage across features before funnel steps are meaningful (only auth/tarot/palm/AI/payments emit events so far)']],
-    'stub:retention': ['Retention & Cohorts', ['Cohort bucketing (by signup date/first feature/etc.) over user_events', 'A derived daily-aggregation job - currently every metric is computed live, which works at this scale but will not forever']],
-    'stub:aicost': ['AI Cost Centre', ['Real per-user AI cost attribution (GenerationOptions does not carry a userId yet, see ai/usageTracking.ts)', 'Real provider-reported cost - every figure today is a ~4-chars/token estimate, see the existing AI Chat tab']],
-    'stub:apm': ['API Monitoring', ['Request-level instrumentation (p50/p95/p99 latency, per-endpoint error rate) - no middleware captures this yet']],
-    'stub:export': ['Export Centre', ['Export jobs for the other data types (payments, AI usage, events) beyond the Users CSV export that already exists']],
-  };
-
   async function renderTab(name) {
     setActiveTab(name);
     stopLiveFeed();
@@ -378,10 +367,14 @@
       if (name === 'admins') return renderAdmins(el);
       if (name === 'errors') return renderErrors(el);
       if (name === 'sessions') return renderSessions(el);
-      if (STUB_PAGES[name]) {
-        const [title, bullets] = STUB_PAGES[name];
-        return renderComingSoon(el, title, bullets);
-      }
+      if (name === 'alerts') return renderAlerts(el);
+      if (name === 'journey') return renderJourney(el);
+      if (name === 'acquisition') return renderAcquisition(el);
+      if (name === 'funnels') return renderFunnels(el);
+      if (name === 'retention') return renderRetention(el);
+      if (name === 'aicost') return renderAiCostCentre(el);
+      if (name === 'apm') return renderApiMonitoring(el);
+      if (name === 'export') return renderExportCentre(el);
     } catch (err) {
       el.innerHTML = '<p class="unavailable">Failed to load: ' + escapeHtml(err.message) + '</p>';
     }
@@ -1107,6 +1100,294 @@
       <div class="section-title">Top devices</div>
       <table><thead><tr><th>Device</th><th>Count</th></tr></thead><tbody>${tallyRows(data.topDevices, 'device') || '<tr><td colspan="2" class="unavailable">No data in range</td></tr>'}</tbody></table>
     `;
+  }
+
+  async function renderAlerts(el) {
+    const data = await api('/admin/alerts');
+    const checkRows = data.checks.map((c) => `
+      <tr style="${c.firing ? 'background:rgba(239,68,68,0.08);' : ''}">
+        <td>${escapeHtml(c.label)}</td>
+        <td><span class="pill" style="${c.firing ? 'color:#ef4444;border-color:#ef4444;' : 'color:var(--secondary);border-color:var(--secondary);'}">${c.firing ? 'FIRING' : 'OK'}</span></td>
+        <td>${c.value}${escapeHtml(c.unit === '%' ? '%' : ' ' + c.unit)}</td>
+        <td>${c.threshold}${escapeHtml(c.unit === '%' ? '%' : ' ' + c.unit)}</td>
+        <td class="unavailable">${escapeHtml(c.detail)}</td>
+        <td>${c.firing ? `<button class="open-incident" data-key="${escapeHtml(c.key)}" data-label="${escapeHtml(c.label)}" style="width:auto;padding:6px 10px;">Open incident</button>` : ''}</td>
+      </tr>
+    `).join('');
+    const incidentRows = data.incidents.map((i) => `
+      <tr>
+        <td>${escapeHtml(i.label)}</td>
+        <td>${new Date(i.openedAt).toLocaleString()}</td>
+        <td>${escapeHtml(i.openedBy)}</td>
+        <td><span class="pill ${i.resolvedAt ? 'premium' : ''}">${i.resolvedAt ? 'Resolved' : 'Open'}</span></td>
+        <td class="unavailable" style="white-space:pre-wrap;max-width:300px;">${escapeHtml(i.note || '-')}</td>
+        <td>${!i.resolvedAt ? `<button class="resolve-incident" data-id="${escapeHtml(i.id)}" style="width:auto;padding:6px 10px;">Resolve</button>` : ''}</td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Checks are evaluated live, from real data, every time this tab loads - not a scheduled job. Thresholds are admin-editable below.</p>
+      <div class="section-title">Live checks</div>
+      <table>
+        <thead><tr><th>Check</th><th>Status</th><th>Value</th><th>Threshold</th><th>Detail</th><th></th></tr></thead>
+        <tbody>${checkRows}</tbody>
+      </table>
+      <div class="card" style="margin-top:16px;">
+        <div class="label" style="margin-bottom:10px;">Thresholds (super_admin only)</div>
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Server errors per hour</label>
+        <input id="th-errors" type="number" min="0" step="1" value="${data.thresholds.errorsPerHour}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Payment failure rate (%) over 24h</label>
+        <input id="th-payfail" type="number" min="0" step="1" value="${data.thresholds.paymentFailureRatePercent}" />
+        <label style="display:block;font-size:12px;color:var(--textSecondary);margin-bottom:4px;">Soulmate generation failure rate (%) over 24h</label>
+        <input id="th-soulfail" type="number" min="0" step="1" value="${data.thresholds.soulmateGenerationFailureRatePercent}" />
+        <button id="th-save" style="width:auto;padding:8px 16px;margin-top:6px;">Save thresholds</button>
+        <div class="error" id="th-error"></div>
+      </div>
+      <div class="section-title">Incident log</div>
+      <table>
+        <thead><tr><th>Alert</th><th>Opened</th><th>By</th><th>Status</th><th>Note</th><th></th></tr></thead>
+        <tbody>${incidentRows || '<tr><td colspan="6" class="unavailable">No incidents logged yet</td></tr>'}</tbody>
+      </table>
+    `;
+
+    document.getElementById('th-save').onclick = async () => {
+      document.getElementById('th-error').textContent = '';
+      try {
+        await api('/admin/alerts/thresholds', {
+          method: 'PUT',
+          body: JSON.stringify({
+            errorsPerHour: Number(document.getElementById('th-errors').value),
+            paymentFailureRatePercent: Number(document.getElementById('th-payfail').value),
+            soulmateGenerationFailureRatePercent: Number(document.getElementById('th-soulfail').value),
+          }),
+        });
+        renderAlerts(el);
+      } catch (err) {
+        document.getElementById('th-error').textContent = err.message || 'Failed to save';
+      }
+    };
+
+    document.querySelectorAll('.open-incident').forEach((btn) => {
+      btn.onclick = async () => {
+        const note = prompt('Optional note for this incident:') || '';
+        try {
+          await api('/admin/incidents', { method: 'POST', body: JSON.stringify({ alertKey: btn.dataset.key, label: btn.dataset.label, note }) });
+          renderAlerts(el);
+        } catch (err) {
+          alert(err.message || 'Failed to open incident');
+        }
+      };
+    });
+
+    document.querySelectorAll('.resolve-incident').forEach((btn) => {
+      btn.onclick = async () => {
+        const note = prompt('Optional resolution note:') || '';
+        try {
+          await api('/admin/incidents/' + encodeURIComponent(btn.dataset.id) + '/resolve', { method: 'PUT', body: JSON.stringify({ note }) });
+          renderAlerts(el);
+        } catch (err) {
+          alert(err.message || 'Failed to resolve incident');
+        }
+      };
+    });
+  }
+
+  async function renderJourney(el) {
+    el.innerHTML = `
+      <p class="unavailable">Look up a user by their PSU id (shown everywhere else in this panel, e.g. User Management) to see every event they've triggered, oldest first.</p>
+      <div class="toolbar">
+        <input id="journey-search" type="text" placeholder="PSU id, e.g. PSU-0001" />
+        <button id="journey-go" style="width:auto;">Search</button>
+      </div>
+      <div id="journey-results"></div>
+    `;
+    const runSearch = async () => {
+      const psuId = document.getElementById('journey-search').value.trim();
+      const results = document.getElementById('journey-results');
+      if (!psuId) { results.innerHTML = ''; return; }
+      results.innerHTML = '<p class="unavailable">Loading...</p>';
+      try {
+        const data = await api('/admin/users/' + encodeURIComponent(psuId) + '/timeline?pageSize=200');
+        if (data.error) { results.innerHTML = '<p class="unavailable">' + escapeHtml(data.error) + '</p>'; return; }
+        const rows = (data.entries || []).map((e) => `
+          <tr>
+            <td>${new Date(e.createdAt).toLocaleString()}</td>
+            <td><span class="pill">${escapeHtml(e.feature)}</span></td>
+            <td>${escapeHtml(e.eventType)}</td>
+            <td>${escapeHtml(e.status)}</td>
+          </tr>
+        `).join('');
+        results.innerHTML = `
+          <table>
+            <thead><tr><th>Time</th><th>Feature</th><th>Event</th><th>Status</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="4" class="unavailable">No events for this user yet</td></tr>'}</tbody>
+          </table>
+        `;
+      } catch (err) {
+        results.innerHTML = '<p class="unavailable">' + escapeHtml(err.message) + '</p>';
+      }
+    };
+    document.getElementById('journey-go').onclick = runSearch;
+    document.getElementById('journey-search').onkeydown = (e) => { if (e.key === 'Enter') runSearch(); };
+  }
+
+  async function renderAcquisition(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/acquisition?' + qs.toString());
+    const rows = data.days.map((d) => `
+      <tr><td>${escapeHtml(d.date)}</td><td>${d.guestSignups}</td><td>${d.registeredSignups}</td><td>${d.guestSignups + d.registeredSignups}</td></tr>
+    `).join('');
+    const totalGuest = data.days.reduce((s, d) => s + d.guestSignups, 0);
+    const totalReg = data.days.reduce((s, d) => s + d.registeredSignups, 0);
+    el.innerHTML = `
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+      <div class="grid">
+        <div class="card"><div class="label">Guest signups</div><div class="value">${totalGuest}</div></div>
+        <div class="card"><div class="label">Registered signups</div><div class="value">${totalReg}</div></div>
+        <div class="card"><div class="label">Total</div><div class="value">${totalGuest + totalReg}</div></div>
+      </div>
+      <div class="section-title">By day</div>
+      <table>
+        <thead><tr><th>Date</th><th>Guest</th><th>Registered</th><th>Total</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" class="unavailable">No signups in range</td></tr>'}</tbody>
+      </table>
+    `;
+  }
+
+  let currentFunnelKey = null;
+  async function renderFunnels(el) {
+    const qs = new URLSearchParams(rangeParams());
+    if (currentFunnelKey) qs.set('funnel', currentFunnelKey);
+    const data = await api('/admin/funnels?' + qs.toString());
+    currentFunnelKey = data.selected;
+    const maxCount = Math.max(1, ...data.steps.map((s) => s.distinctUsers));
+    const stepRows = data.steps.map((s, i) => `
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span>${i + 1}. ${escapeHtml(s.label)}</span>
+          <span>${s.distinctUsers} user(s)${i > 0 ? ' · ' + Math.round((s.conversionFromPrevious ?? 0) * 100) + '% from previous step' : ''}</span>
+        </div>
+        <div style="background:var(--surface);border-radius:6px;height:20px;overflow:hidden;">
+          <div style="background:var(--accent);width:${Math.round((s.distinctUsers / maxCount) * 100)}%;height:100%;"></div>
+        </div>
+      </div>
+    `).join('');
+    el.innerHTML = `
+      <div class="toolbar">
+        <select id="funnel-select" style="flex:1;">
+          ${data.funnels.map((f) => `<option value="${escapeHtml(f.key)}" ${f.key === currentFunnelKey ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
+        </select>
+      </div>
+      <p class="unavailable">Counts are distinct users who reached each step, in order (not a time-windowed funnel) - built on real recorded events only.</p>
+      ${stepRows}
+    `;
+    document.getElementById('funnel-select').onchange = (e) => { currentFunnelKey = e.target.value; renderFunnels(el); };
+  }
+
+  async function renderRetention(el) {
+    const data = await api('/admin/retention');
+    const maxOffset = Math.max(0, ...data.cohorts.map((c) => c.retainedPercentByWeekOffset.length - 1));
+    const header = ['Cohort week', 'Size', ...Array.from({ length: maxOffset + 1 }, (_, i) => 'Week +' + i)];
+    const rows = data.cohorts.map((c) => {
+      const cells = Array.from({ length: maxOffset + 1 }, (_, i) => {
+        const v = c.retainedPercentByWeekOffset[i];
+        return `<td>${v == null ? '-' : v + '%'}</td>`;
+      }).join('');
+      return `<tr><td>${escapeHtml(c.cohortWeekStart)}</td><td>${c.cohortSize}</td>${cells}</tr>`;
+    }).join('');
+    el.innerHTML = `
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+      <table>
+        <thead><tr>${header.map((h) => '<th>' + escapeHtml(h) + '</th>').join('')}</tr></thead>
+        <tbody>${rows || '<tr><td colspan="' + header.length + '" class="unavailable">No cohorts yet</td></tr>'}</tbody>
+      </table>
+    `;
+  }
+
+  async function renderAiCostCentre(el) {
+    const data = await api('/admin/ai-cost-centre');
+    const featureRows = Object.entries(data.byFeature).map(([feature, v]) => `
+      <tr><td><span class="pill">${escapeHtml(feature)}</span></td><td>${v.calls}</td><td>${v.estimatedInputTokens}</td><td>${v.estimatedOutputTokens}</td><td>${formatCents(v.estimatedCostInr * 100)}</td></tr>
+    `).join('');
+    const dailyRows = Object.entries(data.dailyEstimatedCostInr).sort((a, b) => a[0].localeCompare(b[0])).map(([day, inr]) => `
+      <tr><td>${escapeHtml(day)}</td><td>${formatCents(inr * 100)}</td></tr>
+    `).join('');
+    const spenderRows = data.topSpenders.map((s, i) => `
+      <tr><td>#${i + 1}</td><td>${escapeHtml(s.userId)}</td><td>${formatCents(s.costInr * 100)}</td><td>${s.calls}</td></tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">${escapeHtml(data.note)}</p>
+      <div class="grid"><div class="card"><div class="label">Total AI calls</div><div class="value">${data.totalCalls}</div></div></div>
+      <div class="section-title">By feature</div>
+      <table>
+        <thead><tr><th>Feature</th><th>Calls</th><th>Input tokens (est.)</th><th>Output tokens (est.)</th><th>Est. cost</th></tr></thead>
+        <tbody>${featureRows || '<tr><td colspan="5" class="unavailable">No AI usage recorded yet</td></tr>'}</tbody>
+      </table>
+      <div class="section-title">Daily estimated cost</div>
+      <table>
+        <thead><tr><th>Day</th><th>Est. cost</th></tr></thead>
+        <tbody>${dailyRows || '<tr><td colspan="2" class="unavailable">No AI usage recorded yet</td></tr>'}</tbody>
+      </table>
+      <div class="section-title">Top spenders this month (real per-user budget tracking)</div>
+      <table>
+        <thead><tr><th>#</th><th>User</th><th>Spend this month</th><th>Calls</th></tr></thead>
+        <tbody>${spenderRows || '<tr><td colspan="4" class="unavailable">No spend tracked yet this month</td></tr>'}</tbody>
+      </table>
+    `;
+  }
+
+  async function renderApiMonitoring(el) {
+    const qs = new URLSearchParams(rangeParams());
+    const data = await api('/admin/api-monitoring?' + qs.toString());
+    const rows = data.byEndpoint.map((e) => `
+      <tr>
+        <td><span class="pill">${escapeHtml(e.method)}</span> ${escapeHtml(e.routePath)}</td>
+        <td>${e.count}</td>
+        <td>${e.p50Ms}ms</td>
+        <td>${e.p95Ms}ms</td>
+        <td>${e.p99Ms}ms</td>
+        <td style="${e.errorRate > 0 ? 'color:#ef4444;' : ''}">${(e.errorRate * 100).toFixed(1)}%</td>
+        <td>${(e.clientErrorRate * 100).toFixed(1)}%</td>
+      </tr>
+    `).join('');
+    el.innerHTML = `
+      <p class="unavailable">Real request-level timing, captured for every request since this instrumentation shipped (see ops/apiMonitoring.ts) - not an APM/tracing service, but genuinely measured, not estimated.</p>
+      <div class="grid">
+        <div class="card"><div class="label">Total requests</div><div class="value">${data.totalRequests}</div></div>
+        <div class="card"><div class="label">Overall 5xx error rate</div><div class="value">${(data.overallErrorRate * 100).toFixed(1)}%</div></div>
+        <div class="card"><div class="label">Overall p95 latency</div><div class="value">${data.overallP95Ms}ms</div></div>
+      </div>
+      <div class="section-title">By endpoint</div>
+      <table>
+        <thead><tr><th>Endpoint</th><th>Requests</th><th>p50</th><th>p95</th><th>p99</th><th>5xx rate</th><th>4xx rate</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="7" class="unavailable">No requests logged in range</td></tr>'}</tbody>
+      </table>
+    `;
+  }
+
+  function downloadCsv(path) {
+    const qs = new URLSearchParams({ ...rangeParams(), token });
+    window.open(API_BASE + path + '?' + qs.toString(), '_blank');
+  }
+
+  async function renderExportCentre(el) {
+    el.innerHTML = `
+      <p class="unavailable">Every export below honors the Since/Until range at the top of the page. Downloads open in a new tab.</p>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="label" style="margin-bottom:8px;">Users</div>
+        <button id="exp-users" style="width:auto;padding:8px 16px;">Download users CSV</button>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="label" style="margin-bottom:8px;">Transactions (revenue)</div>
+        <button id="exp-tx" style="width:auto;padding:8px 16px;">Download transactions CSV</button>
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:8px;">Events</div>
+        <button id="exp-events" style="width:auto;padding:8px 16px;">Download events CSV</button>
+      </div>
+    `;
+    document.getElementById('exp-users').onclick = () => downloadCsv('/admin/users/export');
+    document.getElementById('exp-tx').onclick = () => downloadCsv('/admin/transactions/export');
+    document.getElementById('exp-events').onclick = () => downloadCsv('/admin/events/export');
   }
 
   let auditPage = 1;

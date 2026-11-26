@@ -30,6 +30,7 @@ import { buildAppSessionRouter } from './routes/appSession';
 import { buildStreakRouter } from './routes/streak';
 import { buildBillingRouter } from './routes/billing';
 import { buildConfigRouter } from './routes/config';
+import { recordApiTiming } from './ops/apiMonitoring';
 import { migrateVastuPropertiesIfNeeded } from './vastu/migratePropertyProfiles';
 import { attachAuthContext } from './auth/middleware';
 import { accountsById, vastuPropertiesById, revokedTokens, passwordResetsByHash } from './data/store';
@@ -62,6 +63,8 @@ app.use(express.json({ limit: '1mb', verify: keepRawBody }));
 app.use(attachAuthContext);
 // Carries the caller's id into the AI provider layer so spend can be attributed per user.
 app.use(runWithAiUser);
+// Real request-level timing/error-rate log, backing the admin panel's API Monitoring tab.
+app.use(recordApiTiming);
 app.use('/auth', buildAuthRouter());
 app.use('/config', buildConfigRouter());
 
