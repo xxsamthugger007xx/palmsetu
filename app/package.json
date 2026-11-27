@@ -17,7 +17,6 @@
     "@sentry/react-native": "~8.28.0",
     "expo": "~58.0.26",
     "expo-auth-session": "~58.0.19",
-    "expo-av": "^16.0.8",
     "expo-camera": "~58.0.14",
     "expo-clipboard": "~58.0.4",
     "expo-constants": "~58.0.16",

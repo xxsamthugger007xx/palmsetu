@@ -19,7 +19,12 @@
       "autoIncrement": true,
       "channel": "production",
       "android": { "buildType": "app-bundle" },
-      "env": { "EXPO_PUBLIC_APP_ENV": "production", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_PUBLIC_API_URL": "https://palmsetu.com",
+        "EXPO_PUBLIC_LEGAL_BASE_URL": "https://palmsetu.com"
+      }
     }
   },
   "submit": {

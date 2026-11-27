@@ -1,0 +1,148 @@
+<!doctype html>
+<title>Support - Palm Setu</title>
+<meta name="description" content="Get help with Palm Setu - FAQs and contact information.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #FBF9F5;
+    --surface: #FFFFFF;
+    --surface-sunken: #F3EFE6;
+    --border: #E7E0D2;
+    --text: #2A2440;
+    --text-muted: #6B6480;
+    --accent: #7A5FC2;
+    --accent-ink: #4A3A8A;
+    --gold: #B8872E;
+    --gold-bg: #FBF0DC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161326;
+      --surface: #1E1A33;
+      --surface-sunken: #241F3D;
+      --border: #332C54;
+      --text: #ECE8FA;
+      --text-muted: #A69BC9;
+      --accent: #A99BEA;
+      --accent-ink: #D2CEFD;
+      --gold: #D9B872;
+      --gold-bg: #332A17;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161326;
+    --surface: #1E1A33;
+    --surface-sunken: #241F3D;
+    --border: #332C54;
+    --text: #ECE8FA;
+    --text-muted: #A69BC9;
+    --accent: #A99BEA;
+    --accent-ink: #D2CEFD;
+    --gold: #D9B872;
+    --gold-bg: #332A17;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding-inline: 20px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding-block: 48px 80px; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--gold); }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1.1;
+    margin: 14px 0 6px;
+    text-wrap: balance;
+  }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin: 0 0 8px; }
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 40px 0 16px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 1rem; font-weight: 600; }
+  .card p { margin: 0; color: var(--text-muted); font-size: 14.5px; }
+  .contact {
+    background: var(--gold-bg);
+    border: 1px solid var(--gold);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 32px;
+  }
+  .contact p { margin: 0 0 10px; }
+  .contact a {
+    display: inline-block;
+    color: var(--accent-ink);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+  }
+  footer { margin-top: 48px; font-size: 13px; color: var(--text-muted); }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Palm Setu</div>
+  <h1>Support</h1>
+  <p class="subtitle">Answers to common questions, and how to reach us for anything else.</p>
+
+  <h2>Frequently asked</h2>
+
+  <div class="card">
+    <h3>How accurate are the palm, tarot, and astrology readings?</h3>
+    <p>Palm Setu blends real astronomical/astrological calculations with AI-assisted interpretation for entertainment and self-reflection. Readings are not scientific predictions and should not replace professional advice.</p>
+  </div>
+
+  <div class="card">
+    <h3>Why was I charged, or why can't I access a premium feature?</h3>
+    <p>Check Profile &gt; Current Plan in the app to see your active plan. If a purchase didn't unlock a feature, try Profile &gt; Restore Purchases, which re-checks your purchase history with the app store.</p>
+  </div>
+
+  <div class="card">
+    <h3>How do I change my birth details?</h3>
+    <p>Go to Profile &gt; Birth Details in the app to update your date, time, and place of birth. This updates your astrology charts and readings going forward.</p>
+  </div>
+
+  <div class="card">
+    <h3>Can I delete my account and data?</h3>
+    <p>Yes - Profile &gt; Account Management &gt; Delete Account in the app permanently removes your account and all associated data.</p>
+  </div>
+
+  <div class="card">
+    <h3>How do I switch the app's language?</h3>
+    <p>Go to Profile &gt; Language in the app to choose from the supported languages.</p>
+  </div>
+
+  <div class="contact">
+    <p>Still need help? Our support team is happy to assist.</p>
+    <a href="mailto:support@palmsetu.com">support@palmsetu.com</a>
+  </div>
+
+  <footer>Palm Setu &middot; <a href="/privacy" style="color:inherit;">Privacy Policy</a> &middot; <a href="/terms" style="color:inherit;">Terms of Service</a></footer>
+</div>
