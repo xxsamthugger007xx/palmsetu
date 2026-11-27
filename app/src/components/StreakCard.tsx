@@ -41,7 +41,12 @@ export function StreakCard({ streak, onRemindersPress }: { streak: StreakSummary
           ))}
         </View>
       </View>
-      <Text variant="caption" tone={streak.atRisk ? undefined : 'secondary'} style={{ marginTop: spacing.sm, color: streak.atRisk ? color.warning : undefined }}>
+      <Text
+        variant="caption"
+        weight={alive ? 'semibold' : 'regular'}
+        tone={streak.atRisk ? 'warning' : alive ? 'success' : 'secondary'}
+        style={{ marginTop: spacing.sm }}
+      >
         {message}
       </Text>
       {onRemindersPress && (

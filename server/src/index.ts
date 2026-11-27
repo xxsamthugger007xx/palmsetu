@@ -160,6 +160,11 @@ app.use('/terms', express.static(path.join(__dirname, '../public/terms')));
 // Password reset page opened from the emailed link (posts to /auth/reset-password).
 app.use('/reset-password', express.static(path.join(__dirname, '../public/reset-password')));
 
+// Public support page, served at /support - the Support URL App Store
+// Connect / Play Console requires for the store listing. Plain static
+// file, no auth.
+app.use('/support', express.static(path.join(__dirname, '../public/support')));
+
 // Provisions the first Super Admin from SUPER_ADMIN_EMAIL/SUPER_ADMIN_PASSWORD
 // if admin_users is empty (no-op otherwise), and assigns a permanent
 // PSU-000001-style ID to every account that doesn't have one yet (no-op for

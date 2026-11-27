@@ -8,7 +8,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.palmsetuapp.ios",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.palmsetuapp.android",
@@ -41,13 +45,13 @@
       "expo-web-browser",
       "@sentry/react-native"
     ],
-    "owner": "samthugger7",
+    "owner": "sanskarmalik",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "extra": {
       "eas": {
-        "projectId": "438b283d-07a0-41cf-83b2-bba8a4bbd44b"
+        "projectId": "c5e65383-30ac-42e0-97cf-ce69e45916a0"
       }
     }
   }
